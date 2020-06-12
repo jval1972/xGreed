@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,15 +18,14 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <MALLOC.H>
-#include <IO.H>
-#include <FCNTL.H>
-#include <STRING.H>
-#include <SYS/STAT.H>
-#include 'd_global.h'
-#include 'd_disk.h'
-#include 'd_misc.h'
-#include 'protos.h'
+unit d_disk;
+
+interface
+
+uses
+  d_disk_h,
+  d_misc_h,
+  protos_h;
 
 (**** VARIABLES ****)
 

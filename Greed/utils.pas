@@ -1249,7 +1249,7 @@ begin
   pattern: integer;
 
 {$IFDEF DEMO}
-  songmap mod  := 5;
+  songmap mod := 5;
 {$ENDIF}
   case songmap  of
   begin
