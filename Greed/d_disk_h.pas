@@ -42,6 +42,8 @@ type
     nameofs: smallint;
     compress: smallint;
   end;
+  lumpinfo_tArray = array[0..$FFF] of lumpinfo_t;
+  Plumpinfo_tArray = ^lumpinfo_tArray;
 
 implementation
 
