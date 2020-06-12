@@ -454,8 +454,6 @@ const
   MAXINVENTORY = 13;
 { adjustment to amount of head bobbing  }
   BOBFACTOR = 12;
-{ adjustment to amount of weapon bobbing  }
-  WEAPFACTOR = 0.001;
   RECBUFSIZE = 16000;
   MAXPROBE = 960;
   MOVEDELAY = 7;
