@@ -23,6 +23,7 @@ program xGreed;
 {$R *.res}
 
 uses
+  Windows,
   constant in 'constant.pas',
   d_disk in 'd_disk.pas',
   d_disk_h in 'd_disk_h.pas',
@@ -58,5 +59,28 @@ uses
   timer_h in 'timer_h.pas',
   utils in 'utils.pas';
 
+var
+  hGenWnd: HWND = 0;
 begin
+  //Check if Generic.exe is running. If it's running then focus on the window
+  hGenWnd := FindWindow('Greed','Greed');
+  if hGenWnd <> 0 then
+  begin
+    SetForegroundWindow(hGenWnd);
+    Halt(0);
+  end;
+
+  if hPrevInstance = 0  then
+    if not InitApplication(hInstance) then
+      Halt(1);
+
+  if not InitInstance(hInstance, 0) then
+    Halt(1);
+
+  startup;
+
+  DestroyWindow(Window_Handle);
+
+  Halt(0);
 end.
+
