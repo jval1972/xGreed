@@ -2653,8 +2653,8 @@ begin
       end;
 
 //   if (recording) or (playback) rndofs := 0;
-
-   memset(reallight,0,MAPROWS*MAPCOLS*4);
+      
+   memset(reallight, 0, MAPROWS * MAPCOLS * 4);
    MoveSprites;
 
    if netmode then

@@ -23,86 +23,106 @@ unit d_disk;
 interface
 
 uses
+  g_delphi,
   d_disk_h,
-  d_misc_h,
   protos_h;
 
 (**** VARIABLES ****)
+var
+  fileinfo: fileinfo_t; // the file header
+  infotable: Plumpinfo_tArray;  // pointers into the cache file
+  lumpmain: PPointerArray;  // pointers to the lumps in main memory
+  cachehandle: file; // handle of current file
 
-fileinfo_t fileinfo;     // the file header
-lumpinfo_t *infotable;   // pointers into the cache file
-void       **lumpmain;   // pointers to the lumps in main memory
-int        cachehandle;  // handle of current file
+procedure CA_ReadFile(const fname: string; const buffer: pointer; const len: LongWord);
 
-extern bool waiting;
+function CA_LoadFile(const fname: string): pointer;
 
-(**** FUNCTIONS ****)
+procedure CA_InitFile(const filename: string);
 
-procedure CA_ReadFile(char *name, void *buffer, unsigned length);
-(* generic read file *)
+function CA_CheckNamedNum(const name: string): integer;
+
+function CA_GetNamedNum(const name: string): integer;
+
+function CA_CacheLump(const lump: integer): pointer;
+
+procedure CA_ReadLump(const lump: integer; const dest: pointer);
+
+procedure CA_FreeLump(const lump: integer);
+
+implementation
+
+uses
+  d_misc;
+  
+procedure CA_ReadFile(const fname: string; const buffer: pointer; const len: LongWord);
+var
+  handle: file;
 begin
-  handle: integer;
-
-  if ((handle := open(name,O_RDONLY) or (O_BINARY)) = -1) MS_Error('CA_ReadFile: Open failed on %s not ',name);
-  if (not read(handle,buffer,length)) then
+  if not fopen(handle, fname, fOpenReadOnly) then
+    MS_Error('CA_ReadFile(): Open failed on %s!', [name]);
+  if not fread(handle, buffer, len) then
   begin
-   close(handle);
-   MS_Error('CA_LoadFile: Read failed on %s not ',name);
-    end;
-  close(handle);
+    closefile(handle);
+    MS_Error('CA_LoadFile(): Read failed on %s!', name);
   end;
+  closefile(handle);
+end;
 
-
-procedure *CA_LoadFile(char *name);
-(* generic load file *)
+function CA_LoadFile(const fname: string): pointer;
+var
+  handle: file;
+  len: integer;
+  buffer: pointer;
 begin
-  handle: integer;
-  unsigned length;
-procedure *buffer;
-
-  if ((handle := open(name,O_RDONLY) or (O_BINARY)) = -1) MS_Error('CA_LoadFile: Open failed on %s not ',name);
-  length := filelength(handle);
-  if (not (buffer := malloc(length))) MS_Error('CA_LoadFile: Malloc failed for %s not ',name);
-  if (not read(handle,buffer,length)) then
+  if not fopen(handle, fname, fOpenReadOnly) then
+    MS_Error('CA_LoadFile(): Open failed on %s!', [name]);
+  len := fsize(handle);
+  buffer := malloc(len)
+  if buffer = nil then
+    MS_Error('CA_LoadFile(): Malloc failed for %s!', [name]);
+  if not fread(buffer, len, 1, handle) then
   begin
-   close(handle);
-   MS_Error('CA_LoadFile: Read failed on %s not ',name);
-    end;
-  close(handle);
-  return buffer;
+    closefile(handle);
+    MS_Error('CA_LoadFile(): Read failed on %s!', [name]);
   end;
+  closefile(handle);
+  result := buffer;
+end;
 
+// initialize link file
+var
+  ca_initialized: boolean = false;
 
-procedure CA_InitFile(char *filename);
-(* initialize link file *)
-begin
-  unsigned size;
+procedure CA_InitFile(const filename: string);
+var
+  size: integer;
   i: integer;
-
-  if (cachehandle) // already open, must shut down
+begin
+  if ca_initialized then // already open, must shut down
   begin
-   close(cachehandle);
-   free(infotable);
-   for(i := 0;i<fileinfo.numlumps;i++)  // dump the lumps
-    if (lumpmain[i]) free(lumpmain[i]);
-   free(lumpmain);
-    end;
+    closefile(cachehandle);
+    memfree(infotable);
+    for i := 0 to fileinfo.numlumps - 1 do  // dump the lumps
+      if lumpmain[i] <> nil then
+        memfree(lumpmain[i]);
+    memfree(lumpmain);
+  end;
   // load the header
-  if ((cachehandle := open(filename,O_RDONLY) or (O_BINARY)) = -1) then
-  MS_Error('CA_InitFile: Can't open %s not ',filename);
-  read(cachehandle,(void *)) and (fileinfo, sizeof(fileinfo));
+  if not fopen(cachehandle, filename, fOpenReadOnly then
+    MS_Error('CA_InitFile: Can't open %s not ',filename);
+  fread(@fileinfo, SizeOf(fileinfo), 1, cachehandle);
   // load the info list
   size := fileinfo.infotablesize;
   infotable := malloc(size);
-  lseek(cachehandle,fileinfo.infotableofs,SEEK_SET);
-  read(cachehandle,(void *)infotable, size);
-  size := fileinfo.numlumps*sizeof(int);
-  lumpmain := malloc(size);
-  memset(lumpmain,0,size);
-  end;
+  seek(cachehandle, fileinfo.infotableofs);
+  fread(infotable, size, 1, cachehandle);
+  size := fileinfo.numlumps * SizeOf(integer);
+  lumpmain := mallocz(size);
+  ca_initialized := true;
+end;
 
-
-int CA_CheckNamedNum(char *name)
+function CA_CheckNamedNum(const name: string): integer;
 (* returns number of lump if found
    returns -1 if name not found *)
    begin
@@ -118,7 +138,7 @@ int CA_CheckNamedNum(char *name)
   end;
 
 
-int CA_GetNamedNum(char *name)
+function CA_GetNamedNum(const name: string): integer;
 (* searches for lump with name
    returns -1 if not found *)
    begin
@@ -126,17 +146,17 @@ int CA_GetNamedNum(char *name)
 
   i := CA_CheckNamedNum(name);
   if (i <> -1) return i;
-  MS_Error('CA_GetNamedNum: %s not found not ',name);
+  MS_Error('CA_GetNamedNum: %s not found!',name);
   return -1;
   end;
 
 
-procedure *CA_CacheLump(int lump);
+function CA_CacheLump(const lump: integer): pointer;
 (* returns pointer to lump
    caches lump in memory *)
    begin
 {$IFDEF PARMCHECK}
-  if (lump >= fileinfo.numlumps) MS_Error('CA_LumpPointer: %i>%i max lumps not ',lump,fileinfo.numlumps);
+  if (lump >= fileinfo.numlumps) MS_Error('CA_LumpPointer: %i>%i max lumps!',lump,fileinfo.numlumps);
 {$ENDIF}
   if not lumpmain[lump] then
   begin
@@ -153,22 +173,22 @@ procedure *CA_CacheLump(int lump);
   end;
 
 
-procedure CA_ReadLump(int lump, void *dest);
+procedure CA_ReadLump(const lump: integer; const dest: pointer);
 (* reads a lump into a buffer *)
 begin
 {$IFDEF PARMCHECK}
-  if (lump >= fileinfo.numlumps) MS_Error('CA_ReadLump: %i>%i max lumps not ',lump,fileinfo.numlumps);
+  if (lump >= fileinfo.numlumps) MS_Error('CA_ReadLump: %i>%i max lumps!',lump,fileinfo.numlumps);
 {$ENDIF}
   lseek(cachehandle, infotable[lump].filepos, SEEK_SET);
   read(cachehandle,dest,infotable[lump].size);
   end;
 
 
-procedure CA_FreeLump(unsigned lump);
+procedure CA_FreeLump(const lump: integer);
 (* frees a cached lump *)
 begin
 {$IFDEF PARMCHECK}
-  if (lump >= fileinfo.numlumps) MS_Error('CA_FreeLump: %i>%i max lumps not ',lump,fileinfo.numlumps);
+  if (lump >= fileinfo.numlumps) MS_Error('CA_FreeLump: %i>%i max lumps!',lump,fileinfo.numlumps);
 {$ENDIF}
   if (not lumpmain[lump]) exit;
   free(lumpmain[lump]);
@@ -176,14 +196,5 @@ begin
   end;
 
 
-procedure CA_WriteLump(unsigned lump);
-(* writes a lump to the link file *)
-begin
-{$IFDEF PARMCHECK}
-  if (lump >= fileinfo.numlumps) MS_Error('CA_WriteLump: %i>%i max lumps not ',lump,fileinfo.numlumps);
-  if (not lumpmain[lump]) MS_Error('CA_WriteLump: %i not cached in not ',lump);
-{$ENDIF}
-  lseek(cachehandle,infotable[lump].filepos, SEEK_SET);
-  write(cachehandle,lumpmain[lump],infotable[lump].size);
-  end;
+end.
 
