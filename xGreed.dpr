@@ -32,7 +32,6 @@ uses
   d_ints in 'Greed\d_ints.pas',
   d_ints_h in 'Greed\d_ints_h.pas',
   d_misc in 'Greed\d_misc.pas',
-  d_misc_h in 'Greed\d_misc_h.pas',
   d_video in 'Greed\d_video.pas',
   d_video_h in 'Greed\d_video_h.pas',
   display in 'Greed\display.pas',
