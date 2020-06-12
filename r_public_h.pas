@@ -28,6 +28,8 @@ interface
 
 
 {*** CONSTANTS *** }
+type
+  bool = boolean;
 
 const
   MAX_VIEW_WIDTH = 320;
@@ -134,9 +136,10 @@ type
 { vertical height }
 { transparent, no clipping }
 
-  scaleobj_s = record
-    prev: ^scaleobj_s;
-    next: ^scaleobj_s;
+  Pscaleobj_t = ^scaleobj_t;
+  scaleobj_t = record
+    prev: Pscaleobj_t;
+    next: Pscaleobj_t;
     animation: longint;
     animationTime: longint;
     moveSpeed: fixed_t;
@@ -177,8 +180,7 @@ type
     specialtype: special_t;
     scale: longint;
   end;
-  scaleobj_t = scaleobj_s;
-  Pscaleobj_t = ^scaleobj_t;
+
 { modify this part whenever you want }
 { probably only want to set this once }
 { set true if the pic has any masked areas }
@@ -186,7 +188,8 @@ type
 { should generally be set to the floor height }
 { range from 0 (open) - FRACUNIT*64 (closed }
 
-  doorobj_s = record
+  Pdoorobj_t  = ^doorobj_t;
+  doorobj_t = record
     tilex: longint;
     tiley: longint;
     doorOpen: bool;
@@ -203,8 +206,7 @@ type
     height: longint;
     position: fixed_t;
   end;
-  doorobj_t = doorobj_s;
-  Pdoorobj_t  = ^doorobj_t;
+
 { elevator structure }
 { going up? }
 { height }
@@ -212,9 +214,10 @@ type
 { set to floorheight[mapspot] }
 { set to ceilingheight[mapspot]-64 }
 
-  elevobj_s = record
-    prev: ^elevobj_s;
-    next: ^elevobj_s;
+  Pelevobj_t = ^elevobj_t;
+  elevobj_t = record
+    prev: Pelevobj_t;
+    next: Pelevobj_t;
     elevUp: bool;
     elevDown: bool;
     position: longint;
@@ -228,18 +231,15 @@ type
     nosave: longint;
     _type: elevtype;
   end;
-  elevobj_t = elevobj_s;
-  Pelevobj_t  = ^elevobj_t;
 
-  spawnarea_s = record
-      mapspot: longint;
-      mapx: fixed_t;
-      mapy: fixed_t;
-      _type: longint;
-      time: longint;
-    end;
-  spawnarea_t = spawnarea_s;
-  Pspawnarea_t  = ^spawnarea_t;
+  Pspawnarea_t = ^spawnarea_t;
+  spawnarea_t = record
+    mapspot: longint;
+    mapx: fixed_t;
+    mapy: fixed_t;
+    _type: longint;
+    time: longint;
+  end;
 {*** VARIABLES *** }
 
 var
