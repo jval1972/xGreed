@@ -301,7 +301,7 @@ scaleobj_t *RF_GetSprite;
 begin
   scaleobj_t *new;
 
-  if (not freescaleobj_p) MS_Error('RF_GetSprite: Out of spots in scaleobjlist not ');
+  if (not freescaleobj_p) MS_Error('RF_GetSprite: Out of spots in scaleobjlist!');
   new := freescaleobj_p;
   freescaleobj_p := freescaleobj_p.next;
   memset(new,0,sizeof(scaleobj_t));
@@ -318,7 +318,7 @@ elevobj_t *RF_GetElevator;
 begin
   elevobj_t *new;
 
-  if (not freeelevobj_p) MS_Error('RF_GetElevator: Too many elevators placed not ');
+  if (not freeelevobj_p) MS_Error('RF_GetElevator: Too many elevators placed!');
   new := freeelevobj_p;
   freeelevobj_p := freeelevobj_p.next;
   memset(new,0,sizeof(elevobj_t));

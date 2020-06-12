@@ -85,7 +85,7 @@ begin
   i: integer;
 
   if numprocesses = MAXPROCESS then
-  MS_Error('AddProcess: Too many active processes not ');
+  MS_Error('AddProcess: Too many active processes!');
   i := 0;
   while (i<MAXPROCESS) and (processes[i] <> 0) i++;
   if i = MAXPROCESS then
@@ -263,7 +263,7 @@ begin
     FN_PrintCentered('Original recipe or extra crispy?');
     break;
    2:
-    FN_PrintCentered('Thank you for recycling not ');
+    FN_PrintCentered('Thank you for recycling!');
     break;
     end;
        fliplayed := 1;
@@ -298,7 +298,7 @@ begin
    count--;
    while (index<MAXPROCESS) and (processes[index] = 0) index++;
    if index = MAXPROCESS then
-    MS_Error('Processes: can't find next process not ');
+    MS_Error('Processes: can''t find next process!');
    z := @zones[processes[index]-1000];
    case z.layer  of
    begin
@@ -589,7 +589,7 @@ begin
      z.type := SOUNDTYPE;
      z.removeable := removeable;
    end
-   else if (stricmp(token,'SPAWNFLI') = 0) then
+   else if (stricmp(token, 'SPAWNFLI') = 0) then
    begin
      result := fscanf(f,'%i %i \n',) and (eval,) and (ceval);
      CHECKERROR(2);
@@ -632,7 +632,7 @@ begin
   if (not MS_CheckParm('file')) then
   begin
    if ((cachehandle := open('GREED.BLO',O_RDONLY) or (O_BINARY)) = -1) then
-    MS_Error('LoadScript: Can't open GREED.BLO not ');
+    MS_Error('LoadScript: Can''t open GREED.BLO!');
     end;
   for (x := 0;x<numloadsprites;x++)
   begin

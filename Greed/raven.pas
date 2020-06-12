@@ -549,12 +549,12 @@ begin
       oldinventory := -2;
       inventoryleft;
       inventoryright;
-      writemsg('Stored MedTube not ');
+      writemsg('Stored MedTube!');
        end;
     else
     begin
       medpaks((5-(value-SM_MEDPAK1))*50);
-      writemsg('Used MedTube not ');
+      writemsg('Used MedTube!');
        end;
      end;
   SpawnSprite(S_GENERATOR,sprite.x,sprite.y,0,0,0,0,false,0);
@@ -584,12 +584,12 @@ begin
       oldinventory := -2;
       inventoryleft;
       inventoryright;
-      writemsg('Stored Shield Charge not ');
+      writemsg('Stored Shield Charge!');
        end;
     else
     begin
       heal((1+(value-SM_SHIELD1))*50);
-      writemsg('Used Shield Charge not ');
+      writemsg('Used Shield Charge!');
        end;
      end;
   SpawnSprite(S_GENERATOR,sprite.x,sprite.y,0,0,0,0,false,0);
@@ -793,7 +793,7 @@ begin
   begin
     hurtborder := true;
     ++player.inventory[10];
-    writemsg('Portable Hole picked up not ');
+    writemsg('Portable Hole picked up!');
     oldinventory := -2;
     inventoryleft;
     inventoryright;
@@ -811,7 +811,7 @@ begin
       heal(150);
       medpaks(150);
       hurtborder := true;
-      writemsg('Bonus Item not ');
+      writemsg('Bonus Item!');
        end;
     BonusItem.score := 0;
     BonusItem.mapspot := -1;
@@ -838,7 +838,7 @@ begin
     medpaks(150);
     hurtborder := true;
     addscore(primaries[(value2-S_PRIMARY1)*2 + 1]);
-    writemsg('Primary goal item not ');
+    writemsg('Primary goal item!');
     player.primaries[value2-S_PRIMARY1]++;
      end;
   exit;
@@ -866,7 +866,7 @@ begin
    medpaks(150);
    hurtborder := true;
    addscore(secondaries[(value2-S_SECONDARY1)*2 + 1]);
-   writemsg('Secondary goal item not ');
+   writemsg('Secondary goal item!');
    player.secondaries[value2-S_SECONDARY1]++;
     end;
        exit;
@@ -987,11 +987,11 @@ begin
   weaponlowering := true;
   newweapon := index;
    end;
-      writemsg('Exchanged weapons not ');
+      writemsg('Exchanged weapons!');
     end
     else if not netmode then
     begin
-      writemsg('Acquired new weapon not ');
+      writemsg('Acquired new weapon!');
       changingweapons := true;
       weaponlowering := true;
       newweapon := index;
@@ -1000,7 +1000,7 @@ begin
     begin
       if player.weapons[index] = value2 then
        exit;
-      writemsg('Acquired new weapon not ');
+      writemsg('Acquired new weapon!');
       player.weapons[index] := value-SM_WEAPON0;
       player.ammo[ammo] := player.ammo[ammo] + 100;
       if (player.ammo[ammo]>MAXAMMO) player.ammo[ammo] := MAXAMMO;
@@ -2180,15 +2180,15 @@ begin
   end
   else if (stricmp(s,'dominatrix') = 0) then
   begin
-   writemsg('On your knees worm not ');
+   writemsg('On your knees worm!');
   end
   else if (stricmp(s,'cyborg') = 0) then
   begin
-   writemsg('Psyborgs Rule not ');
+   writemsg('Psyborgs Rule!');
   end
   else if (stricmp(s,'mooman') = 0) then
   begin
-   writemsg('Brady is better than you, and that ain't saying much not ');
+   writemsg('Brady is better than you, and that ain''t saying much!');
   end
   else if (stricmp(s,'raven') = 0) then
   begin
@@ -2769,7 +2769,7 @@ begin
    ++count;
    f := fopen(name,'wb');
    if f = NULL then
-    MS_Error('Error opening the screen grab file not ');
+    MS_Error('Error opening the screen grab file!');
    fwrite((char *)0xa0000,64000,1,f);
    VI_GetPalette(palette);
    fwrite(palette,768,1,f);
@@ -2982,7 +2982,7 @@ begin
       SoundEffect(SN_NEXUS,0,x shl FRACBITS,y shl FRACBITS);
       SoundEffect(SN_NEXUS,0,x shl FRACBITS,y shl FRACBITS);
       exitexists := true;
-      writemsg('Translation Nexus Created not ');
+      writemsg('Translation Nexus Created!');
       exit;
        end;
      end;

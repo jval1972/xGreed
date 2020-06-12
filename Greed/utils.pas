@@ -451,7 +451,7 @@ begin
   else
   begin
    fname := infotable[lump].nameofs + (char *)infotable;
-   if ((f := fopen(fname,'r')) = -1) MS_Error('LoadNewMap: Can't open %s not ',fname);
+   if ((f := fopen(fname,'r')) = -1) MS_Error('LoadNewMap: Can''t open %s!',fname);
    UpdateWait;
    read(f,northwall,MAPROWS*MAPCOLS);
    UpdateWait;
@@ -1824,7 +1824,7 @@ begin
   if (not read(handle,) and (player,sizeof(player))) then
   begin
    close(handle);
-   MS_Error('LoadGame: Error loading %s not ',fname);
+   MS_Error('LoadGame: Error loading %s!',fname);
     end;
   close(handle);
   oldscore := player.levelscore;
@@ -2412,7 +2412,7 @@ begin
    fontbasecolor := 8;
    printx := 20;
    printy := 30;
-   sprintf(str,'MISSION SUCCESSFUL not ');
+   sprintf(str,'MISSION SUCCESSFUL!');
    FN_RawPrint3(str);
    printx := 25;
    printy := 40;

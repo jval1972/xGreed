@@ -175,15 +175,15 @@ begin
   i: integer;
 
   if (not fread and (frame,sizeof(frame),1,f)) or (frame.signature <> $F1FA) then
-  MS_Error('FLI_ReadFrame: Error Reading Frame not ');
+  MS_Error('FLI_ReadFrame: Error Reading Frame!');
   if frame.size = 0 then
   exit;
   for(i := 0;i<frame.nchunks;i++)
   begin
    if (not fread and (chunk,sizeof(chunk),1,f)) then
-    MS_Error('FLI_ReadFram: Error Reading Chunk Header not ');
+    MS_Error('FLI_ReadFram: Error Reading Chunk Header!');
    if (not fread(chunkbuf,chunk.size-6,1,f)) then
-    MS_Error('FLI_ReadFram: Error with Chunk Read not ');
+    MS_Error('FLI_ReadFram: Error with Chunk Read!');
    bufptr := 0;
    case chunk.type  of
    begin
@@ -232,7 +232,7 @@ bool playfli(char *fname,longint offset)
   newascii := false;
   chunkbuf := (byte *)malloc(64000);
   if chunkbuf = NULL then
-  MS_Error('PlayFLI: Out of Memory with ChunkBuf not ');
+  MS_Error('PlayFLI: Out of Memory with ChunkBuf!');
   memset(screen,0,64000);
   VI_FillPalette(0,0,0);
   f := fopen(fname,'rb');

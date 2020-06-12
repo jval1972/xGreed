@@ -234,7 +234,7 @@ begin
   if (greedcom.nettype = NETIPX) printf('IPX Net');
   else if (greedcom.nettype = NETSERIAL) printf('Serial');
   else if (greedcom.nettype = NETMODEM) printf('Modem');
-  else MS_Error('Unknown net type not ');
+  else MS_Error('Unknown net type!');
   printf('\n');
   pevent := (pevent_t *)greedcom.data;
   sevent := (sevent_t *)greedcom.data;
@@ -319,7 +319,7 @@ begin
     player.difficulty := ievent.difficulty;
 
    if ievent.map <> player.map then
-    MS_Error('Player #%i is playing a different map not ',ievent.playerid);
+    MS_Error('Player #%i is playing a different map!',ievent.playerid);
 
    players[ievent.playerid] := 1;                  // found new player
    playersfound[ievent.playerid] := ievent.found; // how many they've found
@@ -493,7 +493,7 @@ begin
       SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS,0,0,0,0,false,0);
       BonusItem.sprite.basepic := BonusItem.sprite.basepic + BonusItem.num;
       oldgoalitem := -1;
-      writemsg('Bonus item located not ');
+      writemsg('Bonus item located!');
       break;
      TRIGGEREVENTID:
       CheckHere(false,devent.x,devent.y,devent.angle);
@@ -568,7 +568,7 @@ begin
     end;
        else
   sprite_p := sprite_p.next;
-      sprintf(msg,'%s activated Warp Jammer not ',netnames[qevent.playerid]);
+      sprintf(msg,'%s activated Warp Jammer!',netnames[qevent.playerid]);
       writemsg(msg);
       netwarpjammer := true;
       netwarpjamtime := timecount+70*60;
@@ -577,7 +577,7 @@ begin
       Event(fevent.bulletid,false);
       break;
      QUITEVENTID:
-      sprintf(msg,'%s has left the game not ',netnames[qevent.playerid]);
+      sprintf(msg,'%s has left the game!',netnames[qevent.playerid]);
       writemsg(msg);
       break;
      MESSAGEEVENTID:
@@ -700,7 +700,7 @@ begin
    oldgoalitem := -1;
    fragcount[bulletid]++;
    goalitem := bulletid+1;
-   sprintf(str1,'You were fragged by %s not ',netnames[fevent.bulletid]);
+   sprintf(str1,'You were fragged by %s!',netnames[fevent.bulletid]);
    writemsg(str1);
     end;
   NETINT;

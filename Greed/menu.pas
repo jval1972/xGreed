@@ -407,7 +407,7 @@ begin
   else
   begin
    if (not fread(savedir,sizeof(savedir),1,f)) then
-    MS_Error('ShowSaveDir: Savegame directory read failure not ');
+    MS_Error('ShowSaveDir: Savegame directory read failure!');
    fclose(f);
     end;
   fontbasecolor := 93;
@@ -726,7 +726,7 @@ begin
       break;
      default:
       if (isalnum(lastascii)) or (lastascii = ' ') or (lastascii = '.') or (
-       lastascii = '-') or (lastascii = '_') or (lastascii = ' not ') or (lastascii = ',') or (
+       lastascii = '-') or (lastascii = '_') or (lastascii = '!') or (lastascii = ',') or (
        lastascii = '?') or (lastascii = ''')
        begin
   savedir[menucursor][cursor] := lastascii;
@@ -1039,7 +1039,7 @@ begin
   INT_TimerHook(MenuCommand);
 
   scr := (byte *)malloc(64000);
-  if (scr = NULL) MS_Error('ShowMenu: Out of Memory not ');
+  if (scr = NULL) MS_Error('ShowMenu: Out of Memory!');
   memcpy(scr,screen,64000);
   if (SC.animation) MenuAnimate;
   MouseShow;
