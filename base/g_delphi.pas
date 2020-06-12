@@ -139,7 +139,32 @@ function strtrim(const S: string): string;
 
 function stricmp(const s1: string; const s2: string): integer; overload;
 
-function stricmp(const p1: pointer; const s1: string): integer; overload;
+function stricmp(const p1: pointer; const s2: string): integer; overload;
+
+// convertion
+function itoa(i: integer): string;
+
+function uitoa(l: longword): string;
+
+function ftoa(f: single): string;
+
+function ftoafmt(const fmt: string; f: single): string;
+
+function atoi(const s: string): integer; overload;
+
+function atoi(const s: string; const default: integer): integer; overload;
+
+function atoui(const s: string): LongWord; overload;
+
+function atoui(const s: string; const default: LongWord): LongWord; overload;
+
+function atof(const s: string): single; overload;
+
+function atof(const s: string; const default: single): single; overload;
+
+function atob(const s: string): boolean;
+
+function btoa(const b: boolean): string;
 
 implementation
 
@@ -186,6 +211,7 @@ end;
 function memset(const dest: pointer; const val: integer; const count: integer): pointer;
 begin
   FillChar(dest^, count, val);
+  result := dest;
 end;
 
 function fopen(var f: file; const FileName: string; const mode: integer): boolean;
@@ -355,37 +381,230 @@ var
 begin
   u1 := strupper(s1);
   u2 := strupper(s2);
-  if u1 > u2 then
+  if u1 = u2 then
+    result := 0
+  else if s1 > s2 then
     result := 1
-  else if u1 < u2 then
-    result := -1
   else
-    result := 0;
+    result := -1;
 end;
 
-function stricmp(const p1: pointer; const s1: string): integer; overload;
+function stricmp(const p1: pointer; const s2: string): integer; overload;
 var
   a: PByteArray;
-  b1, b2: byte;
+  s1: string;
   i: integer;
 begin
-  result := 0;
+  s1 := '';
   a := p1;
-  for i := 1 to Length(s1) do
+  for i := 1 to Length(s2) do
+    if a[i - 1] = 0 then
+      break
+    else
+      s1 := s1 + Chr(a[i - 1]);
+  result := stricmp(s1, s2);
+end;
+
+function itoa(i: integer): string;
+begin
+  sprintf(result, '%d', [i]);
+end;
+
+function uitoa(l: longword): string;
+begin
+  sprintf(result, '%d', [l]);
+end;
+
+function ftoa(f: single): string;
+begin
+  ThousandSeparator := #0;
+  DecimalSeparator := '.';
+
+  result := FloatToStr(f);
+end;
+
+function ftoafmt(const fmt: string; f: single): string;
+begin
+  ThousandSeparator := #0;
+  DecimalSeparator := '.';
+
+  sprintf(result, '%' + fmt + 'f', [f]);
+end;
+
+function atoi(const s: string): integer;
+var
+  code: integer;
+  ret2: integer;
+begin
+  val(s, result, code);
+  if code <> 0 then
   begin
-    b2 := Ord(toupper(s1[i]));
-    b1 := Ord(toupper(Chr(a[i - 1])));
-    if b1 > b2 then
+    ret2 := 0;
+    if Pos('0x', s) = 1 then
+      val('$' + Copy(s, 3, Length(s) - 2), ret2, code)
+    else if Pos('-0x', s) = 1 then
     begin
-      result := 1;
-      exit;
+      val('$' + Copy(s, 4, Length(s) - 3), ret2, code);
+      ret2 := -ret2;
     end
-    else if b1 < b2 then
-    begin
-      result := -1;
-      exit;
-    end;
+    else if Pos('#', s) = 1 then
+      val(Copy(s, 2, Length(s) - 1), ret2, code);
+    if code = 0 then
+      result := ret2
+    else
+      result := 0;
   end;
+end;
+
+function atoi(const s: string; const default: integer): integer; overload;
+var
+  code: integer;
+  ret2: integer;
+begin
+  val(s, result, code);
+  if code <> 0 then
+  begin
+    ret2 := default;
+    if Pos('0x', s) = 1 then
+      val('$' + Copy(s, 3, Length(s) - 2), ret2, code)
+    else if Pos('-0x', s) = 1 then
+    begin
+      val('$' + Copy(s, 4, Length(s) - 3), ret2, code);
+      ret2 := -ret2;
+    end
+    else if Pos('#', s) = 1 then
+      val(Copy(s, 2, Length(s) - 1), ret2, code);
+    if code = 0 then
+      result := ret2
+    else
+      result := default;
+  end;
+end;
+
+function atoui(const s: string): LongWord; overload;
+var
+  code: integer;
+  ret2: LongWord;
+begin
+  val(s, result, code);
+  if code <> 0 then
+  begin
+    ret2 := 0;
+    if Pos('0x', s) = 1 then
+      val('$' + Copy(s, 3, Length(s) - 2), ret2, code)
+    else if Pos('#', s) = 1 then
+      val(Copy(s, 2, Length(s) - 1), ret2, code);
+    if code = 0 then
+      result := ret2
+    else
+      result := 0;
+  end;
+end;
+
+function atoui(const s: string; const default: LongWord): LongWord; overload;
+var
+  code: integer;
+  ret2: LongWord;
+begin
+  val(s, result, code);
+  if code <> 0 then
+  begin
+    ret2 := default;
+    if Pos('0x', s) = 1 then
+      val('$' + Copy(s, 3, Length(s) - 2), ret2, code)
+    else if Pos('#', s) = 1 then
+      val(Copy(s, 2, Length(s) - 1), ret2, code);
+    if code = 0 then
+      result := ret2
+    else
+      result := default;
+  end;
+end;
+
+function atof(const s: string): single;
+var
+  code: integer;
+  i: integer;
+  str: string;
+begin
+  ThousandSeparator := #0;
+  DecimalSeparator := '.';
+
+  val(s, result, code);
+  if code <> 0 then
+  begin
+    str := s;
+    for i := 1 to Length(str) do
+      if str[i] in ['.', ','] then
+        str[i] := DecimalSeparator;
+    val(str, result, code);
+    if code = 0 then
+      exit;
+    for i := 1 to Length(str) do
+      if str[i] in ['.', ','] then
+        str[i] := '.';
+    val(str, result, code);
+    if code = 0 then
+      exit;
+    for i := 1 to Length(str) do
+      if str[i] in ['.', ','] then
+        str[i] := ',';
+    val(str, result, code);
+    if code = 0 then
+      exit;
+    result := 0.0;
+  end;
+end;
+
+function atof(const s: string; const default: single): single;
+var
+  code: integer;
+  i: integer;
+  str: string;
+begin
+  ThousandSeparator := #0;
+  DecimalSeparator := '.';
+
+  val(s, result, code);
+  if code <> 0 then
+  begin
+    str := s;
+    for i := 1 to Length(str) do
+      if str[i] in ['.', ','] then
+        str[i] := DecimalSeparator;
+    val(str, result, code);
+    if code = 0 then
+      exit;
+    for i := 1 to Length(str) do
+      if str[i] in ['.', ','] then
+        str[i] := '.';
+    val(str, result, code);
+    if code = 0 then
+      exit;
+    for i := 1 to Length(str) do
+      if str[i] in ['.', ','] then
+        str[i] := ',';
+    val(str, result, code);
+    if code = 0 then
+      exit;
+    result := default;
+  end;
+end;
+
+function atob(const s: string): boolean;
+var
+  check: string;
+begin
+  check := strupper(strtrim(s));
+  result := (check = 'TRUE') or (check = 'YES') or (check = '1')
+end;
+
+function btoa(const b: boolean): string;
+begin
+  if b then
+    result := 'TRUE'
+  else
+    result := 'FALSE';
 end;
 
 end.
