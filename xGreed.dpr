@@ -29,7 +29,6 @@ uses
   d_disk_h in 'd_disk_h.pas',
   d_font in 'd_font.pas',
   d_font_h in 'd_font_h.pas',
-  d_global_h in 'd_global_h.pas',
   d_ints in 'd_ints.pas',
   d_ints_h in 'd_ints_h.pas',
   d_misc in 'd_misc.pas',
