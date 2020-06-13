@@ -31,8 +31,13 @@ implementation
 
 uses
   g_delphi,
+  constant,
   d_disk,
-  r_refdef;
+  d_misc,
+  protos_h,
+  r_refdef,
+  r_public,
+  r_public_h;
 
 procedure DemandLoadMonster(const lump, num: integer);
 var
@@ -58,43 +63,47 @@ begin
         begin
           if collumn[0] = 255 then
             collumn[0] := 0;
-          column := @column[1];
+          collumn := @collumn[1];
         end;
       end;
   end;
 end;
 
-scaleobj_t *SpawnSprite(int value, fixed_t x, fixed_t y, fixed_t z,fixed_t zadj,int angle,int angle2,bool active,int spawnid)
-begin
-  scaleobj_t  *sprite_p := 0, *s;
-  doorobj_t   *door_p;
-  elevobj_t   *elevator_p;
-  spawnarea_t *sa;
+function SpawnSprite(const value: integer; const x, y, z: fixed_t; const zadj: fixed_t;
+  angle, angle2: integer; const active: boolean; const spawnid: integer): Pscaleobj_t;
+var
+  sprite_p, s: Pscaleobj_t;
+  door_p: Pdoorobj_t;
+  elevator_p: Pelevobj_t;
+  sa: Pspawnarea_t;
   x1, y1, mapspot, maxheight, i, j: integer;
+begin
+  sprite_p := nil;
 
   x1 := x shr FRACTILESHIFT;
   y1 := y shr FRACTILESHIFT;
-  mapspot := y1*MAPCOLS+x1;
-  angle) and (:= ANGLES;
+  mapspot := y1 * MAPCOLS + x1;
+  angle := angle and ANGLES;
 
-  case value  of
-  begin
-   S_BLOODSPLAT:
-    if MS_RndT>220 then
+  case value of
+  S_BLOODSPLAT:
     begin
-     sprite_p := RF_GetSprite ;
-     sprite_p.animation := 0 + (0 shl 1) + (5 shl 5) + ((2+(MS_RndT) and (7)) shl 9) + ANIM_SELFDEST;
-     sprite_p.x := x+((-3+MS_RndT) and (7) shl FRACBITS);
-     sprite_p.y := y+((-3+MS_RndT) and (7) shl FRACBITS);
-     sprite_p.z := z+((-3+MS_RndT) and (7) shl FRACBITS);
-     sprite_p.basepic := slumps[S_WALLPUFF-S_START];
-     sprite_p.active := true;
-     sprite_p.heat := 100;
-     sprite_p.active := true;
-     sprite_p.type := S_WALLPUFF;
-     sprite_p.specialtype := st_transparent;
-     end;
-    break;
+      if MS_RndT > 220 then
+      begin
+        sprite_p := RF_GetSprite;
+        sprite_p.animation := 0 + (0 shl 1) + (5 shl 5) + ((2 + (MS_RndT) and (7)) shl 9) + ANIM_SELFDEST;
+        sprite_p.x := x + ((-3 + MS_RndT) and (7) shl FRACBITS);
+        sprite_p.y := y + ((-3 + MS_RndT) and (7) shl FRACBITS);
+        sprite_p.z := z + ((-3 + MS_RndT) and (7) shl FRACBITS);
+        sprite_p.basepic := slumps[S_WALLPUFF - S_START];
+        sprite_p.active := true;
+        sprite_p.heat := 100;
+        sprite_p.active := true;
+        sprite_p.typ := S_WALLPUFF;
+        sprite_p.specialtype := st_transparent;
+      end;
+    end;
+
     (*
     if (not SC.violence) break;
     if bloodcount>200 then
@@ -149,26 +158,28 @@ begin
     sprite_p.movesize := FRACUNIT;
     break; *)
 
-   (* ammo *)
-   S_BULLET1: // autopistol
-    sprite_p := RF_GetSprite;
-    sprite_p.moveSpeed := 500;
-    sprite_p.angle := angle;
-    sprite_p.x := x;
-    sprite_p.y := y;
-    sprite_p.zadj := zadj;
-    sprite_p.z := z+zadj;
-    sprite_p.basepic := slumps[value-S_START];
-    sprite_p.movesize := 1 shl FRACBITS;
-    sprite_p.active := true;
-    sprite_p.startspot := mapspot;
-    sprite_p.damage := 35;
-    sprite_p.type := value;
-    sprite_p.spawnid := spawnid;
-    sprite_p.angle2 := angle2;
-    if (netmode) and ( not gameloading) then
-     NetSendSpawn(value,x,y,z,zadj,angle,angle2,active,spawnid);
-    break;
+  (* ammo *)
+  S_BULLET1: // autopistol
+    begin
+      sprite_p := RF_GetSprite;
+      sprite_p.moveSpeed := 500;
+      sprite_p.angle := angle;
+      sprite_p.x := x;
+      sprite_p.y := y;
+      sprite_p.zadj := zadj;
+      sprite_p.z := z + zadj;
+      sprite_p.basepic := slumps[value - S_START];
+      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.active := true;
+      sprite_p.startspot := mapspot;
+      sprite_p.damage := 35;
+      sprite_p.typ := value;
+      sprite_p.spawnid := spawnid;
+      sprite_p.angle2 := angle2;
+      if netmode and not gameloading then
+        NetSendSpawn(value, x, y, z, zadj, angle, angle2, active, spawnid);
+    end;
+
    S_BULLET2: // vulcan cannon
     sprite_p := RF_GetSprite;
     sprite_p.moveSpeed := 500;

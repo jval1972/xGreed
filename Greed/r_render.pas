@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,39 +18,39 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <STDIO.H>
-#include <MATH.H>
-#include <STRING.H>
-#include <STDLIB.H>
-#include 'd_global.h'
-#include 'r_refdef.h'
-#include 'd_misc.h'
-#include 'd_ints.h'
+unit r_render;
 
-(**** VARIABLES ****)
+interface
 
-#define MAXENTRIES 1024
+uses
+  g_delphi,
+  r_public_h,
+  r_refdef;
 
-byte    westwall[MAPROWS*MAPCOLS];
-byte    westflags[MAPROWS*MAPCOLS];
-byte    northwall[MAPROWS*MAPCOLS];
-byte    northflags[MAPROWS*MAPCOLS];
-byte    floorpic[MAPROWS*MAPCOLS];
-byte    floorflags[MAPROWS*MAPCOLS];
-byte    ceilingpic[MAPROWS*MAPCOLS];
-byte    ceilingflags[MAPROWS*MAPCOLS];
-byte    floorheight[MAPROWS*MAPCOLS];
-byte    ceilingheight[MAPROWS*MAPCOLS];
-byte    floordef[MAPROWS*MAPCOLS];
-byte    floordefflags[MAPROWS*MAPCOLS];
-byte    ceilingdef[MAPROWS*MAPCOLS];
-byte    ceilingdefflags[MAPROWS*MAPCOLS];
-byte    maplights[MAPROWS*MAPCOLS];
-byte    mapsprites[MAPROWS*MAPCOLS];
-byte    mapslopes[MAPROWS*MAPCOLS];
-byte    mapeffects[MAPROWS*MAPCOLS];
-byte    mapflags[MAPROWS*MAPCOLS];
-int     reallight[MAPROWS*MAPCOLS];
+const
+  MAXENTRIES = 1024;
+
+var
+  westwall: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  westflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  northwall: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  northflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floorpic: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floorflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingpic: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floorheight: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingheight: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floordef: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floordefflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingdef: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingdefflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  maplights: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapsprites: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapslopes: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapeffects: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  reallight: array[0..MAPROWS * MAPCOLS - 1] of integer;
   actionflag: integer;
   wallglow, wallglowindex: integer;
   wallrotate: integer;
@@ -69,94 +71,111 @@ int     reallight[MAPROWS*MAPCOLS];
 //      after transforming a new vertex
 
   frameon: integer;
-int      framevalid[MAPROWS*MAPCOLS];
-int      framech[MAPROWS*MAPCOLS];
-int      framefl[MAPROWS*MAPCOLS];
-vertex_t *cornervertex[MAPROWS*MAPCOLS];
-vertex_t vertexlist[MAXVISVERTEXES], *vertexlist_p;
-fixed_t  costable[ANGLES+1];
-fixed_t  sintable[ANGLES+1];
-pixel_t  viewbuffer[MAX_VIEW_WIDTH*MAX_VIEW_HEIGHT];
-pixel_t  *viewylookup[MAX_VIEW_HEIGHT];
-fixed_t  yslope[MAX_VIEW_HEIGHT+MAXSCROLL2], xslope[MAX_VIEW_WIDTH+1];
-byte     **wallposts;
-byte     *colormaps;
+  framevalid: array[0..MAPROWS * MAPCOLS] of integer;
+  framech: array[0..MAPROWS * MAPCOLS] of integer;
+  framefl: array[0..MAPROWS * MAPCOLS] of integer;
+  cornervertex: array[0..MAPROWS * MAPCOLS] of Pvertex_t;
+  vertexlist: array[0..MAXVISVERTEXES - 1] of vertex_t;
+  vertexlist_p: Pvertex_t;
+  costable: array[0..ANGLES] of fixed_t;
+  sintable: array[0..ANGLES] of fixed_t;
+  viewbuffer: array[0..MAX_VIEW_WIDTH * MAX_VIEW_HEIGHT - 1] of pixel_t;
+  viewylookup: array[0..MAX_VIEW_HEIGHT - 1] of Ppixel_t;
+  yslope: array[0..MAX_VIEW_HEIGHT + MAXSCROLL2 - 1] of fixed_t;
+  xslope: array[0..MAX_VIEW_WIDTH] of fixed_t;
+  wallposts: PBytePArray;
+  colormaps: PByteArray;
   numcolormaps: integer;
-byte     *zcolormap[(MAXZ shr FRACBITS)+1];
+  zcolormap: array[0..(MAXZ shr FRACBITS) + 1] of PByteArray;
   viewx, viewy, viewz: fixed_t;
   viewcos, viewsin: fixed_t;
-fixed_t  xscale, yscale;         // SCALE/viewcos , SCALE/viewsin
+  xscale, yscale: fixed_t;         // SCALE/viewcos , SCALE/viewsin
   viewangle, viewfineangle: integer;
   viewtilex, viewtiley: integer;
-vertex_t *vertex[4];             // points to the for corner vertexes in vert
-vertex_t *p1, *p2;
-int      side;                   // wall number 0-3
-int      walltype;               // wall number (picture) of p1-p2 edge
-int      wallshadow;             // degree of shadow for a tile
-int      xclipl, xcliph;         // clip window for current tile
-int      tilex, tiley;           // coordinates of the tile being rendered
-int      mapspot;                // tiley*MAPSIZE+tilex
-int      *flattranslation;       // global animation tables
-int      *walltranslation;
+  vertex: array[0..3] of Pvertex_t;// points to the for corner vertexes in vert
+  p1, p2: Pvertex_t;
+  side: integer;                   // wall number 0-3
+  walltype: integer;               // wall number (picture) of p1-p2 edge
+  wallshadow: integer;             // degree of shadow for a tile
+  xclipl, xcliph: integer;         // clip window for current tile
+  tilex, tiley: integer;           // coordinates of the tile being rendered
+  mapspot: integer;                // tiley*MAPSIZE+tilex
+  flattranslation: PIntegerArray;  // global animation tables
+  walltranslation: PIntegerArray;
   spritelump, walllump, flatlump: integer;
   numsprites, numwalls, numflats: integer;
-bool  doortile;               // true if the tile being renderd has a door
-int      adjacentx[4] :=   begin   0, 1, 0, -1  end;
-int      adjacenty[4] :=   begin  -1, 0, 1,  0  end;
-entry_t  entries[MAXENTRIES], *entry_p;
-int      entrymap[MAPCOLS*MAPROWS], entrycount[MAPCOLS*MAPROWS];
+  doortile: boolean;               // true if the tile being renderd has a door
+  adjacentx: array[0..3] of integer = ( 0, 1, 0,-1);
+  adjacenty: array[0..3] of integer = (-1, 0, 1, 0);
+  entries: array[0..MAXENTRIES - 1] of entry_t;
+  entry_p: Pentry_t;
+  entrymap: array[0..MAPCOLS * MAPROWS - 1] of integer;
+  entrycount: array[0..MAPCOLS * MAPROWS - 1] of integer;
   entrycounter: integer;
   fxtimecount: integer;
-extern int rtimecount;
 
-vertex_t *TransformVertex(int tilex, int tiley)
-(* Returns a pointer to the vertex for a given coordinate
-   tx,tz will be the transformed coordinates
-   px, floorheight, ceilingheight will be valid if tz >= MINZ *)
-   begin
-  trx, try, scale: fixed_t;
-  vertex_t *point;
+implementation
+
+uses
+  r_public;
+
+// Returns a pointer to the vertex for a given coordinate
+// tx,tz will be the transformed coordinates
+// px, floorheight, ceilingheight will be valid if tz >= MINZ
+function TransformVertex(const tilex, tiley: integer): Pvertex_t;
+var
+  ttrx, ttry, scale: fixed_t;
+  point: Pvertex_t;
   mapspot2, fl, ch: integer;
+begin
 
-  mapspot2 := tiley*MAPROWS+tilex;
+  mapspot2 := tiley * MAPROWS + tilex;
   if mapspot <> mapspot2 then
   begin
-   if (mapflags[mapspot]) and (FL_FLOOR) fl := (floorheight[mapspot2] shl FRACBITS)-viewz;
-    else fl := ((floorheight[mapspot]) shl FRACBITS)-viewz;
-   if (mapflags[mapspot]) and (FL_CEILING) ch := (ceilingheight[mapspot2] shl FRACBITS)-viewz;
-    else ch := ((ceilingheight[mapspot]) shl FRACBITS)-viewz;
-    end;
+    if mapflags[mapspot] and FL_FLOOR <> 0 then
+      fl := (floorheight[mapspot2] shl FRACBITS) - viewz
+    else
+      fl := (floorheight[mapspot] shl FRACBITS) - viewz;
+    if mapflags[mapspot] and FL_CEILING <> 0 then
+      ch := (ceilingheight[mapspot2] shl FRACBITS) - viewz
+    else
+      ch := (ceilingheight[mapspot] shl FRACBITS) - viewz;
+  end
   else
   begin
-   fl := ((floorheight[mapspot2]) shl FRACBITS)-viewz;
-   ch := ((ceilingheight[mapspot2]) shl FRACBITS)-viewz;
-    end;
+    fl := (floorheight[mapspot2] shl FRACBITS) - viewz;
+    ch := (ceilingheight[mapspot2] shl FRACBITS) - viewz;
+  end;
   if (framevalid[mapspot2] = frameon) and (framefl[mapspot2] = fl) and (framech[mapspot2] = ch) then
-  return cornervertex[mapspot2];
-  point := vertexlist_p++;
+  begin
+    result := cornervertex[mapspot2];
+    exit;
+  end;
+  point := vertexlist_p;
+  inc(vertexlist_p);
 {$IFDEF VALIDATE}
-  if (point = @vertexlist[MAXVISVERTEXES]) MS_Error('Vertexlist overflow (%i >= %i)',vertexlist_p-vertexlist,MAXVISVERTEXES);
+  if point = @vertexlist[MAXVISVERTEXES] then
+    MS_Error('TransformVertex(): Vertexlist overflow (%d)', [MAXVISVERTEXES]);
 {$ENDIF}
   point.floorheight := fl;
   point.ceilingheight := ch;
-  trx := (tilex shl (FRACBITS+TILESHIFT))-viewx;
-  try := (tiley shl (FRACBITS+TILESHIFT))-viewy;
-  point.tx := FIXEDMUL(trx,viewsin)+FIXEDMUL(try,viewcos);
-  point.tz := FIXEDMUL(trx,viewcos)-FIXEDMUL(try,viewsin);
+  ttrx := (tilex shl (FRACBITS + TILESHIFT)) - viewx;
+  ttry := (tiley shl (FRACBITS + TILESHIFT)) - viewy;
+  point.tx := FIXEDMUL(ttrx, viewsin) + FIXEDMUL(ttry, viewcos);
+  point.tz := FIXEDMUL(ttrx, viewcos) - FIXEDMUL(ttry, viewsin);
   if point.tz >= MINZ then
   begin
-   scale := FIXEDDIV(SCALE,point.tz);
-   point.px := CENTERX+(FIXEDMUL(point.tx,scale) shr FRACBITS);
-   point.floory := CENTERY-(FIXEDMUL(point.floorheight,scale) shr FRACBITS);
-   point.ceilingy := CENTERY-(FIXEDMUL(point.ceilingheight,scale) shr FRACBITS);
-    end;
+    scale := FIXEDDIV(SCALE, point.tz);
+    point.px := CENTERX + (FIXEDMUL(point.tx, scale) shr FRACBITS);
+    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) shr FRACBITS);
+    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight,scale) shr FRACBITS);
+  end;
   framevalid[mapspot2] := frameon;
   cornervertex[mapspot2] := point;
   framefl[mapspot2] := fl;
   framech[mapspot2] := ch;
-  return point;
-  end;
-
+  result := point;
+end;
 
   ClipEdge: boolean;
 (* Sets p1.px and p2.px correctly for Z values < MINZ
@@ -232,7 +251,7 @@ begin
    p2 := vertex[(side+1)) and (3];
    if (not ClipEdge) continue;
    if (p1.px >= p2.px) continue;
-   case side  of
+   case side of
    begin
      0: // north
       walltype := northwall[mapspot];
@@ -282,7 +301,7 @@ begin
        entrycount[entry_p.mapspot] := entrycounter;
        ++entry_p;
 {$IFDEF VALIDATE}
-       if (entry_p >= @entries[MAXENTRIES]) MS_Error('Entry Array OverFlow (%i >= %i)',entry_p-entries,MAXENTRIES);
+       if (entry_p >= @entries[MAXENTRIES]) MS_Error('RenderTileWalls(): Entry Array OverFlow (%i >= %i)',entry_p-entries,MAXENTRIES);
 {$ENDIF}
         end;
       end;

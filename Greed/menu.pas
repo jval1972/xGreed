@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,156 +18,156 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <DOS.H>
-#include <STDIO.H>
-#include <STDLIB.H>
-#include <STRING.H>
-#include <CTYPE.H>
-#include 'd_global.h'
-#include 'd_disk.h'
-#include 'd_misc.h'
-#include 'd_video.h'
-#include 'd_ints.h'
-#include 'd_font.h'
-#include 'r_refdef.h'
-#include 'protos.h'
+unit menu;
 
-(**** TYPES ****)
+interface
 
-typedef struct
-begin
-  x, y: integer;
-  w, h: integer;
-   end; cursor_t;
+uses
+  d_video;
 
+type
+  cursor_t = record
+    x, y: integer;
+    w, h: integer;
+  end;
+  Pcursor_t = ^cursor_t;
 
-(**** CONSTANTS ****)
+const
+  KBDELAY2 = 10;
+  MENUS = 6;
+  MAXSAVEGAMES = 10;
 
-#define KBDELAY2     10
-#define MENUS        6
-#define MAXSAVEGAMES 10
-
-cursor_t cursors[MENUS][15] := 
-begin
+const
+  cursors: array[0..MENUS - 1, 0..14] of cursor_t  = (
+  (
   // main menu
-   41, 114, 55, 20,   // new
-   41, 138, 55, 20,   // quit
-   134, 42, 127, 19,  // load
-   134, 62, 127, 19,  // save
-   134, 82, 127, 19,  // options
-   134, 102, 127, 19, // info
-   142, 142, 62, 15,  // quit/resume
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-
+   (x: 41; y: 114; w: 55; h: 20),   // new
+   (x: 41; y: 138; w: 55; h: 20),   // quit
+   (x: 134; y: 42; w: 127; h: 19),  // load
+   (x: 134; y: 62; w: 127; h: 19),  // save
+   (x: 134; y: 82; w: 127; h: 19),  // options
+   (x: 134; y: 102; w: 127; h: 19), // info
+   (x: 142; y: 142; w: 62; h: 15),  // quit/resume
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0)
+  ),
+  (
   // char menu
-   41, 138, 55, 20,   // quit
-   134, 32, 127, 18,  // cyborg
-   134, 51, 127, 18,  // lizard
-   134, 70, 127, 18,  // moo
-   134, 89, 127, 18,  // specimen
-   134, 108, 127, 18, // dominatrix
-   142, 142, 62, 15,  // back
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-
+   (x: 41; y: 138; w: 55; h: 20),   // quit
+   (x: 134; y: 32; w: 127; h: 18),  // cyborg
+   (x: 134; y: 51; w: 127; h: 18),  // lizard
+   (x: 134; y: 70; w: 127; h: 18),  // moo
+   (x: 134; y: 89; w: 127; h: 18),  // specimen
+   (x: 134; y: 108; w: 127; h: 18), // dominatrix
+   (x: 142; y: 142; w: 62; h: 15),  // back
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0)
+  ),
+  (
   // load
-   41, 138, 55, 20,   // quit
-   137, 34, 7, 5,
-   137, 44, 7, 5,
-   137, 54, 7, 5,
-   137, 64, 7, 5,
-   137, 74, 7, 5,
-   137, 84, 7, 5,
-   137, 94, 7, 5,
-   137, 104, 7, 5,
-   137, 114, 7, 5,
-   137, 124, 7, 5,
-   142, 142, 62, 15,  // back
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-
+   (x: 41; y: 138; w: 55; h: 20),   // quit
+   (x: 137; y: 34; w: 7; h: 5),
+   (x: 137; y: 44; w: 7; h: 5),
+   (x: 137; y: 54; w: 7; h: 5),
+   (x: 137; y: 64; w: 7; h: 5),
+   (x: 137; y: 74; w: 7; h: 5),
+   (x: 137; y: 84; w: 7; h: 5),
+   (x: 137; y: 94; w: 7; h: 5),
+   (x: 137; y: 104; w: 7; h: 5),
+   (x: 137; y: 114; w: 7; h: 5),
+   (x: 137; y: 124; w: 7; h: 5),
+   (x: 142; y: 142; w: 62; h: 15),  // back
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0)
+  ),
+  (
   // save
-   41, 138, 55, 20,   // quit
-   137, 34, 7, 5,
-   137, 44, 7, 5,
-   137, 54, 7, 5,
-   137, 64, 7, 5,
-   137, 74, 7, 5,
-   137, 84, 7, 5,
-   137, 94, 7, 5,
-   137, 104, 7, 5,
-   137, 114, 7, 5,
-   137, 124, 7, 5,
-   142, 142, 62, 15,  // back
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-
+   (x: 41; y: 138; w: 55; h: 20),   // quit
+   (x: 137; y: 34; w: 7; h: 5),
+   (x: 137; y: 44; w: 7; h: 5),
+   (x: 137; y: 54; w: 7; h: 5),
+   (x: 137; y: 64; w: 7; h: 5),
+   (x: 137; y: 74; w: 7; h: 5),
+   (x: 137; y: 84; w: 7; h: 5),
+   (x: 137; y: 94; w: 7; h: 5),
+   (x: 137; y: 104; w: 7; h: 5),
+   (x: 137; y: 114; w: 7; h: 5),
+   (x: 137; y: 124; w: 7; h: 5),
+   (x: 142; y: 142; w: 62; h: 15),  // back
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0)
+  ),
+  (
   // options
-   41, 114, 55, 20,
-   41, 138, 55, 20,
-   134, 32, 127, 15,
-   134, 46, 127, 15,
-   134, 60, 127, 15,
-   134, 74, 127, 15,
-   134, 88, 127, 15,
-   134, 101, 127, 15,
-   134, 115, 127, 15,
-   142, 142, 62, 15,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-
+   (x: 41; y: 114; w: 55; h: 20),
+   (x: 41; y: 138; w: 55; h: 20),
+   (x: 134; y: 32; w: 127; h: 15),
+   (x: 134; y: 46; w: 127; h: 15),
+   (x: 134; y: 60; w: 127; h: 15),
+   (x: 134; y: 74; w: 127; h: 15),
+   (x: 134; y: 88; w: 127; h: 15),
+   (x: 134; y: 101; w: 127; h: 15),
+   (x: 134; y: 115; w: 127; h: 15),
+   (x: 142; y: 142; w: 62; h: 15),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0)
+  ),
+  (
   // monster menu
-   41, 138, 55, 20,   // quit
-   134, 30, 127, 15,  // difficulty level 0
-   134, 45, 127, 15,
-   134, 60, 127, 15,
-   134, 75, 127, 15,
-   134, 90, 127, 15,
-   134, 117, 127, 15,
-   142, 142, 62, 15,  // back
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
-   0, 0, 0, 0,
+   (x: 41; y: 138; w: 55; h: 20),   // quit
+   (x: 134; y: 30; w: 127; h: 15),  // difficulty level 0
+   (x: 134; y: 45; w: 127; h: 15),
+   (x: 134; y: 60; w: 127; h: 15),
+   (x: 134; y: 75; w: 127; h: 15),
+   (x: 134; y: 90; w: 127; h: 15),
+   (x: 134; y: 117; w: 127; h: 15),
+   (x: 142; y: 142; w: 62; h: 15),  // back
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0),
+   (x: 0; y: 0; w: 0; h: 0)
+  )
+  );
 
 
-   end;
+const
+  menumax: array[0..MENUS - 1] of integer = ( // max cursor
+    7, 7, 12, 12, 10, 8
+  );
 
-
-int menumax[MENUS] :=                // max cursor
-  begin  7, 7, 12, 12, 10, 8  end;
-
-
-(**** VARIABLES ****)
-
-pic_t   *menuscreen;
-int     menulevel, menucursor, menucurloc, menumaincursor, identity, waitanim,
-  saveposition;
+var
+  menuscreen: Ppic_t;
+  menulevel: integer;
+  menucursor: integer;
+  menucurloc: integer;
+  menumaincursor: integer;
+  identity: integer;
+  waitanim: integer;
+  saveposition: integer;
   timedelay: integer;
   quitmenu, menuexecute, downlevel, goright, goleft, waiting: boolean;
-char    savedir[MAXSAVEGAMES][21];
-pic_t   *waitpics[4];
+  savedir: array[0..MAXSAVEGAMES - 1] of string[22];
+  waitpics: array[0..3] of Ppic_t;
 extern  SoundCard SC;
 
 
@@ -369,7 +371,7 @@ begin
 
   if f = NULL then
   MS_Error('SaveDirectory: Error creating SAVEGAME.DIR');
-  if (not fwrite(savedir,sizeof(savedir),1,f)) then
+  if (not fwrite(savedir,SizeOf(savedir),1,f)) then
   MS_Error('SaveDirectory: Error saving SAVEGAME.DIR');
   fclose(f);
   end;
@@ -406,7 +408,7 @@ begin
   if (f = NULL) InitSaveDir;
   else
   begin
-   if (not fread(savedir,sizeof(savedir),1,f)) then
+   if (not fread(savedir,SizeOf(savedir),1,f)) then
     MS_Error('ShowSaveDir: Savegame directory read failure!');
    fclose(f);
     end;

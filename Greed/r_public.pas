@@ -48,6 +48,8 @@ function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
+function RF_GetSprite: Pscaleobj_t;
+
 implementation
 
 uses

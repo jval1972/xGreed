@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,213 +18,208 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <DOS.H>
-#include <STDIO.H>
-#include <STDLIB.H>
-#include <STRING.H>
-#include <CONIO.H>
-#include <MALLOC.H>
-#include <TIME.H>
-#include <IO.H>
-#include <TCHAR.H>
-#include 'd_global.h'
-#include 'd_disk.h'
-#include 'd_misc.h'
-#include 'd_video.h'
-#include 'd_ints.h'
-#include 'r_refdef.h'
-#include 'r_public.h'
-#include 'd_font.h'
-#include 'protos.h'
+unit intro;
 
-(**** CONSTANTS ****)
+interface
 
-#define VERSION     '1.000.041'
+const
+  VERSION = '1.000.041';
 
-char *charinfo[5][27] :=   // character profiles
-  begin 'CYBORG',
-'.',
-'NAME: TOBIAS LOCKE',
-'.',
-'RACE: HOMO SAPIEN',
-'.',
-'AGE: 27',
-'.',
-'HEIGHT: 6'1''',
-'.',
-'WEIGHT: 450 LBS',
-'(INCLUDING POWERED LIMBS)',
-'.',
-'BIO: CYBERNETICALLY ENHANCED HUMAN',
-'.',
-'BACKGROUND: BORN INTO THE LOTHLOS',
-'CASTE OF HUNTERS, TOBIAS WAS',
-'REBUILT AT THE AGE OF 22 FOLLOWING',
-'HIS INITIATION RITE INTO THE ELITE',
-'LOTH MAL ESCH, OR \'SCAVENGER',
-'BROOD.\'',
-'     HE WAS SOON RECRUITED BY THE',
-'GREEN QUARTER HUNT SQUAD AND',
-'ASSIGNED TO THE SCAVENGER VESSEL,',
-'RED HUNTER, FOR COMPETITION IN THE',
-'GAME.',
-'.',
-
-'LIZARD MAN',
-'.',
-'NAME: XITH',
-'.',
-'RACE: SAPIOSAURUS ROBUSTUS',
-'.',
-'AGE: 43',
-'.',
-'HEIGHT: 4'11''',
-'.',
-'WEIGHT: 100 LBS',
-'.',
-'BIO: ZOLLEESIAN LIZARD MAN',
-'.',
-'BACKGROUND: XITH WAS BORN BETWEEN',
-'LIZARD CLANS AND FROM BIRTH HAS',
-'BEEN AN OUTCAST AMONG HIS TRIBES.',
-'HE ENTERED THE GAME HOPING TO USE',
-'THE LIGHTNING QUICK SPEED INHERENT',
-'IN HIS RACE TO VINDICATE HIMSELF.',
-'     XITH WAS TRADED TO GREEN',
-'QUARTER AND SUBSEQUENTLY PLACED',
-'ABOARD THE RED HUNTER.',
-'.',
-'.',
-'.',
-'.',
-
-'MOOMAN',
-'.',
-'NAME: ALDUS KADEN',
-'.',
-'RACE: BRAHMAN ERECTUS',
-'.',
-'AGE: 35',
-'.',
-'HEIGHT: 7'0''',
-'.',
-'WEIGHT: 375 LBS',
-'.',
-'BIO: BORN ON ELTHO III',
-'.',
-'BACKGROUND: THE BOVINARIAN OR',
-'\'MOOMEN\' AS RIMWARD WORLDS CALL',
-'THEM, HAVE BEEN FASCINATED BY THE',
-'GAME FROM THE BEGINNING.  HAVING',
-'PARTICIPATED IN THE INSURRECTION',
-'AT ALPHA PRAM AND THEN IN THE',
-'FAILED COUP AT SARTUS I, ALDUS',
-'KADEN WENT INTO THE ONLY',
-'PROFESSION LEFT TO HIM.',
-'     THE GREEN QUARTER TOOK HIM',
-'IMMEDIATELY AND AFTER ONLY THREE',
-'HUNTS HE WAS TRANSFERED TO THE',
-'RED HUNTER UNDER TOBIAS'S COMMAND.',
-
-'MUTANT',
-'.',
-'NAME: SPECIMEN 7',
-'.',
-'RACE: HOMO DEGENEROUS',
-'.',
-'AGE: ?',
-'.',
-'HEIGHT: 5'10'' (WHEN STANDING)',
-'.',
-'WEIGHT: 250 LBS',
-'.',
-'BIO: HUMAN VARIANT ENGINEERED BY',
-'JANEX CORP. GEN-TECH DIVISION.',
-'.',
-'BACKGROUND: AN ERROR IN OXYGEN',
-'FEEDS TO THE BIRTHING TANKS',
-'RESULTED IN ABNORMAL INTELLIGENCE',
-'LEVELS IN HIS STRAIN.  ESCAPING THE',
-'STERILIZATION THAT FOLLOWED',
-'SPECIMEN 7 IS THE ONLY REMAINING',
-'MEMBER OF HIS RACE.',
-'     HE JOINED GREEN QUARTER HUNT',
-'SQUAD WHEN THEY REALIZED HIS',
-'POTENTIAL AS A HUNTER.',
-'.',
-'.',
-
-'DOMINATRIX',
-'.',
-'NAME: THEOLA NOM',
-'.',
-'RACE: HOMO MAJESTRIX',
-'.',
-'AGE: 22',
-'.',
-'HEIGHT: 5'11''',
-'.',
-'WEIGHT: 140 LBS',
-'.',
-'BIO: HUMAN VARIANT ENGINEERED BY',
-'JANEX CORP. GEN-TECH DIVISION.',
-'.',
-'BACKGROUND: INITIALLY ENGINEERED',
-'BY JANEX FOR SALE AS A 'HOME',
-'ENTERTAINMENT SYSTEM', THEOLA',
-'FIRST USED HER PREVIOUSLY LATENT',
-'PSYCHIC ABILITIES ON HER FIRST',
-'OWNER.  THEY NEVER FOUND THE BODY.',
-'     SINCE THEN, SHE HAS BEEN A',
-'FUGITIVE FROM CORE LAW.  RECENTLY',
-'SHE HAS SOUGHT REFUGE WITHIN THE',
-'RED HUNTER HUNT SQUAD.',
-'.',
-'.',
-  end;
-
+const
+  charinfo: array[0..4, 0..26] of string[40] = (  // character profiles
+  (
+    'CYBORG',
+    '.',
+    'NAME: TOBIAS LOCKE',
+    '.',
+    'RACE: HOMO SAPIEN',
+    '.',
+    'AGE: 27',
+    '.',
+    'HEIGHT: 6''1''''',
+    '.',
+    'WEIGHT: 450 LBS',
+    '(INCLUDING POWERED LIMBS)',
+    '.',
+    'BIO: CYBERNETICALLY ENHANCED HUMAN',
+    '.',
+    'BACKGROUND: BORN INTO THE LOTHLOS',
+    'CASTE OF HUNTERS, TOBIAS WAS',
+    'REBUILT AT THE AGE OF 22 FOLLOWING',
+    'HIS INITIATION RITE INTO THE ELITE',
+    'LOTH MAL ESCH, OR "SCAVENGER',
+    'BROOD."',
+    '     HE WAS SOON RECRUITED BY THE',
+    'GREEN QUARTER HUNT SQUAD AND',
+    'ASSIGNED TO THE SCAVENGER VESSEL,',
+    'RED HUNTER, FOR COMPETITION IN THE',
+    'GAME.',
+    '.'
+  ),
+  (
+    'LIZARD MAN',
+    '.',
+    'NAME: XITH',
+    '.',
+    'RACE: SAPIOSAURUS ROBUSTUS',
+    '.',
+    'AGE: 43',
+    '.',
+    'HEIGHT: 4''11''''',
+    '.',
+    'WEIGHT: 100 LBS',
+    '.',
+    'BIO: ZOLLEESIAN LIZARD MAN',
+    '.',
+    'BACKGROUND: XITH WAS BORN BETWEEN',
+    'LIZARD CLANS AND FROM BIRTH HAS',
+    'BEEN AN OUTCAST AMONG HIS TRIBES.',
+    'HE ENTERED THE GAME HOPING TO USE',
+    'THE LIGHTNING QUICK SPEED INHERENT',
+    'IN HIS RACE TO VINDICATE HIMSELF.',
+    '     XITH WAS TRADED TO GREEN',
+    'QUARTER AND SUBSEQUENTLY PLACED',
+    'ABOARD THE RED HUNTER.',
+    '.',
+    '.',
+    '.',
+    '.'
+  ),
+  (
+    'MOOMAN',
+    '.',
+    'NAME: ALDUS KADEN',
+    '.',
+    'RACE: BRAHMAN ERECTUS',
+    '.',
+    'AGE: 35',
+    '.',
+    'HEIGHT: 7''0''''',
+    '.',
+    'WEIGHT: 375 LBS',
+    '.',
+    'BIO: BORN ON ELTHO III',
+    '.',
+    'BACKGROUND: THE BOVINARIAN OR',
+    '"MOOMEN" AS RIMWARD WORLDS CALL',
+    'THEM, HAVE BEEN FASCINATED BY THE',
+    'GAME FROM THE BEGINNING.  HAVING',
+    'PARTICIPATED IN THE INSURRECTION',
+    'AT ALPHA PRAM AND THEN IN THE',
+    'FAILED COUP AT SARTUS I, ALDUS',
+    'KADEN WENT INTO THE ONLY',
+    'PROFESSION LEFT TO HIM.',
+    '     THE GREEN QUARTER TOOK HIM',
+    'IMMEDIATELY AND AFTER ONLY THREE',
+    'HUNTS HE WAS TRANSFERED TO THE',
+    'RED HUNTER UNDER TOBIAS''S COMMAND.'
+  ),
+  (
+    'MUTANT',
+    '.',
+    'NAME: SPECIMEN 7',
+    '.',
+    'RACE: HOMO DEGENEROUS',
+    '.',
+    'AGE: ?',
+    '.',
+    'HEIGHT: 5''10'''' (WHEN STANDING)',
+    '.',
+    'WEIGHT: 250 LBS',
+    '.',
+    'BIO: HUMAN VARIANT ENGINEERED BY',
+    'JANEX CORP. GEN-TECH DIVISION.',
+    '.',
+    'BACKGROUND: AN ERROR IN OXYGEN',
+    'FEEDS TO THE BIRTHING TANKS',
+    'RESULTED IN ABNORMAL INTELLIGENCE',
+    'LEVELS IN HIS STRAIN.  ESCAPING THE',
+    'STERILIZATION THAT FOLLOWED',
+    'SPECIMEN 7 IS THE ONLY REMAINING',
+    'MEMBER OF HIS RACE.',
+    '     HE JOINED GREEN QUARTER HUNT',
+    'SQUAD WHEN THEY REALIZED HIS',
+    'POTENTIAL AS A HUNTER.',
+    '.',
+    '.'
+  ),
+  (
+    'DOMINATRIX',
+    '.',
+    'NAME: THEOLA NOM',
+    '.',
+    'RACE: HOMO MAJESTRIX',
+    '.',
+    'AGE: 22',
+    '.',
+    'HEIGHT: 5''11''''',
+    '.',
+    'WEIGHT: 140 LBS',
+    '.',
+    'BIO: HUMAN VARIANT ENGINEERED BY',
+    'JANEX CORP. GEN-TECH DIVISION.',
+    '.',
+    'BACKGROUND: INITIALLY ENGINEERED',
+    'BY JANEX FOR SALE AS A ''HOME',
+    'ENTERTAINMENT SYSTEM'', THEOLA',
+    'FIRST USED HER PREVIOUSLY LATENT',
+    'PSYCHIC ABILITIES ON HER FIRST',
+    'OWNER.  THEY NEVER FOUND THE BODY.',
+    '     SINCE THEN, SHE HAS BEEN A',
+    'FUGITIVE FROM CORE LAW.  RECENTLY',
+    'SHE HAS SOUGHT REFUGE WITHIN THE',
+    'RED HUNTER HUNT SQUAD.',
+    '.',
+    '.'
+  )
+  );
 
 (**** VARIABLES ****)
-
-byte    colors[768];
+var
+  colors: array[0..767] of byte;
   nointro, nextchar: boolean;
-extern  SoundCard SC;
-extern  bool redo;
   cdr_drivenum: integer;
-HWND  Window_Handle;
 
 
 (**** FUNCTIONS ****)
 
+procedure loadscreen(const s: string);
+
 procedure DoIntroMenu;
 
-procedure loadscreen(char *s);
-begin
-  byte *l;
-  i: integer;
+implementation
 
+uses
+  g_delphi,
+  d_video,
+  d_disk,
+  d_ints,
+  playfli;
+
+procedure loadscreen(const s: string);
+var
+  l: Ppic_t;
+  pal: PByteArray;
+  i: integer;
+begin
   i := CA_GetNamedNum(s);
   l := CA_CacheLump(i);
-  VI_DrawPic(0,0,(pic_t*)l);
+  VI_DrawPic(0, 0, l);
   CA_FreeLump(i);
-  l := CA_CacheLump(i+1);
-  memcpy(colors,l,768);
-  CA_FreeLump(i+1);
-  end;
+  pal := CA_CacheLump(i + 1);
+  memcpy(@colors, pal, 768);
+  CA_FreeLump(i + 1);
+end;
 
 
-  CheckTime(int n1, int n2): boolean;
-
-procedure Wait(longint time);
-begin
+procedure Wait(time: integer);
+var
   t: integer;
-   MSG    msg;
-
-  t :=  timecount + time;
-  while ( not CheckTime(timecount,t)) do
-    if (PeekMessage and (msg,NULL,0,0,PM_REMOVE)) then
-      DispatchMessage and (msg);
-  end;
+begin
+  t := timecount + time;
+  while not CheckTime(timecount,t)) do
+    I_PeekAndDisplatch;
+end;
 
 
 procedure ShowPortrait(int n);
