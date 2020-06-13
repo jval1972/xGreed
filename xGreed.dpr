@@ -45,7 +45,7 @@ uses
   r_plane in 'Greed\r_plane.pas',
   r_public in 'Greed\r_public.pas',
   r_public_h in 'Greed\r_public_h.pas',
-  r_refdef_h in 'Greed\r_refdef_h.pas',
+  r_refdef in 'Greed\r_refdef.pas',
   r_render in 'Greed\r_render.pas',
   r_spans in 'Greed\r_spans.pas',
   r_walls in 'Greed\r_walls.pas',
