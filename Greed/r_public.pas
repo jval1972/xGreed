@@ -50,6 +50,11 @@ function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
 implementation
 
+uses
+  d_disk,
+  r_render,
+  spawn;
+
 function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
@@ -97,158 +102,165 @@ begin
   begin
     DemandLoadMonster(spritelump + i, 1);
 //   CA_CacheLump(spritelump+i);
-    if i%50 = 0 then
+    if i mod 50 = 0 then
     begin
       printf('.');
-      if (newascii) and (lastascii = 27) exit;
-      end;
-
+      if newascii and (lastascii = 27) then
+        exit;
     end;
+
+  end;
   printf('.');
   if not debugmode then
-  for(i := doorlump;i<numwalls+walllump;i++) CA_CacheLump(i);
+  begin
+    for i := doorlump to numwalls + walllump - 1 do
+      CA_CacheLump(i);
+  end
   else
   begin
-   CA_CacheLump(walllump+1);
-   CA_CacheLump(flatlump+1);
-    end;
-  printf('.');
+    CA_CacheLump(walllump+1);
+    CA_CacheLump(flatlump+1);
   end;
+  printf('.');
+end;
 
 
 procedure RF_InitTargets;
-begin
-  double  at, atf;
+var
+  at, atf: double;
   j, angle, x1, y1, i: integer;
   x, y: fixed_t;
-
-  memset(autoangle2,-1,SizeOf(autoangle2));
+begin
+  for i := 0 to MAXAUTO - 1 do
+    for j := 0 to MAXAUTO - 1 do
+      autoangle2[i, j] := -1;
   i := 0;
-  do
-  begin
-   at := atan((double)i/(double)MAXAUTO);
-   atf := at*(double)ANGLES/(2*PI);
-   angle := rint(atf);
-   for(j := 0;j<MAXAUTO*2;j++)
-   begin
-     y := FIXEDMUL(sintable[angle],j shl FRACBITS);
-     x := FIXEDMUL(costable[angle],j shl FRACBITS);
-     x1 := x shr FRACBITS;
-     y1 := y shr FRACBITS;
-     if (x1 >= MAXAUTO) or (y1 >= MAXAUTO) or (autoangle2[x1][y1] <> -1) continue;
-     autoangle2[x1][y1] := angle;
-      end;
-   i++;
-    end; while (angle<DEGREE45+DEGREE45_2);
+  repeat
+    at := atan(i / MAXAUTO);
+    atf := at * ANGLES / (2 * PI);
+    angle := rint(atf);
+    for j := 0 to MAXAUTO * 2 - 1 do
+    begin
+      y := FIXEDMUL(sintable[angle], j shl FRACBITS);
+      x := FIXEDMUL(costable[angle], j shl FRACBITS);
+      x1 := x shr FRACBITS;
+      y1 := y shr FRACBITS;
+      if (x1 >= MAXAUTO) or (y1 >= MAXAUTO) or (autoangle2[x1][y1] <> -1) then
+        continue;
+      autoangle2[x1][y1] := angle;
+    end;
+    inc(i);
+  until angle >= DEGREE45 + DEGREE45_2;
 
-  for(i := MAXAUTO-1;i>0;i--)
-  for(j := 0;j<MAXAUTO;j++)
-   if (autoangle2[j][i] = -1) autoangle2[j][i] := autoangle2[j][i-1];
-  for(i := MAXAUTO-1;i>0;i--)
-  for(j := 0;j<MAXAUTO;j++)
-   if (autoangle2[j][i] = -1) autoangle2[j][i] := autoangle2[j][i-1];
-  end;
+  for i = MAXAUTO - 1 downto 1 do
+    for j := 0 to MAXAUTO - 1 do
+      if autoangle2[j][i] = -1 thhen
+        autoangle2[j][i] := autoangle2[j][i - 1];
+  for i := MAXAUTO - 1 downto 1 do
+    for j := 0 to MAXAUTO - 1 do
+      if autoangle2[j][i] = -1 then
+        autoangle2[j][i] := autoangle2[j][i - 1];
+end;
 
 
+// Builds tangent tables for -90 degrees to +90 degrees
+// and pixel angle table
 procedure InitTables;
-(* Builds tangent tables for -90 degrees to +90 degrees
-   and pixel angle table *)
-   begin
-  double  tang, value, ivalue;
+var
+  tang, value, ivalue: double;
   intval, i: integer;
-
+begin
   // tangent values for wall tracing
-  for (i := 0; i<TANANGLES/2; i++)
+  for i := 0 to TANANGLES div 2 - 1 do
   begin
-   tang := (i+0.5)*PI/(TANANGLES*2);
-//   tang := i*PI/(TANANGLES*2);
-   value := tan(tang);
-   ivalue := 1/value;
-   value := rint(value*FRACUNIT);
-   ivalue := rint(ivalue*FRACUNIT);
-   tangents[TANANGLES + i] := (int)(-value);
-   tangents[TANANGLES + TANANGLES - 1 - i] := (int)(-ivalue);
-   tangents[i] := (int)(ivalue);
-   tangents[TANANGLES - 1 - i] := (int)(value);
-    end;
-  // high precision sin / cos for distance calculations
-  for (i := 0; i<TANANGLES; i++)
-  begin
-   tang := (i+0.5)*PI/(TANANGLES*2);
-//   tang := i*PI/(TANANGLES*2);
-   value := sin(tang);
-   intval := rint(value*FRACUNIT);
-   sines[i] := intval;
-   sines[TANANGLES*4 + i] := intval;
-   sines[TANANGLES*2 - 1 - i] := intval;
-   sines[TANANGLES*2 + i] := -intval;
-   sines[TANANGLES*4 - 1 - i] := -intval;
-    end;
-  cosines := @sines[TANANGLES];
-  for(i := 0;i<TANANGLES*2;i++)
-  backtangents[i] := ((windowWidth/2)*tangents[i]) shr FRACBITS;
+    tang := (i + 0.5) * PI / (TANANGLES * 2);
+    value := tan(tang);
+    ivalue := 1 / value;
+    value := rint(value * FRACUNIT);
+    ivalue := rint(ivalue * FRACUNIT);
+    tangents[TANANGLES + i] := trunc(-value);
+    tangents[TANANGLES + TANANGLES - 1 - i] := trunc(-ivalue);
+    tangents[i] := trunc(ivalue);
+    tangents[TANANGLES - 1 - i] := trunc(value);
   end;
+  // high precision sin / cos for distance calculations
+  for i := 0 to TANANGLES - 1 do
+  begin
+    tang := (i + 0.5) * PI / (TANANGLES * 2);
+//   tang := i*PI/(TANANGLES*2);
+    value := sin(tang);
+    intval := rint(value * FRACUNIT);
+    sines[i] := intval;
+    sines[TANANGLES * 4 + i] := intval;
+    sines[TANANGLES * 2 - 1 - i] := intval;
+    sines[TANANGLES * 2 + i] := -intval;
+    sines[TANANGLES * 4 - 1 - i] := -intval;
+  end;
+  cosines := @sines[TANANGLES];
+  for i := 0 to TANANGLES * 2 - 1 do
+    backtangents[i] := ((windowWidth div 2) * tangents[i]) shr FRACBITS;
+end;
 
 
 procedure InitReverseCam;
-begin
+var
   i, intval: integer;
-
-  for (i := 0;i<65; i++)
+begin
+  for i := 0 to 64 do
   begin
-   intval := rint(atan(((double)32-((double)i+1.0))/(double)32)/(double)PI*(double)TANANGLES*(double)2);
-   pixelangle[i] := intval;
-   pixelcosine[i] := cosines[intval) and ((TANANGLES * 4 - 1)];
-    end;
-  memcpy(campixelangle,pixelangle,SizeOf(pixelangle));
-  memcpy(campixelcosine,pixelcosine,SizeOf(pixelcosine));
+    intval := rint(atan((32.0 - (i + 1.0)) / 32.0) / PI * TANANGLES * 2.0);
+    pixelangle[i] := intval;
+    pixelcosine[i] := cosines[intval) and ((TANANGLES * 4 - 1)];
   end;
+  memcpy(campixelangle, pixelangle, SizeOf(pixelangle));
+  memcpy(campixelcosine, pixelcosine, SizeOf(pixelcosine));
+end;
 
 
 procedure RF_Startup;
-begin
+var
   i: integer;
-  double angle;
+  angle: double;
   lightlump: integer;
-
+begin
   memset(framevalid, 0, SizeOf(framevalid));
   printf('.');
   frameon := 0;
   // trig tables
-  for (i := 0; i <= ANGLES; i++)
+  for i := 0 to ANGLES do
   begin
-   angle := (double)(i * PI * 2)/(double)(ANGLES + 1);
-   sintable[i] := rint(sin(angle)*FRACUNIT);
-   costable[i] := rint(cos(angle)*FRACUNIT);
-    end;
+    angle := (i * PI * 2) / (ANGLES + 1);
+    sintable[i] := rint(sin(angle) * FRACUNIT);
+    costable[i] := rint(cos(angle) * FRACUNIT);
+  end;
   printf('.');
-  SetViewSize(windowWidth,windowHeight);
+  SetViewSize(windowWidth, windowHeight);
   // set up lights
   // Allocates a page aligned buffer and load in the light tables
   lightlump := CA_GetNamedNum('lights');
-  numcolormaps := infotable[lightlump].size/256;
-  colormaps := malloc((size_t)256*(numcolormaps+1));
-  colormaps := (byte *)(((int)colormaps+255)) and (~0xff);
+  numcolormaps := infotable[lightlump].size / 256;
+  colormaps := malloc(256 * (numcolormaps + 1));
+  //colormaps := (byte *)(((int)colormaps+255)) and (~0xff);// JVAL: Removed align
   CA_ReadLump(lightlump, colormaps);
-  RF_SetLights((fixed_t)MAXZ);
+  RF_SetLights(MAXZ);
   RF_ClearWorld;
   printf('.');
   // initialize the translation to no animation
-  flattranslation := malloc((size_t)(numflats+1)*4);
-  walltranslation := malloc((size_t)(numwalls+1)*4);
+  flattranslation := malloc((numflats + 1) * 4);
+  walltranslation := malloc((numwalls + 1) * 4);
   if not debugmode then
   begin
-   for(i := 0;i <= numflats;i++) flattranslation[i] := i;
-   for(i := 0;i <= numwalls;i++) walltranslation[i] := i;
-    end;
+    for i := 0 to numflats do flattranslation[i] := i;
+    for i := 0 to numwalls do walltranslation[i] := i;
+  end
   else
   begin
-   for(i := 1;i <= numflats;i++) flattranslation[i] := 1;
-   for(i := 1;i <= numwalls;i++) walltranslation[i] := 1;
-   flattranslation[0] := 0;
-   walltranslation[0] := 0;
-    end;
-  actionhook := NULL;
+    for i := 1 to numflats do flattranslation[i] := 1;
+    for i := 1 to numwalls do walltranslation[i] := 1;
+    flattranslation[0] := 0;
+    walltranslation[0] := 0;
+  end;
+  actionhook := nil;
   actionflag := 0;
   RF_InitTargets;
   InitTables;
@@ -256,261 +268,279 @@ begin
   InitReverseCam;
   InitWalls;
   printf('.');
-  end;
+end;
 
 
 procedure RF_ClearWorld;
-begin
+var
   i: integer;
-
-  firstscaleobj.prev := NULL;
+begin
+  firstscaleobj.prev := nil;
   firstscaleobj.next := @lastscaleobj;
   lastscaleobj.prev := @firstscaleobj;
-  lastscaleobj.next := NULL;
+  lastscaleobj.next := nil;
   freescaleobj_p := scaleobjlist;
-  memset(scaleobjlist,0,SizeOf(scaleobjlist));
-  for(i := 0;i<MAXSPRITES-1;i++) scaleobjlist[i].next := @scaleobjlist[i+1];
-  firstelevobj.prev := NULL;
+  memset(scaleobjlist, 0, SizeOf(scaleobjlist));
+  for i := 0 to MAXSPRITES - 2 do
+    scaleobjlist[i].next := @scaleobjlist[i + 1];
+  firstelevobj.prev := nil;
   firstelevobj.next := @lastelevobj;
   lastelevobj.prev := @firstelevobj;
-  lastelevobj.next := NULL;
+  lastelevobj.next := nil;
   freeelevobj_p := elevlist;
-  memset(elevlist,0,SizeOf(elevlist));
-  for(i := 0;i<MAXELEVATORS-1;i++) elevlist[i].next := @elevlist[i+1];
+  memset(elevlist, 0, SizeOf(elevlist));
+  for i := 0 to MAXELEVATORS - 2 do
+    elevlist[i].next := @elevlist[i + 1];
   numdoors := 0;
   numspawnareas := 0;
   bloodcount := 0;
   metalcount := 0;
-  end;
+end;
 
-
-doorobj_t *RF_GetDoor(int tilex, int tiley)
+function RF_GetDoor(const tilex, tiley: integer): Pdoorobj_t;
+var
+  door: Pdoorobj_t;
 begin
-  doorobj_t *door;
-
-  if (numdoors = MAXDOORS) MS_Error('RF_GetDoor: Too many doors placed! (%i,%i)',numdoors,MAXDOORS);
+  if numdoors = MAXDOORS then
+    MS_Error('RF_GetDoor(): Too many doors placed! (%d)', [MAXDOORS]);
   door := @doorlist[numdoors];
-  numdoors++;
+  inc(numdoors);
   door.tilex := tilex;
   door.tiley := tiley;
-  mapflags[tiley*MAPROWS+tilex]) or (:=  FL_DOOR;
-  return door;
-  end;
+  mapflags[tiley * MAPROWS + tilex] := mapflags[tiley * MAPROWS + tilex] or FL_DOOR;
+  result := door;
+end;
 
 
-scaleobj_t *RF_GetSprite;
-(* returns a new sprite *)
+// returns a new sprite
+function RF_GetSprite: Pscaleobj_t;
 begin
-  scaleobj_t *new;
-
-  if (not freescaleobj_p) MS_Error('RF_GetSprite: Out of spots in scaleobjlist!');
-  new := freescaleobj_p;
+  if freescaleobj_p = nil then
+    MS_Error('RF_GetSprite(): Out of spots in scaleobjlist!');
+  result := freescaleobj_p;
   freescaleobj_p := freescaleobj_p.next;
-  memset(new,0,SizeOf(scaleobj_t));
-  new.next := (scaleobj_t *)) and (lastscaleobj;
+  memset(result, 0, SizeOf(scaleobj_t));
+  result.next := @lastscaleobj;
   new.prev := lastscaleobj.prev;
-  lastscaleobj.prev := new;
-  new.prev.next := new;
-  return new;
-  end;
+  lastscaleobj.prev := result;
+  new.prev.next := result;
+end;
 
 
-elevobj_t *RF_GetElevator;
-(* returns a elevator structure *)
+// returns a elevator structure
+function RF_GetElevator: Pelevobj_t;
 begin
-  elevobj_t *new;
-
-  if (not freeelevobj_p) MS_Error('RF_GetElevator: Too many elevators placed!');
-  new := freeelevobj_p;
+  if  freeelevobj_p = nil then
+    MS_Error('RF_GetElevator(): Too many elevators placed!');
+  result := freeelevobj_p;
   freeelevobj_p := freeelevobj_p.next;
-  memset(new,0,SizeOf(elevobj_t));
-  new.next := (elevobj_t *)) and (lastelevobj;
+  memset(result, 0, SizeOf(elevobj_t));
+  new.next := @lastelevobj;
   new.prev := lastelevobj.prev;
   lastelevobj.prev := new;
   new.prev.next := new;
-  return new;
-  end;
+end;
 
 
-spawnarea_t *RF_GetSpawnArea;
+function RF_GetSpawnArea: Pspawnarea_t;
 begin
-  if (numspawnareas = MAXSPAWNAREAS) MS_Error('RF_GetSpawnArea: Too many Spawn Areas placed not  (%i,%i)',numspawnareas,MAXSPAWNAREAS);
-  ++numspawnareas;
-  return) and (spawnareas[numspawnareas-1];
-  end;
+  if numspawnareas = MAXSPAWNAREAS then
+    MS_Error('RF_GetSpawnArea(): Too many Spawn Areas placed! (%d)', [MAXSPAWNAREAS]);
+  result := @spawnareas[numspawnareas];
+  inc(numspawnareas);
+end;
 
 
-procedure Event(int e,bool send);
-
-
-procedure RF_RemoveSprite(scaleobj_t *spr);
-(* removes sprite from doublely linked list of sprites *)
+// removes sprite from doublely linked list of sprites
+procedure RF_RemoveSprite(const spr: Pscaleobj_t);
 begin
   spr.next.prev := spr.prev;
   spr.prev.next := spr.next;
   spr.next := freescaleobj_p;
   freescaleobj_p := spr;
-  end;
+end;
 
 
-procedure RF_RemoveElevator(elevobj_t *e);
+procedure RF_RemoveElevator(const e: Pelevobj_t);
 begin
   e.next.prev := e.prev;
   e.prev.next := e.next;
   e.next := freeelevobj_p;
   freeelevobj_p := e;
-  end;
+end;
 
 
-fixed_t RF_GetFloorZ(fixed_t x, fixed_t y)
+function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
 begin
   h1, h2, h3, h4: fixed_t;
   tilex, tiley, mapspot: integer;
   polytype: integer;
   fx, fy: fixed_t;
   top, bottom, water: fixed_t;
-
-  tilex := x shr (FRACBITS+TILESHIFT);
-  tiley := y shr (FRACBITS+TILESHIFT);
-  mapspot := tiley *MAPSIZE+tilex;
-  polytype := (mapflags[mapspot]) and (FL_FLOOR) shr FLS_FLOOR;
+begin
+  tilex := x shr (FRACBITS + TILESHIFT);
+  tiley := y shr (FRACBITS + TILESHIFT);
+  mapspot := tiley * MAPSIZE + tilex;
+  polytype := (mapflags[mapspot] and FL_FLOOR) shr FLS_FLOOR;
   if (floorpic[mapspot] >= 57) and (floorpic[mapspot] <= 59) then
-  water := -(20 shl FRACBITS);
+    water := -(20 shl FRACBITS)
   else
-  water := 0;
+    water := 0;
   if polytype = POLY_FLAT then
-  return (floorheight[mapspot] shl FRACBITS) + water;
+  begin
+    result := (floorheight[mapspot] shl FRACBITS) + water;
+    exit;
+  end;
   h1 := floorheight[mapspot] shl FRACBITS;
-  h2 := floorheight[mapspot+1] shl FRACBITS;
-  h3 := floorheight[mapspot+MAPSIZE] shl FRACBITS;
-  h4 := floorheight[mapspot+MAPSIZE+1] shl FRACBITS;
-  fx := (x) and ((TILEUNIT-1)) shr 6; // range from 0 to fracunit-1
-  fy := (y) and ((TILEUNIT-1)) shr 6;
+  h2 := floorheight[mapspot + 1] shl FRACBITS;
+  h3 := floorheight[mapspot + MAPSIZE] shl FRACBITS;
+  h4 := floorheight[mapspot + MAPSIZE + 1] shl FRACBITS;
+  fx := (x and (TILEUNIT - 1)) shr 6; // range from 0 to fracunit-1
+  fy := (y and (TILEUNIT - 1)) shr 6;
   if polytype = POLY_SLOPE then
   begin
-   if (h1 = h2) return h1+FIXEDMUL(h3-h1, fy) + water;
-    else return h1+FIXEDMUL(h2-h1, fx) + water;
-    end;
+    if h1 = h2 then
+      result := h1 + FIXEDMUL(h3 - h1, fy) + water
+    else
+      result := h1 + FIXEDMUL(h2 - h1, fx) + water;
+    exit;
+  end;
   // triangulated slopes
   // set the outside corner of the triangle that the point is NOT in s
   // plane with the other three
   if polytype = POLY_ULTOLR then
   begin
-   if (fx>fy) h3 := h1-(h2-h1);
-    else h2 := h1+(h1-h3);
-    end;
+    if fx > fy then
+      h3 := h1 - (h2 - h1)
+    else
+      h2 := h1 + (h1 - h3);
+  end
   else
   begin
-   if (fx<FRACUNIT-fy) h4 := h2+(h2-h1);
-    else h1 := h2-(h4-h2);
-    end;
-  top := h1+FIXEDMUL(h2-h1, fx);
-  bottom := h3+FIXEDMUL(h4-h3, fx);
-  return top+FIXEDMUL(bottom-top, fy) + water;
+    if fx < FRACUNIT - fy then
+      h4 := h2 + (h2 - h1)
+    else
+      h1 := h2 - (h4 - h2);
   end;
+  top := h1 + FIXEDMUL(h2 - h1, fx);
+  bottom := h3 + FIXEDMUL(h4 - h3, fx);
+  result := top + FIXEDMUL(bottom - top, fy) + water;
+end;
 
 
-fixed_t RF_GetCeilingZ(fixed_t x, fixed_t y)
-(* find how high the ceiling is at x,y *)
-begin
+// find how high the ceiling is at x,y
+function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
+var
   h1, h2, h3, h4: fixed_t;
   tilex, tiley, mapspot: integer;
   polytype: integer;
   fx, fy: fixed_t;
   top, bottom: fixed_t;
-
-  tilex := x shr (FRACBITS+TILESHIFT);
-  tiley := y shr (FRACBITS+TILESHIFT);
-  mapspot := tiley *MAPSIZE+tilex;
-  polytype := (mapflags[mapspot]) and (FL_CEILING) shr FLS_CEILING;
+begin
+  tilex := x shr (FRACBITS + TILESHIFT);
+  tiley := y shr (FRACBITS + TILESHIFT);
+  mapspot := tiley * MAPSIZE + tilex;
+  polytype := (mapflags[mapspot] and FL_CEILING) shr FLS_CEILING;
   // flat
-  if (polytype = POLY_FLAT) return ceilingheight[mapspot] shl FRACBITS;
+  if polytype = POLY_FLAT then
+  begin
+    result := ceilingheight[mapspot] shl FRACBITS;
+    exit;
+  end;
   // constant slopes
   if polytype = POLY_SLOPE then
   begin
-   h1 := ceilingheight[mapspot] shl FRACBITS;
-   h2 := ceilingheight[mapspot+1] shl FRACBITS;
-   if h1 = h2 then
-   begin
-     h3 := ceilingheight[mapspot+MAPSIZE] shl FRACBITS;
-     fy := (y) and ((TILEUNIT-1)) shr 6;
-     return h1+FIXEDMUL(h3-h1, fy); // north/south slope
-      end;
-   else
-   begin
-     fx := (x) and ((TILEUNIT-1)) shr 6;
-     return h1+FIXEDMUL(h2-h1, fx); // east/west slope
-      end;
+    h1 := ceilingheight[mapspot] shl FRACBITS;
+    h2 := ceilingheight[mapspot + 1] shl FRACBITS;
+    if h1 = h2 then
+    begin
+      h3 := ceilingheight[mapspot + MAPSIZE] shl FRACBITS;
+      fy := (y and (TILEUNIT - 1)) shr 6;
+      result := h1 + FIXEDMUL(h3 - h1, fy); // north/south slope
+      exit;
+    end
+    else
+    begin
+      fx := (x and (TILEUNIT - 1)) shr 6;
+      result := h1 + FIXEDMUL(h2 - h1, fx); // east/west slope
+      exit;
     end;
+  end;
   // triangulated slopes
   // set the outside corner of the triangle that the point is NOT in s
   // plane with the other three
   h1 := ceilingheight[mapspot] shl FRACBITS;
-  h2 := ceilingheight[mapspot+1] shl FRACBITS;
-  h3 := ceilingheight[mapspot+MAPSIZE] shl FRACBITS;
-  h4 := ceilingheight[mapspot+MAPSIZE+1] shl FRACBITS;
-  fx := (x) and ((TILEUNIT-1)) shr 6; // range from 0 to fracunit-1
-  fy := (y) and ((TILEUNIT-1)) shr 6;
+  h2 := ceilingheight[mapspot + 1] shl FRACBITS;
+  h3 := ceilingheight[mapspot + MAPSIZE] shl FRACBITS;
+  h4 := ceilingheight[mapspot + MAPSIZE + 1] shl FRACBITS;
+  fx := (x and (TILEUNIT - 1)) shr 6; // range from 0 to fracunit-1
+  fy := (y) and (TILEUNIT - 1)) shr 6;
   if polytype = POLY_ULTOLR then
   begin
-   if (fx>fy) h3 := h1-(h2-h1);
-    else h2 := h1+(h1-h3);
-    end;
+    if fx > fy then
+      h3 := h1 - (h2 - h1)
+    else
+      h2 := h1 + (h1 - h3);
+  end
   else
   begin
-   if (fx<FRACUNIT-fy) h4 := h2+(h2-h1);
-    else h1 := h2-(h4-h2);
-    end;
-  top := h1+FIXEDMUL(h2-h1, fx);
-  bottom := h3+FIXEDMUL(h4-h3, fx);
-  return top+FIXEDMUL(bottom-top, fy);
+    if fx < FRACUNIT - fy then
+      h4 := h2 + (h2 - h1)
+    else
+      h1 := h2 - (h4 - h2);
   end;
+  top := h1 + FIXEDMUL(h2 - h1, fx);
+  bottom := h3 + FIXEDMUL(h4 - h3, fx);
+  return top + FIXEDMUL(bottom - top, fy);
+end;
 
 
-procedure RF_SetActionHook(void (*hook););
+procedure RF_SetActionHook(const hook: PProcedure);
 begin
   actionhook := hook;
   actionflag := 1;
-  end;
+end;
 
 procedure r_publicstub2;
 begin
-  end;
+end;
 
 
-procedure RF_SetLights(fixed_t blackz);
-(* resets the color maps to new lighting values *)
+// resets the color maps to new lighting values
+procedure RF_SetLights(const blackz: fixed_t);
+var
+  i, table: integer;
 begin
   // linear diminishing, table is actually logrithmic
-  i, table: integer;
-
-  blackz> >= FRACBITS;
-  for (i := 0;i <= MAXZ shr FRACBITS;i++)
+  blackz :blackz shr FRACBITS;
+  for i := 0 to MAXZ shr FRACBITS do
   begin
-   table := numcolormaps * i/blackz;
-   if (table >= numcolormaps) table := numcolormaps-1;
-   zcolormap[i] := colormaps+table*256;
-    end;
+    table := (numcolormaps * i) div blackz;
+    if table >= numcolormaps then
+      table := numcolormaps - 1;
+    zcolormap[i] := @colormaps[table * 256];
   end;
+end;
 
 
 procedure RF_CheckActionFlag;
 begin
   if SC.vrhelmet = 0 then
-  TimeUpdate;
-  if (not actionflag) exit;
+    TimeUpdate;
+  if not actionflag then
+    exit;
   actionhook;
   actionflag := 0;
-  end;
+end;
 
 
-procedure RF_RenderView(fixed_t x, fixed_t y, fixed_t z, int angle);
+procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
 begin
-//#ifdef VALIDATE
-// if (x <= 0) or (x >= ((MAPSIZE-1) shl (FRACBITS+TILESHIFT))) or (y <= 0) or (
-//  y >= ((MAPSIZE-1) shl (FRACBITS+TILESHIFT)))
-//  MS_Error('Invalid RF_RenderView (%p, %p, %p, %i)\n', x, y, z, angle);
-//{$ENDIF}
+{$IFDEF VALIDATE}
+  if (x <= 0) or (x >= ((MAPSIZE - 1) shl (FRACBITS + TILESHIFT))) or (y <= 0) or (
+    y >= ((MAPSIZE - 1) shl (FRACBITS + TILESHIFT))) then
+    MS_Error('Invalid RF_RenderView (%d, %d, %d, %d)', [x, y, z, angle]);
+{$ENDIF}
 
 // viewx := (x) and (~0xfff) + $800;
 // viewy := (y) and (~0xfff) + $800;
@@ -519,7 +549,7 @@ begin
   viewx := x;
   viewy := y;
   viewz := z;
-  viewangle := angle) and (ANGLES;
+  viewangle := angle and ANGLES;
   RF_CheckActionFlag;
   SetupFrame;
   RF_CheckActionFlag;
@@ -528,35 +558,40 @@ begin
   RenderSprites;
   DrawSpans;
   RF_CheckActionFlag;
-  end;
+end;
 
 
 procedure SetViewSize(int width, int height);
-begin
+var
   i: integer;
+begin
+  if width > MAX_VIEW_WIDTH then
+    width := MAX_VIEW_WIDTH;
+  if height > MAX_VIEW_HEIGHT then
+    height := MAX_VIEW_HEIGHT;
+  windowHeight := height;
+  windowWidth := width;
+  windowSize := width * height;
+  scrollmax := windowHeight + scrollmin;
+  CENTERX := width div 2;
+  CENTERY := height div 2;
+  SCALE := (width div 2) shl FRACBITS;
+  ISCALE := FRACUNIT div (width div 2);
 
-  if (width>MAX_VIEW_WIDTH) width :=  MAX_VIEW_WIDTH;
-  if (height>MAX_VIEW_HEIGHT) height :=  MAX_VIEW_HEIGHT;
-  windowHeight :=  height;
-  windowWidth :=  width;
-  windowSize :=  width*height;
-  scrollmax := windowHeight+scrollmin;
-  CENTERX := width/2;
-  CENTERY := height/2;
-  SCALE := (width/2) shl FRACBITS;
-  ISCALE := FRACUNIT/(width/2);
-
-  for (i := 0;i<height;i++)
-  viewylookup[i] :=  viewbuffer + i * width;
+  for i := 0 to height - 1 do
+    viewylookup[i] := @viewbuffer[i * width];
 
 // slopes for rows and collumns of screen pixels
 // slightly biased to account for the truncation in coordinates
-  for(i := 0;i <= width;i++)
-  xslope[i] := rint((float)(i+1-CENTERX)/CENTERX*FRACUNIT);
-  for(i := -MAXSCROLL;i<height+MAXSCROLL;i++)
-  yslope[i+MAXSCROLL] :=  rint(-(float)(i-0.5-CENTERY)/CENTERX*FRACUNIT);
-  for(i := 0;i<TANANGLES*2;i++)
-  backtangents[i] := ((width/2)*tangents[i]) shr FRACBITS;
-  hfrac := FIXEDDIV(BACKDROPHEIGHT shl FRACBITS,(windowHeight/2) shl FRACBITS);
-  afrac := FIXEDDIV(TANANGLES shl FRACBITS,width shl FRACBITS);
-  end;
+  for i := 0 to width do
+    xslope[i] := rint((i + 1 - CENTERX) / CENTERX * FRACUNIT);
+  for i := -MAXSCROLL to height + MAXSCROLL - 1 do
+    yslope[i + MAXSCROLL] := rint(-(i - 0.5 - CENTERY) / CENTERX * FRACUNIT);
+  for i := 0 to TANANGLES * 2 - 1 do
+    backtangents[i] := ((width div 2) * tangents[i]) shr FRACBITS;
+  hfrac := FIXEDDIV(BACKDROPHEIGHT shl FRACBITS, (windowHeight div 2) shl FRACBITS);
+  afrac := FIXEDDIV(TANANGLES shl FRACBITS, width shl FRACBITS);
+end;
+
+end.
+
