@@ -29,7 +29,7 @@ uses
 {$PACKRECORDS C}
 {$ENDIF}
 
-function rint(const x: integer): integer;
+function rint(const x: double): integer;
 
 {*** CONSTANTS *** }
 const
@@ -125,7 +125,7 @@ type
 
 implementation
 
-function rint(const x: integer): integer;
+function rint(const x: double): integer;
 begin
   result := trunc(x + 0.5);
 end;
