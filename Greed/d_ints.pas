@@ -123,6 +123,8 @@ procedure INT_TimerISR;
 
 procedure INT_TimerHook(const hook: PProcedure);
 
+procedure INT_Shutdown;
+
 implementation
 
 uses
@@ -221,6 +223,7 @@ end;
 procedure MouseHide;
 begin
 end;
+
 
 procedure MouseShow;
 begin
