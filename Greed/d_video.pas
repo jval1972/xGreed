@@ -27,6 +27,20 @@
 #include 'r_public.h'
 #include 'r_refdef.h'
 
+const
+  SCREENWIDTH = 320;
+  SCREENHEIGHT = 200;
+
+type
+  pic_t = packed record
+    width: smallint;
+    height: smallint;
+    orgx: smallint;
+    orgy: smallint;
+    data: byte;
+  end;
+  Ppic_t = ^pic_t;
+
 (**** CONSTANTS ****)
 
 #define CRTCOFF (inbyte(STATUS_REGISTER_1)) and (1)
