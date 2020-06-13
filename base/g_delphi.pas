@@ -112,6 +112,8 @@ procedure ZeroMemory(const dest: pointer; const count: integer);
 
 function memset(const dest: pointer; const val: integer; const count: integer): pointer;
 
+function memcpy(const dest0: pointer; const src0: pointer; count0: integer): pointer;
+
 // File handling
 const
   fCreate = 0;
@@ -237,6 +239,11 @@ function memset(const dest: pointer; const val: integer; const count: integer): 
 begin
   FillChar(dest^, count, val);
   result := dest;
+end;
+
+function memcpy(const dest0: pointer; const src0: pointer; count0: integer): pointer;
+begin
+  Move(src0^, dest0^, count0);
 end;
 
 function fopen(var f: file; const FileName: string; const mode: integer): boolean;
