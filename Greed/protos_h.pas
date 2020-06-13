@@ -491,10 +491,10 @@ type
     chartype: integer;
     socket: integer;
     numplayers: integer;
-    dialnum: array[0..12] of char;
+    dialnum: packed array[0..12] of char;
     com: integer;
     serplayers: integer;
-    netname: array[0..12] of char;
+    netname: packed array[0..12] of char;
     jcenx: word;
     jceny: word;
     xsense: word;
@@ -552,10 +552,10 @@ type
     scrollmax: integer;
     primaries: array[0..1] of integer;
     secondaries: array[0..6] of integer;
-    frags: array[0..(MAXPLAYERS)-1] of integer;
+    frags: array[0..MAXPLAYERS - 1] of integer;
     runmod: integer;
     walkmod: integer;
-    inventory: array[0..(MAXINVENTORY)-1] of longint;
+    inventory: array[0..MAXINVENTORY - 1] of integer;
     status: integer;
     holopic: integer;
     holoscale: integer;
@@ -616,7 +616,7 @@ type
     numnodes: smallint;
     consoleplayer: smallint;
     numplayers: smallint;
-    data: array[0..DATALENGTH - 1] of char;
+    data: packed array[0..DATALENGTH - 1] of char;
   end;
 
   Ppevent_t = ^pevent_t;
