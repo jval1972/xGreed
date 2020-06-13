@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,245 +18,276 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <DOS.H>
-#include <STDIO.H>
-#include <STRING.H>
-#include <STDLIB.H>
-#include 'd_global.h'
-#include 'd_video.h'
-#include 'r_public.h'
-#include 'd_misc.h'
-#include 'd_ints.h'
+unit playfli;
 
-#define getbyte chunkbuf[bufptr++]
-#define getword chunkbuf[bufptr] + (chunkbuf[bufptr+1] shl 8); bufptr+:= 2
+interface
 
 (**** TYPES ****)
 
-typedef signed char shortint;
+// FLI file header
+type
+  fliheader_t = packed record
+    size: integer;
+    signature: word;
+    nframes: word;
+    width: word;
+    height: word;
+    depth: word;
+    flags: word;
+    speed: word;
+    next: integer;
+    frit: integer;
+    padding: packed array[0..101] of byte;
+  end;
+  Pfliheader_t = ^fliheader_t;
 
-  (* FLI file header *)
-#pragma pack(push,packing,1)
-typedef struct
-begin
-  size: integer;
-  word    signature;
-  word    nframes;
-  word    width;
-  word    height;
-  word    depth;
-  word    flags;
-  word    speed;
-  next: integer;
-  frit: integer;
-  byte    padding[102];
-   end; fliheader;
-
-  (* individual frame header *)
-typedef struct
-begin
-  size: integer;
-  word    signature;
-  word    nchunks;
-  byte    padding[8];
-   end; frameheader;
+// individual frame header
+type
+  frameheader_t = packed record
+    size: integer;
+    signature: word;
+    nchunks: word;
+    padding: packed array[0..7] of byte;
+  end;
+  Pframeheader_t = ^frameheader_t;
 
   (* frame chunk type *)
-typedef struct
+type
+  chunktype_t = packed record
+    size: integer;
+    typ: word;
+   end;
+   Pchunktype_t = ^chunktype_t;
+
+function CheckTime(const n1, n2: integer): boolean;
+
+implementation
+
+uses
+  g_delphi,
+  d_video,
+  r_render;
+
+var
+  header: fliheader_t;
+  currentfliframe, bufptr: integer;
+  chunkbuf: PByteArray;
+  flipal: packed array[0..255, 0..2] of byte;
+
+function getbyte: byte;
 begin
-  size: integer;
-  word    type;
-   end; chunktype;
+  result := chunkbuf[bufptr];
+  inc(bufptr);
+end;
 
+function getshortint: shortint;
+begin
+  result := PShortIntArray(chunkbuf)[bufptr];
+  inc(bufptr);
+end;
 
-(**** VARIABLES ****)
+function getword: word;
+begin
+  result := chunkbuf[bufptr] + (chunkbuf[bufptr + 1] shl 8);
+  inc(bufptr, 2);
+end;
 
-#pragma pack(pop,packing)
-
-static fliheader header;
-static int       currentfliframe, bufptr;
-static byte      *chunkbuf;
-static byte      flipal[256][3];
-
-
-(**** FUNCTIONS ****)
-
+// read a color chunk
 procedure fli_readcolors;
-(* read a color chunk *)
-begin
+var
   i, j, total: integer;
-  word    packets;
-  byte    change, skip;
-  byte    *k;
-
-  packets := getword;
-  for (i := 0;i<packets;i++)
-  begin
-   skip := getbyte;     // colors to skip
-   change := getbyte;   // num colors to change
-   if change = 0 then
-    total := 256;         // hack for 256
-   k := flipal[skip];
-   for (j := 0;j<total;j++)
-   begin
-     *k++:= getbyte;   // r
-     *k++:= getbyte;   // g
-     *k++:= getbyte;   // b
-      end;
-    end;
-  VI_SetPalette((char*)flipal);
-  end;
-
-
-procedure fli_brun;
-(* read beginning runlength compressed frame *)
+  packets: word;
+  change, skip: byte;
+  k: PByte;
 begin
-  i, j, y, y2, p: integer;
-  shortint count;
-  byte     data, packets;
-  byte     *line;
-
-  line := (byte *)viewbuffer;
-  for (y := 0,y2 := header.height;y<y2;y++)
+  packets := getword;
+  for i := 0 to packets - 1 do
   begin
-   packets := getbyte;
-   for (p := 0;p<packets;p++)
-   begin
-     count := getbyte;
-     if (count<0)               // uncompressed
-      for (i := 0,j := -count;i<j;i++,line++) 
-       *line := getbyte;
-     else                       // compressed
-     begin
-       data := getbyte;          // byte to repeat
-       for (i := 0;i<count;i++)
-  *line++:= data;
+    skip := getbyte;     // colors to skip
+    change := getbyte;   // num colors to change
+    if change = 0 then
+      total := 256;         // hack for 256
+    k := @flipal[skip];
+    for j := 0 to total - 1 do
+    begin
+     k^ := getbyte; inc(k); // r
+     k^ := getbyte; inc(k); // g
+     k^ := getbyte; inc(k); // b
+    end;
+  end;
+  VI_SetPalette(@flipal);
+end;
+
+// read beginning runlength compressed frame
+procedure fli_brun;
+var
+  i, j, y, y2, p: integer;
+  count: shortint;
+  data, packets: byte;
+  line: PByte;
+begin
+  line := viewbuffer;
+  y2 := header.height;
+  for y := 0 to y2 - 1 do
+  begin
+    packets := getbyte;
+    for p := 0 to packets - 1 do
+    begin
+      count := getshortint;
+      if count < 0 then  // uncompressed
+      begin
+        j := -count;
+        for i := 0 to j - 1 do
+        begin
+          line^ := getbyte;
+          inc(line);
+        end;
+      end
+      else  // compressed
+      begin
+        data := getbyte;  // byte to repeat
+        for i := 0 to count - 1 do
+        begin
+          line^ := data;
+          inc(line);
         end;
       end;
     end;
   end;
+end;
 
 
+// normal line runlength compression type chunk
 procedure fli_linecompression;
-(* normal line runlength compression type chunk *)
-begin
+var
   i, j, p: integer;
-  word     y, y2;
-  shortint count;
-  byte     data, packets;
-  byte     *line;
-
-  y := getword;                // start y
-  y2 := getword;               // number of lines to change
-  for (y2+:= y;y<y2;y++)
-  begin
-   line := viewylookup[y];
-   packets := getbyte;
-   for (p := 0;p<packets;p++)
-   begin
-     line := line + getbyte;
-     count := getbyte;
-     if (count<0)            // uncompressed
-     begin
-       data := getbyte;
-       for (i := 0,j := -count;i<j;i++,line++)
-  *line := data;
-        end;                     // compressed
-     else for (i := 0;i<count;i++,line++)
-      *line := getbyte;
-      end;
-    end;
-  end;
-
-
-procedure fli_readframe(FILE *f);
-(* process each frame, chunk by chunk *)
+  y, y2: word;
+  count: shortint;
+  data, packets: byte;
+  line: PByte;
 begin
-  chunktype   chunk;
-  frameheader frame;
-  i: integer;
-
-  if (not fread and (frame,sizeof(frame),1,f)) or (frame.signature <> $F1FA) then
-  MS_Error('FLI_ReadFrame: Error Reading Frame!');
-  if frame.size = 0 then
-  exit;
-  for(i := 0;i<frame.nchunks;i++)
+  y := getword; // start y
+  y2 := getword;  // number of lines to change
+  inc(y2, y);
+  while y < y2 do
   begin
-   if (not fread and (chunk,sizeof(chunk),1,f)) then
-    MS_Error('FLI_ReadFram: Error Reading Chunk Header!');
-   if (not fread(chunkbuf,chunk.size-6,1,f)) then
-    MS_Error('FLI_ReadFram: Error with Chunk Read!');
-   bufptr := 0;
-   case chunk.type  of
-   begin
-     12:  // fli line compression
-      fli_linecompression;
-      break;
-     15:  // fli line compression first time (only once at beginning)
-      fli_brun;
-      break;
-     16:  // copy chunk
-      memcpy(viewbuffer,chunkbuf,64000);
-      break;
-     11:  //  new palette
-      fli_readcolors;
-      break;
-     13:  //  clear (only 1 usually at beginning)
-      memset(viewbuffer,0,64000);
-      break;
+    line := viewylookup[y];
+    packets := getbyte;
+    for p := 0 to packets - 1 do
+    begin
+      line := line + getbyte;
+      count := getshortint;
+      if count < 0 then  // uncompressed
+      begin
+        data := getbyte;
+        j := -count;
+        for i := 0 to j - 1 do
+        begin
+          line^ := data;
+          inc(line);
+        end
+      end// compressed
+      else
+      begin
+        for i := 0 to count - 1 do
+        begin
+          line^ := getbyte;
+          inc(line);
+        end;
       end;
     end;
+    inc(y);
   end;
+end;
 
 
-bool CheckTime(int n1, int n2)
-(* check timer update (70/sec) 
-    this is for loop optimization in watcom c *)
-    begin
-  if n1<n2 then
-  return false;
-  return true;
+// process each frame, chunk by chunk
+procedure fli_readframe(var f: file);
+var
+  chunk: chunktype_t;
+  frame: frameheader_t;
+  i: integer;
+begin
+  if not fread(@frame, SizeOf(frame), 1, f) then
+    MS_Error('FLI_ReadFrame(): Error Reading Frame!');
+  if frame.signature <> $F1FA then
+    MS_Error('FLI_ReadFrame(): Wrong Frame Magic!');
+  if frame.size = 0 then
+    exit;
+  for i := 0 to frame.nchunks - 1 do
+  begin
+    if not fread(@chunk, SizeOf(chunk), 1, f) then
+      MS_Error('FLI_ReadFrame(): Error Reading Chunk Header!');
+    if not fread(chunkbuf, chunk.size - 6, 1, f) then
+      MS_Error('FLI_ReadFrame(): Error with Chunk Read!');
+    bufptr := 0;
+    case chunk.typ  of
+    12:  // fli line compression
+      fli_linecompression;
+    15:  // fli line compression first time (only once at beginning)
+      fli_brun;
+    16:  // copy chunk
+      memcpy(viewbuffer, chunkbuf, 64000);
+    11:  //  new palette
+      fli_readcolors;
+    13:  //  clear (only 1 usually at beginning)
+      memset(viewbuffer,0,64000);
+    end;
   end;
+end;
 
 
-bool playfli(char *fname,longint offset)
-(* play FLI out of BLO file
-    load FLI header
-     set timer
-     read frame
-     copy frame to screen
-     reset timer
-     dump out if keypressed or mousereleased *)
-     begin
-  FILE    *f;
+// check timer update (70/sec)
+// this is for loop optimization in watcom c
+function CheckTime(const n1, n2: integer): boolean;
+begin
+  result := n1 >= n2;
+end;
+
+
+// play FLI out of BLO file
+//  load FLI header
+//   set timer
+//   read frame
+//   copy frame to screen
+//      reset timer
+//      dump out if keypressed or mousereleased
+function playfli(const fname: string; const offset: integer);
+var
+  f: file;
   delay: integer;
-
+begin
   newascii := false;
-  chunkbuf := (byte *)malloc(64000);
-  if chunkbuf = NULL then
-  MS_Error('PlayFLI: Out of Memory with ChunkBuf!');
-  memset(screen,0,64000);
-  VI_FillPalette(0,0,0);
-  f := fopen(fname,'rb');
-  if f = NULL then
-  MS_Error('PlayFLI: File Not Found: %s',fname);
-  if (fseek(f,offset,0)) or ( not fread and (header,sizeof(fliheader),1,f)) then
-  MS_Error('PlayFLI: File Read Error: %s',fname);
+  chunkbuf := malloc(64000);
+  if chunkbuf = nil then
+    MS_Error('PlayFLI(): Out of Memory with ChunkBuf!');
+  memset(screen, 0, 64000);
+  VI_FillPalette(0, 0, 0);
+  ifi not fopen(f, fname, fOpenReadOnly) then
+    MS_Error('PlayFLI(): File Not Found: %s', [fname]);
+  seek(f, offset);
+  if not fread(@header, SizeOf(fliheader), 1, f) then
+    MS_Error('PlayFLI(): File Read Error: %s', [fname]);
   currentfliframe := 0;
   delay := timecount;
-  while (currentfliframe++<header.nframes) and ( not newascii) // newascii := user break
+  while (currentfliframe < header.nframes) and not newascii do  // newascii := user break
   begin
-   delay+:= header.speed;                   // set timer
-   fli_readframe(f);
-   while (not CheckTime(timecount,delay)) ;  // wait
-   memcpy(screen,viewbuffer,64000);       // copy
-    end;
-  fclose(f);
-  free(chunkbuf);
-  if (currentfliframe<header.nframes) // user break
-  begin
-   memset(screen,0,64000);
-   return false;
-    end;
-  else return true;
+    delay := delay + header.speed;  // set timer
+    fli_readframe(f);
+    while not CheckTime(timecount, delay) do begin end; // wait
+    memcpy(screen, viewbuffer, 64000);       // copy
+    inc(currentfliframe);
   end;
+  fclose(f);
+  memfree(pointer(chunkbuf));
+  if currentfliframe < header.nframes then  // user break
+  begin
+    memset(screen, 0, 64000);
+    result := false;
+    exit;
+  end;
+  result := true;
+end;
+
+end.
+
