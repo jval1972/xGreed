@@ -53,6 +53,8 @@ const
 function I_timeSetEvent(const uDelay, uResolution: UINT;
   lpFunction: TFNTimeCallBack; dwUser: DWORD; uFlags: UINT): MMRESULT;
 
+procedure I_PeekAndDisplatch;
+
 implementation
 
 function I_MapVirtualKey(const uCode, uMapType: UINT): UINT;
@@ -67,7 +69,7 @@ end;
 
 function I_MessageBox(hWnd: HWND; lpText, lpCaption: PChar; uType: UINT): Integer;
 begin
-  MessageBox(hWnd, lpText, lpCaption, uType);
+  result := MessageBox(hWnd, lpText, lpCaption, uType);
 end;
 
 function I_GetFocus: HWND;
@@ -84,6 +86,14 @@ function I_timeSetEvent(const uDelay, uResolution: UINT;
   lpFunction: TFNTimeCallBack; dwUser: DWORD; uFlags: UINT): MMRESULT;
 begin
   result := timeSetEvent(uDelay, uResolution, lpFunction, dwUser, uFlags);
+end;
+
+procedure I_PeekAndDisplatch;
+var
+  msg: TMsg;
+begin
+  if PeekMessage(msg, 0, 0, 0, PM_REMOVE) then
+    DispatchMessage(msg);
 end;
 
 end.
