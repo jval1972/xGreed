@@ -82,6 +82,9 @@ procedure VI_DrawMaskedPicToBuffer(const x, y: integer; const pic: Ppic_t);
 
 implementation
 
+uses
+  intro;
+  
 procedure VI_FillPalette(const red, green, blue: integer);
 begin
 end;
@@ -386,10 +389,10 @@ begin
   dc :=  GetDC(Window_Handle);
   Memory_DC :=  CreateCompatibleDC(dc);
 
-  bmi :=  malloc(sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 256);
-  memset(bmi,0,sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 256);
+  bmi :=  malloc(SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
+  memset(bmi,0,SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
 
-  bmi.bmiHeader.biSize :=  sizeof(BITMAPINFOHEADER);
+  bmi.bmiHeader.biSize :=  SizeOf(BITMAPINFOHEADER);
   bmi.bmiHeader.biWidth :=  SCREENWIDTH;   
   bmi.bmiHeader.biHeight :=  SCREENHEIGHT;    
   bmi.bmiHeader.biPlanes :=  1;
@@ -401,8 +404,8 @@ begin
     (WORD)*((WORD*)(bmi.bmiColors) + i) :=  i;
    end;
 
-  pal :=  malloc(sizeof(LOGPALETTE) + 256 * sizeof(PALETTEENTRY));
-  memset(pal,0,sizeof(LOGPALETTE) + 256 * sizeof(PALETTEENTRY));
+  pal :=  malloc(SizeOf(LOGPALETTE) + 256 * SizeOf(PALETTEENTRY));
+  memset(pal,0,SizeOf(LOGPALETTE) + 256 * SizeOf(PALETTEENTRY));
 
   pal.palVersion :=  $300;
   pal.palNumEntries :=  256;
