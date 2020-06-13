@@ -166,6 +166,17 @@ function atob(const s: string): boolean;
 
 function btoa(const b: boolean): string;
 
+// standard output
+type
+  TOutProc = procedure (const s: string);
+
+var
+  outproc: TOutProc = nil;
+
+procedure printf(const str: string); overload;
+
+procedure printf(const Fmt: string; const Args: array of const); overload;
+
 implementation
 
 uses
@@ -605,6 +616,22 @@ begin
     result := 'TRUE'
   else
     result := 'FALSE';
+end;
+
+procedure printf(const str: string);
+begin
+  if Assigned(outproc) then
+    outproc(str)
+  else if IsConsole then
+    write(str);
+end;
+
+procedure printf(const Fmt: string; const Args: array of const);
+var
+  s: string;
+begin
+  sprintf(s, Fmt, Args);
+  printf(s);
 end;
 
 end.
