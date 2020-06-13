@@ -33,7 +33,7 @@ var
   timerhook: PProcedure;  // called every other frame (player);
   timeractive: boolean;
   timecount: integer; // current time index
-  keyboard: array[0..NUMCODES - 1] of boolean;  // keyboard flags
+  keyboard: array[0..NUMCODES - 1] of smallint;  // keyboard flags
   pause, capslock, newascii: boolean;
   mouseinstalled, joyinstalled: boolean;
   in_button: array[0..NUMBUTTONS - 1] of integer; // frames the button has been down
@@ -115,106 +115,52 @@ const
     SC_DELETE         // bt_invright
   );
 
-
-(**** FUNCTIONS ****)
-
-
-void INT_KeyboardISR
-(* keyboard interrupt
-    processes make/break codes
-    sets key flags accordingly *)
-    begin
-  (*static bool special;
-  byte           k, c, al;
-
-// Get the scan code
-  k := inbyte(0x60);
-
-  if (k = $E0) special := true;
-  else if (k = $E1) pause) xor (:= true;
-  else
-  begin
-   if (special) and ((k = $2A) or (k = $AA) or (k = $AA) or (k = $36)) then
-   begin
-     special := false;
-     goto end;
-      end;
-   if (k) and (0x80) // Break code
-   begin
-     k) and (:= $7F;
-     keyboard[k] := false;
-      end;
-   else // Make code
-   begin
-     lastscan := k;
-     keyboard[k] := true;
-     if (special) c := SpecialNames[k];
-     else
-     begin
-       if (k = SC_CAPSLOCK) capslock) xor (:= true;
-       if (keyboard[SC_LSHIFT]) or (keyboard[SC_RSHIFT]) then
-       begin
-   c := ShiftNames[k];
-   if (capslock) and (c >= 'A') and (c <= 'Z') c+:= 'a'-'A';
-    end;
-       else
-       begin
-   c := ASCIINames[k];
-   if (capslock) and (c >= 'a') and (c <= 'z') c-:= 'a'-'A';
-    end;
-        end;
-     if (c)         // return a new ascii character
-     begin
-       lastascii := c;
-       newascii := true;
-        end;
-      end;
-   special := false;
-    end;
-end:
-// acknowledge the interrupt
-  al := inbyte(0x61);
-  al) or (:= $80;
-  outbyte(0x61,al);
-  al) and (:= $7F;
-  outbyte(0x61,al);
-  outbyte(0x20,0x20);*)
-  end;
-
+procedure INT_KeyboardISR;
 
 procedure INT_ReadControls;
-(* read in input controls *)
+
+procedure INT_TimerISR;
+
+procedure INT_TimerHook(const hook: PProcedure);
+
+implementation
+
+uses
+  Windows, timer;
+
+// keyboard interrupt
+//    processes make/break codes
+//    sets key flags accordingly
+procedure INT_KeyboardISR;
 begin
+end;
+
+
+// read in input controls
+procedure INT_ReadControls;
+var
   i: integer;
-  BYTE keybkeys[256];
+begin
+  i := MapVirtualKey(SC_A, 1);
 
-  i :=  MapVirtualKey(SC_A,1);
+  for i := 0 to 127 do
+   keyboard[i] := GetKeyState(MapVirtualKey(i, 1));
 
-  GetKeyboardState(keybkeys);
-  for (i :=  0 ; i < 128 ; i++)
-   keyboard[i] :=  GetAsyncKeyState(MapVirtualKey(i,1));
-  for (i :=  0 ; i < 128 ; i++)
-   keyboard[i] :=  keybkeys[i];
-  for (i :=  0 ; i < 128 ; i++)
-   keyboard[i] :=  GetKeyState(MapVirtualKey(i,1));
-
-  memset(in_button,0,sizeof(in_button));
-  for(i := 0;i<NUMBUTTONS;i++)
-  if (keyboard[scanbuttons[i]]) and (0x80) then
-   in_button[i] := 1;
+  memset(@in_button, 0, SizeOf(in_button));
+  for i := 0 to NUMBUTTONS - 1 do
+    if keyboard[scanbuttons[i]] and $80 <> 0 then
+      in_button[i] := 1;
 
   if mouseinstalled then
   begin
-    end;
   end;
+end;
 
-(* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = *)
-
+// process each timer tick
 procedure INT_TimerISR;
-(* process each timer tick *)
 begin
   timecount := timecount + 2;
-  if timerhook then
+  if Assigned(timerhook) then
     timerhook;
 end;
 
@@ -225,22 +171,18 @@ begin
 end;
 
 
-(* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = *)
-
 procedure UpdateMouse;
 begin
 end;
 
-
-function MouseGetClick(short *x,short *y): boolean;
+function MouseGetClick(var x, y: smallint): boolean;
 begin
-  return 0;
+  result := false;
 end;
 
 procedure ResetMouse;
 begin
 end;
-
 
 procedure M_Init;
 begin
@@ -248,19 +190,15 @@ begin
   printf('Mouse Not Found'#13#10);
 end;
 
-
 procedure M_Shutdown;
 begin
 end;
 
-
-(***************************************************************************)
-
 procedure INT_Setup;
 begin
-  memset(keyboard, 0, SizeOf(keyboard));
+  memset(@keyboard, 0, SizeOf(keyboard));
   M_Init;
-  dStartTimer(INT_TimerISR, 1000/35);
+  dStartTimer(INT_TimerISR, 1000 div 35);
   timeractive := true;
 end;
 
@@ -288,4 +226,5 @@ procedure MouseShow;
 begin
 end;
 
-end;
+end.
+
