@@ -124,6 +124,8 @@ function fwrite(const data: pointer; const sz1, sz2: integer; var f: file): bool
 
 function fsize(const FileName: string): integer;
 
+function ftell(var f: file): integer;
+
 // String functions
 procedure sprintf(var s: string; const Fmt: string; const Args: array of const);
 
@@ -176,6 +178,12 @@ var
 procedure printf(const str: string); overload;
 
 procedure printf(const Fmt: string; const Args: array of const); overload;
+
+// Pointer operations
+type
+  PCAST = LongWord;
+
+function pOp(const p: pointer; const offs: integer): pointer;
 
 implementation
 
@@ -289,6 +297,15 @@ begin
   {$I+}
   end
   else
+    result := 0;
+end;
+
+function ftell(var f: file): integer;
+begin
+  {$I-}
+  result := FileSize(f);
+  {$I+}
+  if IOResult <> 0 then
     result := 0;
 end;
 
@@ -632,6 +649,11 @@ var
 begin
   sprintf(s, Fmt, Args);
   printf(s);
+end;
+
+function pOp(const p: pointer; const offs: integer): pointer; 
+begin
+  result := pointer(PCAST(p) + offs);
 end;
 
 end.
