@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,16 +18,13 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <STRING.H>
-#include <STDLIB.H>
-#include <CONIO.H>
-#include 'd_global.h'
-#include 'd_ints.h'
-#include 'd_video.h'
-#include 'd_misc.h'
-#include 'd_disk.h'
-#include 'r_public.h'
-#include 'r_refdef.h'
+unit d_video;
+
+interface
+
+uses
+  g_delphi,
+  Windows;
 
 const
   SCREENWIDTH = 320;
@@ -41,123 +40,151 @@ type
   end;
   Ppic_t = ^pic_t;
 
-(**** CONSTANTS ****)
-
-#define CRTCOFF (inbyte(STATUS_REGISTER_1)) and (1)
-
-
 (**** VARIABLES ****)
+var
+  screen: PByteArray;
+  ylookup: array[0..SCREENHEIGHT - 1] of PByteArray;
+  transparency: PByteArray;
+  translookup: array[0..255] of PByteArray;
+  Bitmap: HBITMAP;
+  Memory_DC: HDC;
+  Palette: HPALETTE;
 
-byte *    screen;
-byte *    ylookup[SCREENHEIGHT];
-byte *    transparency;
-byte *    translookup[255];
-HBITMAP    Bitmap;
-HDC      Memory_DC;
-HPALETTE  Palette;
+procedure VI_FillPalette(const red, green, blue: integer);
 
-extern SoundCard SC;
+procedure VI_SetPalette(const palette: PByteArray);
 
+procedure VI_ResetPalette;
 
-(**** FUNCTIONS ****)
+procedure VI_GetPalette(const palette: PByteArray);
 
-procedure VI_FillPalette(int red, int green, int blue);
+procedure VI_FadeOut(const start, stop: integer; const red, green, blue: integer;
+  const steps: integer);
+
+procedure VI_FadeIn(const start, stop: integer; const palette: PByteArray;
+  const steps: integer);
+
+procedure VI_DrawPic(const x, y: integer; const pic: Ppic_t);
+
+procedure VI_DrawMaskedPic(const x, y: integer; const pic: Ppic_t);
+
+procedure VI_DrawTransPicToBuffer(const x, y: integer; const pic: Ppic_t);
+
+procedure VI_DrawMaskedPicToBuffer2(const x, y: integer; const pic: Ppic_t);
+
+procedure VI_Init(const specialbuffer: integer);
+
+procedure RF_BlitView;
+
+procedure VI_BlitView;
+
+procedure VI_DrawMaskedPicToBuffer(const x, y: integer; const pic: Ppic_t);
+
+implementation
+
+procedure VI_FillPalette(const red, green, blue: integer);
 begin
+end;
+
+procedure VI_SetPalette(const palette: PByteArray);
+var
+  dc: HDC;
+  i: integer;
+  j: integer;
+  entries: array[0..255] of PALETTEENTRY;
+begin
+  j := 0;
+
+  for i := 0 to 255 do
+  begin
+    entries[i].peRed := palette[j] shl 2;
+    inc(j);
+    entries[i].peGreen := palette[j] shl 2;
+    inc(j);
+    entries[i].peBlue := palette[j] shl 2;
+    inc(j);
+    entries[i].peFlags := PC_NOCOLLAPSE;
   end;
 
+  dc := GetDC(Window_Handle);
 
-procedure VI_SetPalette(byte *palette);
-begin
-  HDC        dc;
-  i: integer;
-  j :=  0: integer;
-  PALETTEENTRY  entries[256];
-
-  for (i :=  0 ; i < 256 ; i++)
-  begin
-    entries[i].peRed :=  palette[j++]  shl  2;
-    entries[i].peGreen :=  palette[j++]  shl  2;
-    entries[i].peBlue :=  palette[j++]  shl  2;
-    entries[i].peFlags :=  PC_NOCOLLAPSE;
-   end;  
-  
-  dc :=  GetDC(Window_Handle);
-
-  SetPaletteEntries(Palette,0,256,entries);
+  SetPaletteEntries(Palette, 0, 256, entries);
 
   VI_BlitView;
 
-  SelectPalette(Memory_DC,Palette,TRUE);
-  SelectPalette(dc,Palette,TRUE);
+  SelectPalette(Memory_DC, Palette, TRUE);
+  SelectPalette(dc,Palette, TRUE);
 
   RealizePalette(Memory_DC);
   RealizePalette(dc);
 
-  ReleaseDC(Window_Handle,dc);
-  end;
+  ReleaseDC(Window_Handle, dc);
+end;
 
 
-void VI_ResetPalette
+procedure VI_ResetPalette;
+var
+  dc: HDC;
 begin
-  HDC  dc;
-
-  dc :=  GetDC(Window_Handle);
+  dc := GetDC(Window_Handle);
 
   RealizePalette(dc);
 
-  ReleaseDC(Window_Handle,dc);
-  end;
+  ReleaseDC(Window_Handle, dc);
+end;
 
 
-procedure VI_GetPalette(byte *palette);
+procedure VI_GetPalette(const palette: PByteArray);
 begin
-  end;
+end;
 
 
-procedure VI_FadeOut(int start,int end,int red,int green,int blue,int steps);
-begin
-  byte        basep[768];
-  signed char px[768], pdx[768], dx[768];
+procedure VI_FadeOut(const start, stop: integer; const red, green, blue: integer;
+  const steps: integer);
+var
+  basep: array[0..767] of byte;
+  px, pdx, dx: array[0..767] of shortint;
   i, j: integer;
-
+begin
   VI_GetPalette(basep);
-  memset(dx,0,768);
-  for(j := start;j<end;j++)
+  memset(dx, 0, 768);
+  for j := start to stop - 1 do
   begin
-   pdx[j*3] := (basep[j*3]-red) mod steps;
-   px[j*3] := (basep[j*3]-red)/steps;
-   pdx[j*3+1] := (basep[j*3+1]-green) mod steps;
-   px[j*3+1] := (basep[j*3+1]-green)/steps;
-   pdx[j*3+2] := (basep[j*3+2]-blue) mod steps;
-   px[j*3+2] := (basep[j*3+2]-blue)/steps;
-    end;
-  start := start * 3;
-  end := end * 3;
-  for (i := 0;i<steps;i++)
-  begin
-   for (j := start;j<end;j++)
-   begin
-     basep[j] := basep[j] - px[j];
-     dx[j] := dx[j] + pdx[j];
-     if dx[j] >= steps then
-     begin
-       dx[j] := dx[j] - steps;
-       --basep[j];
-     end
-     else if dx[j] <= -steps then
-     begin
-       dx[j] := dx[j] + steps;
-       ++basep[j];
-        end;
-      end;
-   Wait(1);
-   VI_SetPalette(basep);
-    end;
-  VI_FillPalette(red,green,blue);
+    pdx[j * 3] := (basep[j * 3] - red) mod steps;
+    px[j * 3] := (basep[j*3] - red) div steps;
+    pdx[j * 3 + 1] := (basep[j * 3 + 1] - green) mod steps;
+    px[j * 3 + 1] := (basep[j * 3 + 1] - green) div steps;
+    pdx[j * 3 + 2] := (basep[j * 3 + 2] - blue) mod steps;
+    px[j * 3 + 2] := (basep[j * 3 + 2] - blue) div steps;
   end;
+  start := start * 3;
+  stop := stop * 3;
+  for i := 0 to steps - 1 do
+  begin
+    for j := start to stop - 1 do
+    begin
+      basep[j] := basep[j] - px[j];
+      dx[j] := dx[j] + pdx[j];
+      if dx[j] >= steps then
+      begin
+        dx[j] := dx[j] - steps;
+        dec(basep[j]);
+      end
+      else if dx[j] <= -steps then
+      begin
+        dx[j] := dx[j] + steps;
+        inc(basep[j]);
+      end;
+    end;
+    Wait(1);
+    VI_SetPalette(basep);
+  end;
+  VI_FillPalette(red, green, blue);
+end;
 
 
-procedure VI_FadeIn(int start,int end,byte *palette,int steps);
+procedure VI_FadeIn(const start, stop: integer; const palette: PByteArray;
+  const steps: integer);
 begin
   byte        basep[768], work[768];
   signed char px[768], pdx[768], dx[768];
@@ -167,15 +194,15 @@ begin
   memset(dx,0,768);
   memset(work,0,768);
   start := start * 3;
-  end := end * 3;
-  for(j := start;j<end;j++)
+  stop := stop * 3;
+  for(j := start;j<stop;j++)
   begin
    pdx[j] := (palette[j]-basep[j]) mod steps;
    px[j] := (palette[j]-basep[j])/steps;
     end;
   for (i := 0;i<steps;i++)
   begin
-   for (j := start;j<end;j++)
+   for (j := start;j<stop;j++)
    begin
      work[j] := work[j] + px[j];
      dx[j] := dx[j] + pdx[j];
@@ -197,7 +224,7 @@ begin
   end;
 
 
-procedure VI_DrawPic(int x,int y,pic_t * pic);
+procedure VI_DrawPic(const x, y: integer; const pic: Ppic_t);
 begin
   byte *  dest;
   byte *  source;
@@ -218,7 +245,7 @@ begin
   end;
 
 
-procedure VI_DrawMaskedPic(int x, int y, pic_t  *pic);
+procedure VI_DrawMaskedPic(const x, y: integer; const pic: Ppic_t);
 (* Draws a formatted image to the screen, masked with zero *)
 begin
   byte *dest, *source;
@@ -254,7 +281,7 @@ begin
   end;
 
 
-procedure VI_DrawTransPicToBuffer(int x,int y,pic_t *pic);
+procedure VI_DrawTransPicToBuffer(const x, y: integer; const pic: Ppic_t);
 (* Draws a transpartent, masked pic to the view buffer *)
 begin
   byte *dest,*source;
@@ -288,7 +315,7 @@ begin
   end;
 
 
-procedure VI_DrawMaskedPicToBuffer2(int x,int y,pic_t *pic);
+procedure VI_DrawMaskedPicToBuffer2(const x, y: integer; const pic: Ppic_t);
 (* Draws a masked pic to the view buffer *)
 begin
   byte *dest, *source, *colormap;
@@ -346,7 +373,7 @@ begin
   end;
 
 
-procedure VI_Init(int specialbuffer);
+procedure VI_Init(const specialbuffer: integer);
 begin
   HDC        dc;
   y: integer;
@@ -435,7 +462,7 @@ begin
   end;
 
 
-void VI_BlitView
+procedure VI_BlitView;
 begin
   HDC dc;
 
@@ -446,7 +473,7 @@ begin
   end;
 
 
-procedure VI_DrawMaskedPicToBuffer(int x,int y,pic_t *pic);
+procedure VI_DrawMaskedPicToBuffer(const x, y: integer; const pic: Ppic_t);
 (* Draws a masked pic to the view buffer *)
 begin
   BYTE *  dest;
@@ -466,7 +493,7 @@ begin
   begin
     if y<200 then
     begin
-      dest :=  viewbuffer + (y * MAX_VIEW_WIDTH + x);     
+      dest :=  viewbuffer + (y * MAX_VIEW_WIDTH + x);
       xcor :=  x;
       width :=  pic.width;
       while width-- do
@@ -484,3 +511,5 @@ begin
     y++;
    end;
   end;
+
+end.
