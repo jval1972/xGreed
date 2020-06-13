@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,55 +18,51 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <STDLIB.H>
-#include 'd_global.h'
-#include 'r_refdef.h'
-#include 'd_font.h'
-#include 'protos.h'
-#include 'd_ints.h'
-#include 'd_disk.h'
-#include 'd_misc.h'
+unit spawn;
 
+interface
 
-(**** VARIABLES ****)
+const
+  MAXSTARTLOCATIONS = 8;
 
-#define MAXSTARTLOCATIONS 8
+procedure DemandLoadMonster(const lump, num: integer);
 
-extern int       slumps[S_END-S_START+1];
-extern int       startlocations[MAXSTARTLOCATIONS][2];
-extern SoundCard SC;
-extern int       bloodcount, metalcount;
+implementation
 
+uses
+  g_delphi,
+  d_disk,
+  r_refdef;
 
-(**** FUNCTIONS ****)
-
-procedure DemandLoadMonster(int lump, int num);
-begin
+procedure DemandLoadMonster(const lump, num: integer);
+var
   i, j, l, count, top, bottom: integer;
-  scalepic_t *pic;
-  byte       *collumn;
-
-  if lumpmain[lump] <> 0 then
-  exit; // already loaded
-  for (l := 0;l<num;l++)
+  pic: Pscalepic_t;
+  collumn: PByteArray;
+begin
+  if lumpmain[lump] <> nil then
+    exit; // already loaded
+  for l := 0 to num - 1 do
   begin
-   CA_CacheLump(lump+l);
-   pic := lumpmain[lump+l];
-   for (i := 0;i<pic.width;i++)
-    if pic.collumnofs[i] then
-    begin
-      collumn := (byte *)pic+pic.collumnofs[i];
-      top := *(collumn+1);
-      bottom := *(collumn);
-      count := bottom-top+1;
-      collumn := collumn + 2;
-      for (j := 0;j<count;j++,collumn++)
-       if *collumn = 255 then
-  *collumn := 0;
-       end;
-    end;
+    CA_CacheLump(lump + l);
+    pic := lumpmain[lump + l];
+    for i := 0 to pic.width - 1 do
+      if pic.collumnofs[i] <> 0 then
+      begin
+        collumn := @PByteArray(pic)[pic.collumnofs[i]];
+        top := collumn[1];
+        bottom := collumn[0];
+        count := bottom - top + 1;
+        collumn := @collumn[2];
+        for j := 0 to count - 1 do
+        begin
+          if collumn[0] = 255 then
+            collumn[0] := 0;
+          column := @column[1];
+        end;
+      end;
   end;
-
+end;
 
 scaleobj_t *SpawnSprite(int value, fixed_t x, fixed_t y, fixed_t z,fixed_t zadj,int angle,int angle2,bool active,int spawnid)
 begin
