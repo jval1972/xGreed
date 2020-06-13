@@ -28,6 +28,10 @@ unit g_delphi;
 
 interface
 
+const
+  MAXINT = $7fffffff;
+  MININT = integer($80000000);
+
 type
   PPointer = ^Pointer;
 
