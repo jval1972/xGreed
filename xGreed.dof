@@ -110,30 +110,30 @@ ActiveLang=
 ProjectLang=
 RootDir=
 [Version Info]
-IncludeVerInfo=0
-AutoIncBuild=0
+IncludeVerInfo=1
+AutoIncBuild=1
 MajorVer=1
 MinorVer=0
-Release=0
-Build=0
+Release=1
+Build=1
 Debug=0
 PreRelease=0
 Special=0
 Private=0
 DLL=0
-Locale=1032
-CodePage=1253
+Locale=1033
+CodePage=1252
 [Version Info Keys]
-CompanyName=
-FileDescription=
-FileVersion=1.0.0.0
-InternalName=
-LegalCopyright=
-LegalTrademarks=
-OriginalFilename=
-ProductName=
+CompanyName=Jim Valavanis
+FileDescription=In Pursuit of Greed
+FileVersion=1.0.1.1
+InternalName=xGreed
+LegalCopyright=(c) 2020, Jim Valavanis
+LegalTrademarks=(c) 2020, Jim Valavanis
+OriginalFilename=xGreed.exe
+ProductName=xGreed
 ProductVersion=1.0.0.0
-Comments=
+Comments=Source port of Greed
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
