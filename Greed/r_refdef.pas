@@ -1,48 +1,32 @@
+(***************************************************************************)
+(*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(*                                                                         *)
+(* Raven 3D Engine                                                         *)
+(* Copyright (C) 1996 by Softdisk Publishing                               *)
+(*                                                                         *)
+(* Original Design:                                                        *)
+(*  John Carmack of id Software                                            *)
+(*                                                                         *)
+(* Enhancements by:                                                        *)
+(*  Robert Morgan of Channel 7............................Main Engine Code *)
+(*  Todd Lewis of Softdisk Publishing......Tools,Utilities,Special Effects *)
+(*  John Bianca of Softdisk Publishing..............Low-level Optimization *)
+(*  Carlos Hasan..........................................Music/Sound Code *)
+(*                                                                         *)
+(*                                                                         *)
+(***************************************************************************)
 
-unit r_refdef_h;
+unit r_refdef;
+
 interface
 
-{
-  Automatically converted by H2Pas 1.0.0 from R_refdef.h
-  The following command line parameters were used:
-    -o
-    r_refdef_h.pas
-    R_refdef.h
-}
-
-  Type
-  Pchar  = ^char;
-  Pentry_t  = ^entry_t;
-  Pvertex_t  = ^vertex_t;
 {$IFDEF FPC}
 {$PACKRECORDS C}
 {$ENDIF}
 
-
-  {************************************************************************* }
-  {                                                                          }
-  {                                                                          }
-  { Raven 3D Engine                                                          }
-  { Copyright (C) 1995 by Softdisk Publishing                                }
-  {                                                                          }
-  { Original Design:                                                         }
-  {  John Carmack of id Software                                             }
-  {                                                                          }
-  { Enhancements by:                                                         }
-  {  Robert Morgan of Channel 7............................Main Engine Code  }
-  {  Todd Lewis of Softdisk Publishing......Tools,Utilities,Special Effects  }
-  {  John Bianca of Softdisk Publishing..............Low-level Optimization  }
-  {  Carlos Hasan..........................................Music/Sound Code  }
-  {                                                                          }
-  {                                                                          }
-  {************************************************************************* }
-{$ifndef R_REFDEF_H}
-{$define R_REFDEF_H}  
-{$include "r_public.h"}
-  { was #define dname(params) para_def_expr }
-  { argument types are unknown }
-
-  function rint(x : longint) : longint;  
+function rint(x: integer): integer;
 
   {*** CONSTANTS *** }
   const
@@ -65,7 +49,7 @@ interface
     F_TRANSPARENT = 1 shl 4;    
     F_NOCLIP = 1 shl 5;    
     F_NOBULLETCLIP = 1 shl 6;    
-    F_DAMAGE = 1 shl 7;    
+    F_DAMAGE = 1 shl 7;
   {*** TYPES *** }
   { transformed x / distance }
   { projected x if tz > 0 }
@@ -227,124 +211,11 @@ interface
       afrac : fixed_t;cvar;external;
   {*** FUNCTIONS *** }
 
-  procedure SetupFrame;
-
-  function TransformVertex(tilex:longint; tiley:longint):^vertex_t;
-
-  procedure FlowView;
-
-  procedure InitWalls;
-
-  procedure RenderTileWalls(e:Pentry_t);
-
-  procedure DrawWall(x1:longint; x2:longint);
-
-  procedure DrawSteps(x1:longint; x2:longint);
-
-  procedure InitPlane;
-
-  procedure ClearMapCache;
-
-  procedure RenderTileEnds;
-
-  procedure FindBackVertex;
-
-  procedure RenderDoor;
-
-  procedure RenderSprites;
-
-  procedure ScalePost;
-
-  procedure ScaleMaskedPost;
-
-  procedure MapRow;
-
-  procedure DrawSpans;
-
-  procedure MS_Error(error:Pchar; args:array of const);
-
-{$endif}
-
 implementation
 
-  { was #define dname(params) para_def_expr }
-  { argument types are unknown }
-  function rint(x : longint) : longint;
-  begin
-    rint:=longint(x+0.5);
-  end;
-
-  procedure SetupFrame;
-  begin
-    { You must implement this function }
-  end;
-  function TransformVertex(tilex:longint; tiley:longint):Pvertex_t;
-  begin
-    { You must implement this function }
-  end;
-  procedure FlowView;
-  begin
-    { You must implement this function }
-  end;
-  procedure InitWalls;
-  begin
-    { You must implement this function }
-  end;
-  procedure RenderTileWalls(e:Pentry_t);
-  begin
-    { You must implement this function }
-  end;
-  procedure DrawWall(x1:longint; x2:longint);
-  begin
-    { You must implement this function }
-  end;
-  procedure DrawSteps(x1:longint; x2:longint);
-  begin
-    { You must implement this function }
-  end;
-  procedure InitPlane;
-  begin
-    { You must implement this function }
-  end;
-  procedure ClearMapCache;
-  begin
-    { You must implement this function }
-  end;
-  procedure RenderTileEnds;
-  begin
-    { You must implement this function }
-  end;
-  procedure FindBackVertex;
-  begin
-    { You must implement this function }
-  end;
-  procedure RenderDoor;
-  begin
-    { You must implement this function }
-  end;
-  procedure RenderSprites;
-  begin
-    { You must implement this function }
-  end;
-  procedure ScalePost;
-  begin
-    { You must implement this function }
-  end;
-  procedure ScaleMaskedPost;
-  begin
-    { You must implement this function }
-  end;
-  procedure MapRow;
-  begin
-    { You must implement this function }
-  end;
-  procedure DrawSpans;
-  begin
-    { You must implement this function }
-  end;
-  procedure MS_Error(error:Pchar);
-  begin
-    { You must implement this function }
-  end;
+function rint(x: integer): integer;
+begin
+  result := trunc(x + 0.5);
+end;
 
 end.
