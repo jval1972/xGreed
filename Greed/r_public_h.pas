@@ -47,15 +47,15 @@ const
   DOOR_CONTACT = 2;
   FRACBITS = 16;
   FRACUNIT = 1 shl FRACBITS;
-  TILEUNIT = 64*FRACUNIT;
-  HALFTILEUNIT = 32*FRACUNIT;
+  TILEUNIT = 64 * FRACUNIT;
+  HALFTILEUNIT = 32 * FRACUNIT;
   PI = 3.14159265;
   MAPSIZE = 64;    { there must not be any 65th vertexes }
   MAPROWS = 64;
   MAPCOLS = 64;
   TILESHIFT = 6;
   TILESIZE = 1 shl TILESHIFT;    { pixels to tile }
-  TILEFRACSHIFT = TILESHIFT+FRACBITS;
+  TILEFRACSHIFT = TILESHIFT + FRACBITS;
   TILEGLOBAL = 1 shl TILEFRACSHIFT;
   ANGLES = 1023;
   WEST = 512;
@@ -79,7 +79,7 @@ const
   ANIM_DELAY_MASK = 32256;
   MINDIST = FRACUNIT * 12;
   PLAYERSIZE = 16 shl FRACBITS;
-  FRACTILESHIFT = FRACBITS+TILESHIFT;
+  FRACTILESHIFT = FRACBITS + TILESHIFT;
   BACKDROPHEIGHT = 100;
   MAXSCROLL = 60;
   MAXSCROLL2 = 120;
@@ -105,11 +105,25 @@ type
   pixel_t = byte;
   Ppixel_t = ^pixel_t;
 
-  rotate_t = (rt_one, rt_four, rt_eight);
+  rotate_t = (
+    rt_one,
+    rt_four,
+    rt_eight
+  );
 
-  special_t = (st_none, st_noclip, st_transparent, st_maxlight);
+  special_t = (
+    st_none,
+    st_noclip,
+    st_transparent,
+    st_maxlight
+  );
 
-  orientation_t = (dr_horizontal, dr_vertical, dr_horizontal2, dr_vertical2);
+  orientation_t = (
+    dr_horizontal,
+    dr_vertical,
+    dr_horizontal2,
+    dr_vertical2
+  );
 
   elevtype = (
     E_NORMAL,
@@ -139,11 +153,11 @@ type
 { transparent, no clipping }
 
   Pscaleobj_t = ^scaleobj_t;
-  scaleobj_t = record
+  scaleobj_t = packed record
     prev: Pscaleobj_t;
     next: Pscaleobj_t;
-    animation: longint;
-    animationTime: longint;
+    animation: integer;
+    animationTime: integer;
     moveSpeed: fixed_t;
     zadj: fixed_t;
     x: fixed_t;
@@ -151,36 +165,36 @@ type
     z: fixed_t;
     lastx: fixed_t;
     lasty: fixed_t;
-    basepic: longint;
+    basepic: integer;
     rotate: rotate_t;
-    angle: longint;
-    angle2: longint;
-    movesize: longint;
+    angle: integer;
+    angle2: integer;
+    movesize: integer;
     active: bool;
     nofalling: bool;
-    intelligence: longint;
-    bullet: longint;
-    enraged: longint;
-    movetime: longint;
-    modetime: longint;
-    actiontime: longint;
-    scantime: longint;
-    firetime: longint;
-    heat: longint;
-    startpic: longint;
-    movemode: longint;
-    startspot: longint;
-    damage: longint;
-    hitpoints: longint;
-    _type: longint;
-    spawnid: longint;
-    score: longint;
-    maxmove: longint;
-    regen: longint;
-    deathevent: longint;
+    intelligence: integer;
+    bullet: integer;
+    enraged: integer;
+    movetime: integer;
+    modetime: integer;
+    actiontime: integer;
+    scantime: integer;
+    firetime: integer;
+    heat: integer;
+    startpic: integer;
+    movemode: integer;
+    startspot: integer;
+    damage: integer;
+    hitpoints: integer;
+    typ: integer;
+    spawnid: integer;
+    score: integer;
+    maxmove: integer;
+    regen: integer;
+    deathevent: integer;
     height: fixed_t;
     specialtype: special_t;
-    scale: longint;
+    scale: integer;
   end;
 
 { modify this part whenever you want }
@@ -192,20 +206,20 @@ type
 
   Pdoorobj_t  = ^doorobj_t;
   doorobj_t = record
-    tilex: longint;
-    tiley: longint;
+    tilex: integer;
+    tiley: integer;
     doorOpen: bool;
     doorOpening: bool;
     doorClosing: bool;
     doorBlocked: bool;
     doorBumpable: bool;
-    doorSize: longint;
-    doorTimer: longint;
+    doorSize: integer;
+    doorTimer: integer;
     doorLocks: byte;
     orientation: orientation_t;
     transparent: bool;
-    pic: longint;
-    height: longint;
+    pic: integer;
+    height: integer;
     position: fixed_t;
   end;
 
@@ -222,25 +236,25 @@ type
     next: Pelevobj_t;
     elevUp: bool;
     elevDown: bool;
-    position: longint;
-    elevTimer: longint;
-    floor: longint;
-    ceiling: longint;
-    mapspot: longint;
-    speed: longint;
-    eval: longint;
-    endeval: longint;
-    nosave: longint;
-    _type: elevtype;
+    position: integer;
+    elevTimer: integer;
+    floor: integer;
+    ceiling: integer;
+    mapspot: integer;
+    speed: integer;
+    eval: integer;
+    endeval: integer;
+    nosave: integer;
+    typ: elevtype;
   end;
 
   Pspawnarea_t = ^spawnarea_t;
-  spawnarea_t = record
-    mapspot: longint;
+  spawnarea_t = packed record
+    mapspot: integer;
     mapx: fixed_t;
     mapy: fixed_t;
-    _type: longint;
-    time: longint;
+    typ: integer;
+    time: integer;
   end;
 
 implementation
