@@ -53,18 +53,19 @@ procedure CA_FreeLump(const lump: integer);
 implementation
 
 uses
-  d_misc;
+  d_misc,
+  menu;
   
 procedure CA_ReadFile(const fname: string; const buffer: pointer; const len: LongWord);
 var
   handle: file;
 begin
   if not fopen(handle, fname, fOpenReadOnly) then
-    MS_Error('CA_ReadFile(): Open failed on %s!', [name]);
-  if not fread(handle, buffer, len) then
+    MS_Error('CA_ReadFile(): Open failed on %s!', [fname]);
+  if not fread(buffer, len, 1, handle) then
   begin
     closefile(handle);
-    MS_Error('CA_LoadFile(): Read failed on %s!', name);
+    MS_Error('CA_LoadFile(): Read failed on %s!', [fname]);
   end;
   closefile(handle);
 end;
@@ -76,15 +77,15 @@ var
   buffer: pointer;
 begin
   if not fopen(handle, fname, fOpenReadOnly) then
-    MS_Error('CA_LoadFile(): Open failed on %s!', [name]);
-  len := fsize(handle);
-  buffer := malloc(len)
+    MS_Error('CA_LoadFile(): Open failed on %s!', [fname]);
+  len := ftell(handle);
+  buffer := malloc(len);
   if buffer = nil then
-    MS_Error('CA_LoadFile(): Malloc failed for %s!', [name]);
+    MS_Error('CA_LoadFile(): Malloc failed for %s!', [fname]);
   if not fread(buffer, len, 1, handle) then
   begin
     closefile(handle);
-    MS_Error('CA_LoadFile(): Read failed on %s!', [name]);
+    MS_Error('CA_LoadFile(): Read failed on %s!', [fname]);
   end;
   closefile(handle);
   result := buffer;
@@ -102,15 +103,15 @@ begin
   if ca_initialized then // already open, must shut down
   begin
     closefile(cachehandle);
-    memfree(infotable);
+    memfree(pointer(infotable));
     for i := 0 to fileinfo.numlumps - 1 do  // dump the lumps
       if lumpmain[i] <> nil then
         memfree(lumpmain[i]);
-    memfree(lumpmain);
+    memfree(pointer(lumpmain));
   end;
   // load the header
-  if not fopen(cachehandle, filename, fOpenReadOnly then
-    MS_Error('CA_InitFile: Can't open %s not ',filename);
+  if not fopen(cachehandle, filename, fOpenReadOnly) then
+    MS_Error('CA_InitFile(): Can''t open %s!', [filename]);
   fread(@fileinfo, SizeOf(fileinfo), 1, cachehandle);
   // load the info list
   size := fileinfo.infotablesize;
@@ -122,49 +123,56 @@ begin
   ca_initialized := true;
 end;
 
+// returns number of lump if found
+// returns -1 if name not found
 function CA_CheckNamedNum(const name: string): integer;
-(* returns number of lump if found
-   returns -1 if name not found *)
-   begin
+var
   i, ofs: integer;
-
-  for(i := 0;i<fileinfo.numlumps;i++)
+begin
+  for i := 0 to fileinfo.numlumps - 1 do
   begin
-   ofs := infotable[i].nameofs;
-   if (not ofs) continue;
-   if (stricmp(name,((char *)infotable)+ofs) = 0) return i;
+    ofs := infotable[i].nameofs;
+    if ofs = 0 then
+      continue;
+    if stricmp(pOp(infotable, ofs), name) = 0 then
+    begin
+      result := i;
+      exit;
     end;
-  return -1;
   end;
+  result := -1;
+end;
 
 
+// searches for lump with name
+// returns -1 if not found
 function CA_GetNamedNum(const name: string): integer;
-(* searches for lump with name
-   returns -1 if not found *)
-   begin
+var
   i: integer;
+begin
+  result := CA_CheckNamedNum(name);
+  if result >= 0 then
+    exit;
+  MS_Error('CA_GetNamedNum(): %s not found!', [name]);
+end;
 
-  i := CA_CheckNamedNum(name);
-  if (i <> -1) return i;
-  MS_Error('CA_GetNamedNum: %s not found!',name);
-  return -1;
-  end;
 
-
+// returns pointer to lump
+// caches lump in memory
 function CA_CacheLump(const lump: integer): pointer;
-(* returns pointer to lump
-   caches lump in memory *)
-   begin
+begin
 {$IFDEF PARMCHECK}
-  if (lump >= fileinfo.numlumps) MS_Error('CA_LumpPointer: %i>%i max lumps!',lump,fileinfo.numlumps);
+  if lump >= fileinfo.numlumps then
+    MS_Error('CA_LumpPointer(): %i>%i max lumps!', [lump, fileinfo.numlumps]);
 {$ENDIF}
-  if not lumpmain[lump] then
+  if lumpmain[lump] = nil then
   begin
-   // load the lump off disk
-   if (not (lumpmain[lump] := malloc(infotable[lump].size))) then
-    MS_Error('CA_LumpPointer: malloc failure of lump %d, with size %d',
-        lump,infotable[lump].size);
-   lseek(cachehandle,infotable[lump].filepos,SEEK_SET);
+    // load the lump off disk
+    lumpmain[lump] := malloc(infotable[lump].size);
+    if lumpmain[lump] = nil then
+      MS_Error('CA_LumpPointer(): malloc failure of lump %d, with size %d',
+        [lump, infotable[lump].size]);
+   seek(cachehandle, infotable[lump].filepos);
    if (waiting) UpdateWait;
    read(cachehandle,lumpmain[lump],infotable[lump].size);
    if (waiting) UpdateWait;
