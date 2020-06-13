@@ -128,7 +128,7 @@ procedure INT_Shutdown;
 implementation
 
 uses
-  Windows, timer;
+  i_windows, timer;
 
 // keyboard interrupt
 //    processes make/break codes
@@ -143,10 +143,10 @@ procedure INT_ReadControls;
 var
   i: integer;
 begin
-  i := MapVirtualKey(SC_A, 1);
+  i := I_MapVirtualKey(SC_A, 1);
 
   for i := 0 to 127 do
-   keyboard[i] := GetKeyState(MapVirtualKey(i, 1));
+   keyboard[i] := I_GetKeyState(I_MapVirtualKey(i, 1));
 
   memset(@in_button, 0, SizeOf(in_button));
   for i := 0 to NUMBUTTONS - 1 do

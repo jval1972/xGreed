@@ -46,7 +46,7 @@ implementation
 
 uses
   g_delphi,
-  Windows,
+  i_windows,
   d_ints;
 
 const
@@ -158,7 +158,7 @@ begin
 
   sprintf(s, 'MS_Error: ' + error + #13#10, Args);
 
-  MessageBox(GetFocus, PChar(s), APPNAME, MB_OK or MB_ICONERROR or MB_APPLMODAL);
+  I_MessageBox(I_GetFocus, PChar(s), APPNAME, IMB_ERROR);
   Halt(1);
 end;
 

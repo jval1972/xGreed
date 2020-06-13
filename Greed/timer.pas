@@ -41,7 +41,7 @@ procedure dStartTimer(const atimer: PProcedure; const rate: integer);
 implementation
 
 uses
-  Windows, MMSystem;
+  i_windows;
 
 var
   User_Timer: PProcedure;
@@ -54,13 +54,13 @@ end;
 
 procedure dStopTimer;
 begin
-  timeKillEvent(Timer_Event);
+  I_timeKillEvent(Timer_Event);
 end;
 
 procedure dStartTimer(const atimer: PProcedure; const rate: integer);
 begin
   User_Timer := atimer;
-  Timer_Event := timeSetEvent(1000 div rate, 10, TimerHandler, 0, TIME_PERIODIC);
+  Timer_Event := I_timeSetEvent(1000 div rate, 10, TimerHandler, 0, TSE_TIME_PERIODIC);
 end;
 
 end.
