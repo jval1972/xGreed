@@ -837,7 +837,7 @@ begin
     wc.hCursor :=  NULL;
     wc.hbrBackground :=  (HBRUSH)GetStockObject(BLACK_BRUSH);
     wc.lpszMenuName :=  NULL;
-    wc.lpszClassName :=  'Greed';
+    wc.lpszClassName := APPNAME;
 
     atom :=  RegisterClass and (wc);
     return atom <> 0 ? true : false;
@@ -862,8 +862,8 @@ begin
 
   // Use the default window settings.
   Window_Handle :=  CreateWindow(
-    'Greed',
-    'Greed',
+    APPNAME,
+    APPNAME,
     WS_VISIBLE) or (WS_OVERLAPPED,
     rc.left,
     rc.top,
