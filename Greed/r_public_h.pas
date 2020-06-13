@@ -40,7 +40,7 @@ const
   VIEW_TOP = 0;
 
 type
-  fixed_t = longint;
+  fixed_t = integer;
 
 const
   WALL_CONTACT = 1;
@@ -103,6 +103,7 @@ const
 
 type
   pixel_t = byte;
+  Ppixel_t = ^pixel_t;
 
   rotate_t = (rt_one, rt_four, rt_eight);
 
