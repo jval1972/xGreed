@@ -259,8 +259,8 @@ begin
 
   INT_TimerHook(NULL);
   StartWait;
-  memset(players,0,sizeof(players));
-  memset(playersfound,0,sizeof(playersfound));
+  memset(players,0,SizeOf(players));
+  memset(playersfound,0,SizeOf(playersfound));
   strncpy(netnames[playernum],SC.netname,12);
   if netnames[playernum][10] = ' ' then
   begin
@@ -293,7 +293,7 @@ begin
      playersfound[playernum] := found;
      greedcom.command := CMD_SEND;
      greedcom.remotenode := MAXPLAYERS;           // broadcast
-     greedcom.datalength := sizeof(ievent_t);
+     greedcom.datalength := SizeOf(ievent_t);
      ievent.id := INITEVENTID;
      ievent.playerid := playernum;                 // tell who we are
      ievent.found := found;                        // tell how many we've found
@@ -413,7 +413,7 @@ begin
   sprite_p.modetime := timecount+12;
    end;
 
-      memcpy and (playerdata[pevent.playerid],pevent,sizeof(pevent_t));
+      memcpy and (playerdata[pevent.playerid],pevent,SizeOf(pevent_t));
 
       if pevent.holopic then
       begin
@@ -594,7 +594,7 @@ procedure NetSendPlayerData;
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS; // broadcast
-  greedcom.datalength := sizeof(pevent_t);
+  greedcom.datalength := SizeOf(pevent_t);
   pevent.playerid := playernum;
   pevent.id := PLAYEREVENTID;
   pevent.x := player.x;
@@ -609,7 +609,7 @@ begin
   pevent.holoscale := player.holoscale;
   pevent.specialeffect := specialeffect;
   player.status := 0;
-  memcpy and (playerdata[playernum],pevent,sizeof(pevent_t));
+  memcpy and (playerdata[playernum],pevent,SizeOf(pevent_t));
   NETINT;
   end;
 
@@ -618,7 +618,7 @@ procedure NetNewPlayerData;
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS; // broadcast
-  greedcom.datalength := sizeof(pevent_t);
+  greedcom.datalength := SizeOf(pevent_t);
   pevent.playerid := playernum;
   pevent.id := NEWPLAYEREVENTID;
   pevent.x := player.x;
@@ -632,7 +632,7 @@ begin
   pevent.holopic := player.holopic;
   pevent.specialeffect := specialeffect;
   player.status := 0;
-  memcpy and (playerdata[playernum],pevent,sizeof(pevent_t));
+  memcpy and (playerdata[playernum],pevent,SizeOf(pevent_t));
   NETINT;
   end;
 
@@ -641,7 +641,7 @@ procedure NetSendSpawn(int value, fixed_t x, fixed_t y, fixed_t z,fixed_t zadj,i
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS; // broadcast
-  greedcom.datalength := sizeof(sevent_t);
+  greedcom.datalength := SizeOf(sevent_t);
   sevent.id := SPAWNEVENTID;
   sevent.value := value;
   sevent.x := x;
@@ -662,7 +662,7 @@ begin
   NetDeath(255);
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(qevent_t);
+  greedcom.datalength := SizeOf(qevent_t);
   qevent.id := QUITEVENTID;
   qevent.playerid := playernum;
   NETINT;
@@ -673,7 +673,7 @@ procedure NetOpenDoor(fixed_t x,fixed_t y);
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(devent_t);
+  greedcom.datalength := SizeOf(devent_t);
   devent.id := DOOREVENTID;
   devent.playerid := playernum;
   devent.x := x;
@@ -691,7 +691,7 @@ begin
 
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(fevent_t);
+  greedcom.datalength := SizeOf(fevent_t);
   fevent.id := FRAGEVENTID;
   fevent.playerid := playernum;
   fevent.bulletid := bulletid;
@@ -711,7 +711,7 @@ procedure NetItemPickup(int x,int y);
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(ipevent_t);
+  greedcom.datalength := SizeOf(ipevent_t);
   ipevent.id := ITEMEVENTID;
   ipevent.playerid := playernum;
   ipevent.tilex := x;
@@ -727,7 +727,7 @@ procedure NetBonusItem;
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(bevent_t);
+  greedcom.datalength := SizeOf(bevent_t);
   bevent.id := BONUSEVENTID;
   bevent.playerid := playernum;
   bevent.time := BonusItem.time;
@@ -769,7 +769,7 @@ procedure NetPause;
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(qevent_t);
+  greedcom.datalength := SizeOf(qevent_t);
   qevent.id := PAUSEEVENTID;
   qevent.playerid := playernum;
   NETINT;
@@ -780,7 +780,7 @@ procedure NetUnPause;
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(qevent_t);
+  greedcom.datalength := SizeOf(qevent_t);
   qevent.id := UNPAUSEEVENTID;
   qevent.playerid := playernum;
   NETINT;
@@ -791,7 +791,7 @@ procedure NetCheckHere(fixed_t centerx,fixed_t centery,int angle);
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(devent_t);
+  greedcom.datalength := SizeOf(devent_t);
   devent.id := TRIGGEREVENTID;
   devent.playerid := playernum;
   devent.x := centerx;
@@ -805,7 +805,7 @@ procedure NetSoundEffect(int n,int variation,fixed_t x,fixed_t y);
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(eevent_t);
+  greedcom.datalength := SizeOf(eevent_t);
   eevent.id := SOUNDEVENTID;
   eevent.playerid := playernum;
   eevent.x := x;
@@ -820,7 +820,7 @@ procedure NetWarpJam;
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(qevent_t);
+  greedcom.datalength := SizeOf(qevent_t);
   qevent.id := JAMMEREVENTID;
   qevent.playerid := playernum;
   NETINT;
@@ -831,7 +831,7 @@ procedure NetEvent(int n);
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(fevent_t);
+  greedcom.datalength := SizeOf(fevent_t);
   fevent.id := EVENTEVENTID;
   fevent.playerid := playernum;
   fevent.bulletid := n;
@@ -843,7 +843,7 @@ procedure NetSendMessage(char *s);
 begin
   greedcom.command := CMD_SEND;
   greedcom.remotenode := MAXPLAYERS;
-  greedcom.datalength := sizeof(mevent_t);
+  greedcom.datalength := SizeOf(mevent_t);
   mevent.id := MESSAGEEVENTID;
   mevent.playerid := playernum;
   strcpy(mevent.message,s);

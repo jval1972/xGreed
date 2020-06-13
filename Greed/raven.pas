@@ -1763,7 +1763,7 @@ begin
 
   if (keyboard[SC_F6]) and (netmode) and (netmsgstatus = 0) and (timecount>keyboardDelay) then
   begin
-   memset(netmsg,0,sizeof(netmsg));
+   memset(netmsg,0,SizeOf(netmsg));
    netmsgstatus := 1;
    netmsgindex := 0;
    netmsg[0] := '_';
@@ -2140,7 +2140,7 @@ begin
   if (netmode) and ( not MS_CheckParm('ravenger')) then
   begin
    specialcode := false;
-   memset(secretbuf,0,sizeof(secretbuf));
+   memset(secretbuf,0,SizeOf(secretbuf));
    secretindex := 0;
    exit;
     end;
@@ -2316,7 +2316,7 @@ begin
       end;
     end;
   specialcode := false;
-  memset(secretbuf,0,sizeof(secretbuf));
+  memset(secretbuf,0,SizeOf(secretbuf));
   secretindex := 0;
   end;
 
@@ -2704,20 +2704,20 @@ begin
   ResetScalePostWidth(windowWidth);
   scrollmin := 0;
   scrollmax := 64;
-  memcpy(pixelangle,campixelangle,sizeof(pixelangle));
-  memcpy(pixelcosine,campixelcosine,sizeof(pixelcosine));
+  memcpy(pixelangle,campixelangle,SizeOf(pixelangle));
+  memcpy(pixelcosine,campixelcosine,SizeOf(pixelcosine));
   if (enemyviewmode) and (goalitem>0) then
   RF_RenderView(playerdata[goalitem-1].x,playerdata[goalitem-1].y,playerdata[goalitem-1].z,playerdata[goalitem-1].angle);
   else
   RF_RenderView(player.x,player.y,player.z,player.angle+WEST);
-  memcpy(rearbuf,viewbuffer,sizeof(rearbuf));
+  memcpy(rearbuf,viewbuffer,SizeOf(rearbuf));
   windowLeft := viewLoc[view];
   windowTop := viewLoc[view+1];
   viewLocation := location;
   SetViewSize(viewSizes[view],viewSizes[view+1]);
   ResetScalePostWidth(windowWidth);
-  memcpy(pixelangle,wallpixelangle,sizeof(pixelangle));
-  memcpy(pixelcosine,wallpixelcosine,sizeof(pixelcosine));
+  memcpy(pixelangle,wallpixelangle,SizeOf(pixelangle));
+  memcpy(pixelcosine,wallpixelcosine,SizeOf(pixelcosine));
   player.scrollmin := scrollmin1;
   player.scrollmax := scrollmax1;
   end;
@@ -2797,7 +2797,7 @@ begin
 
    if not netmode then
    begin
-     memset(player.inventory,0,sizeof(player.inventory));
+     memset(player.inventory,0,SizeOf(player.inventory));
      player.inventory[7] := 2;
      player.inventory[5] := 2;
      player.inventory[4] := 2;

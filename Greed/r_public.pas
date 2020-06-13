@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,89 +18,89 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <STDLIB.H>
-#include <MATH.H>
-#include <STRING.H>
-#include 'd_global.h'
-#include 'd_disk.h'
-#include 'r_refdef.h'
-#include 'protos.h'
-#include 'd_ints.h'
+unit r_public;
+
+interface
+
+uses
+  g_delphi,
+  r_public_h,
+  r_refdef;
 
 (**** VARIABLES ****)
-
-  windowHeight :=  INIT_VIEW_HEIGHT: integer;
-  windowWidth :=  INIT_VIEW_WIDTH: integer;
-  windowLeft :=  0: integer;
-  windowTop :=  0: integer;
-int     windowSize :=  INIT_VIEW_HEIGHT*INIT_VIEW_WIDTH;
-  viewLocation := $A0000: integer;
-  CENTERX := INIT_VIEW_WIDTH/2: fixed_t;
-  CENTERY := INIT_VIEW_HEIGHT/2: fixed_t;
+var
+  windowHeight: integer = INIT_VIEW_HEIGHT;
+  windowWidth: integer = INIT_VIEW_WIDTH;
+  windowLeft: integer = 0;
+  windowTop: integer = 0;
+  windowSize: integer = INIT_VIEW_HEIGHT * INIT_VIEW_WIDTH;
+  viewLocation: integer = $A0000;
+  CENTERX: fixed_t = INIT_VIEW_WIDTH div 2;
+  CENTERY: fixed_t = INIT_VIEW_HEIGHT div 2;
   SCALE: fixed_t;
   ISCALE: fixed_t;
-int     backtangents[TANANGLES*2];
-int     autoangle2[MAXAUTO][MAXAUTO];
+  backtangents: array[0..TANANGLES * 2 - 1] of integer;
+  autoangle2: array[0..MAXAUTO - 1, 0..MAXAUTO - 1] of integer;
   scrollmin, scrollmax, bloodcount, metalcount: integer;
-procedure (*actionhook);
+  actionhook: PProcedure;
 
-extern SoundCard SC;
+function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 
-(**** FUNCTIONS ****)
+function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
-fixed_t FIXEDMUL(fixed_t num1,fixed_t num2)
+implementation
+
+function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+asm
+  imul b
+  shrd eax, edx, 16
+end;
+
+function FIXEDDIV2(const a, b: fixed_t): fixed_t; assembler;
+asm
+  mov ebx, b
+  mov edx, eax
+  sal eax, 16
+  sar edx, 16
+  idiv ebx
+end;
+
+function FIXEDDIV(const a, b: fixed_t): fixed_t;
 begin
-  return_value: integer;
-
-  _asm mov eax, [num1]
-  _asm mov ebx, [num2]
-  _asm imul ebx     
-    _asm shrd eax, edx, FRACBITS
-  _asm mov [return_value], eax
-
-  return return_value;
-  end;
-
-
-fixed_t FIXEDDIV(fixed_t num1,fixed_t num2)
-begin
-  return_value: integer;
-
-  _asm mov eax, [num1]
-  _asm mov ebx, [num2]
-  _asm cdq 
-  _asm shld edx, eax, FRACBITS 
-  _asm sal eax, FRACBITS      
-    _asm idiv ebx
-  _asm mov [return_value], eax
-
-  return return_value;
-  end;
-
+  if (abs(a) shr 14) >= abs(b) then
+  begin
+    if a xor b < 0 then
+      result := MININT
+    else
+      result := MAXINT;
+  end
+  else
+    result := FixedDiv2(a, b);
+end;
 
 procedure RF_PreloadGraphics;
-begin
+var
   i: integer;
   doorlump: integer;
-
+begin
   // find the number of lumps of each type
   spritelump := CA_GetNamedNum('startsprites');
-  numsprites := CA_GetNamedNum('endsprites')-spritelump;
+  numsprites := CA_GetNamedNum('endsprites') - spritelump;
   walllump := CA_GetNamedNum('startwalls');
-  numwalls := CA_GetNamedNum('endwalls')-walllump;
+  numwalls := CA_GetNamedNum('endwalls') - walllump;
   flatlump := CA_GetNamedNum('startflats');
-  numflats := CA_GetNamedNum('endflats')-flatlump;
+  numflats := CA_GetNamedNum('endflats') - flatlump;
   doorlump := CA_GetNamedNum('door_1');
   printf('.');
   // load the lumps
-  for (i := 1; i<numsprites; i++)
+  for i := 1 to numsprites - 1 do
   begin
-   DemandLoadMonster(spritelump+i,1);
+    DemandLoadMonster(spritelump + i, 1);
 //   CA_CacheLump(spritelump+i);
-   if i%50 = 0 then
-   begin
-     printf('.');
-     if (newascii) and (lastascii = 27) exit;
+    if i%50 = 0 then
+    begin
+      printf('.');
+      if (newascii) and (lastascii = 27) exit;
       end;
 
     end;
@@ -120,7 +122,7 @@ begin
   j, angle, x1, y1, i: integer;
   x, y: fixed_t;
 
-  memset(autoangle2,-1,sizeof(autoangle2));
+  memset(autoangle2,-1,SizeOf(autoangle2));
   i := 0;
   do
   begin
@@ -198,8 +200,8 @@ begin
    pixelangle[i] := intval;
    pixelcosine[i] := cosines[intval) and ((TANANGLES * 4 - 1)];
     end;
-  memcpy(campixelangle,pixelangle,sizeof(pixelangle));
-  memcpy(campixelcosine,pixelcosine,sizeof(pixelcosine));
+  memcpy(campixelangle,pixelangle,SizeOf(pixelangle));
+  memcpy(campixelcosine,pixelcosine,SizeOf(pixelcosine));
   end;
 
 
@@ -209,7 +211,7 @@ begin
   double angle;
   lightlump: integer;
 
-  memset(framevalid, 0, sizeof(framevalid));
+  memset(framevalid, 0, SizeOf(framevalid));
   printf('.');
   frameon := 0;
   // trig tables
@@ -266,14 +268,14 @@ begin
   lastscaleobj.prev := @firstscaleobj;
   lastscaleobj.next := NULL;
   freescaleobj_p := scaleobjlist;
-  memset(scaleobjlist,0,sizeof(scaleobjlist));
+  memset(scaleobjlist,0,SizeOf(scaleobjlist));
   for(i := 0;i<MAXSPRITES-1;i++) scaleobjlist[i].next := @scaleobjlist[i+1];
   firstelevobj.prev := NULL;
   firstelevobj.next := @lastelevobj;
   lastelevobj.prev := @firstelevobj;
   lastelevobj.next := NULL;
   freeelevobj_p := elevlist;
-  memset(elevlist,0,sizeof(elevlist));
+  memset(elevlist,0,SizeOf(elevlist));
   for(i := 0;i<MAXELEVATORS-1;i++) elevlist[i].next := @elevlist[i+1];
   numdoors := 0;
   numspawnareas := 0;
@@ -304,7 +306,7 @@ begin
   if (not freescaleobj_p) MS_Error('RF_GetSprite: Out of spots in scaleobjlist!');
   new := freescaleobj_p;
   freescaleobj_p := freescaleobj_p.next;
-  memset(new,0,sizeof(scaleobj_t));
+  memset(new,0,SizeOf(scaleobj_t));
   new.next := (scaleobj_t *)) and (lastscaleobj;
   new.prev := lastscaleobj.prev;
   lastscaleobj.prev := new;
@@ -321,7 +323,7 @@ begin
   if (not freeelevobj_p) MS_Error('RF_GetElevator: Too many elevators placed!');
   new := freeelevobj_p;
   freeelevobj_p := freeelevobj_p.next;
-  memset(new,0,sizeof(elevobj_t));
+  memset(new,0,SizeOf(elevobj_t));
   new.next := (elevobj_t *)) and (lastelevobj;
   new.prev := lastelevobj.prev;
   lastelevobj.prev := new;

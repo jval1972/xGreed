@@ -42,7 +42,7 @@ begin
   Handle: integer;
     if ((Handle :=  _open(Filename,O_RDONLY) or (O_BINARY)) < 0) then
         return 1;
-    if (read(Handle,SC,sizeof(SoundCard)) <> sizeof(SoundCard))  begin 
+    if (read(Handle,SC,SizeOf(SoundCard)) <> SizeOf(SoundCard))  begin 
         close(Handle);
         return 1;
      end;
@@ -56,7 +56,7 @@ begin
   Handle: integer;
     if ((Handle :=  fopen(Filename, 'w')) < 0) then
         return 1;
-    if (write(Handle,SC,sizeof(SoundCard)) <> sizeof(SoundCard))  begin 
+    if (write(Handle,SC,SizeOf(SoundCard)) <> SizeOf(SoundCard))  begin 
         close(Handle);
         return 1;
      end;

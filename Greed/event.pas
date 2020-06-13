@@ -374,19 +374,19 @@ begin
   zone_t     *z;
   int        numloadsprites, loadsprites[16], loadspritesn[16], eventlump;
 
-  memset(triggers,0,sizeof(triggers));
-  memset(switches,0,sizeof(switches));
-  memset(zones,0,sizeof(zones));
-  memset(processes,0,sizeof(processes));
+  memset(triggers,0,SizeOf(triggers));
+  memset(switches,0,SizeOf(switches));
+  memset(zones,0,SizeOf(zones));
+  memset(processes,0,SizeOf(processes));
   numprocesses := 0;
   numzones := 0;
   fliplayed := 0;
   numloadsprites := 0;
 
-  memset(secondaries,-1,sizeof(secondaries));
-  memset(primaries,-1,sizeof(primaries));
-  memset(pcount,0,sizeof(pcount));
-  memset(scount,0,sizeof(scount));
+  memset(secondaries,-1,SizeOf(secondaries));
+  memset(primaries,-1,SizeOf(primaries));
+  memset(pcount,0,SizeOf(pcount));
+  memset(scount,0,SizeOf(scount));
   bonustime := 3150;
   levelscore := 100000;
   player.levelscore := 100000;

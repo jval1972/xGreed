@@ -292,7 +292,7 @@ begin
   UpdateWait;
   if wallposts then
   free(wallposts);
-  memset(textures,0,sizeof(textures));
+  memset(textures,0,SizeOf(textures));
   UpdateWait;
   for(i := 0;i<MAPCOLS*MAPROWS;i++)
   begin
@@ -361,7 +361,7 @@ begin
   UpdateWait;
   for(i := 1;i<numflats;i++) CA_FreeLump(flatlump+i);
   UpdateWait;
-  memset(textures,0,sizeof(textures));
+  memset(textures,0,SizeOf(textures));
   UpdateWait;
   for(i := 0;i<MAPCOLS*MAPROWS;i++)
   begin
@@ -491,7 +491,7 @@ begin
    UpdateWait;
    close(f);
     end;
-  memset(mapflags,0,sizeof(mapflags));
+  memset(mapflags,0,SizeOf(mapflags));
   UpdateWait;
   for(i := 0;i<MAPCOLS;i++)
   for(j := 0;j<MAPROWS;j++)
@@ -780,9 +780,9 @@ begin
   elevobj_t   *elev_p;
 
   StartWait;
-  memset(player.savesprites,0,sizeof(player.savesprites));
-  memcpy(player.westwall,westwall,sizeof(westwall));
-  memcpy(player.northwall,northwall,sizeof(northwall));
+  memset(player.savesprites,0,SizeOf(player.savesprites));
+  memcpy(player.westwall,westwall,SizeOf(westwall));
+  memcpy(player.northwall,northwall,SizeOf(northwall));
 
   UpdateWait;
   (* sprites *)
@@ -1205,7 +1205,7 @@ begin
   f := fopen(fname,'w+b');
   if (f = NULL) MS_Error('SaveGame: File Open Error: %s',fname);
   UpdateWait;
-  if (not fwrite and (player,sizeof(player),1,f)) MS_Error('SaveGame: File Write Error:%s',fname);
+  if (not fwrite and (player,SizeOf(player),1,f)) MS_Error('SaveGame: File Write Error:%s',fname);
   UpdateWait;
   fclose(f);
   EndWait;
@@ -1750,9 +1750,9 @@ begin
 
   if activate then
   begin
-   memset(player.westmap,0,sizeof(player.westmap));
-   memset(player.northmap,0,sizeof(player.northmap));
-   memset(player.events,0,sizeof(player.events));
+   memset(player.westmap,0,SizeOf(player.westmap));
+   memset(player.northmap,0,SizeOf(player.northmap));
+   memset(player.events,0,SizeOf(player.events));
    player.x := -1;
     end;
   player.map := map;
@@ -1821,7 +1821,7 @@ begin
 
   sprintf(fname,SAVENAME,n);
   if ((handle := open(fname,O_RDONLY) or (O_BINARY)) = -1) exit;
-  if (not read(handle,) and (player,sizeof(player))) then
+  if (not read(handle,) and (player,SizeOf(player))) then
   begin
    close(handle);
    MS_Error('LoadGame: Error loading %s!',fname);
@@ -1839,13 +1839,13 @@ begin
   spritemovetime := player.timecount;
 
   newmap(player.map,0);
-  memcpy(mapsprites,player.savesprites,sizeof(mapsprites));
+  memcpy(mapsprites,player.savesprites,SizeOf(mapsprites));
   ActivateSpritesFromMap;
   timecount := player.timecount;
   loadweapon(player.weapons[player.currentweapon]);
   player.levelscore := oldscore;
-  memcpy(westwall,player.westwall,sizeof(westwall));
-  memcpy(northwall,player.northwall,sizeof(northwall));
+  memcpy(westwall,player.westwall,SizeOf(westwall));
+  memcpy(northwall,player.northwall,SizeOf(northwall));
   eventloading := true;
   for (i := 1;i<256;i++)
   if player.events[i] then
@@ -1926,7 +1926,7 @@ begin
     end;
 
   gameloaded := true;
-  memset and (player,0,sizeof(player));
+  memset and (player,0,SizeOf(player));
   player.scrollmin := 0;
   player.scrollmax := windowHeight;
   player.x := -1;
@@ -2200,7 +2200,7 @@ begin
      player.weapons[4] := -1;
      player.currentweapon := 0;
      loadweapon(player.weapons[0]);
-     memset(player.inventory,0,sizeof(player.inventory));
+     memset(player.inventory,0,SizeOf(player.inventory));
      player.inventory[7] := 2;
      player.inventory[5] := 2;
      player.inventory[4] := 2;
@@ -2268,7 +2268,7 @@ begin
        printy := 139;
        FN_PrintCentered(
        'THE PRIMARY OBJECTIVE FOR THE TEMPLE IS THE ENCODED\n'
-       'PERSONALITY MATRIX OF THE DEMON-SAINT B'RNOURD.  THIS IS,\n'
+       'PERSONALITY MATRIX OF THE DEMON-SAINT B''RNOURD.  THIS IS,\n'
        'OF COURSE, AN ITEM WHOSE POSSESSION, IF KNOWN, WOULD BRING\n'
        'INSTANT DESTRUCTION.  THE IMPERIAL COUNCIL WOULD ORDER THE\n'
        'SECTOR STERILIZED IF IT KNEW OF ITS EXISTENCE.\n'
@@ -2296,7 +2296,7 @@ begin
      player.weapons[4] := -1;
      player.currentweapon := 0;
      loadweapon(player.weapons[0]);
-     memset(player.inventory,0,sizeof(player.inventory));
+     memset(player.inventory,0,SizeOf(player.inventory));
      player.inventory[7] := 2;
      player.inventory[5] := 2;
      player.inventory[4] := 2;

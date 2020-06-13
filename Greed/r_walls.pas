@@ -57,8 +57,8 @@ begin
    pixelangle[i] := intval;
    pixelcosine[i] := cosines[intval) and ((TANANGLES * 4 - 1)];
     end;
-  memcpy(wallpixelangle,pixelangle,sizeof(pixelangle));
-  memcpy(wallpixelcosine,pixelcosine,sizeof(pixelcosine));
+  memcpy(wallpixelangle,pixelangle,SizeOf(pixelangle));
+  memcpy(wallpixelcosine,pixelcosine,SizeOf(pixelcosine));
   end;
 
 
