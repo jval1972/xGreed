@@ -286,7 +286,7 @@ doorobj_t *RF_GetDoor(int tilex, int tiley)
 begin
   doorobj_t *door;
 
-  if (numdoors = MAXDOORS) MS_Error('RF_GetDoor: Too many doors placed not  (%i,%i)',numdoors,MAXDOORS);
+  if (numdoors = MAXDOORS) MS_Error('RF_GetDoor: Too many doors placed! (%i,%i)',numdoors,MAXDOORS);
   door := @doorlist[numdoors];
   numdoors++;
   door.tilex := tilex;

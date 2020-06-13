@@ -263,7 +263,7 @@ procedure DrawWall(int x1,int x2);
      tpwalls_count[transparentposts] := sp_count;
      transparentposts++;
 {$IFDEF VALIDATE}
-     if (transparentposts >= MAXPEND) MS_Error('Too many Pending Posts not  (%i >= %i)',transparentposts,MAXPEND);
+     if (transparentposts >= MAXPEND) MS_Error('Too many Pending Posts! (%i >= %i)',transparentposts,MAXPEND);
      if (numspans >= MAXSPANS) MS_Error('MAXSPANS exceeded, Walls (%i >= %i)',numspans,MAXSPANS);
 {$ENDIF}
       end;
@@ -497,7 +497,7 @@ skipceilingcalc:
      tpwalls_count[transparentposts] := sp_count;
      transparentposts++;
 {$IFDEF VALIDATE}
-     if (transparentposts >= MAXPEND) MS_Error('Too many Pending Posts not  (%i >= %i)',transparentposts,MAXPEND);
+     if (transparentposts >= MAXPEND) MS_Error('Too many Pending Posts! (%i >= %i)',transparentposts,MAXPEND);
      if (numspans >= MAXSPANS) MS_Error('MAXSPANS exceeded, FloorDefs (%i >= %i)',numspans,MAXSPANS);
   {$ENDIF}
       end;
@@ -552,7 +552,7 @@ contceiling:
      tpwalls_count[transparentposts] := sp_count;
      transparentposts++;
 {$IFDEF VALIDATE}
-     if (transparentposts >= MAXPEND) MS_Error('Too many Pending Posts not  (%i >= %i)',transparentposts,MAXPEND);
+     if (transparentposts >= MAXPEND) MS_Error('Too many Pending Posts! (%i >= %i)',transparentposts,MAXPEND);
      if (numspans >= MAXSPANS) MS_Error('MAXSPANS exceeded, CeilingDefs (%i >= %i)',numspans,MAXSPANS);
   {$ENDIF}
       end;

@@ -509,7 +509,7 @@ begin
       begin
   player.frags[fevent.playerid]++;
   addscore(5000);
-  sprintf(msg,'Fragged %s not  %i of %i',netnames[fevent.playerid],player.frags[fevent.playerid],fragcount[playernum]);
+  sprintf(msg,'Fragged %s! %i of %i',netnames[fevent.playerid],player.frags[fevent.playerid],fragcount[playernum]);
   writemsg(msg);
       end
       else if fevent.bulletid<MAXPLAYERS then
