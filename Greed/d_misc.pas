@@ -30,6 +30,7 @@ var
 function MS_RndT: byte;
 
 function my_argc: integer;
+
 function my_argv(const x: integer): string;
 
 function MS_CheckParm(const check: string): integer;
@@ -37,6 +38,9 @@ function MS_CheckParm(const check: string): integer;
 procedure MS_Error(const error: string; const Args: array of const); overload;
 
 procedure MS_Error(const error: string); overload;
+
+const
+  APPNAME = 'xGreed';
 
 implementation
 
@@ -141,6 +145,8 @@ var
 // exit with an error message
 // shuts everything down
 procedure MS_Error(const error: string; const Args: array of const);
+var
+  s: string;
 begin
 // JVAL: Avoid recursive calls
   if in_i_error then
@@ -150,15 +156,16 @@ begin
 
   INT_Shutdown;
 
-  fprintf(stderr, 'MS_Error: ' + error + #13#10, Args);
+  sprintf(s, 'MS_Error: ' + error + #13#10, Args);
 
-  MessageBox(GetFocus, PChar(s), AppTitle, MB_OK or MB_ICONERROR or MB_APPLMODAL);
+  MessageBox(GetFocus, PChar(s), APPNAME, MB_OK or MB_ICONERROR or MB_APPLMODAL);
   Halt(1);
 end;
 
-procedure I_Error(const error: string);
+procedure MS_Error(const error: string);
 begin
-  I_Error(error, []);
+  MS_Error(error, []);
 end;
 
 end.
+
