@@ -28,6 +28,19 @@
 #include 'protos.h'
 
 
+  const
+    MAXPRINTF = 256;    
+    MSGTIME = 350;    
+  {*** TYPES *** }
+(** unsupported pragma#pragma pack(push,packing,1)*)
+
+  type
+    font_t = record
+        height : smallint;
+        width : array[0..255] of char;
+        charofs : array[0..255] of smallint;
+      end;
+
 (**** VARIABLES ****)
 
 #define MSGQUESIZE 3
