@@ -37,7 +37,7 @@ var
   viewLocation: integer = $A0000;
   CENTERX: fixed_t = INIT_VIEW_WIDTH div 2;
   CENTERY: fixed_t = INIT_VIEW_HEIGHT div 2;
-  SCALE: fixed_t;
+  FSCALE: fixed_t;
   ISCALE: fixed_t;
   backtangents: array[0..TANANGLES * 2 - 1] of integer;
   autoangle2: array[0..MAXAUTO - 1, 0..MAXAUTO - 1] of integer;
@@ -49,6 +49,8 @@ function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
 function RF_GetSprite: Pscaleobj_t;
+
+function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
 
 implementation
 
@@ -138,7 +140,7 @@ begin
       autoangle2[i, j] := -1;
   i := 0;
   repeat
-    at := atan(i / MAXAUTO);
+    at := ArcTan(i / MAXAUTO);
     atf := at * ANGLES / (2 * PI);
     angle := rint(atf);
     for j := 0 to MAXAUTO * 2 - 1 do
@@ -577,7 +579,7 @@ begin
   scrollmax := windowHeight + scrollmin;
   CENTERX := width div 2;
   CENTERY := height div 2;
-  SCALE := (width div 2) shl FRACBITS;
+  FSCALE := (width div 2) shl FRACBITS;
   ISCALE := FRACUNIT div (width div 2);
 
   for i := 0 to height - 1 do

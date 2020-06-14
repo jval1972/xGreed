@@ -41,6 +41,8 @@ const
 
 type
   fixed_t = integer;
+  fixed_tArray = array[0..$FFF] of fixed_t;
+  Pfixed_tArray = ^fixed_tArray;
 
 const
   WALL_CONTACT = 1;

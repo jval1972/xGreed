@@ -461,7 +461,7 @@ begin
   j :=  SCREENHEIGHT - 1: integer;
 
   for (; i < SCREENHEIGHT ; i++,j--)
-    memcpy(ylookup[i],viewylookup[j],SCREENWIDTH);
+    memcpy(ylookup[i], viewylookup[j], SCREENWIDTH);
   end;
 
 

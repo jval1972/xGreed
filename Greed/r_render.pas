@@ -80,7 +80,7 @@ var
   costable: array[0..ANGLES] of fixed_t;
   sintable: array[0..ANGLES] of fixed_t;
   viewbuffer: array[0..MAX_VIEW_WIDTH * MAX_VIEW_HEIGHT - 1] of pixel_t;
-  viewylookup: array[0..MAX_VIEW_HEIGHT - 1] of Ppixel_t;
+  viewylookup: array[0..MAX_VIEW_HEIGHT - 1] of Ppixel_tArray;
   yslope: array[0..MAX_VIEW_HEIGHT + MAXSCROLL2 - 1] of fixed_t;
   xslope: array[0..MAX_VIEW_WIDTH] of fixed_t;
   wallposts: PBytePArray;
@@ -89,7 +89,7 @@ var
   zcolormap: array[0..(MAXZ shr FRACBITS) + 1] of PByteArray;
   viewx, viewy, viewz: fixed_t;
   viewcos, viewsin: fixed_t;
-  xscale, yscale: fixed_t;         // SCALE/viewcos , SCALE/viewsin
+  xscale, yscale: fixed_t;         // FSCALE/viewcos , FSCALE/viewsin
   viewangle, viewfineangle: integer;
   viewtilex, viewtiley: integer;
   vertex: array[0..3] of Pvertex_t;// points to the for corner vertexes in vert
@@ -165,7 +165,7 @@ begin
   point.tz := FIXEDMUL(ttrx, viewcos) - FIXEDMUL(ttry, viewsin);
   if point.tz >= MINZ then
   begin
-    scale := FIXEDDIV(SCALE, point.tz);
+    scale := FIXEDDIV(FSCALE, point.tz);
     point.px := CENTERX + (FIXEDMUL(point.tx, scale) shr FRACBITS);
     point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) shr FRACBITS);
     point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight,scale) shr FRACBITS);
@@ -347,8 +347,8 @@ begin
   viewfineangle := viewangle shl FINESHIFT;
   viewcos := costable[viewangle];
   viewsin := sintable[viewangle];
-  xscale := FIXEDDIV(viewsin,SCALE);
-  yscale := FIXEDDIV(viewcos,SCALE);
+  xscale := FIXEDDIV(viewsin,FSCALE);
+  yscale := FIXEDDIV(viewcos,FSCALE);
   end;
 
 

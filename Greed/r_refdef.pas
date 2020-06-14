@@ -33,15 +33,15 @@ function rint(const x: double): integer;
 
 {*** CONSTANTS *** }
 const
-  TANANGLES = 8192;    { one quadrant }
+  TANANGLES = 8192; // one quadrant
   FINESHIFT = 5;
-  MAXVISVERTEXES = 1536;    { max tile corners visible at once }
+  MAXVISVERTEXES = 1536;  // max tile corners visible at once
 // for spans
   MAXSPANS = 4096;
   ZSHIFT = 12;
   ZTOFRAC = 4;    { shift the Z into frac position }
-  ZMASK = $fffff shl ZSHIFT;    { 20 bits }
-  SPANMASK = $000000fff;    { 12 bits }
+  ZMASK = $fffff shl ZSHIFT;  // 20 bits
+  SPANMASK = $000000fff;      // 12 bits
   MAXPEND = 3072;
   MAXAUTO = 16 * 16;
 // flags

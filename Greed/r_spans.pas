@@ -333,7 +333,7 @@ begin
 
   shapebottom := span_p.y;
   // project the x and height
-  scale := FIXEDDIV(SCALE,pointz);
+  scale := FIXEDDIV(FSCALE,pointz);
   fracstep := FIXEDMUL(pointz,ISCALE) shl sp.scale;
   sp_fracstep := fracstep;
   leftx := span_p.x2;

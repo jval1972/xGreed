@@ -48,7 +48,8 @@ uses
   raven,
   r_public,
   r_refdef,
-  r_render;
+  r_render,
+  r_walls;
 
 // returns vertex pointer of transformed vertex
 function TransformPoint(const x, y: fixed_t): Pvertex_t;

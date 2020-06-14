@@ -262,7 +262,7 @@ begin
     else p1 := @vertexpt[0];
    if ((p1.tz<minz)) xor ((p2.tz<minz)) then
    begin
-     scale := FIXEDDIV(SCALE,minz);
+     scale := FIXEDDIV(FSCALE,minz);
      frac := FIXEDDIV((p1.tz-minz),(p1.tz-p2.tz));
      cliptx := p1.tx+FIXEDMUL((p2.tx-p1.tx),frac);
      clipty := p1.ty+FIXEDMUL((p2.ty-p1.ty),frac);
