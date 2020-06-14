@@ -39,6 +39,7 @@ const
 
 var
   font: Pfont_t;
+  font1, font2, font3: Pfont_t; // JVAL: 20200614 - Moved from raven.pas
   fontbasecolor: integer;
   fontspacing: integer = 1;
   printx, printy: integer;  // the printing position (top left corner)
@@ -73,7 +74,10 @@ implementation
 uses
   Classes,
   g_delphi,
-  r_render;
+  d_video,
+  d_ints,
+  r_render,
+  r_public;
 
 // Draws a string of characters to the buffer
 procedure FN_RawPrint4(const str: string);
@@ -110,7 +114,7 @@ begin
       end;
       dest := @dest[1];
       inc(printx);
-      dec(witdth);
+      dec(width);
     end;
     dest := @dest[fontspacing];
     printx := printx + fontspacing;
@@ -121,7 +125,7 @@ end;
 procedure FN_RawPrint2(const str: string);
 var
   b: byte;
-  dest: PByteArray
+  dest: PByteArray;
   source: PByte;
   width, height, y, oldpx, yh: integer;
   ch: char;
@@ -174,7 +178,7 @@ begin
   for i := 1 to Length(str) do
   begin
     ch := str[i];
-    width := font.width[ch];
+    width := font.width[Ord(ch)];
     source := @PByteArray(font)[font.charofs[Ord(ch)]];
     while width > 0 do
     begin
@@ -212,12 +216,12 @@ var
   i: integer;
 begin
   oldpx := printx;
-  dest := ylookup[printy] + printx;
+  dest := @ylookup[printy][printx];
   height := font.height;
   for i := 1 to Length(str) do
   begin
     ch := str[i];
-    width := font.width[ch];
+    width := font.width[Ord(ch)];
     source := @PByteArray(font)[font.charofs[Ord(ch)]];
     while width > 0 do
     begin
@@ -230,7 +234,7 @@ begin
         if b <> 0 then
           dest[yh] := fontbasecolor + b;
         inc(y);
-        yh = yh + 320;
+        yh := yh + 320;
       end;
       inc(dest);
       inc(printx);
