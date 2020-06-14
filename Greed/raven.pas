@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,130 +18,197 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <DOS.H>
-#include <STDIO.H>
-#include <STDLIB.H>
-#include <STRING.H>
-#include <MATH.H>
-#include <TIME.H>
-#include 'd_global.h'
-#include 'd_disk.h'
-#include 'd_misc.h'
-#include 'd_video.h'
-#include 'd_ints.h'
-#include 'r_refdef.h'
-#include 'd_font.h'
-#include 'protos.h'
+unit raven;
 
-(**** VARIABLES ****)
+interface
 
-#define PLAYERMOVESPEED   FRACUNIT*2.5
-#define MOVEUNIT          FRACUNIT
-#define FALLUNIT          FRACUNIT
-#define MAXAMMO           300
-#define DEFAULTVRDIST     157286
-#define DEFAULTVRANGLE    4
+uses
+  g_delphi,
+  d_ints_h,
+  d_font,
+  d_video,
+  protos_h,
+  r_public_h;
 
-player_t player;
-byte     resizeScreen, biggerScreen, warpActive, currentViewSize := 0;
-longint  keyboardDelay, frames, weapdelay, spritemovetime, secretdelay,
-   RearViewTime, RearViewDelay, inventorytime;
-font_t   *font1, *font2, *font3;
-pic_t    *weaponpic[7], *statusbar[4];
-byte     *backdrop;
-byte     *backdroplookup[256];
-bool  changingweapons, weaponlowering, quitgame, togglemapmode,
-   toggleheatmode, heatmode, godmode, togglemotionmode, motionmode,
-   hurtborder, recording, playback, activatemenu, specialcode,
-   debugmode, gameloaded, nospawn, doorsound, deadrestart, ticker,
-   togglegoalitem, waterdrop, gamepause, ExitLevel, exitexists, warpjammer,
-   paused, QuickExit, autorun, ToggleRearView, RearViewOn, checktrigger,
-   activatehelp, useitem, toggleautorun, goiright, goileft, activatebrief,
-   midgetmode, autotarget := 1, toggleautotarget, adjustvrangle;
-float   adjustvrdist;
-int      weapmode, newweapon, weaponychange, headbob, weapbob, moveforward,
-   changelight, lighting, wbobcount, turnrate, mapmode, secretindex,
-   scrollview, doorx, doory, MapZoom, Warping, goalitem, specialeffect,
-   falldamage, netmode, wallanimcount, netmsgindex, netmsgstatus,
-   playerturnspeed := 8, turnunit := 2, exitx, exity, songnum, enemyviewmode;
+const
+  MOVEUNIT = FRACUNIT;
+  FALLUNIT = FRACUNIT;
+  MAXAMMO = 300;
+  DEFAULTVRDIST = 157286;
+  DEFAULTVRANGLE = 4;
+
+var
+  player: player_t;
+  resizeScreen, biggerScreen, warpActive, currentViewSize: byte;
+  keyboardDelay, frames, weapdelay, spritemovetime, secretdelay: integer;
+  RearViewTime, RearViewDelay, inventorytime: integer;
+  weaponpic: array[0..6] of Ppic_t;
+  statusbar: array[0..3] of Ppic_t;
+  backdrop: PByteArray;
+  backdroplookup: array[0..255] of PByteArray;
+  changingweapons: boolean;
+  weaponlowering: boolean;
+  quitgame: boolean;
+  togglemapmode: boolean;
+  toggleheatmode: boolean;
+  heatmode: boolean;
+  godmode: boolean;
+  togglemotionmode: boolean;
+  motionmode: boolean;
+  hurtborder: boolean;
+  recording: boolean;
+  playback: boolean;
+  activatemenu: boolean;
+  specialcode: boolean;
+  debugmode: boolean;
+  gameloaded: boolean;
+  nospawn: boolean;
+  doorsound: boolean;
+  deadrestart: boolean;
+  ticker: boolean;
+  togglegoalitem: boolean;
+  waterdrop: boolean;
+  gamepause: boolean;
+  ExitLevel: boolean;
+  exitexists: boolean;
+  warpjammer: boolean;
+  paused: boolean;
+  QuickExit: boolean;
+  autorun: boolean;
+  ToggleRearView: boolean;
+  RearViewOn: boolean;
+  checktrigger: boolean;
+  activatehelp: boolean;
+  useitem: boolean;
+  toggleautorun: boolean;
+  goiright: boolean;
+  goileft: boolean;
+  activatebrief: boolean;
+  midgetmode: boolean;
+  autotarget: boolean = true;
+  toggleautotarget: boolean;
+  adjustvrangle: boolean;
+  adjustvrdist: float;
+  weapmode: integer;
+  newweapon: integer;
+  weaponychange: integer;
+  headbob: integer;
+  weapbob: integer;
+  moveforward: integer;
+  changelight: integer;
+  lighting: integer;
+  wbobcount: integer;
+  turnrate: integer;
+  mapmode: integer;
+  secretindex: integer;
+  scrollview: integer;
+  doorx: integer;
+  doory: integer;
+  MapZoom: integer;
+  Warping: integer;
+  goalitem: integer;
+  specialeffect: integer;
+  falldamage: integer;
+  wallanimcount: integer;
+  netmsgindex: integer;
+  netmsgstatus: integer;
+  playerturnspeed: integer = 8;
+  turnunit: integer = 2;
+  exitx: integer;
+  exity: integer;
+  songnum: integer;
+  enemyviewmode: integer;
   moverate, strafrate, fallrate, WarpX, WarpY: fixed_t;
-longint  wallanimationtime, recordindex, netsendtime, specialeffecttime,
-   SwitchTime, nethurtsoundtime;
-byte     *demobuffer;
-byte     demokb[NUMCODES];
-char     secretbuf[30];
-char     netmsg[30];
-byte     rearbuf[64*64];
-bonus_t  BonusItem;
+  netmode: boolean;
+  wallanimationtime: integer;
+  recordindex: integer;
+  netsendtime: integer;
+  specialeffecttime: integer;
+  SwitchTime: integer;
+  nethurtsoundtime: integer;
+  demobuffer: PByteArray;
+  demokb: array[0..NUMCODES - 1] of byte;
+  secretbuf: string;
+
+const
+  NETMSGSIZE = 30;
+
+var
+  netmsg: array[0..NETMSGSIZE - 1] of char;
+
+var
+  rearbuf: array[0..64 * 64 - 1] of byte;
+  BonusItem: bonus_t;
   SaveTheScreen, redo, newsong: boolean;
 
-extern entry_t   entries[1024], *entry_p;
-extern int       frameon, rtimecount;
-extern SoundCard SC;
-extern int       fliplayed;
-extern void      (*timerhook2);
+implementation
 
-(**** FUNCTIONS ****)
-
-procedure selectsong(int num);
+uses
+  d_ints,
+  r_conten,
+  r_public;
 
 procedure CheckElevators;
-begin
-  elevobj_t *elev_p;
+var
+  elev_p: Pelevobj_t;
   time: integer;
   floorz, newfloorz: fixed_t;
-
-  floorz := RF_GetFloorZ(player.x,player.y)+player.height;
+begin
+  floorz := RF_GetFloorZ(player.x, player.y) + player.height;
   time := timecount;
-  for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-  while time >= elev_p.elevTimer do
+  elev_p := firstelevobj.next;
+  while elev_p <> @lastelevobj do
   begin
-    if (elev_p.elevUp) and ((elev_p.position+:= elev_p.speed) >= elev_p.ceiling) then
+    while time >= elev_p.elevTimer do
     begin
-      SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
-      elev_p.position := elev_p.ceiling;
-      if (elev_p.type = E_NORMAL) elev_p.elevDown := true;
-       else if (elev_p.type <> E_SWAP) and (elev_p.type <> E_SECRET) then
-       begin
-   if elev_p.endeval then
-    Event(elev_p.endeval,false);
-   floorheight[elev_p.mapspot] := elev_p.position;
-   if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
-    mapsprites[elev_p.mapspot] := 0;
-   elev_p := elev_p.prev;
-   RF_RemoveElevator(elev_p.next);
-   break;
-    end;
-      elev_p.elevUp := false;
-      elev_p.elevTimer := elev_p.elevTimer + 280;
-    end
-    else if (elev_p.elevDown) and ((elev_p.position-:= elev_p.speed) <= elev_p.floor) then
-    begin
-      SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
-      elev_p.position := elev_p.floor;
-      if (elev_p.type = E_NORMAL) or (elev_p.type = E_SECRET) elev_p.elevUp := true;
-       else if elev_p.type <> E_SWAP then
-       begin
-   if elev_p.endeval then
-    Event(elev_p.endeval,false);
-   floorheight[elev_p.mapspot] := elev_p.position;
-   if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
-    mapsprites[elev_p.mapspot] := 0;
-   elev_p := elev_p.prev;
-   RF_RemoveElevator(elev_p.next);
-   break;
-    end;
-      elev_p.elevDown := false;
-      elev_p.elevTimer := elev_p.elevTimer + 280;
-       end;
-    if (elev_p.type = E_SECRET) and (elev_p.elevUp) then
+      if (elev_p.elevUp) and ((elev_p.position+:= elev_p.speed) >= elev_p.ceiling) then
+      begin
+        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        elev_p.position := elev_p.ceiling;
+        if (elev_p.typ = E_NORMAL) elev_p.elevDown := true;
+        else if (elev_p.typ <> E_SWAP) and (elev_p.typ <> E_SECRET) then
+        begin
+          if elev_p.endeval then
+            Event(elev_p.endeval,false);
+          floorheight[elev_p.mapspot] := elev_p.position;
+          if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
+            mapsprites[elev_p.mapspot] := 0;
+          elev_p := elev_p.prev;
+          RF_RemoveElevator(elev_p.next);
+          break;
+        end;
+        elev_p.elevUp := false;
+        elev_p.elevTimer := elev_p.elevTimer + 280;
+      end
+      else if (elev_p.elevDown) and ((elev_p.position-:= elev_p.speed) <= elev_p.floor) then
+      begin
+        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        elev_p.position := elev_p.floor;
+        if (elev_p.typ = E_NORMAL) or (elev_p.typ = E_SECRET) elev_p.elevUp := true;
+        else if elev_p.typ <> E_SWAP then
+        begin
+          if elev_p.endeval then
+            Event(elev_p.endeval,false);
+          floorheight[elev_p.mapspot] := elev_p.position;
+          if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
+            mapsprites[elev_p.mapspot] := 0;
+          elev_p := elev_p.prev;
+          RF_RemoveElevator(elev_p.next);
+          break;
+        end;
+        elev_p.elevDown := false;
+        elev_p.elevTimer := elev_p.elevTimer + 280;
+      end;
+    if (elev_p.typ = E_SECRET) and (elev_p.elevUp) then
     begin
       if (player.mapspot = elev_p.mapspot) or (mapsprites[elev_p.mapspot]) elev_p.position := elev_p.floor;
        end;
     if (mapsprites[elev_p.mapspot] = SM_ELEVATOR) mapsprites[elev_p.mapspot] := 0;
     floorheight[elev_p.mapspot] := elev_p.position;
     elev_p.elevTimer := elev_p.elevTimer + MOVEDELAY;
-     end;
+    end;
+    elev_p := elev_p.next;
+  end;
   newfloorz := RF_GetFloorZ(player.x,player.y)+player.height;
   if newfloorz <> floorz then
   begin
@@ -535,7 +604,7 @@ begin
     value2 := value-SM_MEDPAK1+S_MEDPAK1;
     for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = value2 then
+      if sprite.typ = value2 then
       begin
   if (useit) and (netmode) NetItemPickup(centerx,centery);
   mapsprites[mapspot] := 0;
@@ -570,7 +639,7 @@ begin
     value2 := value-SM_MEDPAK1+S_MEDPAK1;
     for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = value2 then
+      if sprite.typ = value2 then
       begin
   if (useit) and (netmode) NetItemPickup(centerx,centery);
   mapsprites[mapspot] := 0;
@@ -604,7 +673,7 @@ begin
     value2 := value-SM_ENERGY+S_ENERGY;
     for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = value2 then
+      if sprite.typ = value2 then
       begin
   if (useit) and (netmode) then
    NetItemPickup(centerx,centery);
@@ -634,7 +703,7 @@ begin
      exit;
     for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = S_AMMOBOX then
+      if sprite.typ = S_AMMOBOX then
       begin
   if (useit) and (netmode) then
    NetItemPickup(centerx,centery);
@@ -675,7 +744,7 @@ begin
      exit;
     for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = S_MEDBOX then
+      if sprite.typ = S_MEDBOX then
       begin
   if (useit) and (netmode) then
    NetItemPickup(centerx,centery);
@@ -697,7 +766,7 @@ begin
    SM_GOODIEBOX:
     for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = S_GOODIEBOX then
+      if sprite.typ = S_GOODIEBOX then
       begin
   if (useit) and (netmode) then
    NetItemPickup(centerx,centery);
@@ -753,7 +822,7 @@ begin
     value2 := value-SM_IGRENADE+S_IGRENADE;
     for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = value2 then
+      if sprite.typ = value2 then
       begin
   if (useit) and (netmode) then
    NetItemPickup(centerx,centery);
@@ -784,7 +853,7 @@ begin
     if (useit) and (player.inventory[10] >= 10) exit;
     for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = S_HOLE then
+      if sprite.typ = S_HOLE then
       begin
   if (useit) and (netmode) NetItemPickup(centerx,centery);
   mapsprites[mapspot] := 0;
@@ -826,7 +895,7 @@ begin
     value2 := mapsprites[mapspot]-SM_PRIMARY1 + S_PRIMARY1;
     for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
      if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.type = value2 then
+      if sprite.typ = value2 then
       begin
   if (useit) and (netmode) NetItemPickup(centerx,centery);
   RF_RemoveSprite(sprite);
@@ -853,7 +922,7 @@ begin
    SM_SECONDARY7:
     value2 := mapsprites[mapspot]-SM_SECONDARY1 + S_SECONDARY1;
     for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) and (sprite.type = value2) then
+     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) and (sprite.typ = value2) then
      begin
        if (useit) and (netmode) then
   NetItemPickup(centerx,centery);
@@ -876,7 +945,7 @@ begin
    SM_SWITCHDOWN:
     sound := false;
     for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.type = E_SWITCHDOWN) and ( not elev_p.elevDown) then
+     if (elev_p.typ = E_SWITCHDOWN) and ( not elev_p.elevDown) then
      begin
        elev_p.elevDown := true;
        elev_p.elevTimer := timecount;
@@ -897,7 +966,7 @@ begin
     if (useit) and (netmode) NetItemPickup(centerx,centery);
     sound := false;
     for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.type = E_SWITCHDOWN2) and ( not elev_p.elevDown) then
+     if (elev_p.typ = E_SWITCHDOWN2) and ( not elev_p.elevDown) then
      begin
        elev_p.elevDown := true;
        elev_p.elevTimer := timecount;
@@ -912,7 +981,7 @@ begin
     if (useit) and (netmode) NetItemPickup(centerx,centery);
     sound := false;
     for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.type = E_SWITCHUP) and ( not elev_p.elevUp) then
+     if (elev_p.typ = E_SWITCHUP) and ( not elev_p.elevUp) then
      begin
        elev_p.elevUp := true;
        elev_p.elevTimer := timecount;
@@ -1015,7 +1084,7 @@ begin
       value2 := value-SM_WEAPON0+S_WEAPON0;
       for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-  if sprite.type = value2 then
+  if sprite.typ = value2 then
   begin
     player.weapons[index] := value-SM_WEAPON0;
     value2 := weapons[player.weapons[index]].ammotype;
@@ -1273,7 +1342,7 @@ skipit:
     if (useit) and ( not CheckForSwitch(x,y,angle,true)) break;
     if (useit) and (netmode) NetCheckHere(centerx,centery,angle);
     for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if elev_p.type = E_SWAP then
+     if elev_p.typ = E_SWAP then
      begin
        if elev_p.position = elev_p.ceiling then
        begin
@@ -1297,7 +1366,7 @@ skipit:
 
    SM_STRIGGER:
     for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.type = E_SECRET) and (elev_p.elevDown = false) and (elev_p.elevUp = false) then
+     if (elev_p.typ = E_SECRET) and (elev_p.elevDown = false) and (elev_p.elevUp = false) then
      begin
        x1 := elev_p.mapspot mod MAPCOLS;
        y1 := elev_p.mapspot/MAPCOLS;
@@ -1746,8 +1815,8 @@ begin
   break;
        default:
   netmsg[netmsgindex] := lastascii;
-  if netmsgindex<29 then
-   netmsgindex++;
+  if netmsgindex < NETMSGSIZE - 1 then
+     inc(netmsgindex);
   netmsg[netmsgindex] := '_';
   break;
         end;
@@ -2336,7 +2405,7 @@ begin
   begin
     if (mapsprites[sa.mapspot] = 0) and (sa.mapspot <> player.mapspot) then
     begin
-      case sa.type  of
+      case sa.typ  of
       begin
   0:
    if not netmode then
@@ -2542,26 +2611,26 @@ begin
    break;
    end;
 
-      if sa.type >= 10 then
+      if sa.typ >= 10 then
       begin
   count := 0;
   for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-   if (sprite_p.type = stype) and (sprite_p.hitpoints) ++count;
+   if (sprite_p.typ = stype) and (sprite_p.hitpoints) ++count;
    end;
       else count := 0;
 
       if count<MAXSPAWN then
       begin
   for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-   if ((sprite_p.type = S_GENERATOR) or ((sprite_p.type >= S_GENSTART) and (sprite_p.type <= S_GENEND)) then
+   if ((sprite_p.typ = S_GENERATOR) or ((sprite_p.typ >= S_GENSTART) and (sprite_p.typ <= S_GENEND)) then
    ) and (sprite_p.x = sa.mapx) and (sprite_p.y = sa.mapy)
    begin
      sprite_p := sprite_p.prev;
      RF_RemoveSprite(sprite_p.next);
       end;
-  if sa.type >= 10 then
+  if sa.typ >= 10 then
    for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-    if (sprite_p.type = stype) and (sprite_p.hitpoints = 0) then
+    if (sprite_p.typ = stype) and (sprite_p.hitpoints = 0) then
     begin
       RF_RemoveSprite(sprite_p);
       break;
@@ -2570,7 +2639,7 @@ begin
   begin
     SpawnSprite(stype,sa.mapx,sa.mapy,0,0,0,0,true,0);
     SpawnSprite(S_WARP,sa.mapx,sa.mapy,0,0,0,0,true,0);
-    if (netmode) and (sa.type >= 10) then
+    if (netmode) and (sa.typ >= 10) then
      NetSendSpawn(stype,sa.mapx,sa.mapy,0,0,0,0,true,0);
      end;
    end;
@@ -2591,7 +2660,7 @@ begin
    if BonusItem.score>0 then
    begin
      for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
-      if sprite.type = S_BONUSITEM then
+      if sprite.typ = S_BONUSITEM then
       begin
   RF_RemoveSprite(sprite);
   mapsprites[BonusItem.mapspot] := 0;
@@ -3012,7 +3081,7 @@ begin
    totaleffecttime := 70*60;
    --player.inventory[11];
    for (sp := firstscaleobj.next; sp <> @lastscaleobj;)
-    if (sp.type = S_GENERATOR) or ((sp.type >= S_GENSTART) and (sp.type <= S_GENEND)) then
+    if (sp.typ = S_GENERATOR) or ((sp.typ >= S_GENSTART) and (sp.typ <= S_GENEND)) then
     begin
       mapspot := (sp.y shr FRACTILESHIFT)*MAPCOLS + (sp.x shr FRACTILESHIFT);
       mapsprites[mapspot] := 0;
