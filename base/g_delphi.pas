@@ -197,6 +197,13 @@ type
 
 function pOp(const p: pointer; const offs: integer): pointer;
 
+// Math function
+function MinI(const x1, x2: integer): integer;
+
+function MaxI(const x1, x2: integer): integer;
+
+function absI(const x: integer): integer;
+
 implementation
 
 uses
@@ -671,6 +678,30 @@ end;
 function pOp(const p: pointer; const offs: integer): pointer; 
 begin
   result := pointer(PCAST(p) + offs);
+end;
+
+function MinI(const x1, x2: integer): integer;
+begin
+  if x1 < x2 then
+    result := x1
+  else
+    result := x2;
+end;
+
+function MaxI(const x1, x2: integer): integer;
+begin
+  if x1 > x2 then
+    result := x1
+  else
+    result := x2;
+end;
+
+function absI(const x: integer): integer;
+begin
+  if x < 0 then
+    result := -x
+  else
+    result := x;
 end;
 
 end.
