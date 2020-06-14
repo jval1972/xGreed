@@ -52,7 +52,6 @@ uses
   spawn in 'Greed\spawn.pas',
   sprites in 'Greed\sprites.pas',
   timer in 'Greed\timer.pas',
-  timer_h in 'Greed\timer_h.pas',
   utils in 'Greed\utils.pas',
   g_delphi in 'base\g_delphi.pas',
   i_windows in 'base\i_windows.pas';
