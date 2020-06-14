@@ -270,7 +270,7 @@ begin
   dx, dy: fixed_t;
   smapspot, angle2, ms: integer;
 
-  if (msprite.type = S_CLONE) ms := SM_CLONE;
+  if (msprite.typ = S_CLONE) ms := SM_CLONE;
   else ms := 1;
   dx := msprite.x+xmove;
   dy := msprite.y+ymove;
@@ -338,7 +338,7 @@ begin
 
 procedure ActivationSound(scaleobj_t *sp);
 begin
-  case sp.type  of
+  case sp.typ  of
   begin
    S_MONSTER1:
     SoundEffect(SN_MON1_WAKE,7,sp.x,sp.y);
@@ -416,7 +416,7 @@ void ShowWallPuff
 begin
   i: integer;
 
-  case msprite.type  of
+  case msprite.typ  of
   begin
    S_BULLET3:
    S_BULLET12:
@@ -462,7 +462,7 @@ begin
 
 procedure HitSprite(scaleobj_t *sp);
 begin
-  case sp.type  of
+  case sp.typ  of
   begin
    S_CLONE:
     if not sp.active then
@@ -473,7 +473,7 @@ begin
     sp.modetime := timecount+8;
     sp.basepic := sp.startpic+32;
     SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
-    if msprite.type <> S_BULLET17 then
+    if msprite.typ <> S_BULLET17 then
     begin
       SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
       SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
@@ -499,7 +499,7 @@ begin
     sp.modetime := timecount+8;
     sp.basepic := sp.startpic+40;
     SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
-    if msprite.type <> S_BULLET17 then
+    if msprite.typ <> S_BULLET17 then
     begin
       SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
       SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
@@ -531,8 +531,8 @@ begin
   counter := 0;
   killed := false;
 
-  if (msprite.type = S_GRENADE) msprite.angle2-:= 4;
-  else if ((msprite.type = S_BLOODSPLAT) or (msprite.type = S_METALPARTS)) and ((msprite.angle2<NORTH) or (msprite.angle2>SOUTH))
+  if (msprite.typ = S_GRENADE) msprite.angle2-:= 4;
+  else if ((msprite.typ = S_BLOODSPLAT) or (msprite.typ = S_METALPARTS)) and ((msprite.angle2<NORTH) or (msprite.angle2>SOUTH))
    msprite.angle2 := msprite.angle2 - 32;
 
   if msprite.maxmove then
@@ -545,24 +545,24 @@ begin
       end;
     end;
 
-  if (msprite.type = S_MONSTERBULLET4) or (msprite.type = S_MONSTERBULLET6) or (msprite.type = S_BULLET17) then
+  if (msprite.typ = S_MONSTERBULLET4) or (msprite.typ = S_MONSTERBULLET6) or (msprite.typ = S_BULLET17) then
   SpawnSprite(S_WALLPUFF,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
   blood := false;
   while counter++<msprite.moveSpeed do
   begin
    result := SP_Thrust;
-   if msprite.type = S_BULLET3 then
+   if msprite.typ = S_BULLET3 then
     msprite.z := RF_GetFloorZ(msprite.x,msprite.y)+(20 shl FRACBITS);
 
    if result <> 0 then
    begin
-     if msprite.type = S_BLOODSPLAT then
+     if msprite.typ = S_BLOODSPLAT then
      begin
        if (result = 2) return true;
        spritehit := false;
        playerhit := false;
      end
-     else if (msprite.type = S_METALPARTS) and (result = 2) then
+     else if (msprite.typ = S_METALPARTS) and (result = 2) then
      begin
        playerhit := false;
        return true;
@@ -577,10 +577,10 @@ begin
       mapspot := (hsprite.y shr FRACTILESHIFT)*MAPCOLS+(hsprite.x shr FRACTILESHIFT);
       if mapspot = spriteloc then
       begin
-        if (msprite.z<hsprite.z) or (msprite.z>hsprite.z+hsprite.height) or (hsprite.type <> S_NETPLAYER) break;
+        if (msprite.z<hsprite.z) or (msprite.z>hsprite.z+hsprite.height) or (hsprite.typ <> S_NETPLAYER) break;
         begin
     SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
-       //  if (msprite.type <> S_BULLET17)
+       //  if (msprite.typ <> S_BULLET17)
        //    begin 
       SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
       SpawnSprite(S_BLOODSPLAT,msprite.x,msprite.y,msprite.z,msprite.zadj,0,0,false,0);
@@ -602,14 +602,14 @@ begin
        if (msprite.z<hsprite.z) or (msprite.z>hsprite.z+hsprite.height) continue;
        if hsprite.hitpoints then
        begin
-         if hsprite.type <> S_MONSTER5 then
+         if hsprite.typ <> S_MONSTER5 then
     hsprite.actiontime := hsprite.actiontime + 15;
          else
     hsprite.actiontime := hsprite.actiontime + 5;
          hsprite.hitpoints := hsprite.hitpoints - msprite.damage;
          if (msprite.spawnid = 255) hsprite.enraged++;
 
-         if (msprite.type = S_SOULBULLET) and (msprite.spawnid = playernum) then
+         if (msprite.typ = S_SOULBULLET) and (msprite.spawnid = playernum) then
          begin
      heal(msprite.damage/2);
      medpaks(msprite.damage/2);
@@ -626,7 +626,7 @@ begin
      mapsprites[spriteloc] := 0;
      blood := true;
      HitSprite(hsprite);
-     KillSprite(hsprite,msprite.type);
+     KillSprite(hsprite,msprite.typ);
          end
          else if msprite.damage then
          begin
@@ -677,7 +677,7 @@ begin
         end;
       end;
     end;
-  if (killed) and (msprite.type = S_GRENADE) then
+  if (killed) and (msprite.typ = S_GRENADE) then
   begin
    angleinc := ANGLES/12;
    angle := 0;
@@ -706,7 +706,7 @@ begin
    sp := SpawnSprite(S_EXPLODE,msprite.x,msprite.y,msprite.z,0,0,0,true,255);
    SoundEffect(SN_EXPLODE1+(MS_RndT) and (1),15,msprite.x,msprite.y);
   end
-  else if (killed) and (msprite.type = S_BULLET17) then
+  else if (killed) and (msprite.typ = S_BULLET17) then
   begin
    angleinc := ANGLES/8;
    angle := 0;
@@ -1203,7 +1203,7 @@ begin
   msprite.angle := angle) and (ANGLES;
   msprite.movemode := 5;
   msprite.basepic := msprite.startpic+32;
-  if (msprite.type = S_MONSTER7) fheight := 15 shl FRACBITS;
+  if (msprite.typ = S_MONSTER7) fheight := 15 shl FRACBITS;
    else fheight := 40 shl FRACBITS;
   pangle := GetFireAngle(fheight,tx,ty,targx,targy,targz)-15+(MS_RndT) and (31);
   SpawnSprite(msprite.bullet,msprite.x,msprite.y,msprite.z,fheight,msprite.angle-15+(MS_RndT) and (31),pangle,true,255);
@@ -1247,7 +1247,7 @@ begin
 
   if (timecount>msprite.actiontime) // now active
   begin
-   if msprite.type = S_TIMEMINE then
+   if msprite.typ = S_TIMEMINE then
    begin
      angleinc := ANGLES/20;
      angle := 0;
@@ -1257,7 +1257,7 @@ begin
      SoundEffect(SN_EXPLODE1+(MS_RndT) and (1),15,msprite.x,msprite.y);
      return true;
    end
-   else if msprite.type = S_PROXMINE then
+   else if msprite.typ = S_PROXMINE then
    begin
      if (MS_RndT) and (1) msprite.angle+:= 8;
       else msprite.angle := msprite.angle - 8;
@@ -1293,7 +1293,7 @@ begin
        return true;
         end;
    end
-   else if msprite.type = S_INSTAWALL then
+   else if msprite.typ = S_INSTAWALL then
    begin
      mapsprites[(msprite.y shr FRACTILESHIFT)*MAPCOLS+(msprite.x shr FRACTILESHIFT)] := 0;
      return true;
@@ -1927,19 +1927,19 @@ begin
   angle, sx, sy, px, py, tx, ty, pangle: integer;
   floorz, oldspeed, fheight: fixed_t;
 
-  if (msprite.type = S_MONSTER5) and (msprite.hitpoints<5000) then
+  if (msprite.typ = S_MONSTER5) and (msprite.hitpoints<5000) then
   msprite.hitpoints := msprite.hitpoints + 4;
-  else if (msprite.type = S_MONSTER13) and (msprite.hitpoints<300) then
+  else if (msprite.typ = S_MONSTER13) and (msprite.hitpoints<300) then
   begin
    msprite.hitpoints := msprite.hitpoints + 25;
    msprite.enraged := 0;
   end
-  else if (msprite.type = S_MONSTER15) and (msprite.hitpoints<2000) then
+  else if (msprite.typ = S_MONSTER15) and (msprite.hitpoints<2000) then
   begin
    msprite.hitpoints := msprite.hitpoints + 6;
    msprite.enraged := 0;
   end
-  else if (msprite.type = S_MONSTER14) and (msprite.hitpoints<350)
+  else if (msprite.typ = S_MONSTER14) and (msprite.hitpoints<350)
   msprite.hitpoints := msprite.hitpoints + 1;
   sx := msprite.x shr FRACTILESHIFT;
   sy := msprite.y shr FRACTILESHIFT;
@@ -2011,13 +2011,13 @@ begin
         end;
      msprite.angle := angle) and (ANGLES;
 
-     if (msprite.type = S_MONSTER7) and ((abs(tx-sx)>2) or (abs(ty-sy)>2)) then
+     if (msprite.typ = S_MONSTER7) and ((abs(tx-sx)>2) or (abs(ty-sy)>2)) then
      begin
        msprite.scantime := timecount+30;
        goto endscan;
         end;
 
-     if (msprite.type = S_MONSTER15) and ((abs(tx-sx)>4) or (abs(ty-sy)>4)) then
+     if (msprite.typ = S_MONSTER15) and ((abs(tx-sx)>4) or (abs(ty-sy)>4)) then
      begin
        msprite.scantime := timecount+30;
        goto endscan;
@@ -2025,28 +2025,28 @@ begin
 
      msprite.basepic := msprite.startpic+32;
      msprite.movemode := 6;
-     if msprite.type = S_MONSTER5 then
+     if msprite.typ = S_MONSTER5 then
       msprite.firetime := timecount+(10+3*player.difficulty);
      else
       msprite.firetime := timecount+(40+5*player.difficulty);
 
      msprite.actiontime := timecount+30;
      msprite.modetime := timecount+15;
-     if msprite.type = S_MONSTER3 then
+     if msprite.typ = S_MONSTER3 then
       fheight := 3 shl FRACBITS;
-     else if (msprite.type = S_MONSTER6)
+     else if (msprite.typ = S_MONSTER6)
       fheight := 100 shl FRACBITS;
      else
       fheight := 40 shl FRACBITS;
 
      pangle := GetFireAngle(fheight,tx,ty,targx,targy,targz)-15+(MS_RndT) and (31);
-     if (msprite.type = S_MONSTER13) or (msprite.type = S_MONSTER6) or (msprite.type = S_MONSTER15) or (msprite.type = S_MONSTER5) then
+     if (msprite.typ = S_MONSTER13) or (msprite.typ = S_MONSTER6) or (msprite.typ = S_MONSTER15) or (msprite.typ = S_MONSTER5) then
      begin
        SpawnSprite(msprite.bullet,msprite.x,msprite.y,msprite.z,fheight,msprite.angle-15+(MS_RndT) and (31)+16,pangle,true,255);
        SpawnSprite(msprite.bullet,msprite.x,msprite.y,msprite.z,fheight,msprite.angle-15+(MS_RndT) and (31)-16,pangle,true,255);
        SpawnSprite(msprite.bullet,msprite.x,msprite.y,msprite.z,fheight,msprite.angle-15+(MS_RndT) and (31),pangle,true,255);
      end
-     else if msprite.type = S_MONSTER4 then
+     else if msprite.typ = S_MONSTER4 then
      begin
        SpawnSprite(msprite.bullet,msprite.x,msprite.y,msprite.z,fheight,msprite.angle-15+(MS_RndT) and (31)+8,pangle,true,255);
        SpawnSprite(msprite.bullet,msprite.x,msprite.y,msprite.z,fheight,msprite.angle-15+(MS_RndT) and (31)-8,pangle,true,255);
@@ -2142,12 +2142,12 @@ begin
    killed := Int0;
    if killed then
    begin
-     if msprite.type = S_BLOODSPLAT then
+     if msprite.typ = S_BLOODSPLAT then
      begin
        msprite.intelligence := 128;
        break;
      end
-     else if (msprite.type = S_METALPARTS) and ( not spritehit) then
+     else if (msprite.typ = S_METALPARTS) and ( not spritehit) then
      begin
        killed := false;
        continue;

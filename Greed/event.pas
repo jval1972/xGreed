@@ -150,14 +150,14 @@ begin
 //   begin 
 //   debug := fopen('debug.txt','wt');
 //   for (i := 0;i<numzones;i++)
-//    fprintf(debug,'zone:%i eval:%i type:%i\n',i,zones[i].eval,zones[i].type);
+//    fprintf(debug,'zone:%i eval:%i type:%i\n',i,zones[i].eval,zones[i].typ);
 //   fclose(debug);
 //    end;
 
   for(i := 0;i<numzones;i++)
   if zones[i].eval = eval then
   begin
-    if zones[i].type = ACTIVATIONTYPE then
+    if zones[i].typ = ACTIVATIONTYPE then
     begin
       for(sp := firstscaleobj.next;sp <> @lastscaleobj;sp := sp.next)
        if (sp.active = false) and (sp.moveSpeed) then
@@ -173,20 +173,20 @@ begin
     end;
        if zones[i].removeable then
        begin
-   zones[i].type := -1;
+   zones[i].typ := -1;
    zones[i].eval := 0;
     end;
      end
-     else if zones[i].type = MAPZONETYPE then
+     else if zones[i].typ = MAPZONETYPE then
      begin
        AddProcess(i);
        if zones[i].removeable then
        begin
-   zones[i].type := -1;
+   zones[i].typ := -1;
    zones[i].eval := 0;
     end;
      end
-     else if (zones[i].type = SPAWNTYPE) and (eval>0) then
+     else if (zones[i].typ = SPAWNTYPE) and (eval>0) then
      begin
        gameloading := true;
        if (not eventloading) or (zones[i].endeval) then
@@ -200,40 +200,40 @@ begin
        gameloading := false;
        if zones[i].removeable then
        begin
-   zones[i].type := -1;
+   zones[i].typ := -1;
    zones[i].eval := 0;
     end;
      end
-     else if (zones[i].type = TRIGGERTYPE) and (eval>0) then
+     else if (zones[i].typ = TRIGGERTYPE) and (eval>0) then
      begin
        triggers[zones[i].x1][zones[i].y1] := zones[i].endeval;
        if zones[i].removeable then
        begin
-   zones[i].type := -1;
+   zones[i].typ := -1;
    zones[i].eval := 0;
     end;
      end
-     else if (zones[i].type = SOUNDTYPE) and (eval>0) then
+     else if (zones[i].typ = SOUNDTYPE) and (eval>0) then
      begin
        SoundEffect(zones[i].endeval,0,(zones[i].x1*MAPSIZE+32) shl FRACBITS,(zones[i].y1*MAPSIZE+32) shl FRACBITS);
        if zones[i].removeable then
        begin
-   zones[i].type := -1;
+   zones[i].typ := -1;
    zones[i].eval := 0;
     end;
      end
-     else if zones[i].type = AREATRIGGERTYPE then
+     else if zones[i].typ = AREATRIGGERTYPE then
      begin
        for (y := zones[i].y1;y<zones[i].y2;y++)
   for (x := zones[i].x1;x<zones[i].x2;x++)
    triggers[x][y] := zones[i].endeval;
        if zones[i].removeable then
        begin
-   zones[i].type := -1;
+   zones[i].typ := -1;
    zones[i].eval := 0;
     end;
      end
-     else if (zones[i].type = FLITYPE) and (eval>0) and ( not netmode) then
+     else if (zones[i].typ = FLITYPE) and (eval>0) and ( not netmode) then
      begin
 
 {$IFDEF DEMO}
@@ -268,7 +268,7 @@ begin
     end;
        fliplayed := 1;
        zones[i].eval := 0;
-       zones[i].type := -1;
+       zones[i].typ := -1;
        player.angst := 0;
 
        if SC.vrhelmet = 1 then
@@ -450,7 +450,7 @@ begin
       elevator_p.position := lower;
      else
       elevator_p.position := upper;
-     elevator_p.type := E_TRIGGERED;
+     elevator_p.typ := E_TRIGGERED;
      elevator_p.elevTimer := $70000000;
      elevator_p.speed := speed;
      elevator_p.eval := eval;
@@ -471,7 +471,7 @@ begin
       elevator_p.position := lower;
      else
       elevator_p.position := upper;
-     elevator_p.type := E_NORMAL;
+     elevator_p.typ := E_NORMAL;
      elevator_p.elevTimer := $70000000;
      elevator_p.speed := speed;
      elevator_p.eval := eval;
@@ -488,7 +488,7 @@ begin
       MS_Error('Out of mapzones');
      result := fscanf(f,'%i %i %i %i %i %i \n',) and (z.x1,) and (z.y1,) and (z.x2,) and (z.y2,) and (z.eval,) and (z.removeable);
      CHECKERROR(6);
-     z.type := ACTIVATIONTYPE;
+     z.typ := ACTIVATIONTYPE;
    end
    else if (stricmp(token,'MAPZONE') = 0) then
    begin
@@ -498,7 +498,7 @@ begin
       MS_Error('Out of mapzones');
      result := fscanf(f,'%i %i %i %i %i %i %i %i %i %i \n',) and (z.x1,) and (z.y1,) and (z.x2,) and (z.y2,) and (z.eval,) and (z.endeval,) and (z.layer,) and (z.newvalue,) and (z.rate,) and (z.removeable);
      CHECKERROR(10);
-     z.type := MAPZONETYPE;
+     z.typ := MAPZONETYPE;
    end
    else if (stricmp(token,'BONUSTIME') = 0) then
    begin
@@ -555,7 +555,7 @@ begin
        z.eval := eval;
        z.endeval := ceval;
        z.stype := num;
-       z.type := SPAWNTYPE;
+       z.typ := SPAWNTYPE;
        z.removeable := removeable;
         end;
    end
@@ -571,7 +571,7 @@ begin
      z.y1 := y;
      z.eval := eval;
      z.endeval := ceval;
-     z.type := TRIGGERTYPE;
+     z.typ := TRIGGERTYPE;
      z.removeable := removeable;
    end
    else if (stricmp(token,'SPAWNSOUND') = 0) then
@@ -586,7 +586,7 @@ begin
      z.y1 := y;
      z.eval := eval;
      z.endeval := ceval;
-     z.type := SOUNDTYPE;
+     z.typ := SOUNDTYPE;
      z.removeable := removeable;
    end
    else if (stricmp(token, 'SPAWNFLI') = 0) then
@@ -599,7 +599,7 @@ begin
       MS_Error('Out of mapzones');
      z.eval := eval;
      z.endeval := ceval;
-     z.type := FLITYPE;
+     z.typ := FLITYPE;
    end
    else if (stricmp(token,'FORCELOAD') = 0) then
    begin
@@ -617,7 +617,7 @@ begin
       MS_Error('Out of mapzones');
      result := fscanf(f,'%i %i %i %i %i %i %i \n',) and (z.x1,) and (z.y1,) and (z.x2,) and (z.y2,) and (z.eval,) and (z.endeval,) and (z.removeable);
      CHECKERROR(7);
-     z.type := AREATRIGGERTYPE;
+     z.typ := AREATRIGGERTYPE;
    end
    else if (stricmp(token,'BACKDROP') = 0) then
    begin

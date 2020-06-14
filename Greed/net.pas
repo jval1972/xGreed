@@ -212,7 +212,7 @@ begin
   sprite_p.y := pevent.y;
   sprite_p.z := pevent.z;
   sprite_p.angle := pevent.angle;
-  sprite_p.type := S_NETPLAYER;
+  sprite_p.typ := S_NETPLAYER;
   sprite_p.hitpoints := 500;
   sprite_p.height := 60 shl FRACBITS;
   pmapspot := (sprite_p.y shr FRACTILESHIFT)*MAPCOLS+(sprite_p.x shr FRACTILESHIFT);
@@ -460,7 +460,7 @@ begin
       TryDoor(devent.x,devent.y);
       break;
      ITEMEVENTID:
-      mapsprites[ipevent.mapspot] := ipevent.type;
+      mapsprites[ipevent.mapspot] := ipevent.typ;
       CheckItems(ipevent.tilex,ipevent.tiley,false,ipevent.chartype);
       mapsprites[ipevent.mapspot] := 0;
       break;
@@ -471,7 +471,7 @@ begin
       if BonusItem.score>0 then
       begin
   for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-   if sprite_p.type = S_BONUSITEM then
+   if sprite_p.typ = S_BONUSITEM then
    begin
      RF_RemoveSprite(sprite_p);
      mapsprites[BonusItem.mapspot] := 0;
@@ -559,7 +559,7 @@ begin
       break;
      JAMMEREVENTID:
       for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-       if (sprite_p.type = S_GENERATOR) or ((sprite_p.type >= S_GENSTART) and (sprite_p.type <= S_GENEND)) then
+       if (sprite_p.typ = S_GENERATOR) or ((sprite_p.typ >= S_GENSTART) and (sprite_p.typ <= S_GENEND)) then
        begin
    mapsprites[(sprite_p.y shr FRACTILESHIFT)*MAPCOLS + (sprite_p.x shr FRACTILESHIFT)] := 0;
    temp_p := sprite_p;
@@ -717,7 +717,7 @@ begin
   ipevent.tilex := x;
   ipevent.tiley := y;
   ipevent.mapspot := y*MAPCOLS+x;
-  ipevent.type := mapsprites[ipevent.mapspot];
+  ipevent.typ := mapsprites[ipevent.mapspot];
   ipevent.chartype := player.chartype;
   NETINT;
   end;

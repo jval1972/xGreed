@@ -35,6 +35,7 @@ uses
   d_disk,
   d_misc,
   protos_h,
+  raven,
   r_refdef,
   r_public,
   r_public_h;
@@ -112,7 +113,7 @@ begin
     if bloodcount>200 then
     begin
       for (s := firstscaleobj.next; s <> @lastscaleobj;s := s.next)
-       if s.type = S_BLOODSPLAT then
+       if s.typ = S_BLOODSPLAT then
        begin
    RF_RemoveSprite(s);
    break;
@@ -139,7 +140,7 @@ begin
     if bloodcount>100 then
     begin
       for (s := firstscaleobj.next; s <> @lastscaleobj;s := s.next)
-       if s.type = S_BLOODSPLAT then
+       if s.typ = S_BLOODSPLAT then
        begin
    RF_RemoveSprite(s);
    break;
