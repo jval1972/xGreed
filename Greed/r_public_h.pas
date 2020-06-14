@@ -104,6 +104,8 @@ const
 type
   pixel_t = byte;
   Ppixel_t = ^pixel_t;
+  pixel_tArray = array[0..$FFF] of byte;
+  Ppixel_tArray = ^pixel_tArray;
 
   rotate_t = (
     rt_one,
