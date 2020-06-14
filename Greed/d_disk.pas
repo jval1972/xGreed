@@ -24,8 +24,25 @@ interface
 
 uses
   g_delphi,
-  d_disk_h,
   protos_h;
+
+type
+  Pfileinfo_t = ^fileinfo_t;
+  fileinfo_t = packed record
+    numlumps: smallint;
+    infotableofs: integer;
+    infotablesize: integer;
+  end;
+
+  Plumpinfo_t = ^lumpinfo_t;
+  lumpinfo_t = packed record
+    filepos: integer;
+    size: LongWord;
+    nameofs: smallint;
+    compress: smallint;
+  end;
+  lumpinfo_tArray = array[0..$FFF] of lumpinfo_t;
+  Plumpinfo_tArray = ^lumpinfo_tArray;
 
 (**** VARIABLES ****)
 var
