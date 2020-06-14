@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,141 +18,165 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <MATH.H>
-#include <STRING.H>
-#include 'd_global.h'
-#include 'r_refdef.h'
-#include 'd_disk.h'
-#include 'd_video.h'
-#include 'd_misc.h'
+unit r_walls;
 
+interface
 
-(**** VARIABLES ****)
+uses
+  r_refdef,
+  r_public_h;
 
-fixed_t tangents[TANANGLES *2];
-fixed_t sines[TANANGLES *5];
-fixed_t *cosines;                       // point 1/4 phase into sines
-int     pixelangle[MAX_VIEW_WIDTH+1];
-fixed_t pixelcosine[MAX_VIEW_WIDTH+1];
-fixed_t wallz[MAX_VIEW_WIDTH];  // pointx
-byte    *tpwalls_dest[MAXPEND];
-byte    *tpwalls_colormap[MAXPEND];
-int     tpwalls_count[MAXPEND];
+var
+  tangents: array[0..TANANGLES * 2 - 1] of fixed_t;
+  sines: array[0..TANANGLES * 5 - 1] of fixed_t;
+  cosines: Pfixed_tArray; // point 1/4 phase into sines
+  pixelangle: array[0..MAX_VIEW_WIDTH] of integer;
+  pixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
+  wallz: array[0..MAX_VIEW_WIDTH - 1] of fixed_t;  // pointx
+  tpwalls_dest: array[0..MAXPEND - 1] of PByte;
+  tpwalls_colormap: array[0..MAXPEND - 1] of PByte;
+  tpwalls_count: array[0..MAXPEND - 1] of integer;
   transparentposts: integer;
-int     wallpixelangle[MAX_VIEW_WIDTH+1];
-fixed_t wallpixelcosine[MAX_VIEW_WIDTH+1];
-int     campixelangle[MAX_VIEW_WIDTH+1];
-fixed_t campixelcosine[MAX_VIEW_WIDTH+1];
+  wallpixelangle: array[0..MAX_VIEW_WIDTH] of integer;
+  wallpixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
+  campixelangle: array[0..MAX_VIEW_WIDTH] of integer;
+  campixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
 
+implementation
 
-(**** FUNCTIONS ****)
+uses
+  g_delphi,
+  r_public;
 
+// calculate the angle deltas for each view post
+// VIEWWIDTH view posts covers TANANGLES angles
+// traces go through the RIGHT EDGE of the pixel to follow the direction
 procedure InitWalls;
-begin
+var
   intval, i: integer;
-  // calculate the angle deltas for each view post
-  // VIEWWIDTH view posts covers TANANGLES angles
-  // traces go through the RIGHT EDGE of the pixel to follow the direction
-  for (i := 0;i<windowWidth+1; i++)
+begin
+  for i := 0 to windowWidth do
   begin
-   intval := rint(atan(((double)CENTERX-((double)i+1.0))/(double)CENTERX)/(double)PI*(double)TANANGLES*(double)2);
-   pixelangle[i] := intval;
-   pixelcosine[i] := cosines[intval) and ((TANANGLES * 4 - 1)];
-    end;
-  memcpy(wallpixelangle,pixelangle,SizeOf(pixelangle));
-  memcpy(wallpixelcosine,pixelcosine,SizeOf(pixelcosine));
+    intval := rint(ArcTan((CENTERX - (i + 1.0)) / CENTERX) / PI * TANANGLES * 2);
+    pixelangle[i] := intval;
+    pixelcosine[i] := cosines[intval and (TANANGLES * 4 - 1)];
   end;
+  memcpy(@wallpixelangle, @pixelangle, SizeOf(pixelangle));
+  memcpy(@wallpixelcosine, @pixelcosine, SizeOf(pixelcosine));
+end;
 
 
-procedure DrawWall(int x1,int x2);
-(* Draws the wall on side from p1.px to p2.px-1 with wall picture wall
-   p1/p2 are projected and Z clipped, but unclipped to the view window *)
-   begin
+// Draws the wall on side from p1.px to p2.px-1 with wall picture wall
+// p1/p2 are projected and Z clipped, but unclipped to the view window
+procedure DrawWall(const x1, x2: integer);
+var
   baseangle: integer;
-  byte     **postindex;    // start of the 64 entry texture table for t
-  fixed_t  distance;       // horizontal / vertical dist to wall segmen
-  fixed_t  pointz;         // transformed distance to wall post
+  postindex: PBytePArray;   // start of the 64 entry texture table for t
+  distance: fixed_t;        // horizontal / vertical dist to wall segmen
+  pointz: fixed_t;          // transformed distance to wall post
   anglecos: fixed_t;
-  fixed_t  textureadjust;  // the amount the texture p1ane is shifted
-  fixed_t  ceiling;        // top of the wall
-  fixed_t  floor;          // bottom of the wall
-  fixed_t  top, bottom;    // precise y coordinates for post
+  textureadjust: fixed_t;   // the amount the texture p1ane is shifted
+  ceiling: fixed_t;         // top of the wall
+  floor: fixed_t;           // bottom of the wall
+  top, bottom: fixed_t;     // precise y coordinates for post
   scale: fixed_t;
-  int      topy, bottomy;  // pixel y coordinates for post
-  fixed_t  fracadjust;     // the amount to prestep for the top pixel
-  int      angle;          // the ray angle that strikes the current po
-  int      texture;        // 0-63 post number
-  int      x;      // collumn and ranges
+  topy, bottomy: integer;   // pixel y coordinates for post
+  fracadjust: fixed_t;      // the amount to prestep for the top pixel
+  angle: integer;           // the ray angle that strikes the current po
+  texture: integer;         // 0-63 post number
+  x: integer;               // collumn and ranges
   light: integer;
-  short    *wall;
-  unsigned span;
-  span_t   *span_p;
+  wall: PSmallInt;
+  span: LongWord;
+  span_p: Pspan_t;
   rotateright, rotateleft, transparent, rotateup, rotatedown, invisible: integer;
-
-  walltype := walltranslation[walltype];     // global animation
-  wall := lumpmain[walllump+walltype];       // to get wall height
-  postindex := wallposts+((walltype-1) shl 6);  // 64 pointers to texture start
+begin
+  walltype := walltranslation[walltype];        // global animation
+  wall := lumpmain[walllump + walltype];        // to get wall height
+  postindex := wallposts + ((walltype - 1) shl 6);  // 64 pointers to texture start
   baseangle := viewfineangle;
-  transparent := wallflags) and (F_TRANSPARENT;
+  transparent := wallflags and F_TRANSPARENT;
   floor := floorheight[mapspot];
   ceiling := ceilingheight[mapspot];
-  case side  of
-  begin
-   0:                         // south facing wall
-    distance := viewy-(tiley shl FRACTILESHIFT);
-    textureadjust := viewx;
-    baseangle+:= TANANGLES *2;
-    if (transparent) player.northmap[mapspot] := TRANS_COLOR;
-     else player.northmap[mapspot] := WALL_COLOR;
-    if (mapflags[mapspot]) and ((FL_CEILING+FL_FLOOR)) then
+  case side of
+  0:  // south facing wall
     begin
-      if (floorheight[mapspot+1]<floor) floor := floorheight[mapspot+1];
-      if (ceilingheight[mapspot+1]>ceiling) ceiling := ceilingheight[mapspot+1];
-       end;
-    break;
-   1:                         // west facing wall
-    distance := ((tilex+1) shl FRACTILESHIFT)-viewx;
-    textureadjust := viewy;
-    baseangle := baseangle + TANANGLES;
-    if (transparent) player.westmap[mapspot+1] := TRANS_COLOR;
-     else player.westmap[mapspot+1] := WALL_COLOR;
-    if (mapflags[mapspot]) and ((FL_CEILING+FL_FLOOR)) then
-    begin
-      if (floorheight[mapspot+MAPCOLS+1]<floor) floor := floorheight[mapspot+MAPCOLS+1];
-      if (ceilingheight[mapspot+MAPCOLS+1]>ceiling) ceiling := ceilingheight[mapspot+MAPCOLS+1];
-       end;
-    break;
-   2:                         // north facing wall
-    distance := ((tiley+1) shl FRACTILESHIFT)-viewy;
-    textureadjust := -viewx;
-    baseangle+:= TANANGLES *2;
-    if (transparent) player.northmap[mapspot+MAPCOLS] := TRANS_COLOR;
-     else player.northmap[mapspot+MAPCOLS] := WALL_COLOR;
-    if (mapflags[mapspot]) and ((FL_CEILING+FL_FLOOR)) then
-    begin
-      if (floorheight[mapspot+MAPCOLS+1]<floor) floor := floorheight[mapspot+MAPCOLS+1];
-      if (ceilingheight[mapspot+MAPCOLS+1]>ceiling) ceiling := ceilingheight[mapspot+MAPCOLS+1];
-       end;
-    break;
-   3:                         // east facing wall
-    distance := viewx-(tilex shl FRACTILESHIFT);
-    textureadjust := -viewy;
-    baseangle := baseangle + TANANGLES;
-    if (transparent) player.westmap[mapspot] := TRANS_COLOR;
-     else player.westmap[mapspot] := WALL_COLOR;
-    if (mapflags[mapspot]) and ((FL_CEILING+FL_FLOOR)) then
-    begin
-      if (floorheight[mapspot+MAPCOLS]<floor) floor := floorheight[mapspot+MAPCOLS];
-      if (ceilingheight[mapspot+MAPCOLS]>ceiling) ceiling := ceilingheight[mapspot+MAPCOLS];
-       end;
+      distance := viewy - (tiley shl FRACTILESHIFT);
+      textureadjust := viewx;
+      baseangle := baseangle + TANANGLES * 2;
+      if transparent <> 0 then
+        player.northmap[mapspot] := TRANS_COLOR
+      else
+        player.northmap[mapspot] := WALL_COLOR;
+      if mapflags[mapspot] and (FL_CEILING + FL_FLOOR) <> 0 then
+      begin
+        if floorheight[mapspot + 1] < floor then
+          floor := floorheight[mapspot + 1];
+        if ceilingheight[mapspot + 1] > ceiling then
+          ceiling := ceilingheight[mapspot + 1];
+      end;
     end;
+  1:  // west facing wall
+    begin
+      distance := ((tilex + 1) shl FRACTILESHIFT) - viewx;
+      textureadjust := viewy;
+      baseangle := baseangle + TANANGLES;
+      if transparent <> 0 then
+        player.westmap[mapspot + 1] := TRANS_COLOR
+      else
+        player.westmap[mapspot + 1] := WALL_COLOR;
+      if mapflags[mapspot] and (FL_CEILING + FL_FLOOR) <> 0 then
+      begin
+        if floorheight[mapspot + MAPCOLS + 1] < floor then
+          floor := floorheight[mapspot + MAPCOLS + 1];
+        if ceilingheight[mapspot + MAPCOLS + 1] > ceiling then
+          ceiling := ceilingheight[mapspot + MAPCOLS + 1];
+      end;
+    end;
+  2:  // north facing wall
+    begin
+      distance := ((tiley + 1) shl FRACTILESHIFT) - viewy;
+      textureadjust := -viewx;
+      baseangle := baseangle + TANANGLES * 2;
+      if transparent <> 0 then
+        player.northmap[mapspot + MAPCOLS] := TRANS_COLOR
+      else
+        player.northmap[mapspot+MAPCOLS] := WALL_COLOR;
+      if mapflags[mapspot] and (FL_CEILING + FL_FLOOR) <> 0 then
+      begin
+        if floorheight[mapspot + MAPCOLS + 1] < floor then
+          floor := floorheight[mapspot + MAPCOLS+  1];
+        if ceilingheight[mapspot + MAPCOLS + 1] > ceiling then
+          ceiling := ceilingheight[mapspot + MAPCOLS + 1];
+      end;
+    end;
+  3:  // east facing wall
+    begin
+      distance := viewx - (tilex shl FRACTILESHIFT);
+      textureadjust := -viewy;
+      baseangle := baseangle + TANANGLES;
+      if transparent <> 0 then
+        player.westmap[mapspot] := TRANS_COLOR
+      else
+        player.westmap[mapspot] := WALL_COLOR;
+      if mapflags[mapspot] and (FL_CEILING + FL_FLOOR) <> 0 then
+      begin
+        if floorheight[mapspot + MAPCOLS] < floor then
+          floor := floorheight[mapspot + MAPCOLS];
+        if ceilingheight[mapspot + MAPCOLS] > ceiling then
+          ceiling := ceilingheight[mapspot + MAPCOLS];
+      end;
+    end;
+  end;
+
   // the floor and ceiling height is the max of the points
-  ceiling := (ceiling shl FRACBITS)-viewz;
-  floor := -((floor shl FRACBITS)-viewz);   // distance below vi
-  sp_loopvalue := (*wall * 4) shl FRACBITS;
+  ceiling := (ceiling shl FRACBITS) - viewz;
+  floor := -((floor shl FRACBITS) - viewz);   // distance below vi
+  sp_loopvalue := (wall^ * 4) shl FRACBITS;
 
   (* special effects *)
-  if (wallshadow = 1) sp_colormap := colormaps+(wallglow shl 8);
+  if wallshadow = 1 then
+    sp_colormap := colormaps+(wallglow shl 8);
   else if (wallshadow = 2) sp_colormap := colormaps+(wallflicker1 shl 8);
   else if (wallshadow = 3) sp_colormap := colormaps+(wallflicker2 shl 8);
   else if (wallshadow = 4) sp_colormap := colormaps+(wallflicker3 shl 8);
