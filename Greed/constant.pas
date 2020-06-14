@@ -30,9 +30,7 @@ uses
 const
   PLAYERMOVESPEED = (FRACUNIT * 5) div 2;
   PLAYERTURNSPEED = 8;
-  MOVEUNIT = FRACUNIT div 2;
   TURNUNIT = 2;
-  FALLUNIT = FRACUNIT;
 
 const
   // weapon info
