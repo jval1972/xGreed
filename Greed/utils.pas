@@ -1,5 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -16,21 +18,7 @@
 (*                                                                         *)
 (***************************************************************************)
 
-#include <DOS.H>
-#include <STDIO.H>
-#include <STDLIB.H>
-#include <STRING.H>
-#include <IO.H>
-#include <FCNTL.H>
-#include <TIME.H>
-#include <sys/stat.h>
-#include 'd_disk.h'
-#include 'd_global.h'
-#include 'r_refdef.h'
-#include 'd_font.h'
-#include 'protos.h'
-#include 'd_ints.h'
-#include 'd_misc.h'
+unit utils;
 
 {$IFDEF GAME1}
   #define SAVENAME 'SAVE1.%i'
@@ -44,1172 +32,1277 @@
 
 
 (**** VARIABLES ****)
-
-int primaries[4], secondaries[14], pcount[2], scount[7], bonustime;
-extern int cdr_drivenum;
+var
+  primaries: array[0..3] of integer;
+  secondaries: array[0..13] of integer;
+  pcount: array[0..1] of integer;
+  scount: array[0..6] of integer;
+  bonustime: integer;
 
   levelscore: integer;
 
   gameloading, eventloading: boolean;
 
-int startlocations[MAXSTARTLOCATIONS][2];
-
-extern bool redo;
-extern int fxtimecount;
-extern SoundCard SC;
+  startlocations: array[0..MAXSTARTLOCATIONS - 1, 0..1] of integer;
 
 
 (**** FUNCTIONS ****)
 
-procedure KillSprite(scaleobj_t *sp, int weapon);
-begin
-  scaleobj_t *s;
+procedure KillSprite(const sp: Pscaleobj_t; const weapon: integer);
+var
+  s: Pscaleobj_t;
   i: integer;
   x, y, z: fixed_t;
-
+begin
   if sp.deathevent then
-  Event(sp.deathevent,false);
-  case sp.type  of
-  begin
-   S_CLONE:
-    if (sp.startpic = CA_GetNamedNum(charnames[0])) then
+    Event(sp.deathevent, false);
+  case sp.typ of
+  S_CLONE:
     begin
-      s := SpawnSprite(S_TIMEMINE,sp.x,sp.y,0,0,0,0,false,playernum);
-      s.basepic := sp.startpic+40;
-      s.scale := 1;
-      sp.animation := 0 + (0 shl 1) + (1 shl 5) + (0 shl 9) + ANIM_SELFDEST;
-       end;
-    else
-      sp.animation := 0 + (0 shl 1) + (8 shl 5) + ((4+(MS_RndT) and (3)) shl 9);
-    sp.basepic := sp.startpic+40;
-    sp.rotate := rt_one;
-    sp.heat := 0;
-    sp.active := false;
-    sp.moveSpeed := 0;
-    sp.hitpoints := 0;
-    break;
-   S_MONSTER1:
-   S_MONSTER2:
-   S_MONSTER5:
-   S_MONSTER7:
-   S_MONSTER8:
-   S_MONSTER9:
-   S_MONSTER10:
-   S_MONSTER12:
-   S_MONSTER13:
-   S_MONSTER14:
-   S_MONSTER15:
-    sp.basepic := sp.startpic+48;
-    sp.animation := 0 + (0 shl 1) + (8 shl 5) + ((2+(MS_RndT) and (3)) shl 9);
-    case sp.type  of
-    begin
-      S_MONSTER1:
-       SoundEffect(SN_MON1_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER2:
-       SoundEffect(SN_MON2_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER5:
-       SoundEffect(SN_MON5_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER7:
-       SoundEffect(SN_MON7_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER8:
-       SoundEffect(SN_MON8_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER9:
-       SoundEffect(SN_MON9_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER10:
-       SoundEffect(SN_MON10_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER12:
-       SoundEffect(SN_MON12_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER13:
-       SoundEffect(SN_MON13_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER14:
-       SoundEffect(SN_MON14_DIE,7,sp.x,sp.y);
-       break;
-      S_MONSTER15:
-       SoundEffect(SN_MON15_DIE,7,sp.x,sp.y);
-       break;
-       end;
-    sp.rotate := rt_one;
-    sp.heat := 0;
-    sp.active := false;
-    sp.moveSpeed := 0;
-    sp.hitpoints := 0;
-    break;
-   S_MONSTER3:
-    SpawnSprite(S_EXPLODE,sp.x,sp.y,sp.z,0,0,0,false,0);
-    SoundEffect(SN_MON3_DIE,7,sp.x,sp.y);
-    RF_RemoveSprite(sp);
-    break;
-   S_MONSTER4:
-    SpawnSprite(S_EXPLODE,sp.x,sp.y,sp.z,0,0,0,false,0);
-    SoundEffect(SN_MON4_DIE,7,sp.x,sp.y);
-    RF_RemoveSprite(sp);
-    break;
-   S_MONSTER6:
-   S_MONSTER11:
-    for(i := 0;i<30;i++)
-     SpawnSprite(S_METALPARTS,sp.x,sp.y,sp.z+64*FRACUNIT,0,0,0,false,0);
-    for(i := 0;i<10;i++)
-    begin
-      x := sp.x + ((-64+(MS_RndT) and (127)) shl FRACBITS);
-      y := sp.y + ((-64+(MS_RndT) and (127)) shl FRACBITS);
-      z := sp.z + ((MS_RndT) and (127) shl FRACBITS);
-      SpawnSprite(S_EXPLODE+(MS_RndT) and (1),x,y,z,0,0,0,false,0);
-       end;
-    SoundEffect(SN_EXPLODE1+(clock) and (1),15,x,y);
-    SoundEffect(SN_MON11_DIE,7,sp.x,sp.y);
-    SoundEffect(SN_MON11_DIE,7,sp.x,sp.y);
-    RF_RemoveSprite(sp);
-    break;
-   default:
-    MS_Error('Illegal KillSprite: type %i',sp.type);
+      if sp.startpic = CA_GetNamedNum(charnames[0]) then
+      begin
+        s := SpawnSprite(S_TIMEMINE, sp.x, sp.y, 0, 0, 0, 0, false, playernum);
+        s.basepic := sp.startpic + 40;
+        s.scale := 1;
+        sp.animation := 0 + (0 shl 1) + (1 shl 5) + (0 shl 9) + ANIM_SELFDEST;
+      end
+      else
+        sp.animation := 0 + (0 shl 1) + (8 shl 5) + ((4 + MS_RndT and 3) shl 9);
+      sp.basepic := sp.startpic + 40;
+      sp.rotate := rt_one;
+      sp.heat := 0;
+      sp.active := false;
+      sp.moveSpeed := 0;
+      sp.hitpoints := 0;
     end;
+
+  S_MONSTER1,
+  S_MONSTER2,
+  S_MONSTER5,
+  S_MONSTER7,
+  S_MONSTER8,
+  S_MONSTER9,
+  S_MONSTER10,
+  S_MONSTER12,
+  S_MONSTER13,
+  S_MONSTER14,
+  S_MONSTER15:
+    begin
+      sp.basepic := sp.startpic + 48;
+      sp.animation := 0 + (0 shl 1) + (8 shl 5) + ((2 + MS_RndT and 3) shl 9);
+      case sp.typ of
+      S_MONSTER1:
+        SoundEffect(SN_MON1_DIE, 7, sp.x, sp.y);
+      S_MONSTER2:
+        SoundEffect(SN_MON2_DIE, 7, sp.x, sp.y);
+      S_MONSTER5:
+        SoundEffect(SN_MON5_DIE, 7, sp.x, sp.y);
+      S_MONSTER7:
+        SoundEffect(SN_MON7_DIE, 7, sp.x, sp.y);
+      S_MONSTER8:
+        SoundEffect(SN_MON8_DIE, 7, sp.x, sp.y);
+      S_MONSTER9:
+        SoundEffect(SN_MON9_DIE, 7, sp.x, sp.y);
+      S_MONSTER10:
+        SoundEffect(SN_MON10_DIE, 7, sp.x, sp.y);
+      S_MONSTER12:
+        SoundEffect(SN_MON12_DIE, 7, sp.x, sp.y);
+      S_MONSTER13:
+        SoundEffect(SN_MON13_DIE, 7, sp.x, sp.y);
+      S_MONSTER14:
+        SoundEffect(SN_MON14_DIE, 7, sp.x, sp.y);
+      S_MONSTER15:
+        SoundEffect(SN_MON15_DIE, 7, sp.x, sp.y);
+      end;
+      sp.rotate := rt_one;
+      sp.heat := 0;
+      sp.active := false;
+      sp.moveSpeed := 0;
+      sp.hitpoints := 0;
+    end;
+
+  S_MONSTER3:
+    begin
+      SpawnSprite(S_EXPLODE, sp.x, sp.y, sp.z, 0, 0, 0, false, 0);
+      SoundEffect(SN_MON3_DIE, 7, sp.x, sp.y);
+      RF_RemoveSprite(sp);
+    end;
+
+  S_MONSTER4:
+    begin
+      SpawnSprite(S_EXPLODE, sp.x, sp.y, sp.z, 0, 0, 0, false, 0);
+      SoundEffect(SN_MON4_DIE, 7, sp.x, sp.y);
+      RF_RemoveSprite(sp);
+    end;
+
+  S_MONSTER6,
+  S_MONSTER11:
+    begin
+      for i := 0 to 29 do
+        SpawnSprite(S_METALPARTS, sp.x, sp.y, sp.z + 64 * FRACUNIT, 0, 0, 0, false, 0);
+      for i := 0 to 9 do
+      begin
+        x := sp.x + ((-64 + (MS_RndT and 127)) shl FRACBITS);
+        y := sp.y + ((-64 + (MS_RndT and 127)) shl FRACBITS);
+        z := sp.z + ((MS_RndT and 127) shl FRACBITS);
+        SpawnSprite(S_EXPLODE + (MS_RndT and 1), x, y, z, 0, 0, 0, false, 0);
+      end;
+      SoundEffect(SN_EXPLODE1 + (clock and 1), 15, x, y);
+      SoundEffect(SN_MON11_DIE, 7, sp.x, sp.y);
+      SoundEffect(SN_MON11_DIE, 7, sp.x, sp.y);
+      RF_RemoveSprite(sp);
+    end;
+  else
+    MS_Error('Illegal KillSprite: type %d', [sp.typ]);
   end;
+end;
 
 
 procedure ActivateSpritesFromMap;
-begin
+var
   x, y: integer;
-
+begin
   gameloading := true;
-  for(y := 0;y<MAPROWS;y++)
-  for(x := 0;x<MAPCOLS;x++)
-   if mapsprites[y*MAPCOLS+x] then
-    SpawnSprite((int)mapsprites[y*MAPCOLS+x],(fixed_t)(x*MAPSIZE+32) shl FRACBITS,
-     (fixed_t)(y*MAPCOLS+32) shl FRACBITS,0,0,0,0,false,0);
+  for y := 0 to MAPROWS - 1 do
+    for x := 0 to MAPCOLS - 1 do
+     if mapsprites[y * MAPCOLS + x] then
+       SpawnSprite(mapsprites[y * MAPCOLS + x], (x * MAPSIZE + 32) shl FRACBITS, (y * MAPCOLS + 32) shl FRACBITS, 0, 0, 0, 0, false, 0);
   gameloading := false;
-  end;
+end;
 
 
 procedure ActivateSlopes;
-begin
+var
   i, j, mapspot: integer;
-
-  for(i := 0;i<MAPCOLS;i++)
-  for(j := 0;j<MAPROWS;j++)
-  begin
-    mapspot := i*MAPCOLS+j;
-    case mapslopes[mapspot]  of
+begin
+  for i := 0 to MAPCOLS - 1 do
+    for j := 0 to MAPROWS - 1 do
     begin
+      mapspot := i * MAPCOLS + j;
+      case mapslopes[mapspot] of
       49:
-       mapflags[mapspot]) or (:= POLY_SLOPE shl FLS_CEILING;
-       break;
+        mapflags[mapspot] := mapflags[mapspot] or (POLY_SLOPE shl FLS_CEILING);
       50:
-       mapflags[mapspot]) or (:= POLY_URTOLL shl FLS_CEILING;
-       break;
+        mapflags[mapspot] := mapflags[mapspot] or (POLY_URTOLL shl FLS_CEILING);
       51:
-       mapflags[mapspot]) or (:= POLY_ULTOLR shl FLS_CEILING;
-       break;
-
+        mapflags[mapspot] := mapflags[mapspot] or (POLY_ULTOLR shl FLS_CEILING);
       52:
-       mapflags[mapspot]) or (:= POLY_SLOPE;
-       break;
+        mapflags[mapspot] := mapflags[mapspot] or POLY_SLOPE;
       53:
-       mapflags[mapspot]) or (:= POLY_SLOPE;
-       mapflags[mapspot]) or (:= POLY_URTOLL shl FLS_CEILING;
-       break;
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_SLOPE;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_URTOLL shl FLS_CEILING);
+        end;
       54:
-       mapflags[mapspot]) or (:= POLY_SLOPE;
-       mapflags[mapspot]) or (:= POLY_ULTOLR shl FLS_CEILING;
-       break;
-
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_SLOPE;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_ULTOLR shl FLS_CEILING);
+        end;
       55:
-       mapflags[mapspot]) or (:= POLY_URTOLL;
-       mapflags[mapspot]) or (:= POLY_SLOPE shl FLS_CEILING;
-       break;
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_URTOLL;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_SLOPE shl FLS_CEILING);
+        end;
       56:
-       mapflags[mapspot]) or (:= POLY_URTOLL;
-       break;
+         mapflags[mapspot] := mapflags[mapspot] or POLY_URTOLL;
       57:
-       mapflags[mapspot]) or (:= POLY_URTOLL;
-       mapflags[mapspot]) or (:= POLY_ULTOLR shl FLS_CEILING;
-       break;
-
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_URTOLL;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_ULTOLR shl FLS_CEILING);
+        end;
       58:
-       mapflags[mapspot]) or (:= POLY_ULTOLR;
-       mapflags[mapspot]) or (:= POLY_SLOPE shl FLS_CEILING;
-       break;
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_ULTOLR;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_SLOPE shl FLS_CEILING);
+        end;
       59:
-       mapflags[mapspot]) or (:= POLY_ULTOLR;
-       mapflags[mapspot]) or (:= POLY_URTOLL shl FLS_CEILING;
-       break;
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_ULTOLR;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_URTOLL shl FLS_CEILING);
+        end;
       60:
-       mapflags[mapspot]) or (:= POLY_ULTOLR;
-       break;
-
+        mapflags[mapspot] := mapflags[mapspot] or POLY_ULTOLR;
       61:
-       mapflags[mapspot]) or (:= POLY_SLOPE;
-       mapflags[mapspot]) or (:= POLY_SLOPE shl FLS_CEILING;
-       break;
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_SLOPE;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_SLOPE shl FLS_CEILING);
+        end;
       62:
-       mapflags[mapspot]) or (:= POLY_URTOLL;
-       mapflags[mapspot]) or (:= POLY_URTOLL shl FLS_CEILING;
-       break;
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_URTOLL;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_URTOLL shl FLS_CEILING);
+        end;
       63:
-       mapflags[mapspot]) or (:= POLY_ULTOLR;
-       mapflags[mapspot]) or (:= POLY_ULTOLR shl FLS_CEILING;
-       break;
-       end;
-     end;
-  end;
+        begin
+          mapflags[mapspot] := mapflags[mapspot] or POLY_ULTOLR;
+          mapflags[mapspot] := mapflags[mapspot] or (POLY_ULTOLR shl FLS_CEILING);
+        end;
+      end;
+    end;
+end;
 
 
 procedure LoadTextures;
-begin
-  char textures[256];
+var
+  textures: array[0..255] of boolean;
   i, x, size, numsprites, startsprites: integer;
-  byte *base, *wall;
-
+  base, wall: PByteArray;
+begin
   startsprites := CA_GetNamedNum('startdemand');
-  numsprites := CA_GetNamedNum('enddemand')-startsprites;
-  for (i := 1; i<numsprites; i++)
-  CA_FreeLump(startsprites+i);
+  numsprites := CA_GetNamedNum('enddemand') - startsprites;
+  for i := 1 to numsprites - 1 do
+    CA_FreeLump(startsprites + i);
   UpdateWait;
-  DemandLoadMonster(CA_GetNamedNum(charnames[player.chartype]),48);
+  DemandLoadMonster(CA_GetNamedNum(charnames[player.chartype]), 48);
   UpdateWait;
   if debugmode then
   begin
-   for (i := 0;i<numwalls-1;i++)
-   begin
-     wall := lumpmain[walllump+i+1];
-     base := wall+65*2;
-     size := *wall*4;
-     for (x := 0;x<64;x++)
-      wallposts[i*64+x] := base+size*x;
-      end;
-   exit;
+    for i := 0 to numwalls - 2 do
+    begin
+      wall := lumpmain[walllump + i + 1];
+      base := @wall[65 * 2];
+      size := wall[0] * 4;
+      for x := 0 to 63 do
+        wallposts[i * 64 + x] := @base[size * x];
     end;
+    exit;
+  end;
   UpdateWait;
-  for(i := 1;i<numwalls-7;i++) CA_FreeLump(walllump+i);
+  for i := 1 numwalls - 8 do  // JVAL: SOS
+    CA_FreeLump(walllump + i);
   UpdateWait;
-  if wallposts then
-  free(wallposts);
-  memset(textures,0,SizeOf(textures));
+  if wallposts <> nil then
+    memfree(pointer(wallposts));
+  memset(textures, 0, SizeOf(textures));
   UpdateWait;
-  for(i := 0;i<MAPCOLS*MAPROWS;i++)
+  for i := 0 to MAPCOLS * MAPROWS - 1 do
   begin
-   textures[northwall[i]] := 1;
-   textures[westwall[i]] := 1;
-   textures[floordef[i]] := 1;
-   textures[ceilingdef[i]] := 1;
-    end;
+    textures[northwall[i]] := true;
+    textures[westwall[i]] := true;
+    textures[floordef[i]] := true;
+    textures[ceilingdef[i]] := true;
+  end;
   UpdateWait;
   textures[3] := 1;    // for sides of doors
 
-  if (textures[228]) or (textures[229]) or (textures[230]) then
+  if textures[228] or textures[229] or textures[230] then
   begin
-   textures[228] := 1;  // animation textures
-   textures[229] := 1;
-   textures[230] := 1;
-    end;
-  if (textures[172]) or (textures[173]) then
+    textures[228] := true;  // animation textures
+    textures[229] := true;
+    textures[230] := true;
+  end;
+  if textures[172] or textures[173] then
   begin
-   textures[172] := 1;  // case textures
-   textures[173] := 1;
-    end;
-  if (textures[127]) or (textures[128]) then
+    textures[172] := true;  // case textures
+    textures[173] := true;
+  end;
+  if textures[127] or textures[128] then
   begin
-   textures[127] := 1;
-   textures[128] := 1;
-    end;
-  if (textures[75]) or (textures[76]) then
+    textures[127] := true;
+    textures[128] := true;
+  end;
+  if textures[75] or textures[76] then
   begin
-   textures[75] := 1;
-   textures[76] := 1;
-    end;
-  if (textures[140]) or (textures[141]) then
+    textures[75] := true;
+    textures[76] := true;
+  end;
+  if textures[140] or textures[141] then
   begin
-   textures[140] := 1;
-   textures[141] := 1;
-    end;
-  if (textures[234]) or (textures[235]) then
+   textures[140] := true;
+   textures[141] := true;
+  end;
+  if textures[234] or textures[235] then
   begin
-   textures[234] := 1;
-   textures[235] := 1;
-    end;
-
-  UpdateWait;
-  for(i := 1;i<numwalls;i++)
-  if textures[i] then
-  begin
-    CA_CacheLump(walllump+i);
-    UpdateWait;
-     end;
-  wallposts := malloc((size_t)(numwalls+1)*64*4);
-  UpdateWait;
-
-  for (i :=  0 ; i < numwalls - 1 ; i++)
-  begin
-    wall :=  lumpmain[walllump + i + 1];
-    if wall then
-    begin
-      base :=  wall + 65 * 2;
-      size :=  *wall * 4;
-      for (x :=  0 ; x < 64 ; x++)
-        wallposts[i * 64 + x] :=  base + size * x;
-     end;
-   end;
-
-  UpdateWait;
-  for(i := 1;i<numflats;i++) CA_FreeLump(flatlump+i);
-  UpdateWait;
-  memset(textures,0,SizeOf(textures));
-  UpdateWait;
-  for(i := 0;i<MAPCOLS*MAPROWS;i++)
-  begin
-   textures[floorpic[i]] := 1;
-   textures[ceilingpic[i]] := 1;
-    end;
-  UpdateWait;
-  if (textures[57]) or (textures[58]) or (textures[59]) then
-  begin
-   textures[57] := 1;  // animation textures
-   textures[58] := 1;
-   textures[59] := 1;
-    end;
-  if (textures[217]) or (textures[218]) or (textures[219]) then
-  begin
-   textures[217] := 1;  // animation textures
-   textures[218] := 1;
-   textures[219] := 1;
-    end;
-  textures[133] := 1;
-  textures[134] := 1;
-  textures[135] := 1;
-  for(i := 1;i<numflats;i++)
-//  if (textures[i])
-begin
-    CA_CacheLump(flatlump+i);
-    UpdateWait;
-     end;
+    textures[234] := true;
+    textures[235] := true;
   end;
 
+  UpdateWait;
+  for i := 1 to numwalls - 1 do
+    if textures[i] then
+    begin
+      CA_CacheLump(walllump + i);
+      UpdateWait;
+    end;
+  wallposts := malloc((numwalls + 1) * 64 * 4);
+  UpdateWait;
 
-procedure LoadNewMap(int lump);
-begin
+  for i :=  0 to numwalls - 2 do
+  begin
+    wall := lumpmain[walllump + i + 1];
+    if wall <> nil then
+    begin
+      base := @wall[65 * 2];
+      size := wall[0] * 4;
+      for x := 0 to 63 do
+        wallposts[i * 64 + x] := @base[size * x];
+    end;
+  end;
+
+  UpdateWait;
+  for i := 1 to numflats - 1 do
+    CA_FreeLump(flatlump + i);
+  UpdateWait;
+  memset(textures, 0, SizeOf(textures));
+  UpdateWait;
+  for i := 0 to MAPCOLS * MAPROWS - 1 do
+  begin
+    textures[floorpic[i]] := true;
+    textures[ceilingpic[i]] := true;
+  end;
+  UpdateWait;
+  if textures[57] or textures[58] or textures[59] then
+  begin
+    textures[57] := true;  // animation textures
+    textures[58] := true;
+    textures[59] := true;
+  end;
+  if textures[217] or textures[218] or textures[219] then
+  begin
+    textures[217] := true;  // animation textures
+    textures[218] := true;
+    textures[219] := true;
+  end;
+  textures[133] := true;
+  textures[134] := true;
+  textures[135] := true;
+  for i := 1 to numflats - 1 do
+//  if (textures[i]) // JVAL ?
+  begin
+    CA_CacheLump(flatlump + i);
+    UpdateWait;
+  end;
+end;
+
+
+procedure LoadNewMap(const lump: integer);
+var
   i, j, f: integer;
-  char *fname;
-
+  fname: string;
+begin
   StartWait;
-  for(i := 0;i<S_END-S_START+1;i++)
-  slumps[i] := CA_GetNamedNum(slumpnames[i]);
+  for i := 0 to S_END - S_START do
+    slumps[i] := CA_GetNamedNum(slumpnames[i]);
   UpdateWait;
   goalitem := -1;
   oldgoalitem := -1;
   togglegoalitem := true;
   RF_ClearWorld;
   UpdateWait;
-  if (not MS_CheckParm('file')) then
+  if not MS_CheckParm('file') then
   begin
-   lseek(cachehandle,infotable[lump].filepos,SEEK_SET);
-   UpdateWait;
-   read(cachehandle,northwall,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,northflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,westwall,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,westflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,floorpic,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,floorflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,ceilingpic,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,ceilingflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,floorheight,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,ceilingheight,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,floordef,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,floordefflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,ceilingdef,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,ceilingdefflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,maplights,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,mapeffects,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,mapsprites,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(cachehandle,mapslopes,MAPROWS*MAPCOLS);
-   UpdateWait;
-    end;
+    seek(cachehandle, infotable[lump].filepos);
+    UpdateWait;
+    fread(northwall, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(northflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(westwall, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(westflags, MAPROWS * MAPCOLS, cachehandle);
+    UpdateWait;
+    fread(floorpic, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(floorflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(ceilingpic, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(ceilingflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(floorheight, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(ceilingheight, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(floordef, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(floordefflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(ceilingdef, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(ceilingdefflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(maplights, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(mapeffects, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(mapsprites, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+    fread(mapslopes, MAPROWS * MAPCOLS, 1, cachehandle);
+    UpdateWait;
+  end
   else
   begin
-   fname := infotable[lump].nameofs + (char *)infotable;
-   if ((f := fopen(fname,'r')) = -1) MS_Error('LoadNewMap: Can''t open %s!',fname);
-   UpdateWait;
-   read(f,northwall,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,northflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,westwall,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,westflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,floorpic,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,floorflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,ceilingpic,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,ceilingflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,floorheight,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,ceilingheight,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,floordef,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,floordefflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,ceilingdef,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,ceilingdefflags,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,maplights,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,mapeffects,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,mapsprites,MAPROWS*MAPCOLS);
-   UpdateWait;
-   read(f,mapslopes,MAPROWS*MAPCOLS);
-   UpdateWait;
-   close(f);
-    end;
-  memset(mapflags,0,SizeOf(mapflags));
+    fname := infotable[lump].nameofs + (char *)infotable;
+    if not fopen(f, fname, fOpenReadOnly)then
+      MS_Error('LoadNewMap(): Can''t open %s!', [fname]);
+    UpdateWait;
+    fread(northwall, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(northflags, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(westwall, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(westflags, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(floorpic, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(floorflags, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(ceilingpic, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(ceilingflags, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(floorheight, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(ceilingheight, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(floordef, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(floordefflags, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(ceilingdef, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(ceilingdefflags, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(maplights, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(mapeffects, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(mapsprites, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    fread(mapslopes, MAPROWS * MAPCOLS, 1, f);
+    UpdateWait;
+    close(f);
+  end;
+  memset(mapflags, 0, SizeOf(mapflags));
   UpdateWait;
-  for(i := 0;i<MAPCOLS;i++)
-  for(j := 0;j<MAPROWS;j++)
-  begin
-    if (floordef[i*64+j] = 0) floordef[i*64+j] := 56;
-    if (ceilingdef[i*64+j] = 0) ceilingdef[i*64+j] := 56;
-     end;
+  for i := 0 to MAPCOLS - 1 do
+    for j := 0 to MAPROWS - 1 do
+    begin
+      if floordef[i * 64 + j] = 0 then floordef[i * 64 + j] := 56;
+      if ceilingdef[i * 64 + j] = 0 then ceilingdef[i * 64 + j] := 56;
+    end;
   UpdateWait;
   ActivateSlopes;
   UpdateWait;
   LoadTextures;
-  end;
+end;
 
-
-procedure loadweapon(int n);
-begin
-  static weaponlump := 0, numlumps := 0;
+var
+  weaponlump: integer = 0;
+  numweaponlumps: integer = 0;
+ 
+procedure loadweapon(const n: integer);
+var
   i: integer;
+begin
 
-  if weaponlump then
-  for (i := 0;i<numlumps;i++)
-   CA_FreeLump(weaponlump+i);
+  if weaponlump <> 0 then
+    for i := 0 to numweaponlumps - 1 do
+      CA_FreeLump(weaponlump + i);
   weapons[n].charge := 100;
-  weapons[n].chargetime := timecount+weapons[n].chargerate;
-  case n  of
-  begin
-   1:
-    i := CA_GetNamedNum('gun2');
-    weaponlump := i;
-    numlumps := 3;
-    if (netmode) NetGetData;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    break;
-   2:
-    i := CA_GetNamedNum('gun3');
-    weaponlump := i;
-    numlumps := 4;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    weaponpic[3] := CA_CacheLump(i+3);
-    if (netmode) NetGetData;
-    break;
-   3:
-    i := CA_GetNamedNum('gun4');
-    weaponlump := i;
-    numlumps := 4;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    weaponpic[3] := CA_CacheLump(i+3);
-    if (netmode) NetGetData;
-    break;
-   4:
-    i := CA_GetNamedNum('gun5');
-    weaponlump := i;
-    numlumps := 4;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    weaponpic[3] := CA_CacheLump(i+3);
-    if (netmode) NetGetData;
-    break;
-   7:
-    i := CA_GetNamedNum('gunsquar');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   8:
-    i := CA_GetNamedNum('gunknife');
-    weaponlump := i;
-    numlumps := 4;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    weaponpic[3] := CA_CacheLump(i+3);
-    if (netmode) NetGetData;
-    break;
-   9:
-    i := CA_GetNamedNum('guncross');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   10:
-    i := CA_GetNamedNum('gunspec7');
-    weaponlump := i;
-    numlumps := 4;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    weaponpic[3] := CA_CacheLump(i+3);
-    if (netmode) NetGetData;
-    break;
-   11:
-    i := CA_GetNamedNum('gunmoo');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   12:
-    i := CA_GetNamedNum('gunprong');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   13:
-    i := CA_GetNamedNum('catlprod');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   14:
-    i := CA_GetNamedNum('s7weapon');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   15:
-    i := CA_GetNamedNum('domknife');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   16:
-    i := CA_GetNamedNum('redgun');
-    weaponlump := i;
-    numlumps := 2;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    break;
-   17:
-    i := CA_GetNamedNum('bluegun');
-    weaponlump := i;
-    numlumps := 3;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    break;
-   18:
-    i := CA_GetNamedNum('greengun');
-    weaponlump := i;
-    numlumps := 5;
-    weaponpic[0] := CA_CacheLump(i);
-    if (netmode) NetGetData;
-    weaponpic[1] := CA_CacheLump(i+1);
-    if (netmode) NetGetData;
-    weaponpic[2] := CA_CacheLump(i+2);
-    if (netmode) NetGetData;
-    weaponpic[3] := CA_CacheLump(i+3);
-    if (netmode) NetGetData;
-    weaponpic[4] := CA_CacheLump(i+4);
-    if (netmode) NetGetData;
-    break;
+  weapons[n].chargetime := timecount + weapons[n].chargerate;
+  case n of
+  1:
+    begin
+      i := CA_GetNamedNum('gun2');
+      weaponlump := i;
+      numweaponlumps := 3;
+      if netmode then NetGetData;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+    end;
+  2:
+    begin
+      i := CA_GetNamedNum('gun3');
+      weaponlump := i;
+      numweaponlumps := 4;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+      weaponpic[3] := CA_CacheLump(i + 3);
+      if netmode then NetGetData;
+    end;
+  3:
+    begin
+      i := CA_GetNamedNum('gun4');
+      weaponlump := i;
+      numweaponlumps := 4;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+      weaponpic[3] := CA_CacheLump(i + 3);
+      if netmode then NetGetData;
+    end;
+  4:
+    begin
+      i := CA_GetNamedNum('gun5');
+      weaponlump := i;
+      numweaponlumps := 4;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+      weaponpic[3] := CA_CacheLump(i + 3);
+      if netmode then NetGetData;
+    end;
+  7:
+    begin
+      i := CA_GetNamedNum('gunsquar');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  8:
+    begin
+      i := CA_GetNamedNum('gunknife');
+      weaponlump := i;
+      numweaponlumps := 4;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+      weaponpic[3] := CA_CacheLump(i + 3);
+      if netmode then NetGetData;
+    end;
+  9:
+    begin
+      i := CA_GetNamedNum('guncross');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  10:
+    begin
+      i := CA_GetNamedNum('gunspec7');
+      weaponlump := i;
+      numweaponlumps := 4;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+      weaponpic[3] := CA_CacheLump(i + 3);
+      if netmode then NetGetData;
+    end;
+  11:
+    begin
+      i := CA_GetNamedNum('gunmoo');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  12:
+    begin
+      i := CA_GetNamedNum('gunprong');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  13:
+    begin
+      i := CA_GetNamedNum('catlprod');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  14:
+    begin
+      i := CA_GetNamedNum('s7weapon');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  15:
+    begin
+      i := CA_GetNamedNum('domknife');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  16:
+    begin
+      i := CA_GetNamedNum('redgun');
+      weaponlump := i;
+      numweaponlumps := 2;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+    end;
+  17:
+    begin
+      i := CA_GetNamedNum('bluegun');
+      weaponlump := i;
+      numweaponlumps := 3;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+    end;
+  18:
+    begin
+      i := CA_GetNamedNum('greengun');
+      weaponlump := i;
+      numweaponlumps := 5;
+      weaponpic[0] := CA_CacheLump(i);
+      if netmode then NetGetData;
+      weaponpic[1] := CA_CacheLump(i + 1);
+      if netmode then NetGetData;
+      weaponpic[2] := CA_CacheLump(i + 2);
+      if netmode then NetGetData;
+      weaponpic[3] := CA_CacheLump(i + 3);
+      if netmode then NetGetData;
+      weaponpic[4] := CA_CacheLump(i + 4);
+      if netmode then NetGetData;
     end;
   end;
+end;
 
 
-procedure ResetScalePostWidth (int NewWindowWidth);
-(* this must be updated if the scalepost or scalemaskedpost are changed
-   the increment is size of each replicated asm block
-   the offset is the location of the line to draw the pixel
-
-   *note: runtime change of code not  not  *)
-   begin
-  end;
-
-
-procedure ChangeViewSize(byte MakeLarger);
+// this must be updated if the scalepost or scalemaskedpost are changed
+// the increment is size of each replicated asm block
+// the offset is the location of the line to draw the pixel
+//
+// *note: runtime change of code !!
+procedure ResetScalePostWidth(const NewWindowWidth: integer);
 begin
-  lastviewsize: integer;
+end;
 
+
+procedure ChangeViewSize(const MakeLarger: boolean);
+var
+  lastviewsize: integer;
+begin
   if SC.vrhelmet = 1 then
   begin
-   if (MakeLarger) and (viewSizes[(currentViewSize+1)*2] <> 320) then
-    exit;
-   else if (not MakeLarger) and (viewSizes[(currentViewSize-1)*2] <> 320)
-    exit;
-    end;
+    if MakeLarger and (viewSizes[(currentViewSize + 1) * 2] <> 320) then
+      exit;
+    else if not MakeLarger and (viewSizes[(currentViewSize - 1) * 2] <> 320) then
+      exit;
+  end;
   lastviewsize := currentViewSize;
   resizeScreen := 0;
   if MakeLarger then
   begin
-   if (currentViewSize<MAXVIEWSIZE-1) currentViewSize++;
-    else exit;
-    end;
+    if currentViewSize < MAXVIEWSIZE - 1 then 
+      inc(currentViewSize)
+    else 
+      exit;
+  end
   else
   begin
-   if (currentViewSize>0) currentViewSize--;
-    else exit;
-    end;
-  if (viewSizes[currentViewSize*2] <> viewSizes[lastviewsize*2]
-  ) or (viewSizes[currentViewSize*2+1] <> viewSizes[lastviewsize*2+1]
-  )
+    if currentViewSize > 0 then
+      dec(currentViewSize)
+    else 
+      exit;
+  end;
+  if (viewSizes[currentViewSize * 2] <> viewSizes[lastviewsize * 2]) or 
+     (viewSizes[currentViewSize * 2 + 1] <> viewSizes[lastviewsize * 2 + 1]) then
   begin
-   windowWidth := viewSizes[currentViewSize*2];
-   windowHeight := viewSizes[currentViewSize*2+1];
-   windowLeft := viewLoc[currentViewSize*2];
-   windowTop := viewLoc[currentViewSize*2+1];
-   windowSize := windowHeight*windowWidth;
-   viewLocation := (int)screen+windowTop*320+windowLeft;
-   SetViewSize(windowWidth,windowHeight);
-   ResetScalePostWidth(windowWidth);
-   InitWalls;
-    end;
+    windowWidth := viewSizes[currentViewSize * 2];
+    windowHeight := viewSizes[currentViewSize * 2 + 1];
+    windowLeft := viewLoc[currentViewSize * 2];
+    windowTop := viewLoc[currentViewSize * 2 + 1];
+    windowSize := windowHeight * windowWidth;
+    viewLocation := @screen[windowTop * 320 + windowLeft];
+    SetViewSize(windowWidth, windowHeight);
+    ResetScalePostWidth(windowWidth);
+    InitWalls;
+  end;
   resetdisplay;
   if currentViewSize >= 5 then
   begin
-   memset(screen,0,64000);
-   VI_DrawPic(4,149,statusbar[2]);
-    end;
-  if (currentViewSize >= 4) VI_DrawMaskedPic(0,0,statusbar[3]);
+    memset(screen, 0, 64000);
+    VI_DrawPic(4, 149, statusbar[2]);
+  end;
+  if currentViewSize >= 4 then
+    VI_DrawMaskedPic(0, 0, statusbar[3]);
   player.scrollmin := scrollmin;
   player.scrollmax := scrollmax;
-  end;
+end;
 
 
-procedure SaveGame(int n);
-begin
-  scaleobj_t  *sprite_p;
-  FILE        *f;
-  char        fname[20];
-  doorobj_t   *door_p, *last_p;
+procedure SaveGame(const n: integer);
+var
+  sprite_p: Pscaleobj_t;
+  f: file;
+  fname: string;
+  door_p, last_p: Pdoorobj_t;
   i, mapspot: integer;
-  spawnarea_t *sa;
-  elevobj_t   *elev_p;
-
+  sa: Pspawnarea_t;
+  elev_p: Pelevobj_t;
+begin
   StartWait;
-  memset(player.savesprites,0,SizeOf(player.savesprites));
-  memcpy(player.westwall,westwall,SizeOf(westwall));
-  memcpy(player.northwall,northwall,SizeOf(northwall));
+  memset(player.savesprites, 0, SizeOf(player.savesprites));
+  memcpy(player.westwall, westwall, SizeOf(westwall));
+  memcpy(player.northwall, northwall, SizeOf(northwall));
 
   UpdateWait;
   (* sprites *)
-  for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
+  sprite_p := firstscaleobj.next;
+  while sprite_p <> @lastscaleobj do
   begin
-   mapspot := (sprite_p.y shr FRACTILESHIFT)*MAPCOLS+(sprite_p.x shr FRACTILESHIFT);
-   case sprite_p.type  of
-   begin
-     S_MONSTER1:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER1_NS;
-   else player.savesprites[mapspot] := S_MONSTER1;
-   end;
-       else player.savesprites[mapspot] := S_DEADMONSTER1;
-      break;
-     S_MONSTER2:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER2_NS;
-   else player.savesprites[mapspot] := S_MONSTER2;
-   end;
-      break;
-     S_MONSTER3:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER3_NS;
-   else player.savesprites[mapspot] := S_MONSTER3;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER3;
-      break;
-     S_MONSTER4:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER4_NS;
-   else player.savesprites[mapspot] := S_MONSTER4;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER4;
-      break;
-     S_MONSTER5:
-      if sprite_p.deathevent then
-       break;
-      if (sprite_p.hitpoints) player.savesprites[mapspot] := S_MONSTER5;
-       else player.savesprites[mapspot] := S_DEADMONSTER5;
-      break;
-     S_MONSTER6:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER6_NS;
-   else player.savesprites[mapspot] := S_MONSTER6;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER6;
-      break;
-     S_MONSTER7:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER7_NS;
-   else player.savesprites[mapspot] := S_MONSTER7;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER7;
-      break;
-     S_MONSTER8:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER8_NS;
-   else player.savesprites[mapspot] := S_MONSTER8;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER8;
-      break;
-     S_MONSTER9:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER9_NS;
-   else player.savesprites[mapspot] := S_MONSTER9;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER9;
-      break;
-     S_MONSTER10:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER10_NS;
-   else player.savesprites[mapspot] := S_MONSTER10;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER10;
-      break;
-     S_MONSTER11:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER11_NS;
-   else player.savesprites[mapspot] := S_MONSTER11;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER11;
-      break;
-     S_MONSTER12:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER12_NS;
-   else player.savesprites[mapspot] := S_MONSTER12;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER12;
-      break;
-     S_MONSTER13:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER13_NS;
-   else player.savesprites[mapspot] := S_MONSTER13;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER13;
-      break;
-     S_MONSTER14:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER14_NS;
-   else player.savesprites[mapspot] := S_MONSTER14;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER14;
-      break;
-     S_MONSTER15:
-      if sprite_p.deathevent then
-       break;
-      if sprite_p.hitpoints then
-      begin
-  if (sprite_p.nofalling) player.savesprites[mapspot] := S_MONSTER15_NS;
-   else player.savesprites[mapspot] := S_MONSTER15;
-   end;
-      else player.savesprites[mapspot] := S_DEADMONSTER15;
-      break;
-     S_DEADMONSTER1:
-     S_DEADMONSTER2:
-     S_DEADMONSTER3:
-     S_DEADMONSTER4:
-     S_DEADMONSTER5:
-     S_DEADMONSTER6:
-     S_DEADMONSTER7:
-     S_DEADMONSTER8:
-     S_DEADMONSTER9:
-     S_DEADMONSTER10:
-     S_DEADMONSTER11:
-     S_DEADMONSTER12:
-     S_DEADMONSTER13:
-     S_DEADMONSTER14:
-     S_DEADMONSTER15:
-     S_AMMOBOX:
-     S_MEDBOX:
-     S_GOODIEBOX:
-     S_PROXMINE:
-     S_TIMEMINE:
-     S_PRIMARY1:
-     S_PRIMARY2:
-     S_SECONDARY1:
-     S_SECONDARY2:
-     S_SECONDARY3:
-     S_SECONDARY4:
-     S_SECONDARY5:
-     S_SECONDARY6:
-     S_SECONDARY7:
-     S_WEAPON0:
-     S_WEAPON1:
-     S_WEAPON2:
-     S_WEAPON3:
-     S_WEAPON4:
-     S_WEAPON5:
-     S_WEAPON6:
-     S_WEAPON7:
-     S_WEAPON8:
-     S_WEAPON9:
-     S_WEAPON10:
-     S_WEAPON11:
-     S_WEAPON12:
-     S_WEAPON13:
-     S_WEAPON14:
-     S_WEAPON15:
-     S_WEAPON16:
-     S_WEAPON17:
-     S_WEAPON18:
-     S_ITEM1:
-     S_ITEM2:
-     S_ITEM3:
-     S_ITEM4:
-     S_ITEM5:
-     S_ITEM6:
-     S_ITEM7:
-     S_ITEM8:
-     S_ITEM9:
-     S_ITEM10:
-     S_ITEM11:
-     S_ITEM12:
-     S_ITEM13:
-     S_ITEM14:
-     S_ITEM15:
-     S_ITEM16:
-     S_ITEM17:
-     S_ITEM18:
-     S_ITEM19:
-     S_ITEM20:
-     S_ITEM21:
-     S_ITEM22:
-     S_ITEM23:
-     S_ITEM24:
-     S_ITEM25:
-      player.savesprites[mapspot] := sprite_p.type;
-      break;
+    mapspot := (sprite_p.y shr FRACTILESHIFT) * MAPCOLS + (sprite_p.x shr FRACTILESHIFT);
+    case sprite_p.typ of
+    S_MONSTER1:
+	  begin
+        if not sprite_p.deathevent then
+		begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER1_NS
+            else
+              player.savesprites[mapspot] := S_MONSTER1;
+          end
+          else 
+            player.savesprites[mapspot] := S_DEADMONSTER1;
+        end;
       end;
+
+    S_MONSTER2:
+	  begin
+        if not sprite_p.deathevent then
+	    begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER2_NS
+            else 
+              player.savesprites[mapspot] := S_MONSTER2;
+          end;
+        end;
+      end;
+
+    S_MONSTER3:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER3_NS
+            else 
+              player.savesprites[mapspot] := S_MONSTER3;
+          end
+          else 
+            player.savesprites[mapspot] := S_DEADMONSTER3;
+        end;
+      end;
+
+    S_MONSTER4:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER4_NS
+            else 
+              player.savesprites[mapspot] := S_MONSTER4;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER4;
+        end;
+      end;
+
+    S_MONSTER5:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+            player.savesprites[mapspot] := S_MONSTER5
+          else 
+            player.savesprites[mapspot] := S_DEADMONSTER5;
+        end;
+      end;
+
+    S_MONSTER6:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER6_NS
+            else 
+              player.savesprites[mapspot] := S_MONSTER6;
+          end
+          else 
+            player.savesprites[mapspot] := S_DEADMONSTER6;
+        end;
+      end;
+
+    S_MONSTER7:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER7_NS
+            else 
+              player.savesprites[mapspot] := S_MONSTER7;
+          end
+          else 
+            player.savesprites[mapspot] := S_DEADMONSTER7;
+        end;
+      end;
+
+    S_MONSTER8:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER8_NS
+            else 
+              player.savesprites[mapspot] := S_MONSTER8;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER8;
+        end;
+      end;
+
+    S_MONSTER9:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER9_NS
+            else
+              player.savesprites[mapspot] := S_MONSTER9;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER9;
+        end;
+      end;
+
+    S_MONSTER10:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER10_NS
+            else 
+              player.savesprites[mapspot] := S_MONSTER10;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER10;
+        end;
+      end;
+
+    S_MONSTER11:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER11_NS
+            else
+              player.savesprites[mapspot] := S_MONSTER11;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER11;
+        end;
+      end;
+
+    S_MONSTER12:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER12_NS;
+            else
+              player.savesprites[mapspot] := S_MONSTER12;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER12;
+        end;
+      end;
+
+    S_MONSTER13:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER13_NS;
+            else
+              player.savesprites[mapspot] := S_MONSTER13;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER13;
+        end;
+      end;
+
+    S_MONSTER14:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER14_NS
+            else
+              player.savesprites[mapspot] := S_MONSTER14;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER14;
+        end;
+      end;
+
+    S_MONSTER15:
+	  begin
+        if not sprite_p.deathevent then
+        begin
+          if sprite_p.hitpoints then
+          begin
+            if sprite_p.nofalling <> 0 then 
+              player.savesprites[mapspot] := S_MONSTER15_NS;
+            else
+              player.savesprites[mapspot] := S_MONSTER15;
+          end
+          else
+            player.savesprites[mapspot] := S_DEADMONSTER15;
+        end;
+      end;
+
+    S_DEADMONSTER1,
+    S_DEADMONSTER2,
+    S_DEADMONSTER3,
+    S_DEADMONSTER4,
+    S_DEADMONSTER5,
+    S_DEADMONSTER6,
+    S_DEADMONSTER7,
+    S_DEADMONSTER8,
+    S_DEADMONSTER9,
+    S_DEADMONSTER10,
+    S_DEADMONSTER11,
+    S_DEADMONSTER12,
+    S_DEADMONSTER13,
+    S_DEADMONSTER14,
+    S_DEADMONSTER15,
+    S_AMMOBOX,
+    S_MEDBOX,
+    S_GOODIEBOX,
+    S_PROXMINE,
+    S_TIMEMINE,
+    S_PRIMARY1,
+    S_PRIMARY2,
+    S_SECONDARY1,
+    S_SECONDARY2,
+    S_SECONDARY3,
+    S_SECONDARY4,
+    S_SECONDARY5,
+    S_SECONDARY6,
+    S_SECONDARY7,
+    S_WEAPON0,
+    S_WEAPON1,
+    S_WEAPON2,
+    S_WEAPON3,
+    S_WEAPON4,
+    S_WEAPON5,
+    S_WEAPON6,
+    S_WEAPON7,
+    S_WEAPON8,
+    S_WEAPON9,
+    S_WEAPON10,
+    S_WEAPON11,
+    S_WEAPON12,
+    S_WEAPON13,
+    S_WEAPON14,
+    S_WEAPON15,
+    S_WEAPON16,
+    S_WEAPON17,
+    S_WEAPON18,
+    S_ITEM1,
+    S_ITEM2,
+    S_ITEM3,
+    S_ITEM4,
+    S_ITEM5,
+    S_ITEM6,
+    S_ITEM7,
+    S_ITEM8,
+    S_ITEM9,
+    S_ITEM10,
+    S_ITEM11,
+    S_ITEM12,
+    S_ITEM13,
+    S_ITEM14,
+    S_ITEM15,
+    S_ITEM16,
+    S_ITEM17,
+    S_ITEM18,
+    S_ITEM19,
+    S_ITEM20,
+    S_ITEM21,
+    S_ITEM22,
+    S_ITEM23,
+    S_ITEM24,
+    S_ITEM25:
+      player.savesprites[mapspot] := sprite_p.typ;
     end;
+    sprite_p := sprite_p.next;
+  end;
+  
   UpdateWait;
 
   (* map triggers *)
-  for(i := 0;i<MAPCOLS*MAPROWS;i++)  // remember warps
-  case mapsprites[i]  of
+  for i := 0 to MAPCOLS * MAPROWS - 1 do  // remember warps
   begin
-    SM_WARP1:
-    SM_WARP2:
+    case mapsprites[i]  of
+    SM_WARP1,
+    SM_WARP2,
     SM_WARP3:
-     player.savesprites[i] := mapsprites[i];
-     break;
+      player.savesprites[i] := mapsprites[i];
     SM_SWITCHDOWN:
      player.savesprites[i] := S_TRIGGER1;
-     break;
     SM_SWITCHDOWN2:
      player.savesprites[i] := S_TRIGGER2;
-     break;
     SM_SWAPSWITCH:
      player.savesprites[i] := S_SWAPSWITCH;
-     break;
     SM_STRIGGER:
      player.savesprites[i] := S_STRIGGER;
-     break;
     SM_EXIT:
      player.savesprites[i] := S_EXIT;
-     break;
 //    SM_HOLE:
 //     player.savesprites[i] := S_HOLE;
 //     break;
-     end;
+    end;
+  end;
+
   UpdateWait;
 
   (* doors *)
   last_p := @doorlist[numdoors];
-  for (door_p := doorlist;door_p <> last_p;door_p++)
-  if (door_p.pic = CA_GetNamedNum('door_1')-walllump) then
+  door_p := doorlist;
+  while door_p <> last_p do
   begin
-    if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
-     player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_VDOOR1;
-    else player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_HDOOR1;
-  end
-  else if (door_p.pic = CA_GetNamedNum('door_2')-walllump) then
-  begin
-    if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
-     player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_VDOOR2;
-    else player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_HDOOR2;
-  end
-  else if (door_p.pic = CA_GetNamedNum('door_3')-walllump) then
-  begin
-    if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
-     player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_VDOOR3;
-    else player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_HDOOR3;
-  end
-  else if (door_p.pic = CA_GetNamedNum('door_4')-walllump) then
-  begin
-    if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
-     player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_VDOOR4;
-    else player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_HDOOR4;
-  end
-  else if (door_p.pic = CA_GetNamedNum('door_5')-walllump) then
-  begin
-    if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
-     player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_VDOOR5;
-    else player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_HDOOR5;
-  end
-  else if (door_p.pic = CA_GetNamedNum('door_6')-walllump) then
-  begin
-    if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
-     player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_VDOOR6;
-    else player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_HDOOR6;
-  end
-  else if (door_p.pic = CA_GetNamedNum('door_7')-walllump) then
-  begin
-    if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
-     player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_VDOOR7;
-    else player.savesprites[door_p.tiley*MAPCOLS+door_p.tilex] := S_HDOOR7;
-     end;
+    if door_p.pic = CA_GetNamedNum('door_1') - walllump then
+    begin
+      if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR1
+      else 
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR1;
+    end
+    else if door_p.pic = CA_GetNamedNum('door_2') - walllump then
+    begin
+      if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR2
+      else
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR2;
+    end
+    else if door_p.pic = CA_GetNamedNum('door_3') - walllump then
+    begin
+      if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR3
+      else
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR3;
+    end
+    else if door_p.pic = CA_GetNamedNum('door_4') - walllump then
+    begin
+      if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR4
+      else
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR4;
+    end
+    else if door_p.pic = CA_GetNamedNum('door_5') - walllump then
+    begin
+      if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR5
+      else
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR5;
+    end
+    else if door_p.pic = CA_GetNamedNum('door_6') - walllump then
+    begin
+      if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR6
+      else
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR6;
+    end
+    else if door_p.pic = CA_GetNamedNum('door_7') - walllump then
+    begin
+      if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR7
+      else
+        player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR7;
+    end;
+	inc(door_p);
+  end;
+  
   UpdateWait;
 
   (* spawning areas / generators *)
   sa := spawnareas;
-  for(i := 0;i<numspawnareas;i++,sa++)
-  case sa.type  of
+  for i := 0 to numspawnareas - 1 do
   begin
+    case sa.typ of
     0:
-     player.savesprites[sa.mapspot] := S_GENERATOR1;
-     break;
+      player.savesprites[sa.mapspot] := S_GENERATOR1;
     1:
-     player.savesprites[sa.mapspot] := S_GENERATOR2;
-     break;
+      player.savesprites[sa.mapspot] := S_GENERATOR2;
     10:
-     player.savesprites[sa.mapspot] := S_SPAWN1;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN1;
     11:
-     player.savesprites[sa.mapspot] := S_SPAWN2;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN2;
     12:
-     player.savesprites[sa.mapspot] := S_SPAWN3;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN3;
     13:
-     player.savesprites[sa.mapspot] := S_SPAWN4;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN4;
     14:
-     player.savesprites[sa.mapspot] := S_SPAWN5;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN5;
     15:
-     player.savesprites[sa.mapspot] := S_SPAWN6;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN6;
     16:
-     player.savesprites[sa.mapspot] := S_SPAWN7;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN7;
     17:
-     player.savesprites[sa.mapspot] := S_SPAWN8;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN8;
     18:
-     player.savesprites[sa.mapspot] := S_SPAWN9;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN9;
     19:
-     player.savesprites[sa.mapspot] := S_SPAWN10;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN10;
     20:
-     player.savesprites[sa.mapspot] := S_SPAWN11;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN11;
     21:
-     player.savesprites[sa.mapspot] := S_SPAWN12;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN12;
     22:
-     player.savesprites[sa.mapspot] := S_SPAWN13;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN13;
     23:
-     player.savesprites[sa.mapspot] := S_SPAWN14;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN14;
     24:
-     player.savesprites[sa.mapspot] := S_SPAWN15;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN15;
     100:
-     player.savesprites[sa.mapspot] := S_SPAWN8_NS;
-     break;
+      player.savesprites[sa.mapspot] := S_SPAWN8_NS;
     101:
-     player.savesprites[sa.mapspot] := S_SPAWN9_NS;
-     break;
-     end;
+      player.savesprites[sa.mapspot] := S_SPAWN9_NS;
+	end;
+	inc(sa);
+  end;
+  
   UpdateWait;
 
   (* elevators *)
-  for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-  case elev_p.type  of
+  elev_p := firstelevobj.next;
+  while elev_p <> @lastelevobj do
   begin
+    case elev_p.typ of
     E_NORMAL:
-     if not elev_p.nosave then
-     begin
-       if elev_p.elevTimer = $70000000 then
-  player.savesprites[elev_p.mapspot] := S_PAUSEDELEVATOR;
-       else
-  player.savesprites[elev_p.mapspot] := S_ELEVATOR;
+      begin
+        if not elev_p.nosave then
+        begin
+          if elev_p.elevTimer = $70000000 then
+            player.savesprites[elev_p.mapspot] := S_PAUSEDELEVATOR
+          else
+            player.savesprites[elev_p.mapspot] := S_ELEVATOR;
         end;
-     break;
+      end;
+
     E_TIMED:
-     case elev_p.elevTimer  of
-     begin
-       12600:
-  player.savesprites[elev_p.mapspot] := S_ELEVATOR3M;
-  break;
-       25200:
-  player.savesprites[elev_p.mapspot] := S_ELEVATOR6M;
-  break;
-       63000:
-  player.savesprites[elev_p.mapspot] := S_ELEVATOR15M;
-  break;
+      begin
+        case elev_p.elevTimer  of
+        12600:
+          player.savesprites[elev_p.mapspot] := S_ELEVATOR3M;
+        25200:
+          player.savesprites[elev_p.mapspot] := S_ELEVATOR6M;
+        63000:
+          player.savesprites[elev_p.mapspot] := S_ELEVATOR15M;
         end;
-     break;
+      end;
+
     E_SWITCHDOWN:
-     player.savesprites[elev_p.mapspot] := S_TRIGGERD1;
-     break;
+      player.savesprites[elev_p.mapspot] := S_TRIGGERD1;
+
     E_SWITCHDOWN2:
-     player.savesprites[elev_p.mapspot] := S_TRIGGERD2;
-     break;
+      player.savesprites[elev_p.mapspot] := S_TRIGGERD2;
+
     E_SECRET:
-     player.savesprites[elev_p.mapspot] := S_SDOOR;
-     break;
+      player.savesprites[elev_p.mapspot] := S_SDOOR;
+
     E_SWAP:
-     if ((elev_p.position = elev_p.floor) and ( not elev_p.elevUp)) or (elev_p.elevDown) player.savesprites[elev_p.mapspot] := S_ELEVATORLOW;
-      else if ((elev_p.position = elev_p.ceiling) and ( not elev_p.elevDown)) or (elev_p.elevUp) player.savesprites[elev_p.mapspot] := S_ELEVATORHIGH;
-     break;
-     end;
-
-  UpdateWait;
-
-  sprintf(fname,SAVENAME,n);
-  f := fopen(fname,'w+b');
-  if (f = NULL) MS_Error('SaveGame: File Open Error: %s',fname);
-  UpdateWait;
-  if (not fwrite and (player,SizeOf(player),1,f)) MS_Error('SaveGame: File Write Error:%s',fname);
-  UpdateWait;
-  fclose(f);
-  EndWait;
+      begin
+        if ((elev_p.position = elev_p.floor) and not elev_p.elevUp) or (elev_p.elevDown) then
+          player.savesprites[elev_p.mapspot] := S_ELEVATORLOW
+        else if ((elev_p.position = elev_p.ceiling) and not elev_p.elevDown) or elev_p.elevUp then
+          player.savesprites[elev_p.mapspot] := S_ELEVATORHIGH;
+      end;
+    end;
+    elev_p := elev_p.next;
   end;
+  
+  UpdateWait;
+
+  sprintf(fname, SAVENAME, [n]);
+  if not fopen(f, fname, fOpenReadOnly) then
+    MS_Error('SaveGame(): File Open Error: %s', [fname]);
+  UpdateWait;
+  if not fwrite(@player, SizeOf(player_t), 1, f) then
+    MS_Error('SaveGame(): File Write Error: %s', [fname]);
+  UpdateWait;
+  close(f);
+  EndWait;
+end;
 
 
 procedure resetengine;
@@ -1230,7 +1323,7 @@ begin
   keyboardDelay := 0;
   spritemovetime := 0;
   wallanimationtime := 0;
-  msgtime := 0;
+  timemsg := 0;
   RearViewTime := 0;
   RearViewDelay := 0;
   netsendtime := 0;
@@ -1240,175 +1333,205 @@ begin
   midgetmode := 0;
   fxtimecount := 0;
   ResetMouse;
-  end;
+end;
 
 
-procedure selectsong(int songmap);
-begin
-  char fname[20];
+procedure selectsong(const songmap: integer);
+var
+  sname: string;
   pattern: integer;
-
-{$IFDEF DEMO}
-  songmap mod := 5;
-{$ENDIF}
-  case songmap  of
-  begin
-   0:
-    pattern := 0;
-    strcpy(fname,'SONG0.S3M');
-    break;
+begin
+  if DEMO then
+    songmap := songmap mod 5;
+  case songmap of
+  0:
+    begin
+      pattern := 0;
+      sname := 'SONG0.S3M';
+    end;
    1:
-    pattern := 20;
-    strcpy(fname,'SONG0.S3M');
-    break;
+    begin
+      pattern := 20;
+      sname := 'SONG0.S3M';
+    end;
    2:
-    pattern := 37;
-    strcpy(fname,'SONG0.S3M');
-    break;
+    begin
+      pattern := 37;
+      sname := 'SONG0.S3M';
+    end;
    3:
-    pattern := 54;
-    strcpy(fname,'SONG0.S3M');
-    break;
+    begin
+      pattern := 54;
+      sname := 'SONG0.S3M';
+    end;
    4:
-    pattern := 73;
-    strcpy(fname,'SONG0.S3M');
-    break;
+    begin
+      pattern := 73;
+      sname := 'SONG0.S3M';
+    end;
 
    5:
-    pattern := 0;
-    strcpy(fname,'SONG2.S3M');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG2.S3M';
+    end;
    6:
-    pattern := 26;
-    strcpy(fname,'SONG2.S3M');
-    break;
+    begin
+      pattern := 26;
+      sname := 'SONG2.S3M';
+    end;
    7:
-    pattern := 46;
-    strcpy(fname,'SONG2.S3M');
-    break;
+    begin
+      pattern := 46;
+      sname := 'SONG2.S3M';
+    end;
    8:
-    pattern := 64;
-    strcpy(fname,'SONG2.S3M');
-    break;
+    begin
+      pattern := 64;
+      sname := 'SONG2.S3M';
+    end;
    9:
-    pattern := 83;
-    strcpy(fname,'SONG2.S3M');
-    break;
+    begin
+      pattern := 83;
+      sname := 'SONG2.S3M';
+    end;
 
    10:
-    pattern := 0;
-    strcpy(fname,'SONG3.S3M');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG3.S3M';
+    end;
    11:
-    pattern := 39;
-    strcpy(fname,'SONG3.S3M');
-    break;
+    begin
+      pattern := 39;
+      sname := 'SONG3.S3M';
+    end;
    12:
-    pattern := 58;
-    strcpy(fname,'SONG3.S3M');
-    break;
+    begin
+      pattern := 58;
+      sname := 'SONG3.S3M';
+    end;
    13:
-    pattern := 78;
-    strcpy(fname,'SONG3.S3M');
-    break;
+    begin
+      pattern := 78;
+      sname := 'SONG3.S3M';
+    end;
    14:
-    pattern := 94;
-    strcpy(fname,'SONG3.S3M');
-    break;
+    begin
+      pattern := 94;
+      sname := 'SONG3.S3M';
+    end;
 
    15:
-    pattern := 0;
-    strcpy(fname,'SONG1.S3M');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG1.S3M';
+    end;
    16:
-    pattern := 24;
-    strcpy(fname,'SONG1.S3M');
-    break;
+    begin
+      pattern := 24;
+      sname := 'SONG1.S3M';
+    end;
    17:
-    pattern := 45;
-    strcpy(fname,'SONG1.S3M');
-    break;
+    begin
+      pattern := 45;
+      sname := 'SONG1.S3M';
+    end;
 
    18:
-    pattern := 0;
-    strcpy(fname,'SONG4.S3M');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG4.S3M';
+    end;
    19:
-    pattern := 10;
-    strcpy(fname,'SONG4.S3M');
-    break;
+    begin
+      pattern := 10;
+      sname := 'SONG4.S3M';
+    end;
    20:
-    pattern := 21;
-    strcpy(fname,'SONG4.S3M');
-    break;
+    begin
+      pattern := 21;
+      sname := 'SONG4.S3M';
+    end;
    21:
-    pattern := 0;
-    strcpy(fname,'SONG8.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG8.MOD';
+    end;
 
    22:
-    if netmode then
     begin
-      pattern := 0;
-      strcpy(fname,'SONG14.MOD');
-       end;
-    else
-    begin
-      pattern := 0;
-      strcpy(fname,'ENDING.MOD');
-       end;
-    break;
+      if netmode then
+      begin
+        pattern := 0;
+        sname := 'SONG14.MOD';
+      end
+      else
+      begin
+        pattern := 0;
+        sname := 'ENDING.MOD';
+      end;
+    end;
 
    23:
-    pattern := 0;
-    strcpy(fname,'SONG5.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG5.MOD';
+    end;
    24:
-    pattern := 0;
-    strcpy(fname,'SONG6.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG6.MOD';
+    end;
    25:
-    pattern := 0;
-    strcpy(fname,'SONG7.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG7.MOD';
+    end;
    26:
-    pattern := 33;
-    strcpy(fname,'SONG4.S3M');
-    break;
+    begin
+      pattern := 33;
+      sname := 'SONG4.S3M';
+    end;
    27:
-    pattern := 0;
-    strcpy(fname,'SONG9.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG9.MOD';
+    end;
    28:
-    pattern := 0;
-    strcpy(fname,'SONG10.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG10.MOD';
+    end;
    29:
-    pattern := 0;
-    strcpy(fname,'SONG11.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG11.MOD';
+    end;
    30:
-    pattern := 0;
-    strcpy(fname,'SONG12.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG12.MOD';
+    end;
    31:
-    pattern := 0;
-    strcpy(fname,'SONG13.MOD');
-    break;
+    begin
+      pattern := 0;
+      sname := 'SONG13.MOD';
+    end;
 
    99:
-    pattern := 0;
-    strcpy(fname,'PROBE.MOD');
-    break;
-
-   default:
-    pattern := 0;
-    strcpy(fname,'SONG0.S3M');
-    break;
-
+    begin
+      pattern := 0;
+      sname := 'PROBE.MOD';
     end;
-  PlaySong(fname,pattern);
+
+  else
+    pattern := 0;
+    sname := 'SONG0.S3M';
   end;
+  
+  PlaySong(sname, pattern);
+end;
 
 
 procedure EndGame1;
@@ -1419,17 +1542,17 @@ begin
 
 {$IFDEF CDROMGREEDDIR}
   sprintf(name,'%c:\\GREED\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
 {$ELSE}
   sprintf(name,'%c:\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
 {$ENDIF}
 
-  VI_FillPalette(0,0,0);
+  VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
   VI_FadeIn(0,256,colors,48);
@@ -1438,16 +1561,16 @@ begin
   begin
    printy := 80;
    FN_PrintCentered(
-    'BY SUCCESSFULLY BRAVING THE DESARIAN\n'
-    'PENAL COLONY YOU EMERGE VICTORIOUS\n'
-    'WITH THE BRASS RING OF BYZANT IN HAND.\n'
-    '...BUT IT'S NOT OVER YET, HUNTER.\n'
-    'IT'S ON TO PHASE TWO OF THE HUNT, THE\n'
-    'CITY TEMPLE OF RISTANAK.  ARE YOU\n'
-    'PREPARED TO FACE THE Y'RKTARELIAN\n'
-    'PRIESTHOOD AND THEIR PAGAN GOD?\n'
-    'NOT BLOODY LIKELY...\n'
-    '\n\n\n\n\nTO BE CONTINUED...\n');
+    'BY SUCCESSFULLY BRAVING THE DESARIAN'#13#10 +
+    'PENAL COLONY YOU EMERGE VICTORIOUS'#13#10 +
+    'WITH THE BRASS RING OF BYZANT IN HAND.'#13#10 +
+    '...BUT IT''S NOT OVER YET, HUNTER.'#13#10 +
+    'IT''S ON TO PHASE TWO OF THE HUNT, THE'#13#10 +
+    'CITY TEMPLE OF RISTANAK.  ARE YOU'#13#10 +
+    'PREPARED TO FACE THE Y''RKTARELIAN'#13#10 +
+    'PRIESTHOOD AND THEIR PAGAN GOD?'#13#10 +
+    'NOT BLOODY LIKELY...'#13#10#13#10#13#10#13#10#13#10#13#10 +
+    'TO BE CONTINUED...'#13#10);
     end;
   newascii := false;
   for (;)
@@ -1455,8 +1578,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('SOFTLOGO');
   VI_FadeIn(0,256,colors,48);
@@ -1466,8 +1589,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS1');
   VI_FadeIn(0,256,colors,48);
@@ -1477,8 +1600,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS2');
   VI_FadeIn(0,256,colors,48);
@@ -1488,8 +1611,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
 #ifndef ASSASSINATOR
   loadscreen('CREDITS3');
@@ -1500,8 +1623,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 {$ENDIF}
 
   redo := true;
@@ -1516,22 +1639,22 @@ begin
 
 {$IFDEF CDROMGREEDDIR}
   sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
 {$ELSE}
   sprintf(name,'%c:\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
 {$ENDIF}
 
 
-  VI_FillPalette(0,0,0);
+  VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
   VI_FadeIn(0,256,colors,48);
@@ -1540,18 +1663,18 @@ begin
   begin
    printy := 80;
    FN_PrintCentered(
-    'WITH Y'RKTAREL DEAD AND THE PRIESTHOOD\n'
-    'IN RUINS CONGRATULATE YOURSELF, HUNTER.\n'
-    'YOU'VE ANNHILIATED YET ANOTHER CULTURE\n'
-    'ALL FOR THE SAKE OF THE HUNT.\n'
-    '...BUT DON'T RELAX YET, FOR IT'S ON TO\n'
-    'PHASE THREE OF THE HUNT.  THIS TIME\n'
-    'YOU'LL BATTLE AN ENTIRE ARMY AS YOU FACE\n'
-    'OFF WITH LORD KAAL IN HIS SPACEBORN\n'
-    'MOUNTAIN CITADEL.\n'
-    'DO YOU HAVE WHAT IT TAKES TO SLAY LORD\n'
-    'KAAL AND WREST FROM HIM THE IMPERIAL SIGIL?\n'
-    '\n\n\n\n\nTO BE CONTINUED...\n');
+    'WITH Y''RKTAREL DEAD AND THE PRIESTHOOD'#13#10 +
+    'IN RUINS CONGRATULATE YOURSELF, HUNTER.'#13#10 +
+    'YOU''VE ANNHILIATED YET ANOTHER CULTURE'#13#10 +
+    'ALL FOR THE SAKE OF THE HUNT.'#13#10 +
+    '...BUT DON''T RELAX YET, FOR IT''S ON TO'#13#10 +
+    'PHASE THREE OF THE HUNT.  THIS TIME'#13#10 +
+    'YOU''LL BATTLE AN ENTIRE ARMY AS YOU FACE'#13#10 +
+    'OFF WITH LORD KAAL IN HIS SPACEBORN'#13#10 +
+    'MOUNTAIN CITADEL.'#13#10 +
+    'DO YOU HAVE WHAT IT TAKES TO SLAY LORD'#13#10 +
+    'KAAL AND WREST FROM HIM THE IMPERIAL SIGIL?'#13#10#13#10#13#10#13#10#13#10#13#10 +
+    'TO BE CONTINUED...'#13#10);
     end;
   newascii := false;
   for (;)
@@ -1559,8 +1682,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('SOFTLOGO');
   VI_FadeIn(0,256,colors,48);
@@ -1570,8 +1693,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS1');
   VI_FadeIn(0,256,colors,48);
@@ -1581,8 +1704,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS2');
   VI_FadeIn(0,256,colors,48);
@@ -1592,8 +1715,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS3');
   VI_FadeIn(0,256,colors,48);
@@ -1603,8 +1726,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   redo := true;
   end;
@@ -1616,41 +1739,41 @@ begin
 
 {$IFDEF CDROMGREEDDIR}
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS3.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS4.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS5.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS6.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBS6B.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS7.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS8.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS9.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
 {$ELSE}
   sprintf(name,'%c:\\MOVIES\\JUMPBAS3.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS4.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS5.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS6.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBS6B.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS7.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS8.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
   sprintf(name,'%c:\\MOVIES\\JUMPBAS9.FLI',cdr_drivenum+'A');
-  playfli(name,0);
+  playfli(name, 0);
 {$ENDIF}
 
-  VI_FillPalette(0,0,0);
+  VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
   VI_FadeIn(0,256,colors,48);
@@ -1660,31 +1783,31 @@ begin
    printy := 80;
 {$IFDEF GAME3}
    FN_PrintCentered(
-    'WELL, YOU SUCCESSFULLY PULLED DOWN THE LAST\n'
-    'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.\n'
-    'YOU COULD HAVE RICHES, FAME AND POWER,\n'
-    'AND YOUR CHOICE OF PLEASURE PLANETS.\n'
-    'UNFORTUNATELY, YOU'RE STUCK ON A SHIP THAT'S\n'
-    'DRIFTING THROUGH HYPERSPACE.  IN SHORT\n'
-    'YOU'RE LOST.  LUCKY FOR THE PASSENGERS\n'
-    'THAT YOU'RE A HEROIC HUNTER THAT CAN SAVE\n'
-    'THEM FROM THEIR FATE IN THE CLUTCHES\n'
-    'OF THE MAZDEEN EMPEROR.  OR CAN YOU?\n'
-    '\n\n\n\n\nTO BE CONTINUED...\n');
+    'WELL, YOU SUCCESSFULLY PULLED DOWN THE LAST'#13#10 +
+    'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.'#13#10 +
+    'YOU COULD HAVE RICHES, FAME AND POWER,'#13#10 +
+    'AND YOUR CHOICE OF PLEASURE PLANETS.'#13#10 +
+    'UNFORTUNATELY, YOU''RE STUCK ON A SHIP THAT''S'#13#10 +
+    'DRIFTING THROUGH HYPERSPACE.  IN SHORT'#13#10 +
+    'YOU''RE LOST.  LUCKY FOR THE PASSENGERS'#13#10 +
+    'THAT YOU''RE A HEROIC HUNTER THAT CAN SAVE'#13#10 +
+    'THEM FROM THEIR FATE IN THE CLUTCHES'#13#10 +
+    'OF THE MAZDEEN EMPEROR.  OR CAN YOU?'#13#10#13#10#13#10#13#10#13#10#13#10 +
+    'TO BE CONTINUED...'#13#10);
 {$ELSE}
    FN_PrintCentered(
-    'WELL, YOU SUCCESSFULLY BRAVED A BLOODY RIOT, FACED\n'
-    'A GOD AND SURVIVED, AND PULLED DOWN THE LAST\n'
-    'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.\n'
-    'YOU COULD HAVE RICHES, FAME AND POWER,\n'
-    'AND YOUR CHOICE OF PLEASURE PLANETS.\n'
-    'UNFORTUNATELY, YOU'RE STUCK ON A SHIP THAT'S\n'
-    'DRIFTING THROUGH HYPERSPACE.  IN SHORT\n'
-    'YOU'RE LOST.  LUCKY FOR THE PASSENGERS\n'
-    'THAT YOU'RE A HEROIC HUNTER THAT CAN SAVE\n'
-    'THEM FROM THEIR FATE IN THE CLUTCHES\n'
-    'OF THE MAZDEEN EMPEROR.  OR CAN YOU?\n'
-    '\n\n\n\n\nTO BE CONTINUED...\n');
+    'WELL, YOU SUCCESSFULLY BRAVED A BLOODY RIOT, FACED'#13#10 +
+    'A GOD AND SURVIVED, AND PULLED DOWN THE LAST'#13#10 +
+    'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.'#13#10 +
+    'YOU COULD HAVE RICHES, FAME AND POWER,'#13#10 +
+    'AND YOUR CHOICE OF PLEASURE PLANETS.'#13#10 +
+    'UNFORTUNATELY, YOU''RE STUCK ON A SHIP THAT''S'#13#10 +
+    'DRIFTING THROUGH HYPERSPACE.  IN SHORT'#13#10 +
+    'YOU''RE LOST.  LUCKY FOR THE PASSENGERS'#13#10 +
+    'THAT YOU''RE A HEROIC HUNTER THAT CAN SAVE'#13#10 +
+    'THEM FROM THEIR FATE IN THE CLUTCHES'#13#10 +
+    'OF THE MAZDEEN EMPEROR.  OR CAN YOU?'#13#10#13#10#13#10#13#10#13#10#13#10 +
+    'TO BE CONTINUED...'#13#10);
 {$ENDIF}
     end;
   newascii := false;
@@ -1693,8 +1816,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('SOFTLOGO');
   VI_FadeIn(0,256,colors,48);
@@ -1704,8 +1827,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS1');
   VI_FadeIn(0,256,colors,48);
@@ -1715,8 +1838,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS2');
   VI_FadeIn(0,256,colors,48);
@@ -1726,8 +1849,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   loadscreen('CREDITS3');
   VI_FadeIn(0,256,colors,48);
@@ -1737,8 +1860,8 @@ begin
    Wait(10);
    if (newascii) break;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,48);
+  memset(screen, 0,64000);
 
   redo := true;
   end;
@@ -1750,9 +1873,9 @@ begin
 
   if activate then
   begin
-   memset(player.westmap,0,SizeOf(player.westmap));
-   memset(player.northmap,0,SizeOf(player.northmap));
-   memset(player.events,0,SizeOf(player.events));
+   memset(player.westmap, 0, SizeOf(player.westmap));
+   memset(player.northmap, 0, SizeOf(player.northmap));
+   memset(player.events, 0, SizeOf(player.events));
    player.x := -1;
     end;
   player.map := map;
@@ -1776,7 +1899,7 @@ begin
      ActivateSpritesFromMap;
       end;
    else
-    LoadScript(lump,false);
+    LoadScript(lump, false);
     end;
 {$ELSE}
 
@@ -1800,7 +1923,7 @@ begin
      ActivateSpritesFromMap;
       end;
    else
-    LoadScript(lump,false);
+    LoadScript(lump, false);
     end;
 {$ENDIF}
   EndWait;
@@ -1821,7 +1944,7 @@ begin
 
   sprintf(fname,SAVENAME,n);
   if ((handle := open(fname,O_RDONLY) or (O_BINARY)) = -1) exit;
-  if (not read(handle,) and (player,SizeOf(player))) then
+  if (not read(handle,) and (player, SizeOf(player))) then
   begin
    close(handle);
    MS_Error('LoadGame: Error loading %s!',fname);
@@ -1838,14 +1961,14 @@ begin
   wallanimationtime := player.timecount;
   spritemovetime := player.timecount;
 
-  newmap(player.map,0);
-  memcpy(mapsprites,player.savesprites,SizeOf(mapsprites));
+  newmap(player.map, 0);
+  memcpy(mapsprites,player.savesprites, SizeOf(mapsprites));
   ActivateSpritesFromMap;
   timecount := player.timecount;
   loadweapon(player.weapons[player.currentweapon]);
   player.levelscore := oldscore;
-  memcpy(westwall,player.westwall,SizeOf(westwall));
-  memcpy(northwall,player.northwall,SizeOf(northwall));
+  memcpy(westwall,player.westwall, SizeOf(westwall));
+  memcpy(northwall,player.northwall, SizeOf(northwall));
   eventloading := true;
   for (i := 1;i<256;i++)
   if player.events[i] then
@@ -1926,7 +2049,7 @@ begin
     end;
 
   gameloaded := true;
-  memset and (player,0,SizeOf(player));
+  memset and (player, 0, SizeOf(player));
   player.scrollmin := 0;
   player.scrollmax := windowHeight;
   player.x := -1;
@@ -2041,7 +2164,7 @@ begin
 
   if map = 0 then
   begin
-   VI_FillPalette(0,0,0);
+   VI_FillPalette(0, 0, 0);
 
   loadscreen('BRIEF3');
   VI_BlitView;
@@ -2052,11 +2175,11 @@ begin
    begin
      printy := 149;
      FN_PrintCentered(
-      'WELCOME ABOARD HUNTER.\n'
-      'DUE TO INCREASED FUNDING FROM THE AVC YOU'LL BE EQUIPPED WITH THE\n'
-      'LATEST IN HUNTER HARDWARE.  ALONG WITH YOUR EXISTING AUTO MAPPER,\n'
-      'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS\n'
-      'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS\n'
+      'WELCOME ABOARD HUNTER.'#13#10 +
+      'DUE TO INCREASED FUNDING FROM THE AVC YOU''LL BE EQUIPPED WITH THE'#13#10 +
+      'LATEST IN HUNTER HARDWARE.  ALONG WITH YOUR EXISTING AUTO MAPPER,'#13#10 +
+      'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS'#13#10 +
+      'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
       'REAR VIEW.');
    VI_BlitView;
      Wait(3);
@@ -2079,10 +2202,10 @@ begin
    begin
      printy := 149;
      FN_PrintCentered(
-      'A MENUING SYSTEM HAS ALSO BEEN INSTALLED ALLOWING YOU TO\n'
-      'FINE TUNE YOUR HARDWARE SETTINGS.  STAY ALERT THOUGH, YOUR MENU\n'
-      'OVERLAY CANCELS INPUT FROM YOUR VISUAL ARRAY SO DON'T EXPECT TO\n'
-      'SEE THINGS COMING WHILE YOU'RE ADJUSTING YOUR SETTINGS.');
+      'A MENUING SYSTEM HAS ALSO BEEN INSTALLED ALLOWING YOU TO'#13#10 +
+      'FINE TUNE YOUR HARDWARE SETTINGS.  STAY ALERT THOUGH, YOUR MENU'#13#10 +
+      'OVERLAY CANCELS INPUT FROM YOUR VISUAL ARRAY SO DON''T EXPECT TO'#13#10 +
+      'SEE THINGS COMING WHILE YOU''RE ADJUSTING YOUR SETTINGS.');
      Wait(3);
       end;
    for(;)
@@ -2091,7 +2214,7 @@ begin
      if (newascii) break;
       end;
    if (lastascii = 27) goto end;
-   VI_FadeOut(0,256,0,0,0,64);
+   VI_FadeOut(0,256, 0, 0, 0,64);
 
 
    loadscreen('BRIEF1');
@@ -2102,14 +2225,14 @@ begin
    begin
      printy := 139;
      FN_PrintCentered(
-      'BUILT FROM A HOLLOWED ASTEROID, THE DESARIAN PENAL COLONY\n'
-      'HOUSES THE DREGS OF IMPERIAL SOCIETY.  A RIOT IS IN PROGRESS\n'
-      'WHICH SHOULD MAKE ITEM RETRIEVAL INTERESTING.\n'
-      'THE PRIMARY ITEM TO BE LOCATED HERE IS THE BYZANTIUM BRASS RING,\n'
-      'AN ANCIENT ARTIFACT NOW USED AS THE POWER CORE FOR THE COMPLEX.\n'
-      'SUCH AN ENIGMATIC ENERGY SOURCE IS OF OBVIOUS INTEREST TO A.V.C.\n'
-      'RESEARCH, SO ACQUIRING IT UNDAMAGED IS ESSENTIAL.\n'
-      'YOUR ENTRY POINT WILL BE AT THE BASE OF THE COMPLEX.\n');
+      'BUILT FROM A HOLLOWED ASTEROID, THE DESARIAN PENAL COLONY'#13#10 +
+      'HOUSES THE DREGS OF IMPERIAL SOCIETY.  A RIOT IS IN PROGRESS'#13#10 +
+      'WHICH SHOULD MAKE ITEM RETRIEVAL INTERESTING.'#13#10 +
+      'THE PRIMARY ITEM TO BE LOCATED HERE IS THE BYZANTIUM BRASS RING,'#13#10 +
+      'AN ANCIENT ARTIFACT NOW USED AS THE POWER CORE FOR THE COMPLEX.'#13#10 +
+      'SUCH AN ENIGMATIC ENERGY SOURCE IS OF OBVIOUS INTEREST TO A.V.C.'#13#10 +
+      'RESEARCH, SO ACQUIRING IT UNDAMAGED IS ESSENTIAL.'#13#10 +
+      'YOUR ENTRY POINT WILL BE AT THE BASE OF THE COMPLEX.'#13#10);
      Wait(3);
       end;
    for(;)
@@ -2118,7 +2241,7 @@ begin
      if (newascii) break;
       end;
    if (lastascii = 27) goto end;
-   VI_FadeOut(0,256,0,0,0,64);
+   VI_FadeOut(0,256, 0, 0, 0,64);
 
    loadscreen('BRIEF2');
    VI_FadeIn(0,256,colors,64);
@@ -2128,13 +2251,13 @@ begin
    begin
      printy := 139;
      FN_PrintCentered(
-      'EACH SUBLEVEL WILL HAVE A MANDATORY PRIMARY OBJECTIVE, AS WELL\n'
-      'AS OPTIONAL SECONDARY OBJECTIVES, ALL OF WHICH HELP YOU TO\n'
-      'ACHIEVE A STATED POINT TOTAL NEEDED TO ADVANCE TO THE NEXT LEVEL.\n'
-      'POINTS ARE ALSO AWARDED FOR KILLS AS WELL AS ACQUIRING RANDOMLY\n'
-      'PLACED OBJECTS TAKEN FROM THE SHIP'S INVENTORY. EXPECT\n'
-      'NON-COOPERATIVES (NOPS) FROM OTHER PARTS OF THE COLONY TO BE\n'
-      'BROUGHT IN AT REGULAR INTERVALS TO REPLACE CASUALTIES OF THE HUNT.\n');
+      'EACH SUBLEVEL WILL HAVE A MANDATORY PRIMARY OBJECTIVE, AS WELL'#13#10 +
+      'AS OPTIONAL SECONDARY OBJECTIVES, ALL OF WHICH HELP YOU TO'#13#10 +
+      'ACHIEVE A STATED POINT TOTAL NEEDED TO ADVANCE TO THE NEXT LEVEL.'#13#10 +
+      'POINTS ARE ALSO AWARDED FOR KILLS AS WELL AS ACQUIRING RANDOMLY'#13#10 +
+      'PLACED OBJECTS TAKEN FROM THE SHIP''S INVENTORY. EXPECT'#13#10 +
+      'NON-COOPERATIVES (NOPS) FROM OTHER PARTS OF THE COLONY TO BE'#13#10 +
+      'BROUGHT IN AT REGULAR INTERVALS TO REPLACE CASUALTIES OF THE HUNT.'#13#10);
      Wait(3);
       end;
    for(;)
@@ -2150,10 +2273,10 @@ begin
    begin
      printy := 139;
      FN_PrintCentered(
-      'THIS MISSION WILL BEGIN IN THE INMATE PROCESSING AREA, WHERE\n'
-      'YOU ARE TO SEARCH FOR AN EXPERIMENTAL EXPLOSIVE HIDDEN\n'
-      'IN THE SUBLEVEL.\n'
-      'SECONDARY GOALS ARE PHOSPHER PELLETS AND DELOUSING KITS.\n');
+      'THIS MISSION WILL BEGIN IN THE INMATE PROCESSING AREA, WHERE'#13#10 +
+      'YOU ARE TO SEARCH FOR AN EXPERIMENTAL EXPLOSIVE HIDDEN'#13#10 +
+      'IN THE SUBLEVEL.'#13#10 +
+      'SECONDARY GOALS ARE PHOSPHER PELLETS AND DELOUSING KITS.'#13#10);
      Wait(3);
       end;
    for(;)
@@ -2169,11 +2292,11 @@ begin
    begin
      printy := 139;
      FN_PrintCentered(
-      'YOU WILL BE MONITORED.  POINTS WILL BE AWARDED FOR PRIMARY,\n'
-      'SECONDARY, AND RANDOM ITEMS, AS WELL AS FOR KILLING NOPS.\n'
-      'WHEN YOU'VE ACQUIRED THE PRIMARY ITEM AND YOUR POINT TOTAL\n'
-      'MEETS OR EXCEEDS 50000 WE'LL OPEN A TRANSLATION NEXUS.  WATCH\n'
-      'FOR THE FLASHING EXIT SIGN.  ENTER THE NEXUS AND WE'LL\n'
+      'YOU WILL BE MONITORED.  POINTS WILL BE AWARDED FOR PRIMARY,'#13#10 +
+      'SECONDARY, AND RANDOM ITEMS, AS WELL AS FOR KILLING NOPS.'#13#10 +
+      'WHEN YOU''VE ACQUIRED THE PRIMARY ITEM AND YOUR POINT TOTAL'#13#10 +
+      'MEETS OR EXCEEDS 50000 WE''LL OPEN A TRANSLATION NEXUS.  WATCH'#13#10 +
+      'FOR THE FLASHING EXIT SIGN.  ENTER THE NEXUS AND WE''LL'#13#10 +
       'TRANSLATE YOU TO THE NEXT AREA OF THE BASE.\n \nGOOD LUCK.');
      Wait(3);
       end;
@@ -2200,7 +2323,7 @@ begin
      player.weapons[4] := -1;
      player.currentweapon := 0;
      loadweapon(player.weapons[0]);
-     memset(player.inventory,0,SizeOf(player.inventory));
+     memset(player.inventory, 0, SizeOf(player.inventory));
      player.inventory[7] := 2;
      player.inventory[5] := 2;
      player.inventory[4] := 2;
@@ -2216,26 +2339,26 @@ begin
 
   #ifndef GAME2
       sprintf(name,'%c:\\GREED\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
   {$ENDIF}
       sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
 
 {$ELSE}
 
   #ifndef GAME2
       sprintf(name,'%c:\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
   {$ENDIF}
       sprintf(name,'%c:\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
 
 
 {$ENDIF}
 
      selectsong(map);
 
-     VI_FillPalette(0,0,0);
+     VI_FillPalette(0, 0, 0);
      loadscreen('BRIEF4');
      VI_FadeIn(0,256,colors,64);
      Wait(70);
@@ -2244,9 +2367,9 @@ begin
      begin
        printy := 139;
        FN_PrintCentered(
-       'THIS IS THE CITY-TEMPLE OF RISTANAK, ANCIENT HOME TO THE\n'
-       'PRIESTHOOD OF YRKTAREL.  THE PRIESTHOOD HAS WORSHIPPED THEIR\n'
-       'PAGAN DEITY FOR CENTURIES IN PEACE... UNTIL NOW.\n'
+       'THIS IS THE CITY-TEMPLE OF RISTANAK, ANCIENT HOME TO THE'#13#10 +
+       'PRIESTHOOD OF YRKTAREL.  THE PRIESTHOOD HAS WORSHIPPED THEIR'#13#10 +
+       'PAGAN DEITY FOR CENTURIES IN PEACE... UNTIL NOW.'#13#10
       );
 
        Wait(3);
@@ -2257,7 +2380,7 @@ begin
        if (newascii) break;
         end;
      if (lastascii = 27) goto end;
-     VI_FadeOut(0,256,0,0,0,64);
+     VI_FadeOut(0,256, 0, 0, 0,64);
 
      loadscreen('BRIEF5');
      VI_FadeIn(0,256,colors,64);
@@ -2267,14 +2390,14 @@ begin
      begin
        printy := 139;
        FN_PrintCentered(
-       'THE PRIMARY OBJECTIVE FOR THE TEMPLE IS THE ENCODED\n'
-       'PERSONALITY MATRIX OF THE DEMON-SAINT B''RNOURD.  THIS IS,\n'
-       'OF COURSE, AN ITEM WHOSE POSSESSION, IF KNOWN, WOULD BRING\n'
-       'INSTANT DESTRUCTION.  THE IMPERIAL COUNCIL WOULD ORDER THE\n'
-       'SECTOR STERILIZED IF IT KNEW OF ITS EXISTENCE.\n'
-       'THE A.V.C. BELIEVES THE ENCODE TO CONTAIN FORGOTTEN\n'
-       'TECHNOLOGIES WHICH WOULD BE PRICELESS ON THE BLACK MARKET.\n'
-       'IT IS YOUR MISSION TO ACQUIRE IT.\n'
+       'THE PRIMARY OBJECTIVE FOR THE TEMPLE IS THE ENCODED'#13#10 +
+       'PERSONALITY MATRIX OF THE DEMON-SAINT B''RNOURD.  THIS IS,'#13#10 +
+       'OF COURSE, AN ITEM WHOSE POSSESSION, IF KNOWN, WOULD BRING'#13#10 +
+       'INSTANT DESTRUCTION.  THE IMPERIAL COUNCIL WOULD ORDER THE'#13#10 +
+       'SECTOR STERILIZED IF IT KNEW OF ITS EXISTENCE.'#13#10 +
+       'THE A.V.C. BELIEVES THE ENCODE TO CONTAIN FORGOTTEN'#13#10 +
+       'TECHNOLOGIES WHICH WOULD BE PRICELESS ON THE BLACK MARKET.'#13#10 +
+       'IT IS YOUR MISSION TO ACQUIRE IT.'#13#10
       );
 
        Wait(3);
@@ -2285,7 +2408,7 @@ begin
        if (newascii) break;
         end;
      if (lastascii = 27) goto end;
-     VI_FadeOut(0,256,0,0,0,64);
+     VI_FadeOut(0,256, 0, 0, 0,64);
 
    end
    else if map = 16 then
@@ -2296,7 +2419,7 @@ begin
      player.weapons[4] := -1;
      player.currentweapon := 0;
      loadweapon(player.weapons[0]);
-     memset(player.inventory,0,SizeOf(player.inventory));
+     memset(player.inventory, 0, SizeOf(player.inventory));
      player.inventory[7] := 2;
      player.inventory[5] := 2;
      player.inventory[4] := 2;
@@ -2311,28 +2434,28 @@ begin
 
   #ifndef GAME3
       sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
   {$ENDIF}
       sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
       sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
 {$ELSE}
 
   #ifndef GAME3
       sprintf(name,'%c:\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
   {$ENDIF}
       sprintf(name,'%c:\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
       sprintf(name,'%c:\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-      playfli(name,0);
+      playfli(name, 0);
 {$ENDIF}
 
 
      selectsong(map);
 
-     VI_FillPalette(0,0,0);
+     VI_FillPalette(0, 0, 0);
 
      loadscreen('BRIEF6');
      VI_FadeIn(0,256,colors,64);
@@ -2342,14 +2465,14 @@ begin
      begin
        printy := 139;
        FN_PrintCentered(
-       'DURING THE INSURRECTION AT ALPHA PRAM,  THE FOURTH PLANET IN\n'
-       'THE SYSTEM, WHICH WAS BASE TO THE ELITE GALACTIC CORPS, WAS\n'
-       'DESTROYED BY A BOVINARIAN VIOLATOR SHIP.  THE SHIELDING\n'
-       'SURROUNDING THE MOUNTAIN WHERE THE CORPS WAS BASED WAS SO\n'
-       'STRONG, HOWEVER, THAT THE MOUNTAIN SURVIVED.  THE BASE WAS\n'
-       'THEN MOUNTED TO A TROJAN GATE JUMP POINT AND TO THIS DAY IT\n'
-       'REMAINS AS A WAY POINT BETWEEN THE RIM WORLDS AND THE CORE\n'
-       'QUARTER, AS WELL AS HOUSING MILITARY MIGHT IN THIS SECTOR.\n'
+       'DURING THE INSURRECTION AT ALPHA PRAM,  THE FOURTH PLANET IN'#13#10 +
+       'THE SYSTEM, WHICH WAS BASE TO THE ELITE GALACTIC CORPS, WAS'#13#10 +
+       'DESTROYED BY A BOVINARIAN VIOLATOR SHIP.  THE SHIELDING'#13#10 +
+       'SURROUNDING THE MOUNTAIN WHERE THE CORPS WAS BASED WAS SO'#13#10 +
+       'STRONG, HOWEVER, THAT THE MOUNTAIN SURVIVED.  THE BASE WAS'#13#10 +
+       'THEN MOUNTED TO A TROJAN GATE JUMP POINT AND TO THIS DAY IT'#13#10 +
+       'REMAINS AS A WAY POINT BETWEEN THE RIM WORLDS AND THE CORE'#13#10 +
+       'QUARTER, AS WELL AS HOUSING MILITARY MIGHT IN THIS SECTOR.'#13#10
       );
        Wait(3);
         end;
@@ -2359,7 +2482,7 @@ begin
        if (newascii) break;
         end;
      if (lastascii = 27) goto end;
-     VI_FadeOut(0,256,0,0,0,64);
+     VI_FadeOut(0,256, 0, 0, 0,64);
 
      loadscreen('BRIEF7');
      VI_FadeIn(0,256,colors,64);
@@ -2369,15 +2492,15 @@ begin
      begin
        printy := 139;
        FN_PrintCentered(
-       'THE PRIMARY OBJECTIVE FOR THIS WORLD IS THE IMPERIAL SIGIL.\n'
-       'IT IS THE SYMBOL OF POWER WHICH MAINTAINS THE CHANCELLOR\n'
-       'IN HIS POSITION OF DOMINANCE WITHIN THE SECTOR.  YOU HAVE BUT\n'
-       'TO TAKE THE SIGIL FROM THE CHANCELLOR HIMSELF.  UNFORTUNATELY\n'
-       'FOR YOU, THE DESPOTIC CHANCELLOR HAD HIS FLESH REPLACED\n'
-       'BY A CYBERNETIC SYMBIOTE IN ORDER TO INSURE HIS IMMORTALITY\n'
-       'AND SUBSEQUENT ETERNAL RULE OF THE CORPS.  OVER 30 ATTEMPTS\n'
-       'HAVE BEEN MADE TO WREST THE SIGIL FROM THE CHANCELLOR'S GRASP.\n'
-       'THEY ALL FAILED.\n'
+       'THE PRIMARY OBJECTIVE FOR THIS WORLD IS THE IMPERIAL SIGIL.'#13#10 +
+       'IT IS THE SYMBOL OF POWER WHICH MAINTAINS THE CHANCELLOR'#13#10 +
+       'IN HIS POSITION OF DOMINANCE WITHIN THE SECTOR.  YOU HAVE BUT'#13#10 +
+       'TO TAKE THE SIGIL FROM THE CHANCELLOR HIMSELF.  UNFORTUNATELY'#13#10 +
+       'FOR YOU, THE DESPOTIC CHANCELLOR HAD HIS FLESH REPLACED'#13#10 +
+       'BY A CYBERNETIC SYMBIOTE IN ORDER TO INSURE HIS IMMORTALITY'#13#10 +
+       'AND SUBSEQUENT ETERNAL RULE OF THE CORPS.  OVER 30 ATTEMPTS'#13#10 +
+       'HAVE BEEN MADE TO WREST THE SIGIL FROM THE CHANCELLOR'S GRASP.'#13#10 +
+       'THEY ALL FAILED.'#13#10
       );
        Wait(3);
         end;
@@ -2387,11 +2510,11 @@ begin
        if (newascii) break;
         end;
      if (lastascii = 27) goto end;
-     VI_FadeOut(0,256,0,0,0,64);
+     VI_FadeOut(0,256, 0, 0, 0,64);
 
       end;
 
-   VI_FillPalette(0,0,0);
+   VI_FillPalette(0, 0, 0);
    if map<8 then
     loadscreen('TRANS');
    else if (map<16)
@@ -2443,13 +2566,13 @@ begin
      Wait(10);
      if (newascii) break;
       end;
-   VI_FadeOut(0,256,0,0,0,64);
+   VI_FadeOut(0,256, 0, 0, 0,64);
     end;
 
 end:
   memcpy(viewbuffer,scr,64000);
   free(scr);
-  memset(screen,0,64000);
+  memset(screen, 0,64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   timecount := oldtimecount;
   end;
