@@ -3,6 +3,8 @@
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
 (* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
+(***************************************************************************)
+(*                                                                         *)
 (*                   Digital Sound Interface Kit (DSIK)                    *)
 (*                            Version 2.00                                 *)
 (*                                                                         *)

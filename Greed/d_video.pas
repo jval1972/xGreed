@@ -3,6 +3,8 @@
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
 (* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
+(***************************************************************************)
+(*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
 (*                                                                         *)
