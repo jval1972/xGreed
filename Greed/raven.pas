@@ -132,7 +132,12 @@ var
   nethurtsoundtime: integer;
   demobuffer: PByteArray;
   demokb: array[0..NUMCODES - 1] of byte;
-  secretbuf: string;
+
+const
+  SECRETBUFSIZE = 20;
+
+var
+  secretbuf: string[SECRETBUFSIZE];
 
 const
   NETMSGSIZE = 30;
@@ -149,6 +154,7 @@ implementation
 
 uses
   d_ints,
+  modplay,
   r_conten,
   r_public;
 
@@ -165,15 +171,16 @@ begin
   begin
     while time >= elev_p.elevTimer do
     begin
-      if (elev_p.elevUp) and ((elev_p.position+:= elev_p.speed) >= elev_p.ceiling) then
+      if (elev_p.elevUp) and (CAddI(elev_p.position, elev_p.speed) >= elev_p.ceiling) then
       begin
-        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
         elev_p.position := elev_p.ceiling;
-        if (elev_p.typ = E_NORMAL) elev_p.elevDown := true;
+        if elev_p.typ = E_NORMAL then
+          elev_p.elevDown := true
         else if (elev_p.typ <> E_SWAP) and (elev_p.typ <> E_SECRET) then
         begin
           if elev_p.endeval then
-            Event(elev_p.endeval,false);
+            Event(elev_p.endeval, false);
           floorheight[elev_p.mapspot] := elev_p.position;
           if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
             mapsprites[elev_p.mapspot] := 0;
@@ -184,7 +191,7 @@ begin
         elev_p.elevUp := false;
         elev_p.elevTimer := elev_p.elevTimer + 280;
       end
-      else if (elev_p.elevDown) and ((elev_p.position-:= elev_p.speed) <= elev_p.floor) then
+      else if (elev_p.elevDown) and (CSubI(elev_p.position, elev_p.speed) <= elev_p.floor) then
       begin
         SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
         elev_p.position := elev_p.floor;
@@ -192,7 +199,7 @@ begin
         else if elev_p.typ <> E_SWAP then
         begin
           if elev_p.endeval then
-            Event(elev_p.endeval,false);
+            Event(elev_p.endeval, false);
           floorheight[elev_p.mapspot] := elev_p.position;
           if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
             mapsprites[elev_p.mapspot] := 0;
@@ -213,33 +220,37 @@ begin
     end;
     elev_p := elev_p.next;
   end;
-  newfloorz := RF_GetFloorZ(player.x,player.y)+player.height;
+  newfloorz := RF_GetFloorZ(player.x, player.y) + player.height;
   if newfloorz <> floorz then
   begin
-   if player.z>newfloorz then
-   begin
-     fallrate := fallrate + FALLUNIT;
-     player.z := player.z - fallrate;
-     if (player.z<newfloorz) player.z := newfloorz;
-   end
-   else if player.z<newfloorz then
-   begin
-     player.z := newfloorz;
-     fallrate := 0;
-      end;
+    if player.z>newfloorz then
+    begin
+      fallrate := fallrate + FALLUNIT;
+      player.z := player.z - fallrate;
+      if player.z < newfloorz then
+        player.z := newfloorz;
+    end
+    else if player.z < newfloorz then
+    begin
+      player.z := newfloorz;
+      fallrate := 0;
     end;
   end;
+end;
 
 
-int GetTargetAngle(int n, fixed_t pz)
-begin
-  scaleobj_t *hsprite;
-  counter, mapspot, result, x, y, z, d, accuracy: integer;
+function GetTargetAngle(const n: integer; const pz: fixed_t): integer;
+var
+  hsprite: Pscaleobj_t;
+  counter, mapspot, x, y, z, d, accuracy: integer;
   found: boolean;
   sz: fixed_t;
-
+begin
   if not autotarget then
-  return (-player.scrollmin)) and (ANGLES;
+  begin
+    result := (-player.scrollmin) and ANGLES;
+    exit;
+  end;
   accuracy := 16; //16 + 2*player.difficulty;
   counter := 0;
   found := false;
@@ -247,2140 +258,2677 @@ begin
   probe.x := player.x;
   probe.y := player.y;
   probe.z := player.z;
-  probe.angle := player.angle+n;
+  probe.angle := player.angle + n;
   probe.zadj := player.height;
-  probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
-  while counter++<MAXPROBE do
+  probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+
+  while counter < MAXPROBE do
   begin
-   result := SP_Thrust;
-   if result = 1 then
-   begin
-     for(hsprite := firstscaleobj.next;hsprite <> @lastscaleobj;hsprite := hsprite.next)
-      if hsprite.hitpoints then
+    result := SP_Thrust;
+    if result = 1 then
+    begin
+      hsprite := firstscaleobj.next;
+      while hsprite <> @lastscaleobj do
+        hsprite := hsprite.next;
+      if hsprite.hitpoints <> 0 then
       begin
-  mapspot := (hsprite.y shr FRACTILESHIFT)*MAPCOLS+(hsprite.x shr FRACTILESHIFT);
-  if mapspot = spriteloc then
-  begin
-    found := true;
-    counter := MAXPROBE;
-    break;
-     end;
-   end;
-      end;
-    end;
-  if not found then
-  begin
-   counter := 0;
-   msprite := @probe;
-   probe.x := player.x;
-   probe.y := player.y;
-   probe.z := player.z;
-   probe.angle := player.angle+n+accuracy;
-   probe.zadj := player.height;
-   probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
-   while counter++<MAXPROBE do
-   begin
-     result := SP_Thrust;
-     if result = 1 then
-     begin
-       for(hsprite := firstscaleobj.next;hsprite <> @lastscaleobj;hsprite := hsprite.next)
-  if hsprite.hitpoints then
-  begin
-    mapspot := (hsprite.y shr FRACTILESHIFT)*MAPCOLS+(hsprite.x shr FRACTILESHIFT);
-    if mapspot = spriteloc then
-    begin
-      found := true;
-      player.angle := player.angle + accuracy;
-      counter := MAXPROBE;
-      break;
-       end;
-     end;
+        mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+        if mapspot = spriteloc then
+        begin
+          found := true;
+          counter := MAXPROBE;
+          break;
         end;
       end;
     end;
+    inc(counter);
+  end;
+
   if not found then
   begin
-   counter := 0;
-   msprite := @probe;
-   probe.x := player.x;
-   probe.y := player.y;
-   probe.z := player.z;
-   probe.angle := player.angle+n-accuracy;
-   probe.zadj := player.height;
-   probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
-   while counter++<MAXPROBE do
-   begin
-     result := SP_Thrust;
-     if result = 1 then
-     begin
-       for(hsprite := firstscaleobj.next;hsprite <> @lastscaleobj;hsprite := hsprite.next)
-  if hsprite.hitpoints then
-  begin
-    mapspot := (hsprite.y shr FRACTILESHIFT)*MAPCOLS+(hsprite.x shr FRACTILESHIFT);
-    if mapspot = spriteloc then
+    counter := 0;
+    msprite := @probe;
+    probe.x := player.x;
+    probe.y := player.y;
+    probe.z := player.z;
+    probe.angle := player.angle + n + accuracy;
+    probe.zadj := player.height;
+    probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
+
+    while counter < MAXPROBE do
     begin
-      found := true;
-      player.angle := player.angle - accuracy;
-      counter := MAXPROBE;
-      break;
-       end;
-     end;
+      result := SP_Thrust;
+      if result = 1 then
+      begin
+        hsprite := firstscaleobj.next;
+        while hsprite <> @lastscaleobj do
+          hsprite := hsprite.next;
+        if hsprite.hitpoints <> 0 then
+        begin
+          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          if mapspot = spriteloc then
+          begin
+            found := true;
+            player.angle := player.angle + accuracy;
+            counter := MAXPROBE;
+            break;
+          end;
         end;
       end;
+      inc(counter);
     end;
+
+  end;
+
   if not found then
   begin
-   counter := 0;
-   msprite := @probe;
-   probe.x := player.x;
-   probe.y := player.y;
-   probe.z := player.z;
-   probe.angle := player.angle+n+accuracy/2;
-   probe.zadj := player.height;
-   probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
-   while counter++<MAXPROBE do
-   begin
-     result := SP_Thrust;
-     if result = 1 then
-     begin
-       for(hsprite := firstscaleobj.next;hsprite <> @lastscaleobj;hsprite := hsprite.next)
-  if hsprite.hitpoints then
-  begin
-    mapspot := (hsprite.y shr FRACTILESHIFT)*MAPCOLS+(hsprite.x shr FRACTILESHIFT);
-    if mapspot = spriteloc then
+    counter := 0;
+    msprite := @probe;
+    probe.x := player.x;
+    probe.y := player.y;
+    probe.z := player.z;
+    probe.angle := player.angle + n - accuracy;
+    probe.zadj := player.height;
+    probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
+
+    while counter < MAXPROBE do
     begin
-      found := true;
-      player.angle := player.angle + accuracy/2;
-      counter := MAXPROBE;
-      break;
-       end;
-     end;
+      result := SP_Thrust;
+      if result = 1 then
+      begin
+        hsprite := firstscaleobj.next;
+        while hsprite <> @lastscaleobj do
+          hsprite := hsprite.next;
+        if hsprite.hitpoints <> 0 then
+        begin
+          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          if mapspot = spriteloc then
+          begin
+            found := true;
+            player.angle := player.angle - accuracy;
+            counter := MAXPROBE;
+            break;
+          end;
         end;
       end;
+      inc(counter);
     end;
+
+  end;
+
   if not found then
   begin
-   counter := 0;
-   msprite := @probe;
-   probe.x := player.x;
-   probe.y := player.y;
-   probe.z := player.z;
-   probe.angle := player.angle+n-accuracy/2;
-   probe.zadj := player.height;
-   probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
-   while counter++<MAXPROBE do
-   begin
-     result := SP_Thrust;
-     if result = 1 then
-     begin
-       for(hsprite := firstscaleobj.next;hsprite <> @lastscaleobj;hsprite := hsprite.next)
-  if hsprite.hitpoints then
-  begin
-    mapspot := (hsprite.y shr FRACTILESHIFT)*MAPCOLS+(hsprite.x shr FRACTILESHIFT);
-    if mapspot = spriteloc then
+    counter := 0;
+    msprite := @probe;
+    probe.x := player.x;
+    probe.y := player.y;
+    probe.z := player.z;
+    probe.angle := player.angle + n + accuracy div 2;
+    probe.zadj := player.height;
+    probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
+
+    while counter < MAXPROBE do
     begin
-      found := true;
-      player.angle := player.angle - accuracy/2;
-      counter := MAXPROBE;
-      break;
-       end;
-     end;
+      result := SP_Thrust;
+      if result = 1 then
+      begin
+        hsprite := firstscaleobj.next;
+        while hsprite <> @lastscaleobj do
+          hsprite := hsprite.next;
+        if hsprite.hitpoints then
+        begin
+          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          if mapspot = spriteloc then
+          begin
+            found := true;
+            player.angle := player.angle + accuracy div 2;
+            counter := MAXPROBE;
+            break;
+          end;
         end;
       end;
+      inc(counter);
     end;
+
+  end;
+
+  if not found then
+  begin
+    counter := 0;
+    msprite := @probe;
+    probe.x := player.x;
+    probe.y := player.y;
+    probe.z := player.z;
+    probe.angle := player.angle + n - accuracy div 2;
+    probe.zadj := player.height;
+    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+
+    while counter < MAXPROBE do
+    begin
+      result := SP_Thrust;
+      if result = 1 then
+      begin
+        hsprite := firstscaleobj.next;
+        while hsprite <> @lastscaleobj do
+          hsprite := hsprite.next;
+        if hsprite.hitpoints then
+        begin
+          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          if mapspot = spriteloc then
+          begin
+            found := true;
+            player.angle := player.angle - accuracy div 2;
+            counter := MAXPROBE;
+            break;
+          end;
+        end;
+      end;
+      inc(counter);
+    end;
+
+  end;
+
   if found then
   begin
-   pz := pz + player.z;
-   sz := hsprite.z+(hsprite.height/2);
-   if sz>pz then
-   begin
-     z := (sz-pz) shr (FRACBITS+2);
-     if (z >= MAXAUTO) return (-player.scrollmin)) and (ANGLES;
-     x := (hsprite.x-player.x) shr (FRACBITS+2);
-     y := (hsprite.y-player.y) shr (FRACBITS+2);
-     d := (int)sqrt(x*x + y*y);
-     if (d >= MAXAUTO) or (autoangle2[d][z] = -1) return (-player.scrollmin)) and (ANGLES;
-     return autoangle2[d][z];
-   end
-   else if sz<pz then
-   begin
-     z := (pz-sz) shr (FRACBITS+2);
-     if (z >= MAXAUTO) return (-player.scrollmin)) and (ANGLES;
-     x := (hsprite.x-player.x) shr (FRACBITS+2);
-     y := (hsprite.y-player.y) shr (FRACBITS+2);
-     d := (int)sqrt(x*x + y*y);
-     if (d >= MAXAUTO) or (autoangle2[d][z] = -1) return (-player.scrollmin)) and (ANGLES;
-     return -autoangle2[d][z];
+    pz := pz + player.z;
+    sz := hsprite.z + (hsprite.height div 2);
+    if sz > pz then
+    begin
+      z := (sz - pz) shr (FRACBITS + 2);
+      if z >= MAXAUTO then
+      begin
+        result := (-player.scrollmin) and ANGLES;
+        exit;
       end;
-   else return (-player.scrollmin)) and (ANGLES;
+      x := (hsprite.x - player.x) shr (FRACBITS + 2);
+      y := (hsprite.y - player.y) shr (FRACBITS + 2);
+      d := trunc(sqrt(x * x + y * y);
+      if (d >= MAXAUTO) or (autoangle2[d][z] = -1) then
+      begin
+        result := (-player.scrollmin) and ANGLES;
+        exit;
+      end;
+      result := autoangle2[d][z];
+      exit;
+    end
+    else if sz<pz then
+    begin
+      z := (pz - sz) shr (FRACBITS + 2);
+      if z >= MAXAUTO then
+      begin
+        result := (-player.scrollmin) and ANGLES;
+        exit;
+      end;
+      x := (hsprite.x - player.x) shr (FRACBITS + 2);
+      y := (hsprite.y - player.y) shr (FRACBITS + 2);
+      d := trunc(sqrt(x * x + y * y);
+      if (d >= MAXAUTO) or (autoangle2[d][z] = -1) then
+      begin
+        result := (-player.scrollmin) and ANGLES;
+        exit;
+      end;
+      result := -autoangle2[d][z];
+      exit;
     end;
-  else return (-player.scrollmin)) and (ANGLES;
+    else
+    begin
+      result := (-player.scrollmin) and ANGLES;
+      exit;
+    end;
+  end
+  else
+  begin
+    result := (-player.scrollmin) and ANGLES;
+    exit;
   end;
+end;
 
 
 procedure fireweapon;
-begin
-// scaleobj_t *hsprite;
-// int        px, py, sx, sy, xmove, ymove, spriteloc1, spriteloc2, mapspot;
+var
   i, n, angle2, ammo, angle, angleinc, oldangle: integer;
   z, xmove2, ymove2: fixed_t;
-
+begin
   player.status := 2;
   n := player.weapons[player.currentweapon];
   ammo := weapons[n].ammorate;
-  if (player.ammo[weapons[n].ammotype]<ammo) exit;
+  if player.ammo[weapons[n].ammotype] < ammo then
+    exit;
   oldangle := player.angle;
   weapons[n].charge := 0;
   player.ammo[weapons[n].ammotype] := player.ammo[weapons[n].ammotype] - ammo;
-  if (n <> 4) and (n <> 18) and (weapmode <> 1) weapmode := 1;
-  case n  of
-  begin
-   13: // mooman #1
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_HANDBULLET,player.x,player.y,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    SoundEffect(SN_BULLET13,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET13,0,player.x,player.y);
-    break;
-   8: // lizard #1
-   14: // specimen #1
-   15: // trix #1
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_HANDBULLET,player.x,player.y,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    SoundEffect(SN_BULLET8,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET8,0,player.x,player.y);
-    break;
-   1: // psyborg #2
-    z := player.height-(52 shl FRACBITS);
-    angle2 := GetTargetAngle(0,z);
-    SpawnSprite(S_BULLET1,player.x,player.y,player.z,z,player.angle,angle2,true,playernum);
-    SoundEffect(SN_BULLET1,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET1,0,player.x,player.y);
-    break;
-   2:
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_BULLET2,player.x,player.y,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    SoundEffect(SN_BULLET5,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET5,0,player.x,player.y);
-    break;
-   3:
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_BULLET3,player.x,player.y,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    SoundEffect(SN_BULLET3,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET3,0,player.x,player.y);
-    break;
-   4:
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_BULLET4,player.x,player.y,player.z,z,player.angle-48,GetTargetAngle(-16,z),true,playernum);
-    SpawnSprite(S_BULLET4,player.x,player.y,player.z,z,player.angle-24,GetTargetAngle(-32,z),true,playernum);
-    SpawnSprite(S_BULLET4,player.x,player.y,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    SpawnSprite(S_BULLET4,player.x,player.y,player.z,z,player.angle+24,GetTargetAngle(+16,z),true,playernum);
-    SpawnSprite(S_BULLET4,player.x,player.y,player.z,z,player.angle+48,GetTargetAngle(+32,z),true,playernum);
-    break;
-   5:
-
-    break;
-   6:
-    break;
-   7: // psyborg #1
-    z := player.height-(52 shl FRACBITS);
-    angle2 := GetTargetAngle(0,z);
-    SpawnSprite(S_BULLET7,player.x,player.y,player.z,z,player.angle,angle2,true,playernum);
-    SoundEffect(SN_BULLET13,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET13,0,player.x,player.y);
-    break;
-   9: // lizard #2
-    z := player.height-(52 shl FRACBITS);
-    angle2 := GetTargetAngle(0,z);
-    SpawnSprite(S_BULLET9,player.x,player.y,player.z,z,player.angle,angle2,true,playernum);
-    SoundEffect(SN_BULLET9,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET1,0,player.x,player.y);
-    break;
-   10: // specimen #2
-    z := player.height-(52 shl FRACBITS);
-    angle2 := GetTargetAngle(0,z);
-    SpawnSprite(S_BULLET10,player.x,player.y,player.z,z,player.angle,angle2,true,playernum);
-    SoundEffect(SN_BULLET10,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET10,0,player.x,player.y);
-    break;
-   11: // mooman #2
-    z := player.height-(52 shl FRACBITS);
-    angle2 := GetTargetAngle(0,z);
-    SpawnSprite(S_BULLET11,player.x,player.y,player.z,z,player.angle,angle2,true,playernum);
-    SoundEffect(SN_BULLET1,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET1,0,player.x,player.y);
-    break;
-   12: // dominatrix #2
-    angle := (player.angle-NORTH)) and (ANGLES;
-    xmove2 := FIXEDMUL(FRACUNIT*4,costable[angle]);
-    ymove2 := -FIXEDMUL(FRACUNIT*4,sintable[angle]);
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_BULLET12,player.x+xmove2,player.y+ymove2,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    angle := (player.angle+NORTH)) and (ANGLES;
-    xmove2 := FIXEDMUL(FRACUNIT*4,costable[angle]);
-    ymove2 := -FIXEDMUL(FRACUNIT*4,sintable[angle]);
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_BULLET12,player.x+xmove2,player.y+ymove2,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    SoundEffect(SN_BULLET12,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET12,0,player.x,player.y);
-    break;
-
-   16: // red gun
-    angle := (player.angle-NORTH)) and (ANGLES;
-    xmove2 := FIXEDMUL(FRACUNIT*4,costable[angle]);
-    ymove2 := -FIXEDMUL(FRACUNIT*4,sintable[angle]);
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_BULLET16,player.x+xmove2,player.y+ymove2,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    angle := (player.angle+NORTH)) and (ANGLES;
-    xmove2 := FIXEDMUL(FRACUNIT*4,costable[angle]);
-    ymove2 := -FIXEDMUL(FRACUNIT*4,sintable[angle]);
-    z := player.height-(fixed_t)(50 shl FRACBITS);
-    SpawnSprite(S_BULLET16,player.x+xmove2,player.y+ymove2,player.z,z,player.angle,GetTargetAngle(0,z),true,playernum);
-    SoundEffect(SN_BULLET12,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET12,0,player.x,player.y);
-    break;
-
-   17: // blue gun
-    z := player.height-(64 shl FRACBITS);
-    angle2 := GetTargetAngle(0,z);
-    SpawnSprite(S_BULLET17,player.x,player.y,player.z,z,player.angle,angle2,true,playernum);
-    SoundEffect(SN_BULLET17,0,player.x,player.y);
-    if (netmode) NetSoundEffect(SN_BULLET1,0,player.x,player.y);
-    break;
-
-   18: // green gun
-    angleinc := ANGLES/12;
-    angle := 0;
-    for(i := 0;i<12;i++,angle+:= angleinc)
+  if (n <> 4) and (n <> 18) and (weapmode <> 1) then
+    weapmode := 1;
+  case n of
+  13: // mooman #1
     begin
-      z := player.height-(52 shl FRACBITS);
-      angle2 := GetTargetAngle(0,z);
-      SpawnSprite(S_BULLET18,player.x,player.y,player.z,z,angle,angle2,true,playernum);
-       end;
-    if netmode then
-     NetSendSpawn(S_BULLET18,player.x,player.y,player.z,z,angle,angle2,true,playernum);
-    break;
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_HANDBULLET, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      SoundEffect(SN_BULLET13, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET13, 0, player.x, player.y);
     end;
-  player.angle := oldangle;
+
+  8, // lizard #1
+  14, // specimen #1
+  15: // trix #1
+    begin
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_HANDBULLET, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      SoundEffect(SN_BULLET8, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET8, 0, player.x, player.y);
+    end;
+
+  1: // psyborg #2
+    begin
+      z := player.height - (52 shl FRACBITS);
+      angle2 := GetTargetAngle(0, z);
+      SpawnSprite(S_BULLET1, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
+      SoundEffect(SN_BULLET1, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET1, 0, player.x, player.y);
+    end;
+
+  2:
+    begin
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_BULLET2, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      SoundEffect(SN_BULLET5, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET5, 0, player.x, player.y);
+    end;
+
+  3:
+    begin
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_BULLET3, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      SoundEffect(SN_BULLET3, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET3, 0, player.x, player.y);
+    end;
+
+  4:
+    begin
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle - 48, GetTargetAngle(-16, z), true, playernum);
+      SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle - 24, GetTargetAngle(-32, z), true, playernum);
+      SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle + 24, GetTargetAngle(+16, z), true, playernum);
+      SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle + 48, GetTargetAngle(+32, z), true, playernum);
+    end;
+
+  5:;
+
+  6:;
+
+  7: // psyborg #1
+    begin
+      z := player.height - (52 shl FRACBITS);
+      angle2 := GetTargetAngle(0, z);
+      SpawnSprite(S_BULLET7, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
+      SoundEffect(SN_BULLET13, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET13, 0, player.x, player.y);
+    end;
+
+  9: // lizard #2
+    begin
+      z := player.height - (52 shl FRACBITS);
+      angle2 := GetTargetAngle(0, z);
+      SpawnSprite(S_BULLET9, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
+      SoundEffect(SN_BULLET9, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET1, 0, player.x, player.y);
+    end;
+
+  10: // specimen #2
+    begin
+      z := player.height - (52 shl FRACBITS);
+      angle2 := GetTargetAngle(0, z);
+      SpawnSprite(S_BULLET10, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
+      SoundEffect(SN_BULLET10, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET10, 0, player.x, player.y);
+    end;
+  11: // mooman #2
+    begin
+      z := player.height - (52 shl FRACBITS);
+      angle2 := GetTargetAngle(0, z);
+      SpawnSprite(S_BULLET11, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
+      SoundEffect(SN_BULLET1, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET1, 0, player.x, player.y);
+    end;
+
+  12: // dominatrix #2
+    begin
+      angle := (player.angle - NORTH) and ANGLES;
+      xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
+      ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_BULLET12, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      angle := (player.angle + NORTH) and ANGLES;
+      xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
+      ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_BULLET12, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      SoundEffect(SN_BULLET12, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET12, 0, player.x, player.y);
+    end;
+
+  16: // red gun
+    begin
+      angle := (player.angle-NORTH)) and (ANGLES;
+      xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
+      ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_BULLET16, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      angle := (player.angle + NORTH) and ANGLES;
+      xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
+      ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
+      z := player.height - (50 shl FRACBITS);
+      SpawnSprite(S_BULLET16, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
+      SoundEffect(SN_BULLET12, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET12, 0, player.x, player.y);
+    end;
+
+  17: // blue gun
+    begin
+      z := player.height - (64 shl FRACBITS);
+      angle2 := GetTargetAngle(0, z);
+      SpawnSprite(S_BULLET17, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
+      SoundEffect(SN_BULLET17, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_BULLET1, 0, player.x, player.y);
+    end;
+
+  18: // green gun
+    begin
+      angleinc := ANGLES div 12;
+      angle := 0;
+      for i := 0 to 11 do
+      begin
+        z := player.height - (52 shl FRACBITS);
+        angle2 := GetTargetAngle(0, z);
+        SpawnSprite(S_BULLET18, player.x, player.y, player.z, z, angle, angle2, true, playernum);
+        angle := angle + angleinc;
+      end;
+      if netmode then
+        NetSendSpawn(S_BULLET18, player.x, player.y, player.z, z, angle, angle2, true, playernum);
+    end;
   end;
+  player.angle := oldangle;
+end;
 
 
-bool FindWarpDestination(int *x, int *y,byte warpValue)
-begin
+function FindWarpDestination(var x, y: integer; const warpValue: byte): boolean;
+var
   search, nosearch: integer;
-
-  nosearch := *y*MAPSIZE+*x;
+begin
+  nosearch := y * MAPSIZE + x;
   if not warpActive then
   begin
-   for(search := 0;search<MAPROWS*MAPCOLS;search++)
-    if (mapsprites[search] = warpValue) and (search <> nosearch) then
-    begin
-      *x := search) and ((MAPSIZE-1);
-      *y := search shr TILESHIFT;
-      turnrate := 0;
-      moverate := 0;
-      fallrate := 0;
-      strafrate := 0;
-      ResetMouse;
-      warpActive := warpValue;
-      return true;
-       end;
-    end;
-  return false;
+    for search := 0 to MAPROWS * MAPCOLS - 1 do
+      if (mapsprites[search] = warpValue) and (search <> nosearch) then
+      begin
+        x := search and (MAPSIZE - 1);
+        y := search shr TILESHIFT;
+        turnrate := 0;
+        moverate := 0;
+        fallrate := 0;
+        strafrate := 0;
+        ResetMouse;
+        warpActive := warpValue;
+        result := true;
+        exit;
+      end;
   end;
+  result := false;
+end;
 
 
-procedure CheckItems(int centerx,int centery,bool useit,int chartype);
-begin
-  scaleobj_t *sprite;
+procedure CheckItems(const centerx, centery: integer; const useit: boolean; const chartype: integer);
+var
+  sprite: Pscaleobj_t;
   mapspot, value, value2, index, ammo, cmapspot: integer;
   x, y, i, j: integer;
-  elevobj_t  *elev_p;
+  elev_p: Pelevobj_t;
   sound: boolean;
-
-  mapspot := centery*MAPCOLS+centerx;
+begin
+  mapspot := centery * MAPCOLS + centerx;
   value := mapsprites[mapspot];
-  case value  of
-  begin
-   SM_MEDPAK1:
-   SM_MEDPAK2:
-   SM_MEDPAK3:
-   SM_MEDPAK4:
-    value2 := value-SM_MEDPAK1+S_MEDPAK1;
-    for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = value2 then
+  case value of
+  SM_MEDPAK1,
+  SM_MEDPAK2,
+  SM_MEDPAK3,
+  SM_MEDPAK4:
+    begin
+      value2 := value - SM_MEDPAK1 + S_MEDPAK1;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
       begin
-  if (useit) and (netmode) NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    if player.angst = player.maxangst then
-    begin
-      player.inventory[0]+:= 5-(value-SM_MEDPAK1);
-      if (player.inventory[0]>20) player.inventory[0] := 20;
-      oldinventory := -2;
-      inventoryleft;
-      inventoryright;
-      writemsg('Stored MedTube!');
-       end;
-    else
-    begin
-      medpaks((5-(value-SM_MEDPAK1))*50);
-      writemsg('Used MedTube!');
-       end;
-     end;
-  SpawnSprite(S_GENERATOR,sprite.x,sprite.y,0,0,0,0,false,0);
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break;
-
-   SM_SHIELD1:
-   SM_SHIELD2:
-   SM_SHIELD3:
-   SM_SHIELD4:
-    value2 := value-SM_MEDPAK1+S_MEDPAK1;
-    for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = value2 then
-      begin
-  if (useit) and (netmode) NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    if player.shield = player.maxshield then
-    begin
-      player.inventory[1]+:= 1+(value-SM_SHIELD1);
-      if (player.inventory[1]>20) player.inventory[1] := 20;
-      oldinventory := -2;
-      inventoryleft;
-      inventoryright;
-      writemsg('Stored Shield Charge!');
-       end;
-    else
-    begin
-      heal((1+(value-SM_SHIELD1))*50);
-      writemsg('Used Shield Charge!');
-       end;
-     end;
-  SpawnSprite(S_GENERATOR,sprite.x,sprite.y,0,0,0,0,false,0);
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break;
-
-   SM_ENERGY:
-   SM_BALLISTIC:
-   SM_PLASMA:
-    value2 := value-SM_ENERGY+S_ENERGY;
-    for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = value2 then
-      begin
-  if (useit) and (netmode) then
-   NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    hurtborder := true;
-    player.ammo[value-SM_ENERGY]+:= 75;
-    if player.ammo[value-SM_ENERGY]>MAXAMMO then
-     player.ammo[value-SM_ENERGY] := MAXAMMO;
-    oldshots := -1;
-    writemsg(pickupammomsg[value-SM_ENERGY]);
-     end;
-  SpawnSprite(S_GENERATOR,sprite.x,sprite.y,0,0,0,0,false,0);
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break;
-
-   SM_AMMOBOX:
-    value2 := weapons[player.weapons[player.currentweapon]].ammotype;
-    if (useit) and ((player.ammo[value2] >= MAXAMMO) or (
-     (weapons[player.currentweapon].ammorate = 0) and (
-      player.ammo[0] >= MAXAMMO) and (player.ammo[1] >= MAXAMMO) and (
-      player.ammo[2] >= MAXAMMO)))
-     exit;
-    for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = S_AMMOBOX then
-      begin
-  if (useit) and (netmode) then
-   NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    hurtborder := true;
-    if weapons[player.currentweapon].ammorate = 0 then
-    begin
-      player.ammo[0] := player.ammo[0] + 45;
-      if player.ammo[0]>MAXAMMO then
-       player.ammo[0] := MAXAMMO;
-      player.ammo[1] := player.ammo[1] + 45;
-      if player.ammo[1]>MAXAMMO then
-       player.ammo[1] := MAXAMMO;
-      player.ammo[2] := player.ammo[2] + 45;
-      if player.ammo[2]>MAXAMMO then
-       player.ammo[2] := MAXAMMO;
-       end;
-    else
-    begin
-      player.ammo[value2] := player.ammo[value2] + 125;
-      if player.ammo[value2]>MAXAMMO then
-       player.ammo[value2] := MAXAMMO;
-       end;
-    oldshots := -1;
-    writemsg(pickupmsg[11]);
-     end;
-  if sprite.deathevent then
-   Event(sprite.deathevent,false);
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break;
-   SM_MEDBOX:
-    if (useit) and (player.angst = player.maxangst) and (player.shield = player.maxshield) then
-     exit;
-    for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = S_MEDBOX then
-      begin
-  if (useit) and (netmode) then
-   NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    heal(250);
-    medpaks(250);
-    hurtborder := true;
-    writemsg(pickupmsg[12]);
-     end;
-  if sprite.deathevent then
-   Event(sprite.deathevent,false);
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break;
-   SM_GOODIEBOX:
-    for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = S_GOODIEBOX then
-      begin
-  if (useit) and (netmode) then
-   NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    for (i := 0;i<2;i++)
-    begin
-      if netmode then
-       do
-       begin
-         value2 := (clock+MS_RndT) mod 11;
-          end; while (value2 <> 8);
-      else
-       do
-       begin
-         value2 := (clock+MS_RndT) mod 11;
-          end; while (value2 <> 6) and (value2 <> 10) and (value2 <> 12);
-      player.inventory[value2+2]+:= pickupamounts[value2];
-      if value2 = 2 then
-      begin
-        if player.inventory[2]>15 then
-         player.inventory[2] := 15;
-      end
-      else if (player.inventory[value2+2]>10)
-       player.inventory[value2+2] := 10;
-       end;
-    oldinventory := -2;
-    inventoryleft;
-    inventoryright;
-    hurtborder := true;
-    writemsg(pickupmsg[13]);
-     end;
-  if sprite.deathevent then
-   Event(sprite.deathevent,false);
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break;
-
-   SM_IGRENADE:
-   SM_IREVERSO:
-   SM_IPROXMINE:
-   SM_ITIMEMINE:
-   SM_IDECOY:
-   SM_IINSTAWALL:
-   SM_ICLONE:
-   SM_IHOLO:
-   SM_IINVIS:
-   SM_IJAMMER:
-   SM_ISTEALER:
-    value2 := value-SM_IGRENADE+S_IGRENADE;
-    for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = value2 then
-      begin
-  if (useit) and (netmode) then
-   NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    hurtborder := true;
-    player.inventory[value-SM_IGRENADE+2]+:= pickupamounts[value-SM_IGRENADE];
-    if value = SM_IGRENADE then
-    begin
-      if player.inventory[2]>15 then
-       player.inventory[2] := 15;
-    end
-    else if (player.inventory[value-SM_IGRENADE+2]>10)
-     player.inventory[value-SM_IGRENADE+2] := 10;
-    writemsg(pickupmsg[value-SM_IGRENADE]);
-    oldinventory := -2;
-    inventoryleft;
-    inventoryright;
-     end;
-  SpawnSprite(S_GENERATOR,sprite.x,sprite.y,0,0,0,0,false,0);
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break;
-(*   SM_HOLE:
-    if (useit) and (player.inventory[10] >= 10) exit;
-    for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = S_HOLE then
-      begin
-  if (useit) and (netmode) NetItemPickup(centerx,centery);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_PICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    hurtborder := true;
-    ++player.inventory[10];
-    writemsg('Portable Hole picked up!');
-    oldinventory := -2;
-    inventoryleft;
-    inventoryright;
-     end;
-  RF_RemoveSprite(sprite);
-  exit;
-   end;
-    break; *)
-
-   SM_BONUSITEM:
-    if useit then
-    begin
-      if (netmode) NetItemPickup(centerx,centery);
-      addscore(BonusItem.score);
-      heal(150);
-      medpaks(150);
-      hurtborder := true;
-      writemsg('Bonus Item!');
-       end;
-    BonusItem.score := 0;
-    BonusItem.mapspot := -1;
-    RF_RemoveSprite(BonusItem.sprite);
-    mapsprites[mapspot] := 0;
-    SoundEffect(SN_WEAPPICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-    BonusItem.name := NULL;
-    break;
-
-   SM_PRIMARY1:
-   SM_PRIMARY2:
-    value2 := mapsprites[mapspot]-SM_PRIMARY1 + S_PRIMARY1;
-    for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-      if sprite.typ = value2 then
-      begin
-  if (useit) and (netmode) NetItemPickup(centerx,centery);
-  RF_RemoveSprite(sprite);
-  mapsprites[mapspot] := 0;
-  SoundEffect(SN_WEAPPICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-  if useit then
-  begin
-    heal(150);
-    medpaks(150);
-    hurtborder := true;
-    addscore(primaries[(value2-S_PRIMARY1)*2 + 1]);
-    writemsg('Primary goal item!');
-    player.primaries[value2-S_PRIMARY1]++;
-     end;
-  exit;
-   end;
-    break;
-   SM_SECONDARY1:
-   SM_SECONDARY2:
-   SM_SECONDARY3:
-   SM_SECONDARY4:
-   SM_SECONDARY5:
-   SM_SECONDARY6:
-   SM_SECONDARY7:
-    value2 := mapsprites[mapspot]-SM_SECONDARY1 + S_SECONDARY1;
-    for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
-     if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) and (sprite.typ = value2) then
-     begin
-       if (useit) and (netmode) then
-  NetItemPickup(centerx,centery);
-       RF_RemoveSprite(sprite);
-       mapsprites[mapspot] := 0;
-       SoundEffect(SN_WEAPPICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-       if useit then
-       begin
-   heal(150);
-   medpaks(150);
-   hurtborder := true;
-   addscore(secondaries[(value2-S_SECONDARY1)*2 + 1]);
-   writemsg('Secondary goal item!');
-   player.secondaries[value2-S_SECONDARY1]++;
-    end;
-       exit;
-        end;
-    break;
-
-   SM_SWITCHDOWN:
-    sound := false;
-    for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.typ = E_SWITCHDOWN) and ( not elev_p.elevDown) then
-     begin
-       elev_p.elevDown := true;
-       elev_p.elevTimer := timecount;
-       sound := true;
-       SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
-        end;
-    if (useit) and (netmode) NetItemPickup(centerx,centery);
-    mapsprites[mapspot] := 0;
-    if (useit) and (sound) then
-    begin
-      SoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-      if (netmode) NetSoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-      SoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-      if (netmode) NetSoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-       end;
-    break;
-   SM_SWITCHDOWN2:
-    if (useit) and (netmode) NetItemPickup(centerx,centery);
-    sound := false;
-    for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.typ = E_SWITCHDOWN2) and ( not elev_p.elevDown) then
-     begin
-       elev_p.elevDown := true;
-       elev_p.elevTimer := timecount;
-       SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
-       sound := true;
-        end;
-    if (useit) and (netmode) NetItemPickup(centerx,centery);
-    mapsprites[mapspot] := 0;
-    if (sound) SoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-    break;
-   SM_SWITCHUP:
-    if (useit) and (netmode) NetItemPickup(centerx,centery);
-    sound := false;
-    for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.typ = E_SWITCHUP) and ( not elev_p.elevUp) then
-     begin
-       elev_p.elevUp := true;
-       elev_p.elevTimer := timecount;
-       sound := true;
-       SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
-        end;
-    if (useit) and (netmode) NetItemPickup(centerx,centery);
-    mapsprites[mapspot] := 0;
-    if (sound) SoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-    break;
-
-   SM_EXIT:
-    ExitLevel := true;
-    break;
-
-   SM_WEAPON0:
-   SM_WEAPON1:
-   SM_WEAPON2:
-   SM_WEAPON3:
-   SM_WEAPON4:
-   SM_WEAPON5:
-   SM_WEAPON6:
-   SM_WEAPON7:
-   SM_WEAPON8:
-   SM_WEAPON9:
-   SM_WEAPON10:
-   SM_WEAPON11:
-   SM_WEAPON12:
-   SM_WEAPON13:
-   SM_WEAPON14:
-   SM_WEAPON15:
-   SM_WEAPON16:
-   SM_WEAPON17:
-   SM_WEAPON18:
-    value2 := value-SM_WEAPON0;
-    ammo := weapons[value2].ammotype;
-    index := ammo+2;
-
-    if (player.weapons[index] = value2) and ( not netmode) then
-    begin
-      player.ammo[ammo] := player.ammo[ammo] + 100;
-      if (player.ammo[ammo]>MAXAMMO) player.ammo[ammo] := MAXAMMO;
-      writemsg('Found more ammo.');
-    end
-    else if (player.weapons[index] <> -1) and ( not netmode) then
-    begin
-      for(i := -MAPCOLS;i <= MAPCOLS;i+:= MAPCOLS)
-       for(j := -1;j <= 1;j++)
-       begin
-   cmapspot := mapspot+i+j;
-   if (cmapspot <> mapspot) and (floorpic[cmapspot]) and (mapsprites[cmapspot] = 0) then
-   begin
-     x := (cmapspot) and (63)*MAPSIZE+32;
-     y := (cmapspot/64)*MAPSIZE+32;
-     SpawnSprite(player.weapons[index]+S_WEAPON0,x shl FRACBITS,y shl FRACBITS,0,0,0,0,0,0);
-     i := MAPCOLS*2;
-     j := 1;
-     break;
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = value2 then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              if player.angst = player.maxangst then
+              begin
+                player.inventory[0] := player.inventory[0] + 5 - (value - SM_MEDPAK1);
+                if player.inventory[0] > 20 then
+                  player.inventory[0] := 20;
+                oldinventory := -2;
+                inventoryleft;
+                inventoryright;
+                writemsg('Stored MedTube!');
+              end
+              else
+              begin
+                medpaks((5 - (value - SM_MEDPAK1)) * 50);
+                writemsg('Used MedTube!');
+              end;
+            end;
+            SpawnSprite(S_GENERATOR, sprite.x, sprite.y, 0, 0, 0, 0, false, 0);
+            RF_RemoveSprite(sprite);
+            exit;
+          end;
+        sprite := sprite.next;
       end;
     end;
-      if player.currentweapon = index then
+
+  SM_SHIELD1,
+  SM_SHIELD2,
+  SM_SHIELD3,
+  SM_SHIELD4:
+    begin
+      value2 := value - SM_MEDPAK1 + S_MEDPAK1;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
       begin
-  weaponlowering := false;
-  newweapon := index;
-  loadweapon(value2);
-  weaponychange := weaponpic[0].height-20;
-  changingweapons := true;
-   end;
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = value2 then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              if player.shield = player.maxshield then
+              begin
+                player.inventory[1] := player.inventory[1] + 1 + (value - SM_SHIELD1);
+                if player.inventory[1] > 20 then
+                  player.inventory[1] := 20;
+                oldinventory := -2;
+                inventoryleft;
+                inventoryright;
+                writemsg('Stored Shield Charge!');
+              end
+              else
+              begin
+                heal((1 + (value - SM_SHIELD1)) * 50);
+                writemsg('Used Shield Charge!');
+              end;
+            end;
+            SpawnSprite(S_GENERATOR, sprite.x, sprite.y, 0, 0, 0, 0, false, 0);
+            RF_RemoveSprite(sprite);
+            exit;
+          end;
+        sprite := sprite.next
+      end;
+    end;
+
+  SM_ENERGY,
+  SM_BALLISTIC,
+  SM_PLASMA:
+    begin
+      value2 := value - SM_ENERGY + S_ENERGY;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
+      begin
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = value2 then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              hurtborder := true;
+              player.ammo[value - SM_ENERGY] := player.ammo[value - SM_ENERGY] + 75;
+              if player.ammo[value - SM_ENERGY] > MAXAMMO then
+                player.ammo[value - SM_ENERGY] := MAXAMMO;
+              oldshots := -1;
+              writemsg(pickupammomsg[value - SM_ENERGY]);
+            end;
+            SpawnSprite(S_GENERATOR, sprite.x, sprite.y, 0, 0, 0, 0, false, 0);
+            RF_RemoveSprite(sprite);
+            exit;
+        sprite := sprite.next;
+      end;
+    end;
+
+  SM_AMMOBOX:
+    begin
+      value2 := weapons[player.weapons[player.currentweapon]].ammotype;
+      if (useit and ((player.ammo[value2] >= MAXAMMO) or
+        ((weapons[player.currentweapon].ammorate = 0) and
+        (player.ammo[0] >= MAXAMMO) and (player.ammo[1] >= MAXAMMO) and
+        (player.ammo[2] >= MAXAMMO))) then
+        exit;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
+      begin
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = S_AMMOBOX then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              hurtborder := true;
+              if weapons[player.currentweapon].ammorate = 0 then
+              begin
+                player.ammo[0] := player.ammo[0] + 45;
+                if player.ammo[0] > MAXAMMO then
+                  player.ammo[0] := MAXAMMO;
+                player.ammo[1] := player.ammo[1] + 45;
+                if player.ammo[1] > MAXAMMO then
+                  player.ammo[1] := MAXAMMO;
+                player.ammo[2] := player.ammo[2] + 45;
+                if player.ammo[2] > MAXAMMO then
+                  player.ammo[2] := MAXAMMO;
+              end
+              else
+              begin
+                player.ammo[value2] := player.ammo[value2] + 125;
+                if player.ammo[value2] > MAXAMMO then
+                  player.ammo[value2] := MAXAMMO;
+              end;
+              oldshots := -1;
+              writemsg(pickupmsg[11]);
+            end;
+            if sprite.deathevent then
+              Event(sprite.deathevent, false);
+            RF_RemoveSprite(sprite);
+            exit;
+          end;
+        sprite := sprite.next;
+      end;
+    end;
+
+  SM_MEDBOX:
+    begin
+      if (useit) and (player.angst = player.maxangst) and (player.shield = player.maxshield) then
+        exit;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
+      begin
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = S_MEDBOX then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              heal(250);
+              medpaks(250);
+              hurtborder := true;
+              writemsg(pickupmsg[12]);
+            end;
+            if sprite.deathevent then
+              Event(sprite.deathevent, false);
+            RF_RemoveSprite(sprite);
+            exit;
+          end;
+        sprite := sprite.next;
+      end;
+    end;
+
+  SM_GOODIEBOX:
+    begin
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
+      begin
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = S_GOODIEBOX then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              for i := 0 to 1 do
+              begin
+                if netmode then
+                begin
+                  repeat
+                    value2 := (clock + MS_RndT) mod 11;
+                  until value2 = 8;
+                end
+                else
+                begin
+                  repeat
+                    value2 := (clock + MS_RndT) mod 11;
+                  until (value2 = 6) or (value2 = 10) or (value2 = 12);
+                end;
+                player.inventory[value2 + 2] := player.inventory[value2 + 2] + pickupamounts[value2];
+                if value2 = 2 then
+                begin
+                  if player.inventory[2] > 15 then
+                    player.inventory[2] := 15;
+                end
+                else if player.inventory[value2 + 2] > 10 then
+                  player.inventory[value2 + 2] := 10;
+              end;
+              oldinventory := -2;
+              inventoryleft;
+              inventoryright;
+              hurtborder := true;
+              writemsg(pickupmsg[13]);
+            end;
+            if sprite.deathevent then
+              Event(sprite.deathevent, false);
+            RF_RemoveSprite(sprite);
+            exit;
+          end;
+        sprite := sprite.next;
+      end;
+    end;
+
+  SM_IGRENADE,
+  SM_IREVERSO,
+  SM_IPROXMINE,
+  SM_ITIMEMINE,
+  SM_IDECOY,
+  SM_IINSTAWALL,
+  SM_ICLONE,
+  SM_IHOLO,
+  SM_IINVIS,
+  SM_IJAMMER,
+  SM_ISTEALER:
+    begin
+      value2 := value - SM_IGRENADE + S_IGRENADE;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
+      begin
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = value2 then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              hurtborder := true;
+              player.inventory[value - SM_IGRENADE + 2] := player.inventory[value - SM_IGRENADE + 2] + pickupamounts[value - SM_IGRENADE];
+              if value = SM_IGRENADE then
+              begin
+                if player.inventory[2] > 15 then
+                  player.inventory[2] := 15;
+              end
+              else if (player.inventory[value - SM_IGRENADE + 2] > 10 then
+                player.inventory[value - SM_IGRENADE + 2] := 10;
+              writemsg(pickupmsg[value - SM_IGRENADE]);
+              oldinventory := -2;
+              inventoryleft;
+              inventoryright;
+            end;
+            SpawnSprite(S_GENERATOR, sprite.x, sprite.y, 0, 0, 0, 0, false, 0);
+            RF_RemoveSprite(sprite);
+            exit;
+          end;
+        sprite := sprite.next;
+      end;
+    end;
+
+  SM_BONUSITEM:
+    begin
+      if useit then
+      begin
+        if netmode then
+          NetItemPickup(centerx, centery);
+          addscore(BonusItem.score);
+        heal(150);
+        medpaks(150);
+        hurtborder := true;
+        writemsg('Bonus Item!');
+      end;
+      BonusItem.score := 0;
+      BonusItem.mapspot := -1;
+      RF_RemoveSprite(BonusItem.sprite);
+      mapsprites[mapspot] := 0;
+      SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+      BonusItem.name := '';
+    end;
+
+  SM_PRIMARY1,
+  SM_PRIMARY2:
+    begin
+      value2 := mapsprites[mapspot] - SM_PRIMARY1 + S_PRIMARY1;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
+      begin
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if sprite.typ = value2 then
+          begin
+            if useit and netmode then
+              NetItemPickup(centerx, centery);
+            RF_RemoveSprite(sprite);
+            mapsprites[mapspot] := 0;
+            SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            if useit then
+            begin
+              heal(150);
+              medpaks(150);
+              hurtborder := true;
+              addscore(primaries[(value2 - S_PRIMARY1) * 2 + 1]);
+              writemsg('Primary goal item!');
+              inc(player.primaries[value2 - S_PRIMARY1]);
+            end;
+            exit;
+          end;
+        sprite := sprite.next;
+      end;
+    end;
+
+  SM_SECONDARY1,
+  SM_SECONDARY2,
+  SM_SECONDARY3,
+  SM_SECONDARY4,
+  SM_SECONDARY5,
+  SM_SECONDARY6,
+  SM_SECONDARY7:
+    begin
+      value2 := mapsprites[mapspot] - SM_SECONDARY1 + S_SECONDARY1;
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
+      begin
+        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) and (sprite.typ = value2) then
+        begin
+          if useit and netmode then
+            NetItemPickup(centerx, centery);
+          RF_RemoveSprite(sprite);
+          mapsprites[mapspot] := 0;
+          SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          if useit then
+          begin
+            heal(150);
+            medpaks(150);
+            hurtborder := true;
+            addscore(secondaries[(value2 - S_SECONDARY1) * 2 + 1]);
+            writemsg('Secondary goal item!');
+            inc(player.secondaries[value2 - S_SECONDARY1]);
+          end;
+          exit;
+        end;
+        sprite := sprite.next;
+      end;
+    end;
+
+  SM_SWITCHDOWN:
+    begin
+      sound := false;
+      elev_p := firstelevobj.next;
+      while elev_p <> @lastelevobj do
+      begin
+        if (elev_p.typ = E_SWITCHDOWN) and not elev_p.elevDown then
+        begin
+          elev_p.elevDown := true;
+          elev_p.elevTimer := timecount;
+          sound := true;
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        end;
+        if useit and netmode then
+          NetItemPickup(centerx, centery);
+        mapsprites[mapspot] := 0;
+        if useit and sound then
+        begin
+          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          if netmode then
+            NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          if netmode then
+            NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+        end;
+        elev_p := elev_p.next;
+      end;
+    end;
+
+  SM_SWITCHDOWN2:
+    begin
+      if useit and netmode then
+        NetItemPickup(centerx, centery);
+      sound := false;
+      elev_p := firstelevobj.next;
+      while elev_p <> @lastelevobj do
+      begin
+        if (elev_p.typ = E_SWITCHDOWN2) and not elev_p.elevDown then
+        begin
+          elev_p.elevDown := true;
+          elev_p.elevTimer := timecount;
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+          sound := true;
+        end;
+        if useit and netmode then
+          NetItemPickup(centerx, centery);
+        mapsprites[mapspot] := 0;
+        if sound then
+          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+        elev_p := elev_p.next;
+      end;
+    end;
+
+  SM_SWITCHUP:
+    begin
+      if useit and netmode then
+        NetItemPickup(centerx, centery);
+      sound := false;
+      elev_p := firstelevobj.next;
+      while elev_p <> @lastelevobj do
+      begin
+        if (elev_p.typ = E_SWITCHUP) and not elev_p.elevUp then
+        begin
+          elev_p.elevUp := true;
+          elev_p.elevTimer := timecount;
+          sound := true;
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        end;
+        if useit and netmode then
+          NetItemPickup(centerx, centery);
+        mapsprites[mapspot] := 0;
+        if sound then
+          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+        elev_p := elev_p.next;
+      end;
+    end;
+
+  SM_EXIT:
+    ExitLevel := true;
+
+  SM_WEAPON0,
+  SM_WEAPON1,
+  SM_WEAPON2,
+  SM_WEAPON3,
+  SM_WEAPON4,
+  SM_WEAPON5,
+  SM_WEAPON6,
+  SM_WEAPON7,
+  SM_WEAPON8,
+  SM_WEAPON9,
+  SM_WEAPON10,
+  SM_WEAPON11,
+  SM_WEAPON12,
+  SM_WEAPON13,
+  SM_WEAPON14,
+  SM_WEAPON15,
+  SM_WEAPON16,
+  SM_WEAPON17,
+  SM_WEAPON18:
+    begin
+      value2 := value - SM_WEAPON0;
+      ammo := weapons[value2].ammotype;
+      index := ammo + 2;
+
+      if (player.weapons[index] = value2) and not netmode then
+      begin
+        player.ammo[ammo] := player.ammo[ammo] + 100;
+        if player.ammo[ammo] > MAXAMMO then
+          player.ammo[ammo] := MAXAMMO;
+        writemsg('Found more ammo.');
+      end
+      else if (player.weapons[index] <> -1) and not netmode then
+      begin
+        i := -MAPCOLS;
+        while i <= MAPCOLS do
+        begin
+          for j := -1 to 1 do
+          begin
+            cmapspot := mapspot + i + j;
+            if (cmapspot <> mapspot) and (floorpic[cmapspot] <> 0) and (mapsprites[cmapspot] = 0) then
+            begin
+              x := (cmapspot and 63) * MAPSIZE + 32;
+              y := (cmapspot div 64) * MAPSIZE + 32;
+              SpawnSprite(player.weapons[index] + S_WEAPON0, x shl FRACBITS, y shl FRACBITS, 0, 0, 0, 0, 0, 0);
+              i := MAPCOLS * 2;
+              break;
+            end;
+          end;
+          i := i + MAPCOLS;
+        end;
+        if player.currentweapon = index then
+        begin
+          weaponlowering := false;
+          newweapon := index;
+          loadweapon(value2);
+          weaponychange := weaponpic[0].height - 20;
+          changingweapons := true;
+        end
+        else
+        begin
+          changingweapons := true;
+          weaponlowering := true;
+          newweapon := index;
+        end;
+        writemsg('Exchanged weapons!');
+      end
+      else if not netmode then
+      begin
+        writemsg('Acquired new weapon!');
+        changingweapons := true;
+        weaponlowering := true;
+        newweapon := index;
+      end;
+
+      if netmode then
+      begin
+        if player.weapons[index] = value2 then
+          exit;
+        writemsg('Acquired new weapon!');
+        player.weapons[index] := value - SM_WEAPON0;
+        player.ammo[ammo] := player.ammo[ammo] + 100;
+        if player.ammo[ammo] > MAXAMMO then
+          player.ammo[ammo] := MAXAMMO;
+        SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+        NetSoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+        changingweapons := true;
+        weaponlowering := true;
+        newweapon := index;
+      end
       else
       begin
-  changingweapons := true;
-  weaponlowering := true;
-  newweapon := index;
-   end;
-      writemsg('Exchanged weapons!');
-    end
-    else if not netmode then
-    begin
-      writemsg('Acquired new weapon!');
-      changingweapons := true;
-      weaponlowering := true;
-      newweapon := index;
+        value2 := value - SM_WEAPON0 + S_WEAPON0;
+        sprite := firstscaleobj.next;
+        while sprite <> @lastscaleobj do
+        begin
+          if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+            if sprite.typ = value2 then
+            begin
+              player.weapons[index] := value - SM_WEAPON0;
+              value2 := weapons[player.weapons[index]].ammotype;
+              hurtborder := true;
+              RF_RemoveSprite(sprite);
+              mapsprites[mapspot] := 0;
+              SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+              exit;
+            end;
+          sprite := sprite.next;
        end;
-    if netmode then
-    begin
-      if player.weapons[index] = value2 then
-       exit;
-      writemsg('Acquired new weapon!');
-      player.weapons[index] := value-SM_WEAPON0;
-      player.ammo[ammo] := player.ammo[ammo] + 100;
-      if (player.ammo[ammo]>MAXAMMO) player.ammo[ammo] := MAXAMMO;
-      SoundEffect(SN_WEAPPICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-      NetSoundEffect(SN_WEAPPICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-      changingweapons := true;
-      weaponlowering := true;
-      newweapon := index;
-       end;
-    else
-    begin
-      value2 := value-SM_WEAPON0+S_WEAPON0;
-      for (sprite := firstscaleobj.next;sprite <> @lastscaleobj;sprite := sprite.next)
-       if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
-  if sprite.typ = value2 then
-  begin
-    player.weapons[index] := value-SM_WEAPON0;
-    value2 := weapons[player.weapons[index]].ammotype;
-    hurtborder := true;
-    RF_RemoveSprite(sprite);
-    mapsprites[mapspot] := 0;
-    SoundEffect(SN_WEAPPICKUP0+chartype,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-    exit;
-     end;
-       end;
-    break;
     end;
   end;
+end;
 
 
-procedure CheckWarps(fixed_t centerx,fixed_t centery);
-begin
+procedure CheckWarps(const centerx, centery: fixed_t);
+var
   x, y, mapspot: integer;
-
+begin
   x := centerx shr FRACTILESHIFT;
   y := centery shr FRACTILESHIFT;
-  mapspot := y*MAPCOLS+x;
+  mapspot := y * MAPCOLS + x;
   if (mapsprites[mapspot] >= 128) and (mapsprites[mapspot] <= 130) then
   begin
-   if (Warping) exit;
-   if (FindWarpDestination and (x,) and (y, mapsprites[mapspot])) then
-   begin
-     WarpX := (x*MAPSIZE+32) shl FRACBITS;
-     WarpY := (y*MAPSIZE+32) shl FRACBITS;
-     Warping := 1;
-      end;
+    if Warping then
+      exit;
+    if FindWarpDestination(x, y, mapsprites[mapspot]) then
+    begin
+      WarpX := (x * MAPSIZE + 32) shl FRACBITS;
+      WarpY := (y * MAPSIZE + 32) shl FRACBITS;
+      Warping := 1;
     end;
+  end
   else
   begin
-   warpActive := 0;
-   if mapsprites[mapspot]>130 then
-    CheckItems(x,y,true,player.chartype);
-    end;
+    warpActive := 0;
+    if mapsprites[mapspot] > 130 then
+      CheckItems(x, y, true, player.chartype);
+  end;
   if triggers[x][y] then
   begin
-   SoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-   if (netmode) NetSoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-   SoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-   if (netmode) NetSoundEffect(SN_TRIGGER,0,centerx shl FRACTILESHIFT,centery shl FRACTILESHIFT);
-   Event(triggers[x][y],true);
-    end;
+    SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+    if netmode then
+      NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+    SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+    if netmode then
+      NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+    Event(triggers[x][y], true);
   end;
+end;
 
 
-procedure CheckDoors(fixed_t centerx, fixed_t centery);
-begin
+procedure CheckDoors(const centerx, centery: fixed_t);
+var
   x, y, mapspot: integer;
-  doorobj_t *door_p, *last_p;
-
-  x := (int)((centerx) shr FRACTILESHIFT);
-  y := (int)((centery) shr FRACTILESHIFT);
-  last_p := @doorlist[numdoors];
-  for (door_p := doorlist; door_p <> last_p; door_p++)
-  while (timecount >= door_p.doorTimer) do
-  begin
-    mapspot := door_p.tiley*MAPCOLS + door_p.tilex;
-    if ((door_p.tilex = x) and (door_p.tiley = y)) or (mapsprites[mapspot]) then
-    begin
-      if (door_p.doorOpen) and ( not door_p.doorClosing) door_p.doorBlocked := true;
-       end;
-    else door_p.doorBlocked := false;
-
-    if door_p.doorOpening then
-    begin
-      if ((door_p.doorSize-:= 4) <= MINDOORSIZE) then
-      begin
-  door_p.doorSize := MINDOORSIZE;
-  door_p.doorOpening := false;
-  door_p.doorOpen := true;
-  door_p.doorTimer+:= 270; // 3 seconds
-   end;
-      else door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
-    end
-    else if door_p.doorClosing then
-    begin
-      if ((door_p.doorSize+:= 4) >= 64) then
-      begin
-  door_p.doorSize := 64;
-  door_p.doorClosing := false;
-  door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
-   end;
-      else door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
-    end
-    else if (door_p.doorOpen) and (timecount>door_p.doorTimer) and ( not door_p.doorBlocked) then
-    begin
-      door_p.doorClosing := true;
-      door_p.doorOpen := false;
-      SoundEffect(SN_DOOR,15,door_p.tilex shl FRACTILESHIFT,door_p.tiley shl FRACTILESHIFT);
-      door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
-       end;
-    else door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
-
-    door_p.position := door_p.doorSize shl FRACBITS;
-     end;
-  end;
-
-
-bool CheckForSwitch(int x,int y,int angle,bool doubleswitch)
+  door_p, last_p: Pdoorobj_t;
 begin
-  mapspot: integer;
-
-  mapspot := y*MAPCOLS+x;
-  if (timecount<SwitchTime) return false;
-  if (angle >= SOUTH+DEGREE45) or (angle<DEGREE45) then
-  begin
-   if (westwall[mapspot+1] = 127) return true;
-    else if (westwall[mapspot+1] = 128) and (doubleswitch) return true;
-    else if (westwall[mapspot+1] = 172) return true;
-    else if (westwall[mapspot+1] = 173) and (doubleswitch) return true;
-    else if (westwall[mapspot+1] = 75) return true;
-    else if (westwall[mapspot+1] = 76) and (doubleswitch) return true;
-    else if (westwall[mapspot+1] = 140) return true;
-    else if (westwall[mapspot+1] = 141) and (doubleswitch) return true;
-    else if (westwall[mapspot+1] = 234) return true;
-    else if (westwall[mapspot+1] = 235) and (doubleswitch) return true;
-  end
-  else if (angle >= DEGREE45) and (angle<NORTH+DEGREE45) then
-  begin
-   if (northwall[mapspot] = 127) return true;
-    else if (northwall[mapspot] = 128) and (doubleswitch) return true;
-    else if (northwall[mapspot] = 172) return true;
-    else if (northwall[mapspot] = 173) and (doubleswitch) return true;
-    else if (northwall[mapspot] = 75) return true;
-    else if (northwall[mapspot] = 76) and (doubleswitch) return true;
-    else if (northwall[mapspot] = 140) return true;
-    else if (northwall[mapspot] = 141) and (doubleswitch) return true;
-    else if (northwall[mapspot] = 234) return true;
-    else if (northwall[mapspot] = 235) and (doubleswitch) return true;
-  end
-  else if (angle >= NORTH+DEGREE45) and (angle<WEST+DEGREE45) then
-  begin
-   if (westwall[mapspot] = 127) return true;
-    else if (westwall[mapspot] = 128) and (doubleswitch) return true;
-    else if (westwall[mapspot] = 172) return true;
-    else if (westwall[mapspot] = 173) and (doubleswitch) return true;
-    else if (westwall[mapspot] = 75) return true;
-    else if (westwall[mapspot] = 76) and (doubleswitch) return true;
-    else if (westwall[mapspot] = 140) return true;
-    else if (westwall[mapspot] = 141) and (doubleswitch) return true;
-    else if (westwall[mapspot] = 234) return true;
-    else if (westwall[mapspot] = 235) and (doubleswitch) return true;
-  end
-  else if angle >= WEST+DEGREE45 then
-  begin
-   if (northwall[mapspot+MAPCOLS] = 127) return true;
-    else if (northwall[mapspot+MAPCOLS] = 128) and (doubleswitch) return true;
-    else if (northwall[mapspot+MAPCOLS] = 172) return true;
-    else if (northwall[mapspot+MAPCOLS] = 173) and (doubleswitch) return true;
-    else if (northwall[mapspot+MAPCOLS] = 75) return true;
-    else if (northwall[mapspot+MAPCOLS] = 76) and (doubleswitch) return true;
-    else if (northwall[mapspot+MAPCOLS] = 140) return true;
-    else if (northwall[mapspot+MAPCOLS] = 141) and (doubleswitch) return true;
-    else if (northwall[mapspot+MAPCOLS] = 234) return true;
-    else if (northwall[mapspot+MAPCOLS] = 235) and (doubleswitch) return true;
-    end;
-  return false;
-  end;
-
-
-procedure SwitchWall(int x,int y,int angle,bool doubleswitch);
-begin
-  mapspot: integer;
-
-  SoundEffect(SN_WALLSWITCH,0,x shl FRACTILESHIFT,y shl FRACTILESHIFT);
-  mapspot := y*MAPCOLS+x;
-  if (angle >= SOUTH+DEGREE45) or (angle<DEGREE45) then
-  begin
-   if (westwall[mapspot+1] = 127) westwall[mapspot+1] := 128;
-    else if (westwall[mapspot+1] = 128) and (doubleswitch) westwall[mapspot+1] := 127;
-    else if (westwall[mapspot+1] = 172) westwall[mapspot+1] := 173;
-    else if (westwall[mapspot+1] = 173) and (doubleswitch) westwall[mapspot+1] := 172;
-    else if (westwall[mapspot+1] = 75) westwall[mapspot+1] := 76;
-    else if (westwall[mapspot+1] = 76) and (doubleswitch) westwall[mapspot+1] := 75;
-    else if (westwall[mapspot+1] = 140) westwall[mapspot+1] := 141;
-    else if (westwall[mapspot+1] = 141) and (doubleswitch) westwall[mapspot+1] := 140;
-    else if (westwall[mapspot+1] = 234) westwall[mapspot+1] := 235;
-    else if (westwall[mapspot+1] = 235) and (doubleswitch) westwall[mapspot+1] := 234;
-  end
-  else if (angle >= DEGREE45) and (angle<NORTH+DEGREE45) then
-  begin
-   if (northwall[mapspot] = 127) northwall[mapspot] := 128;
-    else if (northwall[mapspot] = 128) and (doubleswitch) northwall[mapspot] := 127;
-    else if (northwall[mapspot] = 172) northwall[mapspot] := 173;
-    else if (northwall[mapspot] = 173) and (doubleswitch) northwall[mapspot] := 172;
-    else if (northwall[mapspot] = 75) northwall[mapspot] := 76;
-    else if (northwall[mapspot] = 76) and (doubleswitch) northwall[mapspot] := 75;
-    else if (northwall[mapspot] = 140) northwall[mapspot] := 141;
-    else if (northwall[mapspot] = 141) and (doubleswitch) northwall[mapspot] := 140;
-    else if (northwall[mapspot] = 234) northwall[mapspot] := 235;
-    else if (northwall[mapspot] = 235) and (doubleswitch) northwall[mapspot] := 234;
-  end
-  else if (angle >= NORTH+DEGREE45) and (angle<WEST+DEGREE45) then
-  begin
-   if (westwall[mapspot] = 127) westwall[mapspot] := 128;
-    else if (westwall[mapspot] = 128) and (doubleswitch) westwall[mapspot] := 127;
-    else if (westwall[mapspot] = 172) westwall[mapspot] := 173;
-    else if (westwall[mapspot] = 173) and (doubleswitch) westwall[mapspot] := 172;
-    else if (westwall[mapspot] = 75) westwall[mapspot] := 76;
-    else if (westwall[mapspot] = 76) and (doubleswitch) westwall[mapspot] := 75;
-    else if (westwall[mapspot] = 140) westwall[mapspot] := 141;
-    else if (westwall[mapspot] = 141) and (doubleswitch) westwall[mapspot] := 140;
-    else if (westwall[mapspot] = 234) westwall[mapspot] := 235;
-    else if (westwall[mapspot] = 235) and (doubleswitch) westwall[mapspot] := 234;
-  end
-  else if angle >= WEST+DEGREE45 then
-  begin
-   if (northwall[mapspot+MAPCOLS] = 127) northwall[mapspot+MAPCOLS] := 128;
-    else if (northwall[mapspot+MAPCOLS] = 128) and (doubleswitch) northwall[mapspot+MAPCOLS] := 127;
-    else if (northwall[mapspot+MAPCOLS] = 172) northwall[mapspot+MAPCOLS] := 173;
-    else if (northwall[mapspot+MAPCOLS] = 173) and (doubleswitch) northwall[mapspot+MAPCOLS] := 172;
-    else if (northwall[mapspot+MAPCOLS] = 75) northwall[mapspot+MAPCOLS] := 76;
-    else if (northwall[mapspot+MAPCOLS] = 76) and (doubleswitch) northwall[mapspot+MAPCOLS] := 75;
-    else if (northwall[mapspot+MAPCOLS] = 140) northwall[mapspot+MAPCOLS] := 141;
-    else if (northwall[mapspot+MAPCOLS] = 141) and (doubleswitch) northwall[mapspot+MAPCOLS] := 140;
-    else if (northwall[mapspot+MAPCOLS] = 234) northwall[mapspot+MAPCOLS] := 235;
-    else if (northwall[mapspot+MAPCOLS] = 235) and (doubleswitch) northwall[mapspot+MAPCOLS] := 234;
-    end;
-  end;
-
-
-procedure CheckHere(int useit,fixed_t centerx,fixed_t centery,int angle);
-(* check for door at centerx, centery *)
-begin
-  mapspot, x, y, x1, y1: integer;
-  elevobj_t  *elev_p;
-  switchit: boolean;
-
-  TryDoor(centerx,centery);
   x := centerx shr FRACTILESHIFT;
   y := centery shr FRACTILESHIFT;
-  mapspot := y*MAPCOLS+x;
+  last_p := @doorlist[numdoors];
+  door_p := @doorlist[0];
+  while door_p <> last_p do
+  begin
+    while (timecount >= door_p.doorTimer) do
+    begin
+      mapspot := door_p.tiley * MAPCOLS + door_p.tilex;
+      if ((door_p.tilex = x) and (door_p.tiley = y)) or (mapsprites[mapspot] <> 0) then
+      begin
+        if door_p.doorOpen and not door_p.doorClosing then
+          door_p.doorBlocked := true;
+      end
+      else
+        door_p.doorBlocked := false;
+
+      if door_p.doorOpening then
+      begin
+        if CSubI(door_p.doorSize, 4) <= MINDOORSIZE then
+        begin
+          door_p.doorSize := MINDOORSIZE;
+          door_p.doorOpening := false;
+          door_p.doorOpen := true;
+          door_p.doorTimer := door_p.doorTimer + 270; // 3 seconds
+        end
+        else
+          door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+      end
+      else if door_p.doorClosing then
+      begin
+        if CAddI(door_p.doorSize, 4) >= 64 then
+        begin
+          door_p.doorSize := 64;
+          door_p.doorClosing := false;
+          door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+        end
+        else
+          door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+      end
+      else if door_p.doorOpen and (timecount > door_p.doorTimer) and not door_p.doorBlocked then
+      begin
+        door_p.doorClosing := true;
+        door_p.doorOpen := false;
+        SoundEffect(SN_DOOR, 15, door_p.tilex shl FRACTILESHIFT, door_p.tiley shl FRACTILESHIFT);
+        door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+      end
+      else
+        door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+
+      door_p.position := door_p.doorSize shl FRACBITS;
+    end;
+    inc(door_p);
+  end;
+end;
+
+function CheckForSwitch(const x, y: integer; const angle: integer; const doubleswitch: boolean): boolean;
+var
+  mapspot: integer;
+begin
+  if timecount < SwitchTime then
+  begin
+    false;
+    exit;
+  end;
+  mapspot := y * MAPCOLS + x;
+  if (angle >= SOUTH + DEGREE45) or (angle < DEGREE45) then
+  begin
+    if westwall[mapspot + 1] = 127 then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 128) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 172) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 173) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 75) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 76) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 140) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 141) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 234) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot + 1] = 235) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+  end
+  else if (angle >= DEGREE45) and (angle < NORTH + DEGREE45) then
+  begin
+    if (northwall[mapspot] = 127) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 128) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 172) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 173) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 75) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 76) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 140) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 141) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 234) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot] = 235) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+  end
+  else if (angle >= NORTH + DEGREE45) and (angle < WEST + DEGREE45) then
+  begin
+    if (westwall[mapspot] = 127) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 128) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 172) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 173) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 75) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 76) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 140) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 141) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 234) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (westwall[mapspot] = 235) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+  end
+  else if angle >= WEST + DEGREE45 then
+  begin
+    if (northwall[mapspot + MAPCOLS] = 127) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 128) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 172) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 173) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 75) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 76) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 140) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 141) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 234) then
+    begin
+      result := true;
+      exit;
+    end
+    else if (northwall[mapspot + MAPCOLS] = 235) and (doubleswitch) then
+    begin
+      result := true;
+      exit;
+    end
+  end;
+  result := false;
+end;
+
+
+procedure SwitchWall(const x, y: integer; const angle: integer; const doubleswitch: boolean);
+var
+  mapspot: integer;
+begin
+  SoundEffect(SN_WALLSWITCH, 0, x shl FRACTILESHIFT, y shl FRACTILESHIFT);
+  mapspot := y * MAPCOLS + x;
+  if (angle >= SOUTH+DEGREE45) or (angle < DEGREE45) then
+  begin
+    if westwall[mapspot + 1] = 127 then
+      westwall[mapspot + 1] := 128
+    else if (westwall[mapspot + 1] = 128) and (doubleswitch) then
+      westwall[mapspot + 1] := 127
+    else if (westwall[mapspot + 1] = 172) then
+      westwall[mapspot + 1] := 173
+    else if (westwall[mapspot + 1] = 173) and (doubleswitch) then
+      westwall[mapspot + 1] := 172
+    else if (westwall[mapspot + 1] = 75) then
+      westwall[mapspot + 1] := 76
+    else if (westwall[mapspot + 1] = 76) and (doubleswitch) then
+      westwall[mapspot + 1] := 75
+    else if (westwall[mapspot + 1] = 140) then
+      westwall[mapspot + 1] := 141
+    else if (westwall[mapspot + 1] = 141) and (doubleswitch) then
+      westwall[mapspot + 1] := 140
+    else if (westwall[mapspot + 1] = 234) then
+      westwall[mapspot + 1] := 235
+    else if (westwall[mapspot + 1] = 235) and (doubleswitch) then
+      westwall[mapspot + 1] := 234;
+  end
+  else if (angle >= DEGREE45) and (angle < NORTH + DEGREE45) then
+  begin
+    if northwall[mapspot] = 127 then
+      northwall[mapspot] := 128
+    else if (northwall[mapspot] = 128) and (doubleswitch) then
+      northwall[mapspot] := 127
+    else if (northwall[mapspot] = 172) then
+      northwall[mapspot] := 173
+    else if (northwall[mapspot] = 173) and (doubleswitch) then
+      northwall[mapspot] := 172
+    else if (northwall[mapspot] = 75) then
+      northwall[mapspot] := 76
+    else if (northwall[mapspot] = 76) and (doubleswitch) then
+      northwall[mapspot] := 75
+    else if (northwall[mapspot] = 140) then
+      northwall[mapspot] := 141
+    else if (northwall[mapspot] = 141) and (doubleswitch) then
+      northwall[mapspot] := 140
+    else if (northwall[mapspot] = 234) then
+      northwall[mapspot] := 235
+    else if (northwall[mapspot] = 235) and then
+      (doubleswitch) northwall[mapspot] := 234;
+  end
+  else if (angle >= NORTH + DEGREE45) and (angle < WEST + DEGREE45) then
+  begin
+    if (westwall[mapspot] = 127) then
+      westwall[mapspot] := 128
+    else if (westwall[mapspot] = 128) and (doubleswitch) then
+      westwall[mapspot] := 127
+    else if (westwall[mapspot] = 172) then
+      westwall[mapspot] := 173
+    else if (westwall[mapspot] = 173) and (doubleswitch) then
+      westwall[mapspot] := 172
+    else if (westwall[mapspot] = 75) then
+      westwall[mapspot] := 76
+    else if (westwall[mapspot] = 76) and (doubleswitch) then
+      westwall[mapspot] := 75
+    else if (westwall[mapspot] = 140) then
+      westwall[mapspot] := 141
+    else if (westwall[mapspot] = 141) and (doubleswitch) then
+      westwall[mapspot] := 140
+    else if (westwall[mapspot] = 234) then
+      westwall[mapspot] := 235
+    else if (westwall[mapspot] = 235) and (doubleswitch) then
+      westwall[mapspot] := 234;
+  end
+  else if angle >= WEST + DEGREE45 then
+  begin
+    if northwall[mapspot + MAPCOLS] = 127 then
+      northwall[mapspot + MAPCOLS] := 128
+    else if (northwall[mapspot + MAPCOLS] = 128) and (doubleswitch) then
+      northwall[mapspot + MAPCOLS] := 127
+    else if (northwall[mapspot + MAPCOLS] = 172) then
+      northwall[mapspot + MAPCOLS] := 173
+    else if (northwall[mapspot + MAPCOLS] = 173) and (doubleswitch) then
+      northwall[mapspot + MAPCOLS] := 172
+    else if (northwall[mapspot + MAPCOLS] = 75) then
+      northwall[mapspot + MAPCOLS] := 76
+    else if (northwall[mapspot + MAPCOLS] = 76) and (doubleswitch) then
+      northwall[mapspot + MAPCOLS] := 75
+    else if (northwall[mapspot + MAPCOLS] = 140) then
+      northwall[mapspot + MAPCOLS] := 141
+    else if (northwall[mapspot + MAPCOLS] = 141) and (doubleswitch) then
+      northwall[mapspot + MAPCOLS] := 140
+    else if (northwall[mapspot + MAPCOLS] = 234) then
+      northwall[mapspot + MAPCOLS] := 235
+    else if (northwall[mapspot + MAPCOLS] = 235) and (doubleswitch) then
+      northwall[mapspot + MAPCOLS] := 234;
+  end;
+end;
+
+
+// check for door at centerx, centery
+procedure CheckHere(int useit,fixed_t centerx,fixed_t centery,int angle);
+var
+  mapspot, x, y, x1, y1: integer;
+  elev_p: Pelevobj_t;
+  switchit: boolean;
+label
+  skipit;
+begin
+  TryDoor(centerx, centery);
+  x := centerx shr FRACTILESHIFT;
+  y := centery shr FRACTILESHIFT;
+  mapspot := y * MAPCOLS + x;
   switchit := false;
 
-  if switches[x][y] then
+  if switches[x][y] <> 0 then
   begin
-   if useit then
-   begin
-     if (not CheckForSwitch(x,y,angle,true)) then
-      goto skipit;
-     if netmode then
-      NetCheckHere(centerx,centery,angle);
-      end;
-   SwitchWall(x,y,angle,true);
-   Event(switches[x][y],false);
-    end;
-skipit:
-  case mapsprites[mapspot]  of
-  begin
-   SM_SWAPSWITCH:
-    if (useit) and ( not CheckForSwitch(x,y,angle,true)) break;
-    if (useit) and (netmode) NetCheckHere(centerx,centery,angle);
-    for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if elev_p.typ = E_SWAP then
-     begin
-       if elev_p.position = elev_p.ceiling then
-       begin
-   elev_p.elevDown := true;
-   elev_p.elevTimer := timecount;
-   switchit := true;
-       end
-       else if elev_p.position = elev_p.floor then
-       begin
-   elev_p.elevUp := true;
-   elev_p.elevTimer := timecount;
-   switchit := true;
-    end;
-        end;
-    if switchit then
+    if useit then
     begin
-      SwitchWall(x,y,angle,true);
-      SwitchTime := timecount+210;
-       end;
-    break;
-
-   SM_STRIGGER:
-    for(elev_p := firstelevobj.next;elev_p <> @lastelevobj;elev_p := elev_p.next)
-     if (elev_p.typ = E_SECRET) and (elev_p.elevDown = false) and (elev_p.elevUp = false) then
-     begin
-       x1 := elev_p.mapspot mod MAPCOLS;
-       y1 := elev_p.mapspot/MAPCOLS;
-       if (abs(x1-x)<2) and (abs(y1-y)<2) then
-       begin
-   switchit := true;
-   elev_p.elevDown := true;
-   elev_p.elevTimer := timecount;
-   CheckHere(false,x1 shl FRACTILESHIFT,y1 shl FRACTILESHIFT,angle);
+      if not CheckForSwitch(x, y, angle, true) then
+        goto skipit;
+      if netmode then
+        NetCheckHere(centerx, centery, angle);
     end;
+    SwitchWall(x, y, angle, true);
+    Event(switches[x][y], false);
+  end;
+
+skipit:
+  case mapsprites[mapspot] of
+  SM_SWAPSWITCH:
+    begin
+      if useit and not CheckForSwitch(x, y, angle, true) then
+        exit;
+      if useit and netmode then
+        NetCheckHere(centerx, centery, angle);
+      elev_p := firstelevobj.next;
+      while elev_p <> @lastelevobj do
+      begin
+        if elev_p.typ = E_SWAP then
+        begin
+          if elev_p.position = elev_p.ceiling then
+          begin
+            elev_p.elevDown := true;
+            elev_p.elevTimer := timecount;
+            switchit := true;
+          end
+          else if elev_p.position = elev_p.floor then
+          begin
+            elev_p.elevUp := true;
+            elev_p.elevTimer := timecount;
+            switchit := true;
+          end;
         end;
-    if (switchit) and (useit) and (netmode) then
-     NetCheckHere(centerx,centery,angle);
-    break;
+        if switchit then
+        begin
+          SwitchWall(x, y, angle, true);
+          SwitchTime := timecount + 210;
+        end;
+        elev_p := elev_p.next;
+      end;
+    end;
+
+  SM_STRIGGER:
+    begin
+      elev_p := firstelevobj.next;
+      while elev_p <> @lastelevobj do
+      begin
+        if (elev_p.typ = E_SECRET) and not elev_p.elevDown and not elev_p.elevUp then
+        begin
+          x1 := elev_p.mapspot mod MAPCOLS;
+          y1 := elev_p.mapspot div MAPCOLS;
+          if (abs(x1 - x) < 2) and (abs(y1 - y) < 2) then
+          begin
+            switchit := true;
+            elev_p.elevDown := true;
+            elev_p.elevTimer := timecount;
+            CheckHere(false, x1 shl FRACTILESHIFT, y1 shl FRACTILESHIFT, angle);
+          end;
+        end;
+        elev_p := elev_p.next;
+      end;
+      if switchit and useit and netmode then
+        NetCheckHere(centerx, centery, angle);
     end;
   end;
+end;
 
 
 procedure chargeweapons;
-begin
+var
   i, n: integer;
   time: integer;
-
+begin
   time := timecount;
-  for(i := 0;i<5;i++)
+  for i := 0 to 4 do
   begin
-   n := player.weapons[i];
-   while (n <> -1) and (weapons[n].charge<100) and (time >= weapons[n].chargetime) do
-   begin
-     if weapons[n].charge = 0 then
-      weapons[n].chargetime := timecount;
-     weapons[n].charge := weapons[n].charge + 20;
-     weapons[n].chargetime := weapons[n].chargetime + weapons[n].chargerate;
-      end;
+    n := player.weapons[i];
+    while (n <> -1) and (weapons[n].charge < 100) and (time >= weapons[n].chargetime) do
+    begin
+      if weapons[n].charge = 0 then
+        weapons[n].chargetime := timecount;
+      weapons[n].charge := weapons[n].charge + 20;
+      weapons[n].chargetime := weapons[n].chargetime + weapons[n].chargerate;
     end;
   end;
+end;
 
 
-(* timer access not  ********************************************)
+// timer access! ********************************************
 procedure ControlStub1;
 begin
-  end;
+end;
 
-bool TryDoor(fixed_t xcenter, fixed_t ycenter)
-begin
+function TryDoor(const xcenter, ycenter: fixed_t): boolean;
+var
   xl, yl, xh, yh, x, y: integer;
-  doorobj_t *door_p, *last_p;
-
-  xl :=  (int)((xcenter-PLAYERSIZE)  shr  FRACTILESHIFT);
-  yl :=  (int)((ycenter-PLAYERSIZE - (TILEUNIT shr 1))  shr  FRACTILESHIFT);
-  xh :=  (int)((xcenter+PLAYERSIZE)  shr  FRACTILESHIFT);
-  yh :=  (int)((ycenter+PLAYERSIZE - (TILEUNIT shr 1))  shr  FRACTILESHIFT);
-// check for doors on the north wall
-  for (y := yl+1;y <= yh;y++)
-  for (x := xl;x <= xh;x++)
-  begin
-    if (mapflags[y*MAPSIZE+x]) and (FL_DOOR) // if tile has a door
-    begin
-      last_p := @doorlist[numdoors];
-      for (door_p := doorlist; door_p <> last_p; door_p++)
-       if (door_p.tilex = x) and (door_p.tiley = y) and ((door_p.orientation = dr_horizontal) or (door_p.orientation = dr_horizontal2)) then
-       begin
-   if (door_p.doorOpen) and ( not door_p.doorClosing) return true; // can move, door is open
-   else if (not door_p.doorOpen) and (door_p.doorBumpable) and ( not door_p.doorOpening) then
-   begin
-     door_p.doorClosing := false;
-     door_p.doorOpening := true;
-     doorsound := true;
-     doorx := door_p.tilex shl FRACTILESHIFT;
-     doory := door_p.tiley shl FRACTILESHIFT;
-     if (door_p.orientation = dr_horizontal) TryDoor(xcenter+64*FRACUNIT,ycenter);
-      else TryDoor(xcenter-64*FRACUNIT,ycenter);
-     if (netmode) NetOpenDoor(xcenter,ycenter);
-     return false;
-   end
-   else if (not door_p.doorOpen) and (door_p.doorBumpable) and (door_p.doorClosing) then
-   begin
-     door_p.doorClosing := false;
-     door_p.doorOpening := true;
-     doorsound := true;
-     doorx := door_p.tilex shl FRACTILESHIFT;
-     doory := door_p.tiley shl FRACTILESHIFT;
-     if (door_p.orientation = dr_horizontal) TryDoor(xcenter+64*FRACUNIT,ycenter);
-      else TryDoor(xcenter-64*FRACUNIT,ycenter);
-     if (netmode) NetOpenDoor(xcenter,ycenter);
-     return false;
-      end;
-   else return false;
-    end;
-       end;
-     end;
-// check for doors on the west wall
-  xl :=  (int)((xcenter-PLAYERSIZE - (TILEUNIT shr 1))  shr  FRACTILESHIFT);
-  yl :=  (int)((ycenter-PLAYERSIZE)  shr  FRACTILESHIFT);
-  xh :=  (int)((xcenter+PLAYERSIZE - (TILEUNIT shr 1))  shr  FRACTILESHIFT);
-  yh :=  (int)((ycenter+PLAYERSIZE)  shr  FRACTILESHIFT);
-  for (y := yl;y <= yh;y++)
-  for (x := xl+1;x <= xh;x++)
-  begin
-    if (mapflags[y*MAPSIZE+x]) and (FL_DOOR) // if tile has a door
-    begin
-      last_p := @doorlist[numdoors];
-      for (door_p := doorlist; door_p <> last_p; door_p++)
-       if (door_p.tilex = x) and (door_p.tiley = y) and ((door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2)) then
-       begin
-   if (door_p.doorOpen) and ( not door_p.doorClosing) return true; // can move, door is open
-   else if (not door_p.doorOpen) and (door_p.doorBumpable) and ( not door_p.doorOpening) then
-   begin
-     door_p.doorOpening := true;
-     door_p.doorClosing := false;
-     doorsound := true;
-     doorx := door_p.tilex shl FRACTILESHIFT;
-     doory := door_p.tiley shl FRACTILESHIFT;
-     if (door_p.orientation = dr_vertical) TryDoor(xcenter,ycenter+64*FRACUNIT);
-      else TryDoor(xcenter,ycenter-64*FRACUNIT);
-     if (netmode) NetOpenDoor(xcenter,ycenter);
-     return false;
-   end
-   else if (not door_p.doorOpen) and (door_p.doorBumpable) and (door_p.doorClosing) then
-   begin
-     door_p.doorClosing := false;
-     door_p.doorOpening := true;
-     doorsound := true;
-     doorx := door_p.tilex shl FRACTILESHIFT;
-     doory := door_p.tiley shl FRACTILESHIFT;
-     if (door_p.orientation = dr_vertical) TryDoor(xcenter,ycenter+64*FRACUNIT);
-      else TryDoor(xcenter,ycenter-64*FRACUNIT);
-     if (netmode) NetOpenDoor(xcenter,ycenter);
-     return false;
-      end;
-   else return false;
-    end;
-       end;
-     end;
-  return true;
-  end;
-
-
-bool TryMove(int angle,fixed_t xcenter, fixed_t ycenter)
+  door_p, last_p: Pdoorobj_t;
 begin
+  // check for doors on the north wall
+  xl := ((xcenter - PLAYERSIZE) shr FRACTILESHIFT);
+  yl := ((ycenter - PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT);
+  xh := ((xcenter + PLAYERSIZE) shr FRACTILESHIFT);
+  yh := ((ycenter + PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT);
+  for y := yl + 1 to yh do
+    for x := xl to xh do
+    begin
+      if mapflags[y * MAPSIZE + x] and FL_DOOR <> 0 then // if tile has a door
+      begin
+        last_p := @doorlist[numdoors];
+        door_p := @doorlist[0];
+        while door_p <> last_p do
+        begin
+          if (door_p.tilex = x) and (door_p.tiley = y) and ((door_p.orientation = dr_horizontal) or (door_p.orientation = dr_horizontal2)) then
+          begin
+            if door_p.doorOpen and not door_p.doorClosing then
+            begin
+              result := true; // can move, door is open
+              exit;
+            end
+            else if not door_p.doorOpen and door_p.doorBumpable and not door_p.doorOpening then
+            begin
+              door_p.doorClosing := false;
+              door_p.doorOpening := true;
+              doorsound := true;
+              doorx := door_p.tilex shl FRACTILESHIFT;
+              doory := door_p.tiley shl FRACTILESHIFT;
+              if door_p.orientation = dr_horizontal then
+                TryDoor(xcenter + 64 * FRACUNIT, ycenter)
+              else
+                TryDoor(xcenter - 64 * FRACUNIT, ycenter);
+              if netmode then
+                NetOpenDoor(xcenter, ycenter);
+              result := false;
+              exit;
+            end
+            else if not door_p.doorOpen and door_p.doorBumpable and door_p.doorClosing then
+            begin
+              door_p.doorClosing := false;
+              door_p.doorOpening := true;
+              doorsound := true;
+              doorx := door_p.tilex shl FRACTILESHIFT;
+              doory := door_p.tiley shl FRACTILESHIFT;
+              if door_p.orientation = dr_horizontal then
+                TryDoor(xcenter + 64 * FRACUNIT, ycenter)
+              else
+                TryDoor(xcenter - 64 * FRACUNIT, ycenter);
+              if netmode then
+                NetOpenDoor(xcenter, ycenter);
+              result := false;
+              exit;
+            end
+            else
+            begin
+              result := false;
+              exit;
+            end;
+          end;
+          inc(door_p);
+        end;
+      end;
+    end;
+
+  // check for doors on the west wall
+  xl := (xcenter - PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT;
+  yl := (ycenter - PLAYERSIZE)  shr FRACTILESHIFT;
+  xh := (xcenter + PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT;
+  yh := (ycenter + PLAYERSIZE) shr FRACTILESHIFT;
+  for y := yl to yh do
+    for x := xl + 1 to xh do
+    begin
+      if mapflags[y * MAPSIZE + x] and FL_DOOR <> 0 then // if tile has a door
+      begin
+        last_p := @doorlist[numdoors];
+        door_p := @doorlist[0];
+        while door_p <> last_p do
+        begin
+          if (door_p.tilex = x) and (door_p.tiley = y) and ((door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2)) then
+          begin
+            if door_p.doorOpen and not door_p.doorClosing then
+            begin
+              result := true; // can move, door is open
+              exit;
+            end
+            else if not door_p.doorOpen and door_p.doorBumpable and not door_p.doorOpening then
+            begin
+              door_p.doorOpening := true;
+              door_p.doorClosing := false;
+              doorsound := true;
+              doorx := door_p.tilex shl FRACTILESHIFT;
+              doory := door_p.tiley shl FRACTILESHIFT;
+              if door_p.orientation = dr_vertical then
+                TryDoor(xcenter, ycenter + 64 * FRACUNIT)
+              else
+                TryDoor(xcenter, ycenter - 64 * FRACUNIT);
+              if netmode then
+                NetOpenDoor(xcenter, ycenter);
+              result := false;
+              exit;
+            end
+            else if not door_p.doorOpen and door_p.doorBumpable and door_p.doorClosing then
+            begin
+              door_p.doorClosing := false;
+              door_p.doorOpening := true;
+              doorsound := true;
+              doorx := door_p.tilex shl FRACTILESHIFT;
+              doory := door_p.tiley shl FRACTILESHIFT;
+              if door_p.orientation = dr_vertical then
+                TryDoor(xcenter, ycenter + 64 * FRACUNIT)
+              else
+                TryDoor(xcenter, ycenter - 64 * FRACUNIT);
+              if netmode then
+                NetOpenDoor(xcenter, ycenter);
+              result := false;
+              exit;
+            end
+            else
+            begin
+              result := false;
+              exit;
+            end;
+          end;
+          inc(door_p);
+        end;
+      end;
+    end;
+
+  result := true;
+end;
+
+
+function TryMove(const angle: integer; xcenter, ycenter: fixed_t): boolean;
+var
   xl, yl, xh, yh, x, y, mapspot: integer;
   pz: fixed_t;
-
-  if (angle<NORTH) or (angle>SOUTH) then
+begin
+  if (angle < NORTH) or (angle > SOUTH) then
   begin
-   xl := xcenter shr FRACTILESHIFT;
-   xh := (xcenter+PLAYERSIZE) shr FRACTILESHIFT;
+    xl := xcenter shr FRACTILESHIFT;
+    xh := (xcenter + PLAYERSIZE) shr FRACTILESHIFT;
   end
-  else if (angle>NORTH) and (angle<SOUTH) then
+  else if (angle > NORTH) and (angle < SOUTH) then
   begin
-   xh := xcenter shr FRACTILESHIFT;
-   xl := (xcenter-PLAYERSIZE) shr FRACTILESHIFT;
-    end;
+    xh := xcenter shr FRACTILESHIFT;
+    xl := (xcenter - PLAYERSIZE) shr FRACTILESHIFT;
+  end
   else
   begin
-   xh := (xcenter+PLAYERSIZE) shr FRACTILESHIFT;
-   xl := (xcenter-PLAYERSIZE) shr FRACTILESHIFT;
-    end;
-  if angle>WEST then
-  begin
-   yl := ycenter shr FRACTILESHIFT;
-   yh := (ycenter+PLAYERSIZE) shr FRACTILESHIFT;
-  end
-  else if (angle<WEST) and (angle <> EAST) then
-  begin
-   yl := (ycenter-PLAYERSIZE) shr FRACTILESHIFT;
-   yh := ycenter shr FRACTILESHIFT;
-    end;
-  else
-  begin
-   yl := (ycenter-PLAYERSIZE) shr FRACTILESHIFT;
-   yh := (ycenter+PLAYERSIZE) shr FRACTILESHIFT;
-    end;
-  pz := player.z - player.height + (26 shl FRACBITS);
-// check for solid walls
-  for (y := yl;y <= yh;y++)
-  for (x := xl;x <= xh;x++)
-  begin
-    mapspot := MAPCOLS*y+x;
-    if ((y>yl) and (northwall[mapspot]) and ( not (northflags[mapspot]) and (F_NOCLIP))) or (
-  (x>xl) and (westwall[mapspot]) and ( not (westflags[mapspot]) and (F_NOCLIP))) return false;
-    if mapspot <> player.mapspot then
-    begin
-      if (mapsprites[mapspot]>0) and (mapsprites[mapspot]<128) return false;
-      if (RF_GetFloorZ((x shl FRACTILESHIFT)+(32 shl FRACBITS),(y shl FRACTILESHIFT)+(32 shl FRACBITS))>pz) return false;
-      if (RF_GetCeilingZ((x shl FRACTILESHIFT)+(32 shl FRACBITS),(y shl FRACTILESHIFT)+(32 shl FRACBITS))<player.z+(10 shl FRACBITS)) return false;
-       end;
-     end;
-  return true;
+    xh := (xcenter + PLAYERSIZE) shr FRACTILESHIFT;
+    xl := (xcenter - PLAYERSIZE) shr FRACTILESHIFT;
   end;
 
+  if angle > WEST then
+  begin
+    yl := ycenter shr FRACTILESHIFT;
+    yh := (ycenter + PLAYERSIZE) shr FRACTILESHIFT;
+  end
+  else if (angle < WEST) and (angle <> EAST) then
+  begin
+    yl := (ycenter - PLAYERSIZE) shr FRACTILESHIFT;
+    yh := ycenter shr FRACTILESHIFT;
+  end
+  else
+  begin
+    yl := (ycenter - PLAYERSIZE) shr FRACTILESHIFT;
+    yh := (ycenter + PLAYERSIZE) shr FRACTILESHIFT;
+  end;
 
-bool ClipMove(int angle,fixed_t xmove, fixed_t ymove)
-begin
+  pz := player.z - player.height + (26 shl FRACBITS);
+  // check for solid walls
+  for y := yl to yh do
+    for x := xl to xh do
+    begin
+      mapspot := MAPCOLS * y + x;
+      if (y > yl) and (northwall[mapspot] <> 0) and (northflags[mapspot] and F_NOCLIP = 0) then
+      begin
+        result := false;
+        exit;
+      end;
+      if (x > xl) and (westwall[mapspot] <> 0) and (westflags[mapspot] and F_NOCLIP = 0) then
+      begin
+        result := false;
+        exit;
+      end;
+      if mapspot <> player.mapspot then
+      begin
+        if (mapsprites[mapspot] > 0) and (mapsprites[mapspot] < 128) then
+        begin
+          result := false;
+          exit;
+        end;
+        if RF_GetFloorZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS)) > pz then
+        begin
+          result := false;
+          exit;
+        end;
+        if (RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS)) < player.z + (10 shl FRACBITS) then
+        begin
+          result := false;
+          exit;
+        end;
+      end;
+    end;
+
+  result := true;
+end;
+
+
+function ClipMove(const angle: integer; const xmove, ymove: fixed_t): boolean;
+var
   dx, dy: fixed_t;
   angle2: integer;
-
-  dx := player.x+xmove;
-  dy := player.y+ymove;
-  if (TryMove(angle,dx,dy)) and (TryDoor(dx,dy)) then
+begin
+  dx := player.x + xmove;
+  dy := player.y + ymove;
+  if TryMove(angle, dx, dy) and TryDoor(dx, dy) then
   begin
-   if (floorpic[(dy shr FRACTILESHIFT)*MAPCOLS+(dx shr FRACTILESHIFT)] = 0) return false;
-   player.x := player.x + xmove;
-   player.y := player.y + ymove;
-   return true;
+    if floorpic[(dy shr FRACTILESHIFT) * MAPCOLS + (dx shr FRACTILESHIFT)] = 0 then
+    begin
+      result := false;
+      exit;
     end;
-// the move goes into a wall, so try and move along one axis
-  if (xmove>0) angle2 := EAST;
-  else angle2 := WEST;
-  if (TryMove(angle2,dx,player.y)) and (TryDoor(dx,player.y)) then
-  begin
-   if (floorpic[(player.y shr FRACTILESHIFT)*MAPCOLS+(dx shr FRACTILESHIFT)] = 0) then
-    return false;
-   player.x := player.x + xmove;
-   return true;
-    end;
-  if (ymove>0) angle2 := SOUTH;
-  else angle2 := NORTH;
-  if (TryMove(angle2,player.x,dy)) and (TryDoor(player.x,dy)) then
-  begin
-   if (floorpic[(dy shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT)] = 0) then
-    return false;
-   player.y := player.y + ymove;
-   return true;
-    end;
-  return false;
+    player.x := player.x + xmove;
+    player.y := player.y + ymove;
+    result := true;
+    exit;
   end;
 
+  // the move goes into a wall, so try and move along one axis
+  if xmove > 0 then
+    angle2 := EAST
+  else
+    angle2 := WEST;
+  if TryMove(angle2, dx, player.y) and TryDoor(dx, player.y) then
+  begin
+    if floorpic[(player.y shr FRACTILESHIFT) * MAPCOLS + (dx shr FRACTILESHIFT)] = 0 then
+    begin
+      result := false;
+      exit;
+    end;
+    player.x := player.x + xmove;
+    result := true;
+    exit;
+  end;
 
-bool Thrust(int angle,fixed_t speed)
-begin
+  if ymove > 0 then
+    angle2 := SOUTH
+  else
+    angle2 := NORTH;
+  if TryMove(angle2, player.x, dy) and TryDoor(player.x, dy) then
+  begin
+    if floorpic[(dy shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT)] = 0 then
+    begin
+      result := false;
+      exit;
+    end;
+    player.y := player.y + ymove;
+    result := true;
+    exit;
+  end;
+
+  result := false;
+end;
+
+
+function Thrust(const angle: integer; const speed: fixed_t): boolean;
+var
   xmove, ymove: fixed_t;
-  result: integer;
-
-  angle) and (:= ANGLES;
-  xmove := FIXEDMUL(speed,costable[angle]);
-  ymove := -FIXEDMUL(speed,sintable[angle]);
-  result := ClipMove(angle,xmove,ymove);
-  player.mapspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
-  return result;
-  end;
-
-
-procedure ControlMovement ;
 begin
+  angle := angle and ANGLES;
+  xmove := FIXEDMUL(speed, costable[angle]);
+  ymove := -FIXEDMUL(speed, sintable[angle]);
+  result := ClipMove(angle, xmove, ymove);
+  player.mapspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+end;
+
+
+procedure ControlMovement;
+var
   modifiedSpeed: fixed_t;
   modifiedTurn, modifiedMoveUnit, modifiedturnunit, n: integer;
   floorz, fz, xl, yl, xh, yh, maxz: fixed_t;
   maxx, maxy, mapspot: integer;
-
+begin
   if Warping then
   begin
-   floorz := RF_GetFloorZ(player.x,player.y)+player.height;
-   if player.z>floorz then
+   floorz := RF_GetFloorZ(player.x, player.y) + player.height;
+   if player.z > floorz then
    begin
      fallrate := fallrate + MOVEUNIT;
      player.z := player.z - fallrate;
-     if (player.z<floorz) player.z := floorz;
+     if player.z < floorz then
+        player.z := floorz;
    end
-   else if player.z<floorz then
+   else if player.z < floorz then
    begin
      player.z := floorz;
      fallrate := 0;
-      end;
+   end;
    exit;
-    end;
+ end;
 
 //#ifndef DEMO
-// if (keyboard[SC_G]) and (timecount>keyboardDelay) and ( not netmsgstatus)
-//   begin 
+// if (keyboard[SC_G]) and (timecount > keyboardDelay) and ( not netmsgstatus)
+//   begin
 //   SaveTheScreen := true;
-//   keyboardDelay := timecount+KBDELAY;
+//   keyboardDelay := timecount + KBDELAY;
 //    end;
 //{$ENDIF}
 
-  if (keyboard[SC_ESCAPE]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
-  activatemenu := true;
+  if (keyboard[SC_ESCAPE] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
+    activatemenu := true;
 
-  if (keyboard[SC_F5]) and (keyboard[SC_LSHIFT]) and (timecount>keyboardDelay) then
+  if (keyboard[SC_F5] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
-   adjustvrangle := -SC.vrangle+DEFAULTVRANGLE;
-   adjustvrdist := -1;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_F4]) and (keyboard[SC_LSHIFT]) and (timecount>keyboardDelay) then
-  begin
-   adjustvrdist := 72090;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_F3]) and (keyboard[SC_LSHIFT]) and (timecount>keyboardDelay) then
-  begin
-   adjustvrdist := 59578;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_F2]) and (keyboard[SC_LSHIFT]) and (timecount>keyboardDelay) then
-  begin
-   adjustvrangle := 1;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_F1]) and (keyboard[SC_LSHIFT]) and (timecount>keyboardDelay) then
-  begin
-   adjustvrangle := -1;
-   keyboardDelay := timecount+KBDELAY;
-    end;
+    adjustvrangle := -SC.vrangle + DEFAULTVRANGLE;
+    adjustvrdist := -1;
+    keyboardDelay := timecount + KBDELAY;
+  end;
 
-  if (keyboard[SC_F1]) and (timecount>keyboardDelay) then
+  if (keyboard[SC_F4] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
-   activatehelp := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
+    adjustvrdist := 72090;
+    keyboardDelay := timecount + KBDELAY;
+  end;
 
-  if ((keyboard[SC_F4]) or ((keyboard[SC_ALT]) and (keyboard[SC_Q])) then
-  ) and (timecount>keyboardDelay) QuickExit := true;
-
-  if (keyboard[SC_F5]) and (timecount>keyboardDelay) and ( not netmode) then
-  activatebrief := true;
-
-  if (keyboard[SC_P]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
-  paused := true;
-
-  (* change screen size *)
-  if (keyboard[SC_F9]) and ( not resizeScreen) and (timecount>keyboardDelay) then
+  if (keyboard[SC_F3] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
-   resizeScreen := 1;
-   biggerScreen := 1;
-   keyboardDelay := timecount+KBDELAY;
-   if (SC.screensize<9) SC.screensize++;
-   exit;
-    end;
-  if (keyboard[SC_F10]) and ( not resizeScreen) and (timecount>keyboardDelay) then
-  begin
-   resizeScreen := 1;
-   biggerScreen := 0;
-   keyboardDelay := timecount+KBDELAY;
-   if (SC.screensize) SC.screensize--;
-   exit;
-    end;
+    adjustvrdist := 59578;
+    keyboardDelay := timecount + KBDELAY;
+  end;
 
-  if (keyboard[SC_MINUS]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
+  if (keyboard[SC_F2] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
-   case MapZoom  of
-   begin
-     8:
-      MapZoom := 4;
-      break;
-     16:
-      MapZoom := 8;
-      break;
-      end;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_PLUS]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
-  begin
-   case MapZoom  of
-   begin
-     4:
-      MapZoom := 8;
-      break;
-     8:
-      MapZoom := 16;
-      break;
-      end;
-   keyboardDelay := timecount+KBDELAY;
-    end;
+    adjustvrangle := 1;
+    keyboardDelay := timecount + KBDELAY;
+  end;
 
-  if (in_button[bt_lookup]) and ( not netmsgstatus) scrollview-:= SCROLLRATE;
-  if (in_button[bt_lookdown]) and ( not netmsgstatus) scrollview+:= SCROLLRATE;
-  if (in_button[bt_centerview]) and ( not netmsgstatus) scrollview := 255;
+  if (keyboard[SC_F1] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
+  begin
+    adjustvrangle := -1;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+
+  if (keyboard[SC_F1] <> 0) and (timecount > keyboardDelay) then
+  begin
+    activatehelp := true;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+
+  if ((keyboard[SC_F4] <> 0) or ((keyboard[SC_ALT] <> 0) and (keyboard[SC_Q] <> 0)) and
+    (timecount > keyboardDelay) then
+    QuickExit := true;
+
+  if (keyboard[SC_F5] <> 0) and (timecount > keyboardDelay) and not netmode then
+    activatebrief := true;
+
+  if (keyboard[SC_P] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
+    paused := true;
+
+  // change screen size
+  if (keyboard[SC_F9] <> 0) and not resizeScreen and (timecount > keyboardDelay) then
+  begin
+    resizeScreen := 1;
+    biggerScreen := 1;
+    keyboardDelay := timecount + KBDELAY;
+    if SC.screensize < 9 then
+      inc(SC.screensize);
+    exit;
+  end;
+
+  if (keyboard[SC_F10] <> 0) and not resizeScreen) and (timecount > keyboardDelay) then
+  begin
+    resizeScreen := 1;
+    biggerScreen := 0;
+    keyboardDelay := timecount + KBDELAY;
+    if SC.screensize > 0 then
+      dec(SC.screensize);
+    exit;
+  end;
+
+  if (keyboard[SC_MINUS] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
+  begin
+    case MapZoom of
+    8: MapZoom := 4;
+    16: MapZoom := 8;
+    end;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+
+  if (keyboard[SC_PLUS] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
+  begin
+    case MapZoom of
+    4: MapZoom := 8
+    8: MapZoom := 16;
+    end;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+
+  if (in_button[bt_lookup] <> 0) and not netmsgstatus then
+    scrollview := scrollview - SCROLLRATE;
+  if (in_button[bt_lookdown] <> 0) and not netmsgstatus then
+    scrollview := scrollview + SCROLLRATE;
+  if (in_button[bt_centerview] <> 0) and not netmsgstatus then
+    scrollview := 255;
 
   if scrollview = 255 then
   begin
-   if player.scrollmin<0 then
-   begin
-     player.scrollmin := player.scrollmin + SCROLLRATE;
-     player.scrollmax := player.scrollmax + SCROLLRATE;
-   end
-   else if player.scrollmin>0 then
-   begin
-     player.scrollmin := player.scrollmin - SCROLLRATE;
-     player.scrollmax := player.scrollmax - SCROLLRATE;
-      end;
-   else scrollview := 0;
-    end;
+    if player.scrollmin < 0 then
+    begin
+      player.scrollmin := player.scrollmin + SCROLLRATE;
+      player.scrollmax := player.scrollmax + SCROLLRATE;
+    end
+    else if player.scrollmin > 0 then
+    begin
+      player.scrollmin := player.scrollmin - SCROLLRATE;
+      player.scrollmax := player.scrollmax - SCROLLRATE;
+    end
+    else
+      scrollview := 0;
+  end;
 
-  (* display mode toggles *)
-  if (keyboard[SC_M]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
+  // display mode toggles
+  if (keyboard[SC_M] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
   begin
-   togglemapmode := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_H]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
+    togglemapmode := true;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+  if (keyboard[SC_H] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
   begin
-   toggleheatmode := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_S]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
+    toggleheatmode := true;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+  if (keyboard[SC_S] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
   begin
-   togglemotionmode := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (in_button[bt_asscam]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
+    togglemotionmode := true;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+  if (in_button[bt_asscam] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
   begin
-   ToggleRearView := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_TAB]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
+    ToggleRearView := true;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+  if (keyboard[SC_TAB] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
   begin
-   togglegoalitem := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
+    togglegoalitem := true;
+    keyboardDelay := timecount + KBDELAY;
+  end;
 
 
-  if (keyboard[SC_CAPSLOCK]) and (timecount>keyboardDelay) then
+  if (keyboard[SC_CAPSLOCK] <> 0) and (timecount > keyboardDelay) then
   begin
-   toggleautorun := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
-  if (keyboard[SC_NUMLOCK]) and (timecount>keyboardDelay) then
+    toggleautorun := true;
+    keyboardDelay := timecount + KBDELAY;
+  end;
+  if (keyboard[SC_NUMLOCK] <> 0) and (timecount > keyboardDelay) then
   begin
    toggleautotarget := true;
-   keyboardDelay := timecount+KBDELAY;
-    end;
+   keyboardDelay := timecount + KBDELAY;
+  end;
 
-
-  (* secrets *)
+  // secrets
   if newascii then
   begin
-   secretbuf[secretindex++] := lastascii;
-   if (secretindex >= 19) specialcode := true;
-   if (netmsgstatus = 1) // getting message
-   begin
-     case lastascii  of
-     begin
-       27:
-  netmsgstatus := 0;
-  break;
-       8:
-  netmsg[netmsgindex] := ' ';
-  if netmsgindex>0 then
-    netmsgindex--;
-  netmsg[netmsgindex] := '_';
-  break;
-       13:
-  netmsgstatus := 2; // sending
-  netmsg[netmsgindex] := ' ';
-  break;
-       default:
-  netmsg[netmsgindex] := lastascii;
-  if netmsgindex < NETMSGSIZE - 1 then
-     inc(netmsgindex);
-  netmsg[netmsgindex] := '_';
-  break;
+    secretbuf := secretbuf + lastascii;
+    inc(secretindex);
+    if secretindex >= SECRETBUFSIZE - 1 then
+      specialcode := true;
+    if netmsgstatus = 1 then  // getting message
+    begin
+      case lastascii of
+      27:
+        netmsgstatus := 0;
+      8:
+        begin
+          netmsg[netmsgindex] := ' ';
+          if netmsgindex > 0 then
+            dec(netmsgindex);
+          netmsg[netmsgindex] := '_';
         end;
+      13:
+        begin
+          netmsgstatus := 2; // sending
+          netmsg[netmsgindex] := ' ';
+        end;
+      else
+        netmsg[netmsgindex] := lastascii;
+        if netmsgindex < NETMSGSIZE - 1 then
+          inc(netmsgindex);
+        netmsg[netmsgindex] := '_';
       end;
-   newascii := false;
-   secretdelay := timecount+KBDELAY*5;
     end;
-  if timecount>secretdelay then
-  begin
-   specialcode := true;
-   secretdelay := timecount+KBDELAY*5;
-    end;
+    newascii := false;
+    secretdelay := timecount + KBDELAY * 5;
+  end;
 
-  if (keyboard[SC_F6]) and (netmode) and (netmsgstatus = 0) and (timecount>keyboardDelay) then
+  if timecount > secretdelay then
   begin
-   memset(netmsg,0,SizeOf(netmsg));
-   netmsgstatus := 1;
-   netmsgindex := 0;
-   netmsg[0] := '_';
-   keyboardDelay := timecount+KBDELAY;
-    end;
+    specialcode := true;
+    secretdelay := timecount + KBDELAY * 5;
+  end;
 
-  if keyboard[SC_F7] then
-  newsong := true;
-
-  if (in_button[bt_invright]) and (timecount>keyboardDelay) then
+  if (keyboard[SC_F6] <> 0) and netmode and (netmsgstatus = 0) and (timecount > keyboardDelay) then
   begin
-   goiright := true;
-   keyboardDelay := timecount+KBDELAY;
-   inventorytime := timecount+(3*70);
-    end;
-  if (in_button[bt_invleft] ) and (timecount>keyboardDelay) then
-  begin
-   goileft := true;
-   keyboardDelay := timecount+KBDELAY;
-   inventorytime := timecount+(3*70);
-    end;
+    memset(netmsg, 0, SizeOf(netmsg));
+    netmsgstatus := 1;
+    netmsgindex := 0;
+    netmsg[0] := '_';
+    keyboardDelay := timecount + KBDELAY;
+  end;
 
-  (* he's dead jim not  *)
+  if keyboard[SC_F7] <> 0 then
+    newsong := true;
+
+  if (in_button[bt_invright] <> 0) and (timecount > keyboardDelay) then
+  begin
+    goiright := true;
+    keyboardDelay := timecount + KBDELAY;
+    inventorytime := timecount + (3 * 70);
+  end;
+
+  if (in_button[bt_invleft] <> 0) and (timecount > keyboardDelay) then
+  begin
+    goileft := true;
+    keyboardDelay := timecount + KBDELAY;
+    inventorytime := timecount + (3 * 70);
+  end;
+
+  // he's dead jim!
   if player.angst = 0 then
   begin
-
-   if (floorpic[player.mapspot] >= 57) and (floorpic[player.mapspot] <= 59) then
-   begin
-     if (player.z>RF_GetFloorZ(player.x,player.y)+(40 shl FRACBITS)) then
-      player.z := player.z - FRACUNIT;
-     else if (player.z<RF_GetFloorZ(player.x,player.y)+(40 shl FRACBITS))
-      player.z := RF_GetFloorZ(player.x,player.y)+(40 shl FRACBITS);
-      end;
-   else
-   begin
-     if (player.z>RF_GetFloorZ(player.x,player.y)+(12 shl FRACBITS)) then
-      player.z := player.z - FRACUNIT;
-     else if (player.z<RF_GetFloorZ(player.x,player.y)+(12 shl FRACBITS))
-      player.z := RF_GetFloorZ(player.x,player.y)+(12 shl FRACBITS);
-      end;
-   if (keyboard[SC_SPACE]) deadrestart := true;
-   exit;
+    if (floorpic[player.mapspot] >= 57) and (floorpic[player.mapspot] <= 59) then
+    begin
+      if player.z > RF_GetFloorZ(player.x, player.y) + (40 shl FRACBITS) then
+        player.z := player.z - FRACUNIT
+      else if player.z < RF_GetFloorZ(player.x, player.y) + (40 shl FRACBITS) then
+        player.z := RF_GetFloorZ(player.x, player.y) + (40 shl FRACBITS);
+    end
+    else
+    begin
+      if player.z > RF_GetFloorZ(player.x, player.y) + (12 shl FRACBITS) then
+        player.z := player.z - FRACUNIT
+      else if player.z < RF_GetFloorZ(player.x, player.y) + (12 shl FRACBITS) then
+        player.z := RF_GetFloorZ(player.x, player.y) + (12 shl FRACBITS);
     end;
+    if (keyboard[SC_SPACE] <> 0) then
+      deadrestart := true;
+    exit;
+  end;
 
-  if (in_button[bt_useitem]) and (timecount>keyboardDelay) then
+  if (in_button[bt_useitem] <> 0) and (timecount > keyboardDelay) then
   begin
-   useitem := true;
-   keyboardDelay := timecount+KBDELAY;
-   inventorytime := timecount+(3*70);
-    end;
+    useitem := true;
+    keyboardDelay := timecount + KBDELAY;
+    inventorytime := timecount + (3 * 70);
+  end;
 
-  (* change weapon *)
-  if (keyboard[SC_1]) and ( not changingweapons) and (player.currentweapon <> 0) and ( not netmsgstatus) then
+  // change weapon
+  if (keyboard[SC_1] <> 0) and not changingweapons and (player.currentweapon <> 0) and not netmsgstatus then
   begin
-   changingweapons := true;
-   weaponlowering := true;
-   newweapon := 0;
+    changingweapons := true;
+    weaponlowering := true;
+    newweapon := 0;
   end
-  else if (keyboard[SC_2]) and ( not changingweapons) and (player.currentweapon <> 1) and (player.weapons[1] <> -1) and ( not netmsgstatus) then
+  else if (keyboard[SC_2] <> 0) and not changingweapons and (player.currentweapon <> 1) and (player.weapons[1] <> -1) and not netmsgstatus then
   begin
-   changingweapons := true;
-   weaponlowering := true;
-   newweapon := 1;
+    changingweapons := true;
+    weaponlowering := true;
+    newweapon := 1;
   end
-  else if (keyboard[SC_3]) and ( not changingweapons) and (player.currentweapon <> 2) and (player.weapons[2] <> -1) and ( not netmsgstatus) then
+  else if (keyboard[SC_3] <> 0) and not changingweapons and (player.currentweapon <> 2) and (player.weapons[2] <> -1) and not netmsgstatus then
   begin
-   changingweapons := true;
-   weaponlowering := true;
-   newweapon := 2;
+    changingweapons := true;
+    weaponlowering := true;
+    newweapon := 2;
   end
-  else if (keyboard[SC_4]) and ( not changingweapons) and (player.currentweapon <> 3) and (player.weapons[3] <> -1) and ( not netmsgstatus) then
+  else if (keyboard[SC_4] <> 0) and not changingweapons and (player.currentweapon <> 3) and (player.weapons[3] <> -1) and not netmsgstatus then
   begin
-   changingweapons := true;
-   weaponlowering := true;
-   newweapon := 3;
+    changingweapons := true;
+    weaponlowering := true;
+    newweapon := 3;
   end
-  else if (keyboard[SC_5]) and ( not changingweapons) and (player.currentweapon <> 4) and (player.weapons[4] <> -1) and ( not netmsgstatus) then
+  else if (keyboard[SC_5] <> 0) and not changingweapons and (player.currentweapon <> 4) and (player.weapons[4] <> -1) and not netmsgstatus then
   begin
-   changingweapons := true;
-   weaponlowering := true;
-   newweapon := 4;
-    end;
+    changingweapons := true;
+    weaponlowering := true;
+    newweapon := 4;
+  end;
 
-  if (in_button[bt_jump]) and (timecount>keyboardDelay) and (fallrate = 0) and ( not netmsgstatus) then
+  if (in_button[bt_jump] <> 0) and (timecount > keyboardDelay) and (fallrate = 0) and not netmsgstatus then
   begin
-   fallrate-:= FALLUNIT*9+player.jumpmod;
-   keyboardDelay := timecount+KBDELAY;
-    end;
+    fallrate := fallrate - (FALLUNIT * 9 + player.jumpmod);
+    keyboardDelay := timecount + KBDELAY;
+  end;
 
-  (* check run/slow keys *)
-  if (in_button[bt_run]) or (autorun) then
+  // check run/slow keys
+  if (in_button[bt_run] <> 0) or autorun then
   begin
-   modifiedSpeed := (int)((PLAYERMOVESPEED)*6 + player.runmod);
-   modifiedTurn := (int)(playerturnspeed*2.5);
-   modifiedMoveUnit := MOVEUNIT*2;
-   modifiedturnunit := turnunit;
-    end;
+    modifiedSpeed := PLAYERMOVESPEED * 6 + player.runmod;
+    modifiedTurn := (playerturnspeed * 5) div 2;
+    modifiedMoveUnit := MOVEUNIT * 2;
+    modifiedturnunit := turnunit;
+  end
   else
   begin
-   modifiedSpeed := (int)((PLAYERMOVESPEED)*3.5 + player.walkmod);
-   modifiedTurn := playerturnspeed;
-   modifiedMoveUnit := MOVEUNIT;
-   modifiedturnunit := turnunit*2;
-    end;
+    modifiedSpeed := (PLAYERMOVESPEED * 7) div 2 + player.walkmod;
+    modifiedTurn := playerturnspeed;
+    modifiedMoveUnit := MOVEUNIT;
+    modifiedturnunit := turnunit * 2;
+  end;
 
-  floorz := RF_GetFloorZ(player.x,player.y)+player.height;
+  floorz := RF_GetFloorZ(player.x, player.y) + player.height;
   if (floorpic[player.mapspot] >= 57) and (floorpic[player.mapspot] <= 59) then
   begin
-   if player.z = floorz then
-    modifiedSpeed> >= 1;
-    end;
+    if player.z = floorz then
+      modifiedSpeed := modifiedSpeed div 2;
+  end;
 
-  (* check strafe *)
-  if ((in_button[bt_straf]) or (in_button[bt_slideleft]) or (in_button[bt_slideright])) and ( not netmsgstatus) then
+  // check strafe
+  if ((in_button[bt_straf] <> 0) or (in_button[bt_slideleft] <> 0) or (in_button[bt_slideright] <> 0)) and not netmsgstatus then
   begin
-   if (in_button[bt_west]) or (in_button[bt_slideleft]) then
-   begin
-     strafrate := strafrate - modifiedMoveUnit;
-     if (strafrate<-modifiedSpeed) strafrate+:= modifiedMoveUnit;
-      end;
-   if (in_button[bt_east]) or (in_button[bt_slideright]) then
-   begin
-     strafrate := strafrate + modifiedMoveUnit;
-     if (strafrate>modifiedSpeed) strafrate-:= modifiedMoveUnit;
-   end
-   else if (not in_button[bt_west]) and ( not in_button[bt_slideleft]) then
-   begin
-     if (strafrate<0) strafrate+:= MOVEUNIT;
-     else if (strafrate>0) strafrate-:= MOVEUNIT;
-      end;
+    if (in_button[bt_west] <> 0) or (in_button[bt_slideleft] <> 0) then
+    begin
+      strafrate := strafrate - modifiedMoveUnit;
+      if strafrate < -modifiedSpeed then
+        strafrate := strafrate + modifiedMoveUnit;
     end;
+    if (in_button[bt_east] <> 0) or (in_button[bt_slideright] <> 0) then
+    begin
+      strafrate := strafrate + modifiedMoveUnit;
+      if strafrate > modifiedSpeed then
+        strafrate := strafrate - modifiedMoveUnit;
+    end
+    else if (in_button[bt_west] = 0) and (in_button[bt_slideleft] = 0) then
+    begin
+      if strafrate < 0 then
+        strafrate := strafrate + MOVEUNIT
+      else if strafrate > 0 then
+        strafrate := strafrate - MOVEUNIT;
+    end;
+  end
   else
   begin
-   if (strafrate<0) strafrate+:= MOVEUNIT;
-    else if (strafrate>0) strafrate-:= MOVEUNIT;
+    if strafrate < 0 then
+      strafrate := strafrate + MOVEUNIT
+    else if strafrate > 0 then
+      strafrate := strafrate - MOVEUNIT;
 
-   (* not strafing *)
-   if in_button[bt_east] then
-   begin
-     turnrate := turnrate - modifiedturnunit;
-     if turnrate<-modifiedTurn then
-      turnrate := -modifiedTurn;
-     player.angle := player.angle + turnrate;
-   end
-   else if in_button[bt_west] then
-   begin
-     turnrate := turnrate + modifiedturnunit;
-     if turnrate>modifiedTurn then
-      turnrate := modifiedTurn;
-     player.angle := player.angle + turnrate;
+    // not strafing
+    if in_button[bt_east] <> 0 then
+    begin
+      turnrate := turnrate - modifiedturnunit;
+      if turnrate < -modifiedTurn then
+        turnrate := -modifiedTurn;
+      player.angle := player.angle + turnrate;
+    end
+    else if in_button[bt_west] <> 0 then
+    begin
+      turnrate := turnrate + modifiedturnunit;
+      if turnrate > modifiedTurn then
+        turnrate := modifiedTurn;
+      player.angle := player.angle + turnrate;
+    end
+    else
+    begin
+      if turnrate < 0 then
+      begin
+        turnrate := turnrate + modifiedturnunit;
+        if turnrate > 0 then
+          turnrate := 0
+      end
+      else if turnrate > 0 then
+      begin
+        turnrate := turnrate - modifiedturnunit;
+        if turnrate < 0 then
+          turnrate := 0;
       end;
-   else
-   begin
-     if turnrate<0 then
-     begin
-       turnrate := turnrate + modifiedturnunit;
-       if turnrate>0 then
-  turnrate := 0;
-     end
-     else if turnrate>0 then
-     begin
-       turnrate := turnrate - modifiedturnunit;
-       if turnrate<0 then
-  turnrate := 0;
-        end;
-     player.angle := player.angle + turnrate;
-      end;
-   player.angle) and (:= ANGLES;
+      player.angle := player.angle + turnrate;
     end;
+    player.angle := player.angle and ANGLES;
+  end;
 
-  if strafrate<0 then
+  if strafrate < 0 then
   begin
-   if (not Thrust(player.angle+NORTH,-strafrate)) then
-   begin
-     moverate := 0;
-     strafrate := 0;
-      end;
+    if not Thrust(player.angle + NORTH, -strafrate) then
+    begin
+      moverate := 0;
+      strafrate := 0;
+    end
   end
-  else if strafrate>0 then
+  else if strafrate > 0 then
   begin
-   if (not Thrust(player.angle+SOUTH,strafrate)) then
-   begin
-     moverate := 0;
-     strafrate := 0;
-      end;
+    if not Thrust(player.angle + SOUTH, strafrate) then
+    begin
+      moverate := 0;
+      strafrate := 0;
     end;
+  end;
 
-  (* forward/backwards move *)
-  if (in_button[bt_north]) moveforward := 1;
-  else if (in_button[bt_south]) moveforward := -1;
-  else moveforward := 0;
+  // forward/backwards move
+  if in_button[bt_north] <> 0 then
+    moveforward := 1
+  else if in_button[bt_south] <> 0 then
+    moveforward := -1
+  else
+    moveforward := 0;
 
-  (* compute move vectors *)
+  // compute move vectors
   if moveforward = 1 then
   begin
-   if (moverate<modifiedSpeed) moverate+:= modifiedMoveUnit;
-   if (moverate>modifiedSpeed) moverate-:= modifiedMoveUnit;
+    if moverate < modifiedSpeed then
+      moverate := moverate + modifiedMoveUnit;
+    if moverate > modifiedSpeed then
+      moverate := moverate - modifiedMoveUnit;
   end
   else if moveforward = -1 then
   begin
-   if (moverate>-modifiedSpeed) moverate-:= modifiedMoveUnit;
-   if (moverate<-modifiedSpeed) moverate+:= modifiedMoveUnit;
+    if moverate > -modifiedSpeed then
+      moverate := moverate - modifiedMoveUnit;
+    if moverate < -modifiedSpeed then
+      moverate := moverate + modifiedMoveUnit;
   end
   else if moverate <> 0 then
   begin
-   if (moverate<0) moverate+:= MOVEUNIT;
-    else moverate := moverate - MOVEUNIT;
-    end;
+    if moverate < 0 then
+      moverate := moverate + MOVEUNIT
+    else
+      moverate := moverate - MOVEUNIT;
+  end;
 
-  (* move along move vector) and (compute head bobbing *)
-  if moverate<0 then
+  // move along move vector & compute head bobbing
+  if moverate < 0 then
   begin
-   if (headbob = MAXBOBS-1) headbob := 0;
-    else ++headbob;
-   if wbobcount = 4 then
-   begin
-     wbobcount := 0;
-     if (weapbob = MAXBOBS-1) weapbob := 0;
-      else ++weapbob;
-      end;
-   else ++wbobcount;
-   if (not Thrust(player.angle+WEST,-moverate)) moverate := 0;
-  end
-  else if moverate>0 then
-  begin
-   if (headbob = MAXBOBS-1) headbob := 0;
-    else ++headbob;
-   if wbobcount = 4 then
-   begin
-     wbobcount := 0;
-     if (weapbob = MAXBOBS-1) weapbob := 0;
-      else ++weapbob;
-      end;
-   else ++wbobcount;
-   if (not Thrust(player.angle,moverate)) moverate := 0;
-  end
-  else if (timecount) and (8) then
-  begin
-   if weapmove[weapbob] <> 0 then
-   begin
-     if (abs(weapmove[weapbob-1])<abs(weapmove[weapbob])) --weapbob;
-     else
-     begin
-       ++weapbob;
-       if (weapbob = MAXBOBS) weapbob := 0;
-        end;
-      end;
-   if headmove[headbob] <> 0 then
-   begin
-     if (abs(headmove[headbob-1])<abs(headmove[headbob])) --headbob;
-     else
-     begin
-       ++headbob;
-       if (headbob = MAXBOBS) headbob := 0;
-        end;
-      end;
-    end;
-
-  (* try to open a door in front of player *)
-  if (in_button[bt_use]) and (timecount>keyboardDelay) and ( not netmsgstatus) then
-  begin
-   checktrigger := true;
-   keyboardDelay := timecount+KBDELAY*2;
-    end;
-
-  (* fire a weapon *)
-  if (in_button[bt_fire]) and (weapons[player.weapons[player.currentweapon]].charge = 100) and ( not changingweapons) then
-  begin
-   n := player.weapons[player.currentweapon];
-   if (n = 18) or (n = 4) then
-   begin
-     if (player.ammo[weapons[n].ammotype] >= weapons[n].ammorate) and (weapmode = 0) weapmode := 1;
-      end;
-   else RF_SetActionHook(fireweapon);
-    end;
-
-  (* compute falling or stepping up higher *)
-  xl := (player.x-(FRACUNIT*8)) shr FRACTILESHIFT;
-  xh := (player.x+(FRACUNIT*8)) shr FRACTILESHIFT;
-  yl := (player.y-(FRACUNIT*8)) shr FRACTILESHIFT;
-  yh := (player.y+(FRACUNIT*8)) shr FRACTILESHIFT;
-  floorz := player.z-player.height;
-  maxz := 0;
-  for(;xl <= xh;xl++)
-  for(;yl <= yh;yl++)
-  begin
-    fz := RF_GetFloorZ((xl*64+32) shl FRACBITS,(yl*64+32) shl FRACBITS);
-    if (fz>maxz) and (fz<floorz+(20 shl FRACBITS)) then
+    if headbob = MAXBOBS - 1 then
+      headbob := 0
+    else
+      inc(headbob);
+    if wbobcount = 4 then
     begin
-      maxz := fz;
-      maxx := xl;
-      maxy := yl;
-       end;
-     end;
-  if maxz = 0 then
+      wbobcount := 0;
+      if weapbob = MAXBOBS - 1 then
+        weapbob := 0
+      else
+        inc(weapbob);
+    end
+    else
+      inc(wbobcount);
+    if not Thrust(player.angle + WEST, -moverate) then
+      moverate := 0;
+  end
+  else if moverate > 0 then
   begin
-   maxz := RF_GetFloorZ(player.x,player.y);
-   maxx := player.x shr FRACTILESHIFT;
-   maxy := player.y shr FRACTILESHIFT;
+    if headbob = MAXBOBS - 1 then
+      headbob := 0
+    else
+      inc(headbob);
+    if wbobcount = 4 then
+    begin
+      wbobcount := 0;
+      if weapbob = MAXBOBS - 1 then
+        weapbob := 0
+      else
+        inc(weapbob);
+    end
+    else
+      inc(wbobcount);
+    if not Thrust(player.angle, moverate) then
+      moverate := 0;
+  end
+  else if timecount and 8 <> 0 then
+  begin
+    if weapmove[weapbob] <> 0 then
+    begin
+      if absI(weapmove[weapbob - 1]) < absI(weapmove[weapbob]) then
+        dec(weapbob)
+      else
+      begin
+        inc(weapbob);
+        if weapbob = MAXBOBS then
+          weapbob := 0;
+      end;
     end;
-  floorz := maxz + player.height;
-
-  if (abs(player.z-floorz) <= 10 shl FRACBITS) then
-  begin
-   mapspot := maxy*MAPCOLS + maxx;
-   if (floorflags[mapspot]) and (F_RIGHT) then
-    Thrust(EAST,FRACUNIT*4);
-   if (floorflags[mapspot]) and (F_LEFT) then
-    Thrust(WEST,FRACUNIT*4);
-   if (floorflags[mapspot]) and (F_UP) then
-    Thrust(NORTH,FRACUNIT*4);
-   if (floorflags[mapspot]) and (F_DOWN) then
-    Thrust(SOUTH,FRACUNIT*4);
-    end;
-
-// floorz := RF_GetFloorZ(player.x,player.y)+player.height;
-
-  player.z := player.z - fallrate;
-  if (player.z>floorz) fallrate+:= FALLUNIT;
-  else if player.z<floorz then
-  begin
-   if (fallrate >= 12*FRACUNIT) falldamage := (fallrate shr FRACBITS)/7;
-   player.z+:= FRACUNIT shl 2;
-   if (player.z>floorz) player.z := floorz;
-   fallrate := 0;
-    end;
-  floorz := RF_GetCeilingZ(player.x,player.y);
-  if (player.z+(10 shl FRACBITS)>floorz) then
-  begin
-   player.z := floorz-(10 shl FRACBITS);
-   fallrate := FALLUNIT;
+    if headmove[headbob] <> 0 then
+    begin
+      if absI(headmove[headbob - 1]) < absI(headmove[headbob]) then
+        dec(headbob)
+      else
+      begin
+        inc(headbob);
+        if headbob = MAXBOBS then
+          headbob := 0;
+      end;
     end;
   end;
 
+  // try to open a door in front of player
+  if (in_button[bt_use] <> 0) and (timecount > keyboardDelay) and not netmsgstatus then
+  begin
+    checktrigger := true;
+    keyboardDelay := timecount + KBDELAY * 2;
+  end;
 
+  // fire a weapon
+  if (in_button[bt_fire] <> 0) and (weapons[player.weapons[player.currentweapon]].charge = 100) and not changingweapons then
+  begin
+    n := player.weapons[player.currentweapon];
+    if (n = 18) or (n = 4) then
+    begin
+      if (player.ammo[weapons[n].ammotype] >= weapons[n].ammorate) and (weapmode = 0) then
+        weapmode := 1;
+    end
+    else
+      RF_SetActionHook(fireweapon);
+  end;
+
+  // compute falling or stepping up higher
+  xl := (player.x - FRACUNIT * 8) shr FRACTILESHIFT;
+  xh := (player.x + FRACUNIT * 8) shr FRACTILESHIFT;
+  yl := (player.y - FRACUNIT * 8) shr FRACTILESHIFT;
+  yh := (player.y + FRACUNIT * 8) shr FRACTILESHIFT;
+  floorz := player.z - player.height;
+  maxz := 0;
+  while xl <= xh do // JVAL: SOS -> does not reset y1 ?
+  begin
+    while yl <= yh do
+    begin
+      fz := RF_GetFloorZ((xl * 64 + 32) shl FRACBITS, (yl * 64 + 32) shl FRACBITS);
+      if (fz > maxz) and (fz < floorz + (20 shl FRACBITS)) then
+      begin
+        maxz := fz;
+        maxx := xl;
+        maxy := yl;
+      end;
+      inc(y1);
+    end;
+    inc(x1);
+  end;
+
+  if maxz = 0 then
+  begin
+    maxz := RF_GetFloorZ(player.x, player.y);
+    maxx := player.x shr FRACTILESHIFT;
+    maxy := player.y shr FRACTILESHIFT;
+  end;
+  floorz := maxz + player.height;
+
+  if absI(player.z - floorz) <= 10 shl FRACBITS then
+  begin
+    mapspot := maxy * MAPCOLS + maxx;
+    if floorflags[mapspot] and F_RIGHT <> 0 then
+      Thrust(EAST, FRACUNIT * 4);
+    if floorflags[mapspot] and F_LEFT <> 0 then
+      Thrust(WEST, FRACUNIT * 4);
+    if floorflags[mapspot] and F_UP <> 0 then
+      Thrust(NORTH, FRACUNIT * 4);
+    if floorflags[mapspot] and F_DOWN <> 0 then
+      Thrust(SOUTH, FRACUNIT * 4);
+  end;
+
+// floorz := RF_GetFloorZ(player.x, player.y)+player.height;
+
+  player.z := player.z - fallrate;
+  if player.z > floorz then
+    fallrate := fallrate + FALLUNIT
+  else if player.z < floorz then
+  begin
+    if fallrate >= 12 * FRACUNIT then
+      falldamage := (fallrate shr FRACBITS) div 7;
+    player.z := player.z + FRACUNIT shl 2;
+    if player.z > floorz then
+      player.z := floorz;
+    fallrate := 0;
+  end;
+  floorz := RF_GetCeilingZ(player.x, player.y);
+  if player.z + (10 shl FRACBITS) > floorz then
+  begin
+    player.z := floorz - 10 shl FRACBITS;
+    fallrate := FALLUNIT;
+  end;
+end;
+
+
+// called by an interrupt
 procedure PlayerCommand;
-(* called by an interrupt *)
 begin
   INT_ReadControls;
   ControlMovement;
-  end;
+end;
 
 
 procedure newlights;
 begin
-  if (lighting+changelight>4096) lighting := 4096;
-  else lighting := lighting + changelight;
-  if (lighting <= 0) lighting := 1;
-  RF_SetLights((fixed_t)lighting shl FRACBITS);
+  if lighting + changelight > 4096 then
+    lighting := 4096
+  else
+    lighting := lighting + changelight;
+  if lighting <= 0 then
+    lighting := 1;
+  RF_SetLights(lighting shl FRACBITS);
   changelight := 0;
-  end;
+end;
 
 
 procedure ChangeScroll;
 begin
-  if (scrollview = 255) exit;
-  if (player.scrollmin+scrollview <= -MAXSCROLL) or (player.scrollmin+scrollview >= MAXSCROLL) then
+  if scrollview = 255 then
+    exit;
+  if (player.scrollmin + scrollview <= -MAXSCROLL) or (player.scrollmin + scrollview >= MAXSCROLL) then
   begin
-   scrollview := 0;
-   exit;
-    end;
+    scrollview := 0;
+    exit;
+  end;
   player.scrollmin := player.scrollmin + scrollview;
   player.scrollmax := player.scrollmax + scrollview;
   scrollview := 0;
+end;
+
+
+// secrets
+procedure Special_Code(const s: string);
+var
+  hsprite_p, sprite_p: Pscaleobj_t;
+  i: integer;
+begin
+  if netmode and not MS_CheckParm('ravenger') then
+  begin
+    specialcode := false;
+    secretbuf := '';
+    secretindex := 0;
+    exit;
   end;
 
-
-procedure Special_Code(char *s);
-(* secrets *)
-begin
-  scaleobj_t *hsprite_p, *sprite_p;
-  i: integer;
-
-  if (netmode) and ( not MS_CheckParm('ravenger')) then
+  if stricmp(s, 'belfast') = 0 then
   begin
-   specialcode := false;
-   memset(secretbuf,0,SizeOf(secretbuf));
-   secretindex := 0;
-   exit;
-    end;
-  if (stricmp(s,'belfast') = 0) then
-  begin
-   for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-    if sprite_p.hitpoints then
+    sprite_p := firstscaleobj.next;
+    while sprite_p <> @lastscaleobj do
     begin
-      mapsprites[(sprite_p.y shr FRACTILESHIFT)*MAPCOLS+(sprite_p.x shr FRACTILESHIFT)] := 0;
-      hsprite_p := sprite_p;
-      sprite_p := sprite_p.prev;
-      KillSprite(hsprite_p,S_BULLET3);
-      player.bodycount++;
-       end;
-   writemsg('DeathKiss');
-  end
-  else if (stricmp(s,'allahmode') = 0) then
-  begin
-   if godmode then
-   begin
-     godmode := false;
-     writemsg('GodMode Off');
+      if sprite_p.hitpoints <> 0 then
+      begin
+        mapsprites[(sprite_p.y shr FRACTILESHIFT) * MAPCOLS + (sprite_p.x shr FRACTILESHIFT)] := 0;
+        hsprite_p := sprite_p;
+        sprite_p := sprite_p.prev;
+        KillSprite(hsprite_p, S_BULLET3);
+        player.bodycount++;
       end;
-   else
-   begin
-     godmode := true;
-     writemsg('GodMode On');
-      end;
-  end
-  else if (stricmp(s,'channel7') = 0) then
-  begin
-   writemsg('Rob Lays Eggs');
-  end
-  else if (stricmp(s,'lizardman') = 0) then
-  begin
-   writemsg('Jeremy Lays Eggs');
-  end
-  else if (stricmp(s,'dominatrix') = 0) then
-  begin
-   writemsg('On your knees worm!');
-  end
-  else if (stricmp(s,'cyborg') = 0) then
-  begin
-   writemsg('Psyborgs Rule!');
-  end
-  else if (stricmp(s,'mooman') = 0) then
-  begin
-   writemsg('Brady is better than you, and that ain''t saying much!');
-  end
-  else if (stricmp(s,'raven') = 0) then
-  begin
-   player.angst := player.maxangst;
-   player.shield := player.maxshield;
-   writemsg('Ambrosia');
-  end
-  else if (stricmp(s,'omni') = 0) then
-  begin
-   for(i := 0;i<MAPCOLS*MAPROWS;i++)
-    if (northwall[i]) and (255) player.northmap[i] := WALL_COLOR;
-   for(i := 0;i<MAPCOLS*MAPROWS;i++)
-    if (westwall[i]) and (255) player.westmap[i] := WALL_COLOR;
-   writemsg('Omniscience');
-  end
-  else if (stricmp(s,'kmfdm') = 0) then
-  begin
-   player.ammo[0] := 999;
-   player.ammo[1] := 999;
-   player.ammo[2] := 999;
-   writemsg('Backpack of Holding');
-   oldshots := -1;
-  end
-  else if (stricmp(s,'beavis') = 0) then
-  begin
-   player.levelscore := 100;
-   player.primaries[0] := pcount[0];
-   player.primaries[1] := pcount[1];
-   for (i := 0;i<7;i++)
-    player.secondaries[i] := scount[i];
-   writemsg('Time Warp');
-  end
-  else if (stricmp(s,'gulliver') = 0) then
-  begin
-   if midgetmode then
-   begin
-     for (sprite_p := firstscaleobj.next;sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-      sprite_p.scale--;
-     midgetmode := false;
-     writemsg('Midget Mode Off');
-      end;
-   else
-   begin
-     for (sprite_p := firstscaleobj.next;sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-      sprite_p.scale++;
-     midgetmode := true;
-     writemsg('Midget Mode On');
-      end;
-  end
-  else if (stricmp(s,'gimme') = 0) then
-  begin
-   player.inventory[0] := 20;
-   player.inventory[1] := 20;
-   player.inventory[2] := 15;
-   player.inventory[3] := 10;
-   player.inventory[4] := 10;
-   player.inventory[5] := 10;
-   player.inventory[6] := 10;
-   player.inventory[7] := 10;
-   player.inventory[8] := 10;
-#ifndef DEMO
-   player.inventory[9] := 10;
-   player.inventory[10] := 10;
-   player.inventory[11] := 10;
-   player.inventory[12] := 10;
-{$ENDIF}
-   writemsg('Bag of Holding');
-  end
-  else if (stricmp(s,'taco') = 0) then
-  begin
-   enemyviewmode) xor (:= 1;
-   writemsg('Enemy view toggled');
+      sprite_p := sprite_p.next;
     end;
+    writemsg('DeathKiss');
+  end
+  else if stricmp(s, 'allahmode') = 0 then
+  begin
+    if godmode then
+    begin
+      godmode := false;
+      writemsg('GodMode Off');
+    end
+    else
+    begin
+      godmode := true;
+      writemsg('GodMode On');
+    end;
+  end
+  else if stricmp(s, 'channel7') = 0 then
+  begin
+    writemsg('Rob Lays Eggs');
+  end
+  else if stricmp(s, 'lizardman') = 0 then
+  begin
+    writemsg('Jeremy Lays Eggs');
+  end
+  else if stricmp(s, 'dominatrix') = 0 then
+  begin
+    writemsg('On your knees worm!');
+  end
+  else if stricmp(s, 'cyborg') = 0 then
+  begin
+    writemsg('Psyborgs Rule!');
+  end
+  else if stricmp(s, 'mooman') = 0 then
+  begin
+    writemsg('Brady is better than you, and that ain''t saying much!');
+  end
+  else if stricmp(s, 'raven') = 0 then
+  begin
+    player.angst := player.maxangst;
+    player.shield := player.maxshield;
+    writemsg('Ambrosia');
+  end
+  else if stricmp(s, 'omni') = 0 then
+  begin
+    for i := 0 to MAPCOLS * MAPROWS - 1 do
+      if northwall[i] and 255 <> 0 then
+        player.northmap[i] := WALL_COLOR;
+    for i := 0 to MAPCOLS * MAPROWS - 1 do
+      if westwall[i] and 255 <> 0 then
+        player.westmap[i] := WALL_COLOR;
+    writemsg('Omniscience');
+  end
+  else if stricmp(s, 'kmfdm') = 0 then
+  begin
+    player.ammo[0] := 999;
+    player.ammo[1] := 999;
+    player.ammo[2] := 999;
+    writemsg('Backpack of Holding');
+    oldshots := -1;
+  end
+  else if stricmp(s, 'beavis') = 0 then
+  begin
+    player.levelscore := 100;
+    player.primaries[0] := pcount[0];
+    player.primaries[1] := pcount[1];
+    for i := 0 to 6 do
+      player.secondaries[i] := scount[i];
+    writemsg('Time Warp');
+  end
+  else if stricmp(s, 'gulliver') = 0 then
+  begin
+    if midgetmode then
+    begin
+      sprite_p := firstscaleobj.next;
+      while sprite_p <> @lastscaleobj do
+      begin
+        dec(sprite_p.scale);
+        sprite_p := sprite_p.next;
+      end;
+      midgetmode := false;
+      writemsg('Midget Mode Off');
+    end
+    else
+    begin
+      sprite_p := firstscaleobj.next;
+      while sprite_p <> @lastscaleobj do
+      begin
+        inc(sprite_p.scale);
+        sprite_p := sprite_p.next;
+      end;
+      midgetmode := true;
+      writemsg('Midget Mode On');
+    end;
+  end
+  else if stricmp(s, 'gimme') = 0 then
+  begin
+    player.inventory[0] := 20;
+    player.inventory[1] := 20;
+    player.inventory[2] := 15;
+    player.inventory[3] := 10;
+    player.inventory[4] := 10;
+    player.inventory[5] := 10;
+    player.inventory[6] := 10;
+    player.inventory[7] := 10;
+    player.inventory[8] := 10;
+    if not DEMO then
+    begin
+      player.inventory[9] := 10;
+      player.inventory[10] := 10;
+      player.inventory[11] := 10;
+      player.inventory[12] := 10;
+    end;
+    writemsg('Bag of Holding');
+  end
+  else if stricmp(s, 'taco') = 0 then
+  begin
+    enemyviewmode := enemyviewmode xor 1;
+    writemsg('Enemy view toggled');
+  end;
 #if  not defined(DEMO)) and ( not defined(GAME1)) and ( not defined(GAME2)) and ( not defined(GAME3)
   if (s[0] = 'g') and (s[1] = 'o') then
   begin
-   if (stricmp(s,'go1') = 0) newmap(0,2);
-    else if (stricmp(s,'go2') = 0) newmap(1,2);
-    else if (stricmp(s,'go3') = 0) newmap(2,2);
-    else if (stricmp(s,'go4') = 0) newmap(3,2);
-    else if (stricmp(s,'go5') = 0) newmap(4,2);
-    else if (stricmp(s,'go6') = 0) newmap(5,2);
-    else if (stricmp(s,'go7') = 0) newmap(6,2);
-    else if (stricmp(s,'go8') = 0) newmap(7,2);
-    else if (stricmp(s,'go9') = 0) newmap(8,2);
-    else if (stricmp(s,'go10') = 0) newmap(9,2);
-    else if (stricmp(s,'go11') = 0) newmap(10,2);
-    else if (stricmp(s,'go12') = 0) newmap(11,2);
-    else if (stricmp(s,'go13') = 0) newmap(12,2);
-    else if (stricmp(s,'go14') = 0) newmap(13,2);
-    else if (stricmp(s,'go15') = 0) newmap(14,2);
-    else if (stricmp(s,'go16') = 0) newmap(15,2);
-    else if (stricmp(s,'go17') = 0) newmap(16,2);
-    else if (stricmp(s,'go18') = 0) newmap(17,2);
-    else if (stricmp(s,'go19') = 0) newmap(18,2);
-    else if (stricmp(s,'go20') = 0) newmap(19,2);
-    else if (stricmp(s,'go21') = 0) newmap(20,2);
-    else if (stricmp(s,'go22') = 0) newmap(21,2);
-    else if (stricmp(s,'go23') = 0) newmap(22,2);
-    else if (stricmp(s,'go24') = 0) newmap(23,2);
-    else if (stricmp(s,'go25') = 0) newmap(24,2);
-    else if (stricmp(s,'go26') = 0) newmap(25,2);
-    else if (stricmp(s,'go27') = 0) newmap(26,2);
-    else if (stricmp(s,'go28') = 0) newmap(27,2);
-    else if (stricmp(s,'go29') = 0) newmap(28,2);
-    else if (stricmp(s,'go30') = 0) newmap(29,2);
-    else if (stricmp(s,'go31') = 0) newmap(30,2);
-    else if (stricmp(s,'go32') = 0) newmap(31,2);
+   if (stricmp(s, 'go1') = 0) newmap(0,2);
+    else if (stricmp(s, 'go2') = 0) newmap(1,2);
+    else if (stricmp(s, 'go3') = 0) newmap(2,2);
+    else if (stricmp(s, 'go4') = 0) newmap(3,2);
+    else if (stricmp(s, 'go5') = 0) newmap(4,2);
+    else if (stricmp(s, 'go6') = 0) newmap(5,2);
+    else if (stricmp(s, 'go7') = 0) newmap(6,2);
+    else if (stricmp(s, 'go8') = 0) newmap(7,2);
+    else if (stricmp(s, 'go9') = 0) newmap(8,2);
+    else if (stricmp(s, 'go10') = 0) newmap(9,2);
+    else if (stricmp(s, 'go11') = 0) newmap(10,2);
+    else if (stricmp(s, 'go12') = 0) newmap(11,2);
+    else if (stricmp(s, 'go13') = 0) newmap(12,2);
+    else if (stricmp(s, 'go14') = 0) newmap(13,2);
+    else if (stricmp(s, 'go15') = 0) newmap(14,2);
+    else if (stricmp(s, 'go16') = 0) newmap(15,2);
+    else if (stricmp(s, 'go17') = 0) newmap(16,2);
+    else if (stricmp(s, 'go18') = 0) newmap(17,2);
+    else if (stricmp(s, 'go19') = 0) newmap(18,2);
+    else if (stricmp(s, 'go20') = 0) newmap(19,2);
+    else if (stricmp(s, 'go21') = 0) newmap(20,2);
+    else if (stricmp(s, 'go22') = 0) newmap(21,2);
+    else if (stricmp(s, 'go23') = 0) newmap(22,2);
+    else if (stricmp(s, 'go24') = 0) newmap(23,2);
+    else if (stricmp(s, 'go25') = 0) newmap(24,2);
+    else if (stricmp(s, 'go26') = 0) newmap(25,2);
+    else if (stricmp(s, 'go27') = 0) newmap(26,2);
+    else if (stricmp(s, 'go28') = 0) newmap(27,2);
+    else if (stricmp(s, 'go29') = 0) newmap(28,2);
+    else if (stricmp(s, 'go30') = 0) newmap(29,2);
+    else if (stricmp(s, 'go31') = 0) newmap(30,2);
+    else if (stricmp(s, 'go32') = 0) newmap(31,2);
    INT_TimerHook(PlayerCommand);
     end;
 {$ENDIF}
   else if (s[0] = 'b') and (s[1] = 'l') then
   begin
-   if (stricmp(s,'blammo1') = 0) player.weapons[2] := 2;
-    else if (stricmp(s,'blammo2') = 0) player.weapons[2] := 3;
-    else if (stricmp(s,'blammo3') = 0) player.weapons[2] := 4;
-    else if (stricmp(s,'blammo4') = 0) player.weapons[2] := 16;
-    else if (stricmp(s,'blammo5') = 0) player.weapons[2] := 17;
-    else if (stricmp(s,'blammo6') = 0) player.weapons[2] := 18;
+   if (stricmp(s, 'blammo1') = 0) player.weapons[2] := 2;
+    else if (stricmp(s, 'blammo2') = 0) player.weapons[2] := 3;
+    else if (stricmp(s, 'blammo3') = 0) player.weapons[2] := 4;
+    else if (stricmp(s, 'blammo4') = 0) player.weapons[2] := 16;
+    else if (stricmp(s, 'blammo5') = 0) player.weapons[2] := 17;
+    else if (stricmp(s, 'blammo6') = 0) player.weapons[2] := 18;
    if player.weapons[2] >= 0 then
    begin
      loadweapon(player.weapons[2]);
@@ -2389,7 +2937,7 @@ begin
       end;
     end;
   specialcode := false;
-  memset(secretbuf,0,SizeOf(secretbuf));
+  secretbuf := '';
   secretindex := 0;
   end;
 
@@ -2641,10 +3189,10 @@ begin
        end;
   if (not netmode) or ((netmode) and (playernum = 0)) then
   begin
-    SpawnSprite(stype,sa.mapx,sa.mapy,0,0,0,0,true,0);
-    SpawnSprite(S_WARP,sa.mapx,sa.mapy,0,0,0,0,true,0);
+    SpawnSprite(stype,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
+    SpawnSprite(S_WARP,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
     if (netmode) and (sa.typ >= 10) then
-     NetSendSpawn(stype,sa.mapx,sa.mapy,0,0,0,0,true,0);
+     NetSendSpawn(stype,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
      end;
    end;
        end;
@@ -2670,7 +3218,7 @@ begin
   mapsprites[BonusItem.mapspot] := 0;
   break;
    end;
-      SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS,0,0,0,0,false,0);
+      SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS, 0, 0, 0, 0, false, 0);
       end;
    do
    begin
@@ -2683,11 +3231,11 @@ begin
    BonusItem.time := timecount + bonustime + (clock) and (1023);
    BonusItem.num := clock mod MAXRANDOMITEMS;
    BonusItem.name := randnames[BonusItem.num];
-   BonusItem.sprite := SpawnSprite(S_BONUSITEM,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS,0,0,0,0,false,0);
-   SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS,0,0,0,0,false,0);
+   BonusItem.sprite := SpawnSprite(S_BONUSITEM,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS, 0, 0, 0, 0, false, 0);
+   SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS, 0, 0, 0, 0, false, 0);
    BonusItem.sprite.basepic := BonusItem.sprite.basepic + BonusItem.num;
    oldgoalitem := -1;
-   if (netmode) NetBonusItem;
+   if netmode then NetBonusItem;
    goalitem := 0;
     end;
   end;
@@ -2698,12 +3246,12 @@ begin
   time: integer;
   MSG    msg;
 
-  if (PeekMessage and (msg,NULL,0,0,PM_REMOVE)) then
+  if (PeekMessage and (msg,NULL, 0, 0,PM_REMOVE)) then
     DispatchMessage and (msg);
 
   chargeweapons;
   UpdateMouse;
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
   if netmode then
   begin
    NetGetData;
@@ -2718,11 +3266,11 @@ begin
   UpdateSound;
   while time >= spritemovetime do
   begin
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
    if numprocesses then
    begin
      Process;
-     if (netmode) NetGetData;
+     if netmode then NetGetData;
       end;
 
 //   if (recording) or (playback) rndofs := 0;
@@ -2739,19 +3287,19 @@ begin
    spritemovetime := spritemovetime + 8;
     end;
   UpdateMouse;
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
   if (numspawnareas) CheckSpawnAreas;
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
   CheckElevators;
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
   CheckBonusItem;
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
   if doorsound then
   begin
    doorsound := false;
    SoundEffect(SN_DOOR,15,doorx,doory);
     end;
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
   UpdateMouse;
   end;
 
@@ -2780,9 +3328,9 @@ begin
   memcpy(pixelangle,campixelangle,SizeOf(pixelangle));
   memcpy(pixelcosine,campixelcosine,SizeOf(pixelcosine));
   if (enemyviewmode) and (goalitem>0) then
-  RF_RenderView(playerdata[goalitem-1].x,playerdata[goalitem-1].y,playerdata[goalitem-1].z,playerdata[goalitem-1].angle);
+  RF_RenderView(playerdata[goalitem-1].x, playerdata[goalitem-1].y, playerdata[goalitem-1].z, playerdata[goalitem-1].angle);
   else
-  RF_RenderView(player.x,player.y,player.z,player.angle+WEST);
+  RF_RenderView(player.x, player.y, player.z, player.angle+WEST);
   memcpy(rearbuf,viewbuffer,SizeOf(rearbuf));
   windowLeft := viewLoc[view];
   windowTop := viewLoc[view+1];
@@ -2856,7 +3404,7 @@ procedure startover(int restartvalue);
 begin
   i: integer;
 
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
   resetdisplay;
   if restartvalue <> 1 then
   begin
@@ -2870,7 +3418,7 @@ begin
 
    if not netmode then
    begin
-     memset(player.inventory,0,SizeOf(player.inventory));
+     memset(player.inventory, 0,SizeOf(player.inventory));
      player.inventory[7] := 2;
      player.inventory[5] := 2;
      player.inventory[4] := 2;
@@ -2904,7 +3452,7 @@ begin
   else
   respawnplayer;
 
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
 
   exitexists := false;
   specialeffecttime := 0;
@@ -2912,8 +3460,8 @@ begin
   if currentViewSize >= 5 then
   VI_DrawPic(4,149,statusbar[2]);
   if currentViewSize >= 4 then
-  VI_DrawMaskedPic(0,0,statusbar[3]);
-  if (netmode) NetGetData;
+  VI_DrawMaskedPic(0, 0,statusbar[3]);
+  if netmode then NetGetData;
   turnrate := 0;
   moverate := 0;
   fallrate := 0;
@@ -2928,8 +3476,8 @@ begin
 
 procedure EndLevel;
 begin
-  VI_FadeOut(0,256,0,0,0,64);
-  memset(screen,0,64000);
+  VI_FadeOut(0,256, 0, 0, 0,64);
+  memset(screen, 0,64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   ++player.map;
   startover(1);
@@ -2995,7 +3543,7 @@ begin
   if (not netmode) timecount := player.timecount;
   activatemenu := false;
   INT_TimerHook(PlayerCommand);
-  keyboardDelay := timecount+KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
   end;
 
 
@@ -3007,7 +3555,7 @@ begin
   INT_TimerHook(PlayerCommand);
   activatehelp := false;
   timecount := player.timecount;
-  keyboardDelay := timecount+KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
   end;
 
 
@@ -3017,7 +3565,7 @@ begin
   MouseShow;
   if (ShowQuit(PlayerCommand)) quitgame := true;
   MouseHide;
-  keyboardDelay := timecount+KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
   end;
 
 
@@ -3026,7 +3574,7 @@ begin
   if paused then
   begin
    gamepause := true;
-   if (netmode) NetPause;
+   if netmode then NetPause;
     end;
   player.timecount := timecount;
   ShowPause;
@@ -3035,7 +3583,7 @@ begin
   paused := false;
   gamepause := false;
   INT_TimerHook(PlayerCommand);
-  keyboardDelay := timecount+KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
   end;
 
 
@@ -3051,9 +3599,9 @@ begin
     begin
       x := ((player.mapspot+i+j)) and (63)*MAPSIZE+32;
       y := ((player.mapspot+i+j)/64)*MAPSIZE+32;
-      SpawnSprite(S_EXIT,x shl FRACBITS,y shl FRACBITS,0,0,0,0,0,0);
-      SoundEffect(SN_NEXUS,0,x shl FRACBITS,y shl FRACBITS);
-      SoundEffect(SN_NEXUS,0,x shl FRACBITS,y shl FRACBITS);
+      SpawnSprite(S_EXIT,x shl FRACBITS,y shl FRACBITS, 0, 0, 0, 0, 0, 0);
+      SoundEffect(SN_NEXUS, 0,x shl FRACBITS,y shl FRACBITS);
+      SoundEffect(SN_NEXUS, 0,x shl FRACBITS,y shl FRACBITS);
       exitexists := true;
       writemsg('Translation Nexus Created!');
       exit;
@@ -3128,13 +3676,13 @@ begin
 
   if update then
   rtimecount := timecount;
-  RF_RenderView(px,py,pz,angle);
+  RF_RenderView(px,py,pz, angle);
 
   if (update = 1) TimeUpdate;
 
   if (player.holopic) DrawHolo;
 
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
 
   if timecount<RearViewTime then
   begin
@@ -3198,7 +3746,7 @@ begin
      weapony := wy;
       end;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
    if (weapmode = 0) VI_DrawMaskedPicToBuffer2(weaponx,weapony,wpic);
     else VI_DrawMaskedPicToBuffer(weaponx,weapony,wpic);
     end;
@@ -3222,7 +3770,7 @@ begin
     else displaymotionmode;
     end;
 
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
 
   if (currentViewSize>0) and (currentViewSize <= 4) then
   begin
@@ -3231,18 +3779,18 @@ begin
    VI_DrawMaskedPicToBuffer(statusbarloc[currentViewSize*2],statusbarloc[currentViewSize*2+1],pic);
     end;
 
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
 
   updatedisplay;
 
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
 
 (* display the message string *)
   rewritemsg;
 
 (* finally draw it *)
 
-  if (netmode) NetGetData;
+  if netmode then NetGetData;
 
   if ticker then
   begin
@@ -3279,7 +3827,7 @@ procedure PlayLoop ;
 begin
   i: integer;
 
-  if (netmode) NetWaitStart;
+  if netmode then NetWaitStart;
   else timecount := 0;
 
   while not quitgame do
@@ -3288,7 +3836,7 @@ begin
    begin
      if deadrestart then
      begin
-    memset(screen,0,64000);
+    memset(screen, 0,64000);
 
     VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
 
@@ -3296,7 +3844,7 @@ begin
         end;
      continue;
       end;
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
    if toggleautorun then
    begin
      autorun) xor (:= 1;
@@ -3331,16 +3879,16 @@ begin
    if checktrigger then
    begin
      checktrigger := false;
-     CheckHere(true,player.x,player.y,player.angle);
+     CheckHere(true, player.x, player.y, player.angle);
      if fliplayed then
       continue;
       end;
    if (warpjammer) JamWarps;
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
    if falldamage then
      begin  // just makes a grunt sound
-     SoundEffect(SN_HIT0+player.chartype,15,player.x,player.y);
-     if (netmode) NetSoundEffect(SN_HIT0+player.chartype,15,player.x,player.y);
+     SoundEffect(SN_HIT0+player.chartype,15, player.x, player.y);
+     if netmode then NetSoundEffect(SN_HIT0+player.chartype,15, player.x, player.y);
      falldamage := 0;
       end;
 
@@ -3359,7 +3907,7 @@ begin
         end;
       end;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
 
    if timecount>specialeffecttime then
    begin
@@ -3368,18 +3916,18 @@ begin
       end;
    if firegrenade then
    begin
-     SpawnSprite(S_GRENADE,player.x,player.y,player.z,player.height-(50 shl FRACBITS),player.angle,(-player.scrollmin)) and (ANGLES,true,playernum);
-     SoundEffect(SN_GRENADE,0,player.x,player.y);
-     if (netmode) NetSoundEffect(SN_GRENADE,0,player.x,player.y);
+     SpawnSprite(S_GRENADE, player.x, player.y, player.z, player.height-(50 shl FRACBITS), player.angle,(-player.scrollmin)) and (ANGLES, true, playernum);
+     SoundEffect(SN_GRENADE, 0, player.x, player.y);
+     if netmode then NetSoundEffect(SN_GRENADE, 0, player.x, player.y);
      --player.inventory[2];
      firegrenade := false;
       end;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
 
    if (Warping) WarpAnim;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
 
 (* check special code flag *)
    if (specialcode) Special_Code(secretbuf);
@@ -3430,19 +3978,19 @@ begin
      wallanimationtime := timecount+12;
      if netmode then
       NetGetData;
-     if (floorflags[player.mapspot]) and (F_DAMAGE) and (player.z = RF_GetFloorZ(player.x,player.y)+player.height) then
+     if (floorflags[player.mapspot]) and (F_DAMAGE) and (player.z = RF_GetFloorZ(player.x, player.y)+player.height) then
       hurt(30);
       end;
 
-   CheckWarps(player.x,player.y);
+   CheckWarps(player.x, player.y);
    if fliplayed then
     continue;
 
-   CheckDoors(player.x,player.y);
-   if (netmode) NetGetData;
+   CheckDoors(player.x, player.y);
+   if netmode then NetGetData;
    if (deadrestart) startover(2);
    if (resizeScreen) ChangeViewSize(biggerScreen);
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
    if (scrollview) ChangeScroll;
 
 (* update sprite movement *)
@@ -3493,7 +4041,7 @@ begin
      RearViewDelay := timecount;
       end;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
 
 (* render the view *)
    if (RearViewOn) and (timecount >= RearViewDelay) then
@@ -3505,7 +4053,7 @@ begin
       RearViewOn := false;
       end;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
 
    scrollmin := player.scrollmin;
    scrollmax := player.scrollmax;
@@ -3514,7 +4062,7 @@ begin
      memset(ylookup[i],i,320);
    VI_BlitView;*)
 
-   UpdateView(player.x,player.y,player.z,player.angle,1);
+   UpdateView(player.x, player.y, player.z, player.angle,1);
 
    RF_BlitView;
    VI_BlitView;
@@ -3531,7 +4079,7 @@ begin
 
    if (QuickExit) RunQuickExit;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
 
    if (paused) or (netpaused) RunPause;
 
@@ -3552,14 +4100,14 @@ begin
        begin
    if player.weapons[player.currentweapon] = 4 then
    begin
-     SoundEffect(SN_BULLET4,0,player.x,player.y);
-     if (netmode) NetSoundEffect(SN_BULLET4,0,player.x,player.y);
+     SoundEffect(SN_BULLET4, 0, player.x, player.y);
+     if netmode then NetSoundEffect(SN_BULLET4, 0, player.x, player.y);
       end;
    if player.weapons[player.currentweapon] = 18 then
    begin
-     SoundEffect(SN_BULLET18,0,player.x,player.y);
+     SoundEffect(SN_BULLET18, 0, player.x, player.y);
      if netmode then
-      NetSoundEffect(SN_BULLET18,0,player.x,player.y);
+      NetSoundEffect(SN_BULLET18, 0, player.x, player.y);
       end;
     end;
        weapmode := weaponstate[player.weapons[player.currentweapon]][weapmode];
@@ -3571,15 +4119,15 @@ begin
      weapdelay := timecount+8;
       end;
 
-   if (netmode) NetGetData;
+   if netmode then NetGetData;
     end;
   end;
 
 
-procedure ActionHook ;
+procedure ActionHook;
 begin
   actionflag :=  0;
-  end;
+end;
 
 
 procedure InitData;
@@ -3595,7 +4143,7 @@ begin
   fallrate := 0;
   strafrate := 0;
   MapZoom := 8;
-  memset(secretbuf,0,20);
+  secretbuf := '';
   secretindex := 0;
 //   demobuffer := CA_CacheLump(CA_GetNamedNum('demo'));
   if playback then
@@ -3606,7 +4154,7 @@ begin
   if recording then
   begin
    demobuffer := CA_CacheLump(CA_GetNamedNum('demo'));
-   memset(demobuffer,0,RECBUFSIZE);
+   memset(demobuffer, 0,RECBUFSIZE);
    recordindex := 0;
     end;
   probe.moveSpeed := MAXPROBE;
@@ -3633,7 +4181,7 @@ begin
   f := fopen('demo1','w');
   fwrite(demobuffer,RECBUFSIZE,1,f);
   fclose(f);
-  end;
+end;
 
 
 procedure maingame;
@@ -3645,10 +4193,12 @@ begin
   PlayLoop;
   player.timecount := timecount;
   if netmode then
-   NetQuitGame;
+    NetQuitGame;
   if recording then
-   SaveDemo;
-  SaveSetup and (SC,'SETUP.CFG');
+    SaveDemo;
+  SaveSetup(SC, 'SETUP.CFG');
   playback := false;
-  end;
+end;
+
+end.
 
