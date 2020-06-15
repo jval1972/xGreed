@@ -206,6 +206,11 @@ function MaxI(const x1, x2: integer): integer;
 
 function absI(const x: integer): integer;
 
+// Operations
+function CAddI(var a: integer; const b: integer): integer;
+
+function CSubI(var a: integer; const b: integer): integer;
+
 implementation
 
 uses
@@ -704,6 +709,18 @@ begin
     result := -x
   else
     result := x;
+end;
+
+function CAddI(var a: integer; const b: integer): integer;
+begin
+  a := a + b;
+  result := a;
+end;
+
+function CSubI(var a: integer; const b: integer): integer;
+begin
+  a := a - b;
+  result := a;
 end;
 
 end.
