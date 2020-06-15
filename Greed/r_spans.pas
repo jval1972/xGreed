@@ -55,6 +55,8 @@ var
   mr_dest: PByteArray;
   mr_colormap: PByteArray;
 
+procedure ScalePost;
+  
 implementation
 
 uses
@@ -219,10 +221,14 @@ begin
     if light < 0 then light := 0;
     sp_colormap := zcolormap[light];
   end
-  else if span_p.shadow = 1 then sp_colormap := @colormaps[wallglow shl 8]
-  else if span_p.shadow = 2 then sp_colormap := @colormaps[wallflicker1 shl 8]
-  else if span_p.shadow = 3 then sp_colormap := @colormaps[wallflicker2 shl 8]
-  else if span_p.shadow = 4 then sp_colormap := @colormaps[wallflicker3 shl 8]
+  else if span_p.shadow = 1 then
+    sp_colormap := @colormaps[wallglow shl 8]
+  else if span_p.shadow = 2 then
+    sp_colormap := @colormaps[wallflicker1 shl 8]
+  else if span_p.shadow = 3 then
+    sp_colormap := @colormaps[wallflicker2 shl 8]
+  else if span_p.shadow = 4 then
+    sp_colormap := @colormaps[wallflicker3 shl 8]
   else if (span_p.shadow >= 5) and (span_p.shadow <= 8) then
   begin
     if wallcycle = span_p.shadow - 5 then
@@ -337,10 +343,14 @@ begin
     if light < 0 then light := 0;
     sp_colormap := zcolormap[light];
   end
-  else if span_p.shadow = 1 then sp_colormap := @colormaps[wallglow shl 8]
-  else if span_p.shadow = 2 then sp_colormap := @colormaps[wallflicker1 shl 8]
-  else if span_p.shadow = 3 then sp_colormap := @colormaps[wallflicker2 shl 8]
-  else if span_p.shadow = 4 then sp_colormap := @colormaps[wallflicker3 shl 8]
+  else if span_p.shadow = 1 then
+    sp_colormap := @colormaps[wallglow shl 8]
+  else if span_p.shadow = 2 then
+    sp_colormap := @colormaps[wallflicker1 shl 8]
+  else if span_p.shadow = 3 then
+    sp_colormap := @colormaps[wallflicker2 shl 8]
+  else if span_p.shadow = 4 then
+    sp_colormap := @colormaps[wallflicker3 shl 8]
   else if (span_p.shadow >= 5) and (span_p.shadow <= 8) then
   begin
     if wallcycle = span_p.shadow - 5 then sp_colormap := colormaps
