@@ -45,10 +45,12 @@ uses
   g_delphi,
   d_disk,
   d_misc,
+  d_ints,
   raven,
   r_public,
   r_refdef,
   r_render,
+  r_spans,
   r_walls;
 
 // returns vertex pointer of transformed vertex
@@ -556,7 +558,7 @@ end;
 // For each sprite, if the sprite's bounding rect touches a tile with a
 // vertex, transform and clip the projected view rect.  If still visible
 // a span into the span list
-procedure RenderSprite(const sprite: Pscaleobj_t);
+procedure RenderSprite(var sprite: Pscaleobj_t);
 var
   deltax, deltay, pointx, pointz, gxt, gyt: fixed_t;
   picnum: integer;
@@ -567,7 +569,7 @@ var
 begin
   // calculate which image to display
   picnum := sprite.basepic;
-  if sprite.rotate <> 0 then
+  if sprite.rotate <> rt_one then
   begin    // this is only aproximate, but ok for 8
     if sprite.rotate = rt_eight then
       picnum := picnum + ((viewangle - sprite.angle + WEST + DEGREE45_2) shr 7) and 7
@@ -632,11 +634,11 @@ begin
   mapx := sprite.x shr FRACTILESHIFT;
   mapspot := mapy * MAPCOLS + mapx;
   if sprite.specialtype = st_noclip then
-    span_p.shadow := (st_noclip shl 8)
+    span_p.shadow := Ord(st_noclip) shl 8
   else
-    span_p.shadow := (sprite.specialtype shl 8) + mapeffects[mapspot];
+    span_p.shadow := Ord(sprite.specialtype) shl 8 + mapeffects[mapspot];
   if sprite.specialtype = st_noclip then
-    span_p.light := -1000;
+    span_p.light := -1000
   else
     span_p.light := (maplights[mapspot] shl 2) + reallight[mapspot];
   inc(numspans);
@@ -644,7 +646,6 @@ begin
   if numspans >= MAXSPANS then
     MS_Error('MAXSPANS exceeded, RenderSprites (%d)', [MAXSPANS]);
 {$ENDIF}
-  end;
 end;
 
 procedure RenderSprites;
