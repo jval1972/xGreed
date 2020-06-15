@@ -1,3 +1,5 @@
+{$I xGreed.inc}
+
 (* Copyright 1996 by Robert Morgan of Channel 7
    Sound Interface *)
 

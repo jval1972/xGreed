@@ -3,6 +3,8 @@
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
 (* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
+(***************************************************************************)
+(*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
 (*                                                                         *)
@@ -18,11 +20,14 @@
 (*                                                                         *)
 (***************************************************************************)
 
+{$I xGreed.inc}
+
 unit r_refdef;
 
 interface
 
 uses
+  g_delphi,
   r_public_h;
   
 {$IFDEF FPC}
@@ -96,7 +101,7 @@ type
 { either doorobj or scaleobj }
   span_t = packed record
     spantype: spanobj_t;
-    picture: PByte;
+    picture: PByteArray;
     structure: pointer;
     x2: fixed_t;
     y: fixed_t;

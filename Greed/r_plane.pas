@@ -16,6 +16,8 @@
 (*                                                                         *)
 (***************************************************************************)
 
+{$I xGreed.inc}
+
 #include <MATH.H>
 #include <STRING.H>
 #include 'd_global.h'

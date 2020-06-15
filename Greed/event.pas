@@ -1,3 +1,5 @@
+{$I xGreed.inc}
+
 
 #include <STDLIB.H>
 #include <STRING.H>

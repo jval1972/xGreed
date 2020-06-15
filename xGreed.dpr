@@ -22,6 +22,8 @@ program xGreed;
 
 {$R *.res}
 
+{$I xGreed.inc}
+
 uses
   Windows,
   constant in 'Greed\constant.pas',

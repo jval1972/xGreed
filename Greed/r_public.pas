@@ -3,6 +3,8 @@
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
 (* Copyright (C) 2020 by Jim Valavanis                                     *)
 (*                                                                         *)
+(***************************************************************************)
+(*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
 (*                                                                         *)
@@ -17,6 +19,8 @@
 (*                                                                         *)
 (*                                                                         *)
 (***************************************************************************)
+
+{$I xGreed.inc}
 
 unit r_public;
 
@@ -51,6 +55,8 @@ function FIXEDDIV(const a, b: fixed_t): fixed_t;
 function RF_GetSprite: Pscaleobj_t;
 
 function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
+
+procedure RF_RemoveSprite(const spr: Pscaleobj_t);
 
 implementation
 
@@ -214,7 +220,7 @@ begin
   begin
     intval := rint(atan((32.0 - (i + 1.0)) / 32.0) / PI * TANANGLES * 2.0);
     pixelangle[i] := intval;
-    pixelcosine[i] := cosines[intval) and ((TANANGLES * 4 - 1)];
+    pixelcosine[i] := cosines[intval and (TANANGLES * 4 - 1)];
   end;
   memcpy(campixelangle, pixelangle, SizeOf(pixelangle));
   memcpy(campixelcosine, pixelcosine, SizeOf(pixelcosine));
