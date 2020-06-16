@@ -349,6 +349,9 @@ const
 
 var
   DEMO: boolean = false;
+  GAME1: boolean = true;
+  GAME2: boolean = true;
+  GAME3: boolean = true;
 
 implementation
 
