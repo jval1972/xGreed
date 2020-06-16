@@ -50,11 +50,14 @@ var
   MusicError, EffectChan, CurrentChan, FXLump: integer;
   MusicVol, effecttracks: integer;
 
+procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
+  
 implementation
 
 uses
   g_delphi,
   d_ints_h,
+  d_ints,
   raven;
 
 function LoadSetup(const SC: PSoundCard; const Filename: string): integer;
@@ -118,8 +121,8 @@ begin
    MusicPlaying := false;
    //dFreeModule(M);}
   end;
-  if netmode then
-    NetGetData;
+//  if netmode then
+//    NetGetData;
 end;
 
 
@@ -174,8 +177,8 @@ begin
     SC.leftbutton := bt_fire;
     SC.joybut1 := bt_fire;
     SC.joybut2 := bt_straf;
-    strncpy(SC.dialnum, '           ',12);
-    strncpy(SC.netname, '           ',12);
+    SC.dialnum := '            ';
+    SC.netname := '            ';
     SC.netmap := 22;
     SC.netdifficulty := 2;
     SC.mousesensitivity := 32;
@@ -245,14 +248,18 @@ begin
 end;
 
 
-procedure SetVolumes(const music: integer; const fx: integer);
+procedure SetVolumes(const amusic: integer; const afx: integer);
+var
+  music, fx: integer;
 begin
   if MusicError <> 0 then
     exit;
+  music := amusic;
   if music > 255 then
     music := 255;
   //dSetMusicVolume(music);
   MusicVol := music;
+  fx := afx;
   if fx > 255 then
     fx := 255;
   //dSetSoundVolume(fx);

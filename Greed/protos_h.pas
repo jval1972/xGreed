@@ -481,7 +481,7 @@ type
     SampleRate: word;
     DriverName: packed array[0..15] of char;
     inversepan: boolean;
-    ckeys: packed array[0..13] of char;
+    ckeys: packed array[0..13] of byte;
     effecttracks: byte;
     musicvol: integer;
     sfxvol: integer;
@@ -490,15 +490,15 @@ type
     screensize: integer;
     animation: boolean;
     violence: boolean;
-    joystick: char;
+    joystick: byte;
     mouse: byte;
     chartype: integer;
     socket: integer;
     numplayers: integer;
-    dialnum: packed array[0..12] of char;
+    dialnum: string[12];
     com: integer;
     serplayers: integer;
-    netname: packed array[0..12] of char;
+    netname: string[12];
     jcenx: word;
     jceny: word;
     xsense: word;
