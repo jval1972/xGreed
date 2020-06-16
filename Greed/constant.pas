@@ -352,6 +352,7 @@ var
   GAME1: boolean = true;
   GAME2: boolean = true;
   GAME3: boolean = true;
+  CDROMGREEDDIR: boolean = false;
 
 implementation
 
