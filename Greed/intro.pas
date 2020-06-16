@@ -332,16 +332,15 @@ procedure DemoIntroFlis(char *path);
 
 
 procedure MainIntro;
+var
+  path: string;
 begin
-  char  path[64];
-
-{$IFDEF CDROMGREEDDIR}
-  sprintf(path,'%c:\\GREED\\MOVIES\\',cdr_drivenum+'A');
-{$ELSE}
-  sprintf(path,'%c:\\MOVIES\\',cdr_drivenum+'A');
-{$ENDIF}
+  if CDROMGREEDDIR then
+    path := Chr(cdr_drivenum + Ord('A') + ':\GREED\MOVIES\'
+  else
+    path := Chr(cdr_drivenum + Ord('A') + ':\\MOVIES\\';
   DemoIntroFlis(path);
-  end;
+end;
 
 
 procedure DemoIntroFlis(char *path);

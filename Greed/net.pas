@@ -1,5 +1,9 @@
 (***************************************************************************)
 (*                                                                         *)
+(* xGreed - Source port of the game "In Pursuit of Greed"                  *)
+(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(*                                                                         *)
+(***************************************************************************)
 (*                                                                         *)
 (* Raven 3D Engine                                                         *)
 (* Copyright (C) 1996 by Softdisk Publishing                               *)
@@ -18,58 +22,48 @@
 
 {$I xGreed.inc}
 
+unit net;
 
-#include <STDIO.H>
-#include <STRING.H>
-#include <DOS.H>
-#include <CONIO.H>
-#include <STDLIB.H>
-#include 'd_global.h'
-#include 'd_ints.h'
-#include 'd_misc.h'
-#include 'r_public.h'
-#include 'protos.h'
-#include 'd_disk.h'
-#include 'r_refdef.h'
+interface
 
-(**** CONSTANTS ****)
+const
+  CMD_SEND = 1;
+  CMD_GET = 2;
+  GREEDCOM_ID = $C7C7C7C7;
+  NETIPX = 1;
+  NETSERIAL = 2;
+  NETMODEM = 3;
 
-#define CMD_SEND          1
-#define CMD_GET           2
-#define GREEDCOM_ID       $C7C7C7C7L
-#define NETIPX            1
-#define NETSERIAL         2
-#define NETMODEM          3
+const
+  INITEVENTID = 1;
+  PLAYEREVENTID = 2;
+  SPAWNEVENTID = 3;
+  QUITEVENTID = 4;
+  DOOREVENTID = 5;
+  FRAGEVENTID = 6;
+  NEWPLAYEREVENTID = 7;
+  ITEMEVENTID = 8;
+  BONUSEVENTID = 9;
+  PAUSEEVENTID = 10;
+  UNPAUSEEVENTID = 11;
+  TRIGGEREVENTID = 12;
+  SOUNDEVENTID = 13;
+  JAMMEREVENTID = 14;
+  EVENTEVENTID = 15;
+  MESSAGEEVENTID = 16;
 
-#define INITEVENTID       1
-#define PLAYEREVENTID     2
-#define SPAWNEVENTID      3
-#define QUITEVENTID       4
-#define DOOREVENTID       5
-#define FRAGEVENTID       6
-#define NEWPLAYEREVENTID  7
-#define ITEMEVENTID       8
-#define BONUSEVENTID      9
-#define PAUSEEVENTID      10
-#define UNPAUSEEVENTID    11
-#define TRIGGEREVENTID    12
-#define SOUNDEVENTID      13
-#define JAMMEREVENTID     14
-#define EVENTEVENTID      15
-#define MESSAGEEVENTID    16
+const
+  QUESIZE = 4095;
 
-#define QUESIZE        4095
+const
+  PEL_WRITE_ADR = $3c8;
+  PEL_DATA = $3c9;
 
-#define PEL_WRITE_ADR       $3c8
-#define PEL_DATA            $3c9
-#define I_ColorBlack(r,g,b) outp(PEL_WRITE_ADR,0); \
-          outp(PEL_DATA,r);      \
-          outp(PEL_DATA,g);      \
-          outp(PEL_DATA,b)
+implementation
 
-#define NETINT // send data on network
+end.
 
-
+{
 (**** TYPES ****)
 
 typedef struct
@@ -852,3 +846,6 @@ begin
   strcpy(mevent.message,s);
   NETINT;
   end;
+
+
+}

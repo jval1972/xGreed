@@ -58,7 +58,8 @@ uses
   timer in 'Greed\timer.pas',
   utils in 'Greed\utils.pas',
   g_delphi in 'base\g_delphi.pas',
-  i_windows in 'base\i_windows.pas';
+  i_windows in 'base\i_windows.pas',
+  scriptengine in 'base\scriptengine.pas';
 
 var
   hGenWnd: HWND = 0;

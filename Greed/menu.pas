@@ -198,7 +198,7 @@ begin
    if y<200 then
    begin
      dest := ylookup[y]+x;
-     source2 := y*320+x+viewbuffer;
+     source2 := @viewbuffer[y * 320 + x];
      xcor := x;
      width := pic.width;
      while width-- do

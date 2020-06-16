@@ -154,6 +154,7 @@ implementation
 
 uses
   d_ints,
+  event,
   modplay,
   r_conten,
   r_public;
@@ -180,7 +181,7 @@ begin
         else if (elev_p.typ <> E_SWAP) and (elev_p.typ <> E_SECRET) then
         begin
           if elev_p.endeval <> 0 then
-            Event(elev_p.endeval, false);
+            RunEvent(elev_p.endeval, false);
           floorheight[elev_p.mapspot] := elev_p.position;
           if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
             mapsprites[elev_p.mapspot] := 0;
@@ -199,7 +200,7 @@ begin
         else if elev_p.typ <> E_SWAP then
         begin
           if elev_p.endeval then
-            Event(elev_p.endeval, false);
+            RunEvent(elev_p.endeval, false);
           floorheight[elev_p.mapspot] := elev_p.position;
           if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
             mapsprites[elev_p.mapspot] := 0;
@@ -859,7 +860,7 @@ begin
               writemsg(pickupmsg[11]);
             end;
             if sprite.deathevent then
-              Event(sprite.deathevent, false);
+              RunEvent(sprite.deathevent, false);
             RF_RemoveSprite(sprite);
             exit;
           end;
@@ -889,7 +890,7 @@ begin
               writemsg(pickupmsg[12]);
             end;
             if sprite.deathevent then
-              Event(sprite.deathevent, false);
+              RunEvent(sprite.deathevent, false);
             RF_RemoveSprite(sprite);
             exit;
           end;
@@ -941,7 +942,7 @@ begin
               writemsg(pickupmsg[13]);
             end;
             if sprite.deathevent then
-              Event(sprite.deathevent, false);
+              RunEvent(sprite.deathevent, false);
             RF_RemoveSprite(sprite);
             exit;
           end;
@@ -1305,7 +1306,7 @@ begin
     SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
     if netmode then
       NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
-    Event(triggers[x][y], true);
+    RunEvent(triggers[x][y], true);
   end;
 end;
 
@@ -1723,7 +1724,7 @@ begin
         NetCheckHere(centerx, centery, angle);
     end;
     SwitchWall(x, y, angle, true);
-    Event(switches[x][y], false);
+    RunEvent(switches[x][y], false);
   end;
 
 skipit:

@@ -130,7 +130,7 @@ var
   data, packets: byte;
   line: PByte;
 begin
-  line := viewbuffer;
+  line := @viewbuffer[0];
   y2 := header.height;
   for y := 0 to y2 - 1 do
   begin
@@ -231,11 +231,11 @@ begin
     15:  // fli line compression first time (only once at beginning)
       fli_brun;
     16:  // copy chunk
-      memcpy(viewbuffer, chunkbuf, 64000);
+      memcpy(@viewbuffer, chunkbuf, 64000);
     11:  //  new palette
       fli_readcolors;
     13:  //  clear (only 1 usually at beginning)
-      memset(viewbuffer,0,64000);
+      memset(@viewbuffer, 0, 64000);
     end;
   end;
 end;
@@ -279,7 +279,7 @@ begin
     delay := delay + header.speed;  // set timer
     fli_readframe(f);
     while not CheckTime(timecount, delay) do begin end; // wait
-    memcpy(screen, viewbuffer, 64000);       // copy
+    memcpy(screen, @viewbuffer, 64000);       // copy
     inc(currentfliframe);
   end;
   fclose(f);

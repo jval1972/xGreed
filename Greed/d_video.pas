@@ -500,7 +500,7 @@ begin
   begin
     if y<200 then
     begin
-      dest :=  viewbuffer + (y * MAX_VIEW_WIDTH + x);
+      dest :=  @viewbuffer[(y * MAX_VIEW_WIDTH + x)];
       xcor :=  x;
       width :=  pic.width;
       while width-- do

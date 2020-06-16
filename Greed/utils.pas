@@ -59,7 +59,7 @@ var
   x, y, z: fixed_t;
 begin
   if sp.deathevent then
-    Event(sp.deathevent, false);
+    RunEvent(sp.deathevent, false);
   case sp.typ of
   S_CLONE:
     begin
@@ -1976,7 +1976,7 @@ begin
   eventloading := true;
   for (i := 1;i<256;i++)
   if player.events[i] then
-   Event(i,true);
+    RunEvent(i,true);
   eventloading := false;
   end;
 
@@ -2159,7 +2159,7 @@ begin
   scr := (byte *)malloc(64000);
   if scr = NULL then
   MS_Error('Error allocating MissonBriefing buffer');
-  memcpy(scr,viewbuffer,64000);
+  memcpy(scr, @viewbuffer, 64000);
 
   oldtimecount := timecount;
 
@@ -2574,7 +2574,7 @@ begin
     end;
 
 end:
-  memcpy(viewbuffer,scr,64000);
+  memcpy(@viewbuffer, scr, 64000);
   free(scr);
   memset(screen, 0,64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
