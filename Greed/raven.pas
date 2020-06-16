@@ -179,7 +179,7 @@ begin
           elev_p.elevDown := true
         else if (elev_p.typ <> E_SWAP) and (elev_p.typ <> E_SECRET) then
         begin
-          if elev_p.endeval then
+          if elev_p.endeval <> 0 then
             Event(elev_p.endeval, false);
           floorheight[elev_p.mapspot] := elev_p.position;
           if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
@@ -2883,503 +2883,691 @@ begin
     enemyviewmode := enemyviewmode xor 1;
     writemsg('Enemy view toggled');
   end;
-#if  not defined(DEMO)) and ( not defined(GAME1)) and ( not defined(GAME2)) and ( not defined(GAME3)
-  if (s[0] = 'g') and (s[1] = 'o') then
+
+  if not DEMO and not GAME1 and not GAME2 and GAME3 then
   begin
-   if (stricmp(s, 'go1') = 0) newmap(0,2);
-    else if (stricmp(s, 'go2') = 0) newmap(1,2);
-    else if (stricmp(s, 'go3') = 0) newmap(2,2);
-    else if (stricmp(s, 'go4') = 0) newmap(3,2);
-    else if (stricmp(s, 'go5') = 0) newmap(4,2);
-    else if (stricmp(s, 'go6') = 0) newmap(5,2);
-    else if (stricmp(s, 'go7') = 0) newmap(6,2);
-    else if (stricmp(s, 'go8') = 0) newmap(7,2);
-    else if (stricmp(s, 'go9') = 0) newmap(8,2);
-    else if (stricmp(s, 'go10') = 0) newmap(9,2);
-    else if (stricmp(s, 'go11') = 0) newmap(10,2);
-    else if (stricmp(s, 'go12') = 0) newmap(11,2);
-    else if (stricmp(s, 'go13') = 0) newmap(12,2);
-    else if (stricmp(s, 'go14') = 0) newmap(13,2);
-    else if (stricmp(s, 'go15') = 0) newmap(14,2);
-    else if (stricmp(s, 'go16') = 0) newmap(15,2);
-    else if (stricmp(s, 'go17') = 0) newmap(16,2);
-    else if (stricmp(s, 'go18') = 0) newmap(17,2);
-    else if (stricmp(s, 'go19') = 0) newmap(18,2);
-    else if (stricmp(s, 'go20') = 0) newmap(19,2);
-    else if (stricmp(s, 'go21') = 0) newmap(20,2);
-    else if (stricmp(s, 'go22') = 0) newmap(21,2);
-    else if (stricmp(s, 'go23') = 0) newmap(22,2);
-    else if (stricmp(s, 'go24') = 0) newmap(23,2);
-    else if (stricmp(s, 'go25') = 0) newmap(24,2);
-    else if (stricmp(s, 'go26') = 0) newmap(25,2);
-    else if (stricmp(s, 'go27') = 0) newmap(26,2);
-    else if (stricmp(s, 'go28') = 0) newmap(27,2);
-    else if (stricmp(s, 'go29') = 0) newmap(28,2);
-    else if (stricmp(s, 'go30') = 0) newmap(29,2);
-    else if (stricmp(s, 'go31') = 0) newmap(30,2);
-    else if (stricmp(s, 'go32') = 0) newmap(31,2);
-   INT_TimerHook(PlayerCommand);
+    if (s[0] = 'g') and (s[1] = 'o') then
+    begin
+      if stricmp(s, 'go1') = 0 then
+        newmap(0, 2)
+      else if (stricmp(s, 'go2') = 0) then
+        newmap(1, 2)
+      else if (stricmp(s, 'go3') = 0) then
+        newmap(2, 2)
+      else if (stricmp(s, 'go4') = 0) then
+        newmap(3, 2)
+      else if (stricmp(s, 'go5') = 0) then
+        newmap(4, 2)
+      else if (stricmp(s, 'go6') = 0) then
+        newmap(5, 2)
+      else if (stricmp(s, 'go7') = 0) then
+        newmap(6, 2)
+      else if (stricmp(s, 'go8') = 0) then
+        newmap(7, 2)
+      else if (stricmp(s, 'go9') = 0) then
+        newmap(8, 2)
+      else if (stricmp(s, 'go10') = 0) then
+        newmap(9, 2);
+      else if (stricmp(s, 'go11') = 0) then
+        newmap(10, 2)
+      else if (stricmp(s, 'go12') = 0) then
+        newmap(11, 2)
+      else if (stricmp(s, 'go13') = 0) then
+        newmap(12, 2)
+      else if (stricmp(s, 'go14') = 0) then
+        newmap(13, 2)
+      else if (stricmp(s, 'go15') = 0) then
+        newmap(14, 2)
+      else if (stricmp(s, 'go16') = 0) then
+        newmap(15, 2)
+      else if (stricmp(s, 'go17') = 0) then
+        newmap(16, 2)
+      else if (stricmp(s, 'go18') = 0) then
+        newmap(17, 2)
+      else if (stricmp(s, 'go19') = 0) then
+        newmap(18, 2)
+      else if (stricmp(s, 'go20') = 0) then
+        newmap(19, 2)
+      else if (stricmp(s, 'go21') = 0) then
+        newmap(20, 2)
+      else if (stricmp(s, 'go22') = 0) then
+        newmap(21, 2)
+      else if (stricmp(s, 'go23') = 0) then
+        newmap(22, 2)
+      else if (stricmp(s, 'go24') = 0) then
+        newmap(23, 2)
+      else if (stricmp(s, 'go25') = 0) then
+        newmap(24, 2)
+      else if (stricmp(s, 'go26') = 0) then
+        newmap(25, 2)
+      else if (stricmp(s, 'go27') = 0) then
+        newmap(26, 2)
+      else if (stricmp(s, 'go28') = 0) then
+        newmap(27, 2)
+      else if (stricmp(s, 'go29') = 0) then
+        newmap(28, 2)
+      else if (stricmp(s, 'go30') = 0) then
+        newmap(29, 2)
+      else if (stricmp(s, 'go31') = 0) then
+        newmap(30, 2)
+      else if (stricmp(s, 'go32') = 0) then
+        newmap(31, 2);
+      INT_TimerHook(PlayerCommand);
     end;
-{$ENDIF}
-  else if (s[0] = 'b') and (s[1] = 'l') then
+  end
+
+  if Length(s) > 2 then
   begin
-   if (stricmp(s, 'blammo1') = 0) player.weapons[2] := 2;
-    else if (stricmp(s, 'blammo2') = 0) player.weapons[2] := 3;
-    else if (stricmp(s, 'blammo3') = 0) player.weapons[2] := 4;
-    else if (stricmp(s, 'blammo4') = 0) player.weapons[2] := 16;
-    else if (stricmp(s, 'blammo5') = 0) player.weapons[2] := 17;
-    else if (stricmp(s, 'blammo6') = 0) player.weapons[2] := 18;
-   if player.weapons[2] >= 0 then
-   begin
-     loadweapon(player.weapons[2]);
-     player.currentweapon := 2;
-     weapmode := 0;
+    if (s[1] = 'b') and (s[2] = 'l') then
+    begin
+      if stricmp(s, 'blammo1') = 0 then
+        player.weapons[2] := 2
+      else if (stricmp(s, 'blammo2') = 0) then
+        player.weapons[2] := 3
+      else if (stricmp(s, 'blammo3') = 0) then
+        player.weapons[2] := 4
+      else if (stricmp(s, 'blammo4') = 0) then
+        player.weapons[2] := 16
+      else if (stricmp(s, 'blammo5') = 0) then
+        player.weapons[2] := 17
+      else if (stricmp(s, 'blammo6') = 0) then
+        player.weapons[2] := 18;
+      if player.weapons[2] >= 0 then
+      begin
+        loadweapon(player.weapons[2]);
+        player.currentweapon := 2;
+        weapmode := 0;
       end;
     end;
+  end;
   specialcode := false;
   secretbuf := '';
   secretindex := 0;
-  end;
+end;
 
 
 procedure CheckSpawnAreas;
+var
+  sa: Pspawnarea_t;
+  i, count, typ, stype: integer;
+  sprite_p: Pscaleobj_t;
 begin
-  spawnarea_t *sa;
-  i, count, type, stype: integer;
-  scaleobj_t  *sprite_p;
+  if specialeffect = SE_WARPJAMMER then
+    exit;
+  if netwarpjammer and (netwarpjamtime > timecount) then
+    exit;
 
-  if (specialeffect = SE_WARPJAMMER) exit;
-  if (netwarpjammer) and (netwarpjamtime>(int)timecount) exit;
-
-  sa := spawnareas;
-  for(i := 0;i<numspawnareas;i++,sa++)
-  if timecount >= sa.time then
+  for i := 0 to numspawnareas - 1 do
   begin
-    if (mapsprites[sa.mapspot] = 0) and (sa.mapspot <> player.mapspot) then
+    sa := @spawnareas[i];
+    if timecount >= sa.time then
     begin
-      case sa.typ  of
+      if (mapsprites[sa.mapspot] = 0) and (sa.mapspot <> player.mapspot) then
       begin
-  0:
-   if not netmode then
-   begin
-{$IFDEF DEMO}
-      type := (clock+MS_RndT) mod 110;
-     {$ELSE}
-      type := (clock+MS_RndT) mod 114;
-     {$ENDIF}
-     if (type<30) stype := S_ENERGY;
-      else if (type<60) stype := S_BALLISTIC;
-      else if (type<90) stype := S_PLASMA;
-{$IFDEF DEMO}
-      else if (type<96) stype := S_IGRENADE;
-      else if (type<98) stype := S_IREVERSO;
-      else if (type<102) stype := S_IPROXMINE;
-      else if (type<106) stype := S_ITIMEMINE;
-      else if (type<108) stype := S_IINSTAWALL;
-      else stype := S_ICLONE;
-     {$ELSE}
-      else if (type<96) stype := S_IGRENADE;
-      else if (type<98) stype := S_IREVERSO;
-      else if (type<102) stype := S_IPROXMINE;
-      else if (type<106) stype := S_ITIMEMINE;
-      else if (type<108) stype := S_IINSTAWALL;
-      else if (type<110) stype := S_ICLONE;
-      else if (type<112) stype := S_IJAMMER;
-      else stype := S_ISTEALER;
-     {$ENDIF}
-     sa.time := timecount+(clock) and (255) + 3500 - (350*(player.difficulty+1));
-      end;
-   else
-   begin
-{$IFDEF DEMO}
-      type := (clock+MS_RndT) mod 110;
-     {$ELSE}
-      type := (clock+MS_RndT) mod 146;
-     {$ENDIF}
-     if (type<30) stype := S_ENERGY;
-      else if (type<60) stype := S_BALLISTIC;
-      else if (type<90) stype := S_PLASMA;
-{$IFDEF DEMO}
-      else if (type<96) stype := S_IGRENADE;
-      else if (type<98) stype := S_IREVERSO;
-      else if (type<102) stype := S_IPROXMINE;
-      else if (type<106) stype := S_ITIMEMINE;
-      else if (type<108) stype := S_IDECOY;
-      else stype := S_IINSTAWALL;
-     {$ELSE}
-      else if (type<98) stype := S_IGRENADE;
-      else if (type<102) stype := S_IREVERSO;
-      else if (type<112) stype := S_IPROXMINE;
-      else if (type<116) stype := S_ITIMEMINE;
-      else if (type<120) stype := S_IDECOY;
-      else if (type<134) stype := S_IINSTAWALL;
-      else if (type<138) stype := S_IINVIS;
-      else if (type<142) stype := S_ISTEALER;
-      else stype := S_IHOLO;
-     {$ENDIF}
-     sa.time := timecount + (clock) and (255) + (9-greedcom.numplayers)*437;
-      end;
-   break;
-  1:
-   if not netmode then
-   begin
-{$IFDEF DEMO}
-      type := (clock+MS_RndT) mod 110;
-     {$ELSE}
-      type := (clock+MS_RndT) mod 114;
-     {$ENDIF}
-     if (type<15) stype := S_MEDPAK1;
-      else if (type<22) stype := S_MEDPAK2;
-      else if (type<30) stype := S_MEDPAK3;
-      else if (type<45) stype := S_MEDPAK4;
-      else if (type<60) stype := S_SHIELD4;
-      else if (type<67) stype := S_SHIELD3;
-      else if (type<75) stype := S_SHIELD2;
-      else if (type<90) stype := S_SHIELD1;
-{$IFDEF DEMO}
-      else if (type<96) stype := S_IGRENADE;
-      else if (type<98) stype := S_IREVERSO;
-      else if (type<102) stype := S_IPROXMINE;
-      else if (type<106) stype := S_ITIMEMINE;
-      else if (type<108) stype := S_IINSTAWALL;
-      else stype := S_ICLONE;
-     {$ELSE}
-      else if (type<96) stype := S_IGRENADE;
-      else if (type<98) stype := S_IREVERSO;
-      else if (type<102) stype := S_IPROXMINE;
-      else if (type<106) stype := S_ITIMEMINE;
-      else if (type<108) stype := S_IINSTAWALL;
-      else if (type<110) stype := S_ICLONE;
-      else if (type<112) stype := S_IJAMMER;
-      else stype := S_ISTEALER;
-     {$ENDIF}
-     sa.time := timecount+(clock) and (255) + 3500 - (350*(player.difficulty+1));
-      end;
-   else
-   begin
-{$IFDEF DEMO}
-      type := (clock+MS_RndT) mod 110;
-     {$ELSE}
-      type := (clock+MS_RndT) mod 116;
-     {$ENDIF}
-     if (type<15) stype := S_MEDPAK1;
-      else if (type<22) stype := S_MEDPAK2;
-      else if (type<30) stype := S_MEDPAK3;
-      else if (type<45) stype := S_MEDPAK4;
-      else if (type<60) stype := S_SHIELD4;
-      else if (type<67) stype := S_SHIELD3;
-      else if (type<75) stype := S_SHIELD2;
-      else if (type<90) stype := S_SHIELD1;
-{$IFDEF DEMO}
-      else if (type<96) stype := S_IGRENADE;
-      else if (type<98) stype := S_IREVERSO;
-      else if (type<102) stype := S_IPROXMINE;
-      else if (type<106) stype := S_ITIMEMINE;
-      else if (type<108) stype := S_IDECOY;
-      else stype := S_IINSTAWALL;
-     {$ELSE}
-      else if (type<96) stype := S_IGRENADE;
-      else if (type<98) stype := S_IREVERSO;
-      else if (type<102) stype := S_IPROXMINE;
-      else if (type<106) stype := S_ITIMEMINE;
-      else if (type<108) stype := S_IDECOY;
-      else if (type<110) stype := S_IINSTAWALL;
-      else if (type<110) stype := S_IINVIS;
-      else if (type<112) stype := S_IJAMMER;
-      else if (type<114) stype := S_ISTEALER;
-      else stype := S_IHOLO;
-     {$ENDIF}
-     sa.time := timecount + (clock) and (255) + (9-greedcom.numplayers)*437;
-      end;
-   break;
-  10:
-   stype := S_MONSTER1;
-   sa.time := timecount+(clock) and (255) + (2100*(player.difficulty+1));
-   break;
-  11:
-   stype := S_MONSTER2;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  12:
-   stype := S_MONSTER3;
-   sa.time := timecount+(clock) and (255) + (2100*(player.difficulty+1));
-   break;
-  13:
-   stype := S_MONSTER4;
-   sa.time := timecount+(clock) and (255) + (10500*(player.difficulty+1));
-   break;
-  14:
-   stype := S_MONSTER5;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  15:
-   stype := S_MONSTER6;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  16:
-   stype := S_MONSTER7;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  17:
-   stype := S_MONSTER8;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  18:
-   stype := S_MONSTER9;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  19:
-   stype := S_MONSTER10;
-   sa.time := timecount+(clock) and (255) + (1200*(player.difficulty+1));
-   break;
-  20:
-   stype := S_MONSTER11;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  21:
-   stype := S_MONSTER12;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  22:
-   stype := S_MONSTER13;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  23:
-   stype := S_MONSTER14;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  24:
-   stype := S_MONSTER15;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
+        case sa.typ of
+        0:
+          begin
+            if not netmode then
+            begin
+              if DEMO then
+                typ := (clock + MS_RndT) mod 110
+              else
+                typ := (clock + MS_RndT) mod 114;
+              if (typ < 30) then
+                stype := S_ENERGY
+              else if (typ < 60) then
+                stype := S_BALLISTIC
+              else if (typ < 90) then
+                stype := S_PLASMA
+              else if (typ < 96) then
+                stype := S_IGRENADE
+              else if (typ < 98) then
+                stype := S_IREVERSO
+              else if (typ < 102) then
+                stype := S_IPROXMINE
+              else if (typ < 106) then
+                stype := S_ITIMEMINE
+              else if (typ < 108) then
+                stype := S_IINSTAWALL
+              else if (typ < 110) and not DEMO then
+                stype := S_ICLONE
+              else if (typ < 112) and not DEMO then
+                stype := S_IJAMMER
+              else if DEMO then
+                stype := S_ICLONE
+              else
+                stype := S_ISTEALER;
+              sa.time := timecount + (clock and 255) + 3500 - (350 * (player.difficulty + 1));
+            end
+            else
+            begin
+              if DEMO then
+                typ := (clock + MS_RndT) mod 110
+              else
+                typ := (clock + MS_RndT) mod 146;
+              if typ < 30 then
+                stype := S_ENERGY
+              else if (typ < 60) then
+                stype := S_BALLISTIC
+              else if (typ < 90) then
+                stype := S_PLASMA
+              else if (typ < 96) and DEMO then
+                stype := S_IGRENADE
+              else if (typ < 98) and DEMO then
+                stype := S_IREVERSO
+              else if (typ < 102) and DEMO then
+                stype := S_IPROXMINE
+              else if (typ < 106) and DEMO then
+                stype := S_ITIMEMINE
+              else if (typ < 108) and DEMO then
+                stype := S_IDECOY
+              else if (typ < 98) and not DEMO
+                then stype := S_IGRENADE
+              else if (typ < 102) and not DEMO then
+                stype := S_IREVERSO
+              else if (typ < 112) and not DEMO then
+                stype := S_IPROXMINE
+              else if (typ < 116) and not DEMO then
+                stype := S_ITIMEMINE
+              else if (typ < 120) and not DEMO then
+                stype := S_IDECOY
+              else if (typ < 134) and not DEMO then
+                stype := S_IINSTAWALL
+              else if (typ < 138) and not DEMO then
+                stype := S_IINVIS
+              else if (typ < 142) and not DEMO then
+                stype := S_ISTEALER
+              else if DEMO then
+                stype := S_IINSTAWALL
+              else
+                stype := S_IHOLO
+              sa.time := timecount + (clock and 255) + (9 - greedcom.numplayers) * 437;
+            end;
+          end;
 
-  100:
-   stype := S_MONSTER8_NS;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-  101:
-   stype := S_MONSTER9_NS;
-   sa.time := timecount+(clock) and (255) + (4200*(player.difficulty+1));
-   break;
-   end;
+        1:
+          begin
+            if not netmode then
+            begin
+              if DEMO then
+                typ := (clock + MS_RndT) mod 110
+              else
+                typ := (clock + MS_RndT) mod 114;
+              if typ < 15 then
+                stype := S_MEDPAK1
+              else if (typ < 22) then
+                stype := S_MEDPAK2
+              else if (typ < 30) then
+                stype := S_MEDPAK3
+              else if (typ < 45) then
+                stype := S_MEDPAK4
+              else if (typ < 60) then
+                stype := S_SHIELD4
+              else if (typ < 67) then
+                stype := S_SHIELD3
+              else if (typ < 75) then
+                stype := S_SHIELD2
+              else if (typ < 90) then
+                stype := S_SHIELD1
+              else if (typ < 96) and DEMO then
+                stype := S_IGRENADE
+              else if (typ < 98) and DEMO then
+                stype := S_IREVERSO
+              else if (typ < 102) and DEMO then
+                stype := S_IPROXMINE
+              else if (typ < 106) and DEMO then
+                stype := S_ITIMEMINE
+              else if (typ < 108) and DEMO then
+                stype := S_IINSTAWALL
+              else if (typ < 96) and not DEMO then
+                stype := S_IGRENADE
+              else if (typ < 98) and not DEMO then
+                stype := S_IREVERSO
+              else if (typ < 102) and not DEMO then
+                stype := S_IPROXMINE
+              else if (typ < 106) and not DEMO then
+                stype := S_ITIMEMINE
+              else if (typ < 108) and not DEMO then
+                stype := S_IINSTAWALL
+              else if (typ < 110) and not DEMO then
+                stype := S_ICLONE
+              else if (typ < 112) and not DEMO then
+                stype := S_IJAMMER
+              else if DEMO then
+                stype := S_ICLONE
+              else
+                stype := S_ISTEALER;
+              sa.time := timecount + (clock and 255) + 3500 - (350 * (player.difficulty + 1));
+            end
+            else
+            begin
+              if DEMO then
+                typ := (clock + MS_RndT) mod 110
+              else
+                typ := (clock + MS_RndT) mod 116;
+              if typ < 15 then
+                stype := S_MEDPAK1
+              else if (typ < 22) then
+                stype := S_MEDPAK2
+              else if (typ < 30) then
+                stype := S_MEDPAK3
+              else if (typ < 45) then
+                stype := S_MEDPAK4
+              else if (typ < 60) then
+                stype := S_SHIELD4
+              else if (typ < 67) then
+                stype := S_SHIELD3
+              else if (typ < 75) then
+                stype := S_SHIELD2
+              else if (typ < 90) then
+                stype := S_SHIELD1
+              else if (typ < 96) and DEMO then
+                stype := S_IGRENADE
+              else if (typ < 98) and DEMO then
+                stype := S_IREVERSO
+              else if (typ < 102) and DEMO then
+                stype := S_IPROXMINE
+              else if (typ < 106) and DEMO then
+                stype := S_ITIMEMINE
+              else if (typ < 108) and DEMO then
+                stype := S_IDECOY
+              else if (typ < 96) and not DEMO then
+                stype := S_IGRENADE
+              else if (typ < 98) and not DEMO then
+                stype := S_IREVERSO
+              else if (typ < 102) and not DEMO then
+                stype := S_IPROXMINE
+              else if (typ < 106) and not DEMO then
+                stype := S_ITIMEMINE
+              else if (typ < 108) and not DEMO then
+                stype := S_IDECOY
+              else if (typ < 110) and not DEMO then
+                stype := S_IINSTAWALL
+              else if (typ < 110) and not DEMO then
+                stype := S_IINVIS
+              else if (typ < 112) and not DEMO then
+                stype := S_IJAMMER
+              else if (typ < 114) and not DEMO then
+                stype := S_ISTEALER
+              else if DEMO then
+                stype := S_IINSTAWALL;
+              else
+                stype := S_IHOLO;
+              sa.time := timecount + (clock and 255) + (9 - greedcom.numplayers) * 437;
+            end;
+          end;
+          
+        10:
+          begin
+            stype := S_MONSTER1;
+            sa.time := timecount + (clock and 255) + (2100 * (player.difficulty + 1));
+          end;
 
-      if sa.typ >= 10 then
-      begin
-  count := 0;
-  for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-   if (sprite_p.typ = stype) and (sprite_p.hitpoints) ++count;
-   end;
-      else count := 0;
+        11:
+          begin
+            stype := S_MONSTER2;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty+ 1));
+          end;
 
-      if count<MAXSPAWN then
-      begin
-  for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-   if ((sprite_p.typ = S_GENERATOR) or ((sprite_p.typ >= S_GENSTART) and (sprite_p.typ <= S_GENEND)) then
-   ) and (sprite_p.x = sa.mapx) and (sprite_p.y = sa.mapy)
-   begin
-     sprite_p := sprite_p.prev;
-     RF_RemoveSprite(sprite_p.next);
+        12:
+          begin
+            stype := S_MONSTER3;
+            sa.time := timecount + (clock and 255) + (2100 * (player.difficulty + 1));
+          end;
+
+        13:
+          begin
+            stype := S_MONSTER4;
+            sa.time := timecount + (clock and 255) + (10500 * (player.difficulty + 1));
+          end;
+
+        14:
+          begin
+            stype := S_MONSTER5;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        15:
+          begin
+            stype := S_MONSTER6;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        16:
+          begin
+            stype := S_MONSTER7;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        17:
+          begin
+            stype := S_MONSTER8;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        18:
+          begin
+            stype := S_MONSTER9;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        19:
+          begin
+            stype := S_MONSTER10;
+            sa.time := timecount + (clock and 255) + (1200 * (player.difficulty + 1));
+          end;
+
+        20:
+          begin
+            stype := S_MONSTER11;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        21:
+          begin
+            stype := S_MONSTER12;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+          
+        22:
+          begin
+            stype := S_MONSTER13;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        23:
+          begin
+            stype := S_MONSTER14;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        24:
+          begin
+            stype := S_MONSTER15;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        100:
+          begin
+            stype := S_MONSTER8_NS;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+
+        101:
+          begin
+            stype := S_MONSTER9_NS;
+            sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
+          end;
+        end;
+
+        if sa.typ >= 10 then
+        begin
+          count := 0;
+          sprite_p := firstscaleobj.next;
+          while sprite_p <> @lastscaleobj do
+          begin
+            if (sprite_p.typ = stype) and (sprite_p.hitpoints <> 0) then
+              inc(count);
+            sprite_p := sprite_p.next;
+          end;
+        end
+        else
+          count := 0;
+
+        if count < MAXSPAWN then
+        begin
+          sprite_p := firstscaleobj.next;
+          while sprite_p <> @lastscaleobj do
+          begin
+            if ((sprite_p.typ = S_GENERATOR) or ((sprite_p.typ >= S_GENSTART) and (sprite_p.typ <= S_GENEND))) and
+               (sprite_p.x = sa.mapx) and (sprite_p.y = sa.mapy) then
+            begin
+              sprite_p := sprite_p.prev;
+              RF_RemoveSprite(sprite_p.next);
+            end;
+            sprite_p := sprite_p.next;
+          end;
+
+          if sa.typ >= 10 then
+          begin
+            sprite_p := firstscaleobj.next;
+            while sprite_p <> @lastscaleobj do
+            begin
+            if (sprite_p.typ = stype) and (sprite_p.hitpoints = 0) then
+              begin
+                RF_RemoveSprite(sprite_p);
+                break;
+              end;
+              sprite_p := sprite_p.next;
+            end;
+          end;
+
+          if not netmode or (netmode and (playernum = 0)) then
+          begin
+            SpawnSprite(stype, sa.mapx, sa.mapy, 0, 0, 0, 0, true, 0);
+            SpawnSprite(S_WARP, sa.mapx, sa.mapy, 0, 0, 0, 0, true, 0);
+            if netmode and (sa.typ >= 10) then
+              NetSendSpawn(stype,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
+          end;
+
+        end;
       end;
-  if sa.typ >= 10 then
-   for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
-    if (sprite_p.typ = stype) and (sprite_p.hitpoints = 0) then
-    begin
-      RF_RemoveSprite(sprite_p);
-      break;
-       end;
-  if (not netmode) or ((netmode) and (playernum = 0)) then
-  begin
-    SpawnSprite(stype,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
-    SpawnSprite(S_WARP,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
-    if (netmode) and (sa.typ >= 10) then
-     NetSendSpawn(stype,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
-     end;
-   end;
-       end;
-    else sa.time := timecount+(clock) and (255) + 7000;
-     end;
+    end
+    else
+      sa.time := timecount + (clock and 255) + 7000;
   end;
+end;
 
 
 procedure CheckBonusItem;
+var
+  sprite: Pscaleobj_t;
 begin
-  scaleobj_t *sprite;
-
-  if timecount>BonusItem.time then
+  if timecount > BonusItem.time then
   begin
-   if (netmode) and (playernum <> 0) exit; // player 0 spawns the bonuses
+    if netmode and (playernum <> 0) then
+      exit; // player 0 spawns the bonuses
 
-   if BonusItem.score>0 then
-   begin
-     for (sprite := firstscaleobj.next; sprite <> @lastscaleobj;sprite := sprite.next)
-      if sprite.typ = S_BONUSITEM then
+    if BonusItem.score > 0 then
+    begin
+      sprite := firstscaleobj.next;
+      while sprite <> @lastscaleobj do
       begin
-  RF_RemoveSprite(sprite);
-  mapsprites[BonusItem.mapspot] := 0;
-  break;
-   end;
-      SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS, 0, 0, 0, 0, false, 0);
+        if sprite.typ = S_BONUSITEM then
+        begin
+          RF_RemoveSprite(sprite);
+          mapsprites[BonusItem.mapspot] := 0;
+          break;
+        end;
+        sprite := sprite.next;
       end;
-   do
-   begin
-     BonusItem.tilex := (clock+MS_RndT)) and (63;
-     BonusItem.tiley := (clock+MS_RndT)) and (63;
-     BonusItem.mapspot := BonusItem.tiley*MAPCOLS + BonusItem.tilex;
-      end; while (floorpic[BonusItem.mapspot] = 0) or (mapsprites[BonusItem.mapspot]) or (mapeffects[BonusItem.mapspot]) and (FL_FLOOR
-  ) or (floorheight[BonusItem.mapspot] = ceilingheight[BonusItem.mapspot]);
-   BonusItem.score := 2000 + (clock) and (7)*300;
-   BonusItem.time := timecount + bonustime + (clock) and (1023);
-   BonusItem.num := clock mod MAXRANDOMITEMS;
-   BonusItem.name := randnames[BonusItem.num];
-   BonusItem.sprite := SpawnSprite(S_BONUSITEM,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS, 0, 0, 0, 0, false, 0);
-   SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS, 0, 0, 0, 0, false, 0);
-   BonusItem.sprite.basepic := BonusItem.sprite.basepic + BonusItem.num;
-   oldgoalitem := -1;
-   if netmode then NetBonusItem;
-   goalitem := 0;
+
+      SpawnSprite(S_WARP,
+        (BonusItem.tilex * MAPSIZE + 32) shl FRACBITS,
+        (BonusItem.tiley * MAPSIZE + 32) shl FRACBITS,
+        0, 0, 0, 0, false, 0);
     end;
+
+    repeat
+      BonusItem.tilex := (clock + MS_RndT) and 63;
+      BonusItem.tiley := (clock + MS_RndT) and 63;
+      BonusItem.mapspot := BonusItem.tiley * MAPCOLS + BonusItem.tilex;
+    until (floorpic[BonusItem.mapspot] <> 0) and
+          (mapsprites[BonusItem.mapspot] = 0) and
+          (mapeffects[BonusItem.mapspot] and FL_FLOOR = 0) and
+          (floorheight[BonusItem.mapspot] <> ceilingheight[BonusItem.mapspot]);
+
+    BonusItem.score := 2000 + (clock and 7) * 300;
+    BonusItem.time := timecount + bonustime + (clock and 1023);
+    BonusItem.num := clock mod MAXRANDOMITEMS;
+    BonusItem.name := randnames[BonusItem.num];
+    BonusItem.sprite := SpawnSprite(S_BONUSITEM, (BonusItem.tilex * MAPSIZE + 32) shl FRACBITS,(BonusItem.tiley * MAPSIZE + 32) shl FRACBITS, 0, 0, 0, 0, false, 0);
+    SpawnSprite(S_WARP, (BonusItem.tilex * MAPSIZE + 32) shl FRACBITS, (BonusItem.tiley * MAPSIZE + 32) shl FRACBITS, 0, 0, 0, 0, false, 0);
+    BonusItem.sprite.basepic := BonusItem.sprite.basepic + BonusItem.num;
+    oldgoalitem := -1;
+    if netmode then
+      NetBonusItem;
+    goalitem := 0;
   end;
+end;
 
 
 procedure TimeUpdate;
-begin
+var
   time: integer;
-  MSG    msg;
-
-  if (PeekMessage and (msg,NULL, 0, 0,PM_REMOVE)) then
-    DispatchMessage and (msg);
+begin
+  I_PeekAndDisplatch;
 
   chargeweapons;
   UpdateMouse;
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
   if netmode then
   begin
-   NetGetData;
-   if timecount>netsendtime then
-   begin
-     if (player.angst) NetSendPlayerData;
-     netsendtime := timecount + 3 + greedcom.numplayers;
-      end;
-   NetGetData;
+    NetGetData;
+    if timecount>netsendtime then
+    begin
+      if player.angst <> 0 then
+        NetSendPlayerData;
+      netsendtime := timecount + 3 + greedcom.numplayers;
     end;
+    NetGetData;
+  end;
   time := timecount;
   UpdateSound;
   while time >= spritemovetime do
   begin
-   if netmode then NetGetData;
-   if numprocesses then
-   begin
-     Process;
-     if netmode then NetGetData;
-      end;
+    if netmode then
+      NetGetData;
+    if numprocesses then
+    begin
+      Process;
+      if netmode then
+        NetGetData;
+    end;
 
 //   if (recording) or (playback) rndofs := 0;
-      
-   memset(reallight, 0, MAPROWS * MAPCOLS * 4);
-   MoveSprites;
 
-   if netmode then
-   begin
-     NetGetData;
-     spritemovetime := spritemovetime + 2;
-      end;
+    memset(reallight, 0, MAPROWS * MAPCOLS * 4);
+    MoveSprites;
 
-   spritemovetime := spritemovetime + 8;
+    if netmode then
+    begin
+      NetGetData;
+      spritemovetime := spritemovetime + 2;
     end;
+
+    spritemovetime := spritemovetime + 8;
+  end;
   UpdateMouse;
-  if netmode then NetGetData;
-  if (numspawnareas) CheckSpawnAreas;
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
+  if numspawnareas <> 0 then
+    CheckSpawnAreas;
+  if netmode then
+    NetGetData;
   CheckElevators;
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
   CheckBonusItem;
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
   if doorsound then
   begin
-   doorsound := false;
-   SoundEffect(SN_DOOR,15,doorx,doory);
-    end;
-  if netmode then NetGetData;
-  UpdateMouse;
+    doorsound := false;
+    SoundEffect(SN_DOOR, 15, doorx, doory);
   end;
+  if netmode then
+    NetGetData;
+  UpdateMouse;
+end;
 
 
 extern pevent_t playerdata[MAXPLAYERS];
 
 
 procedure RearView;
-begin
+var
   scrollmin1, scrollmax1, view, location: integer;
-
-  view := currentViewSize*2;
+begin
+  view := currentViewSize * 2;
   location := viewLocation;
   windowWidth := 64;
   windowHeight := 64;
   windowLeft := 0;
   windowTop := 0;
   windowSize := 4096;
-  viewLocation := (int)screen;
+  viewLocation := screen;
   scrollmin1 := player.scrollmin;
   scrollmax1 := player.scrollmax;
-  SetViewSize(windowWidth,windowHeight);
+  SetViewSize(windowWidth, windowHeight);
   ResetScalePostWidth(windowWidth);
   scrollmin := 0;
   scrollmax := 64;
-  memcpy(pixelangle,campixelangle,SizeOf(pixelangle));
-  memcpy(pixelcosine,campixelcosine,SizeOf(pixelcosine));
+  memcpy(pixelangle, campixelangle, SizeOf(pixelangle));
+  memcpy(pixelcosine, campixelcosine, SizeOf(pixelcosine));
   if (enemyviewmode) and (goalitem>0) then
-  RF_RenderView(playerdata[goalitem-1].x, playerdata[goalitem-1].y, playerdata[goalitem-1].z, playerdata[goalitem-1].angle);
+    RF_RenderView(playerdata[goalitem - 1].x, playerdata[goalitem - 1].y, playerdata[goalitem - 1].z, playerdata[goalitem - 1].angle)
   else
-  RF_RenderView(player.x, player.y, player.z, player.angle+WEST);
-  memcpy(rearbuf,viewbuffer,SizeOf(rearbuf));
+    RF_RenderView(player.x, player.y, player.z, player.angle + WEST);
+  memcpy(@rearbuf, @viewbuffer, SizeOf(rearbuf));
   windowLeft := viewLoc[view];
-  windowTop := viewLoc[view+1];
+  windowTop := viewLoc[view + 1];
   viewLocation := location;
-  SetViewSize(viewSizes[view],viewSizes[view+1]);
+  SetViewSize(viewSizes[view], viewSizes[view + 1]);
   ResetScalePostWidth(windowWidth);
-  memcpy(pixelangle,wallpixelangle,SizeOf(pixelangle));
-  memcpy(pixelcosine,wallpixelcosine,SizeOf(pixelcosine));
+  memcpy(pixelangle, wallpixelangle, SizeOf(pixelangle));
+  memcpy(pixelcosine, wallpixelcosine, SizeOf(pixelcosine));
   player.scrollmin := scrollmin1;
   player.scrollmax := scrollmax1;
-  end;
+end;
 
 
 procedure NewGoalItem;
 begin
   togglegoalitem := false;
-  goalitem++;
+  inc(goalitem);
 
   if not netmode then
   begin
-   if (goalitem = 0) and (BonusItem.score = 0) goalitem++;
-   while (goalitem >= 1) and (goalitem <= 2) and (primaries[(goalitem-1)*2] = -1) goalitem++;
-   while (goalitem >= 3) and (goalitem <= 9) and (secondaries[(goalitem-3)*2] = -1) goalitem++;
-   if goalitem >= 10 then
-   begin
-     goalitem := 0;
-     if (goalitem = 0) and (BonusItem.score = 0) goalitem++;
-     while (goalitem >= 1) and (goalitem <= 2) and (primaries[(goalitem-1)*2] = -1) goalitem++;
-     while (goalitem >= 3) and (goalitem <= 9) and (secondaries[(goalitem-3)*2] = -1) goalitem++;
-     if (goalitem = 10) goalitem := -1;
-      end;
+    if (goalitem = 0) and (BonusItem.score = 0) then
+      inc(goalitem);
+    while (goalitem >= 1) and (goalitem <= 2) and (primaries[(goalitem - 1) * 2] = -1) do
+      inc(goalitem);
+    while (goalitem >= 3) and (goalitem <= 9) and (secondaries[(goalitem - 3) * 2] = -1) do
+      inc(goalitem);
+    if goalitem >= 10 then
+    begin
+      goalitem := 0;
+      if (goalitem = 0) and (BonusItem.score = 0) then
+        inc(goalitem);
+      while (goalitem >= 1) and (goalitem <= 2) and (primaries[(goalitem - 1) * 2] = -1) do
+        inc(goalitem);
+      while (goalitem >= 3) and (goalitem <= 9) and (secondaries[(goalitem - 3) * 2] = -1) do
+        inc(goalitem);
+      if goalitem = 10 then
+        goalitem := -1;
     end;
+  end
   else
   begin
-   if (goalitem = 0) and (BonusItem.score = 0) goalitem++;
-   if goalitem>greedcom.numplayers then
-   begin
-     goalitem := 0;
-     if (goalitem = 0) and (BonusItem.score = 0) goalitem++;
-     if goalitem>greedcom.numplayers then
-      goalitem := -1;
-      end;
+    if (goalitem = 0) and (BonusItem.score = 0) then
+      inc(goalitem);
+    if goalitem > greedcom.numplayers then
+    begin
+      goalitem := 0;
+      if (goalitem = 0) and (BonusItem.score = 0) then
+        inc(goalitem);
+      if goalitem > greedcom.numplayers then
+        goalitem := -1;
     end;
   end;
+end;
 
 
 procedure GrabTheScreen;
 begin
-  FILE *f;
+ { FILE *f;
   char name[15];
   byte palette[768];
   static int count := 0;
@@ -3396,72 +3584,75 @@ begin
    fwrite(palette,768,1,f);
    fclose(f);
     end;
-  SaveTheScreen := false;
-  end;
+  SaveTheScreen := false;  }
+end;
 
 
-procedure startover(int restartvalue);
-begin
+procedure startover(const restartvalue: integer);
+var
   i: integer;
-
-  if netmode then NetGetData;
+begin
+  if netmode then
+    NetGetData;
   resetdisplay;
   if restartvalue <> 1 then
   begin
-   player.score := 0;
-   player.levelscore := levelscore;
-   player.weapons[2] := -1;
-   player.weapons[3] := -1;
-   player.weapons[4] := -1;
-   player.currentweapon := 0;
-   loadweapon(player.weapons[0]);
+    player.score := 0;
+    player.levelscore := levelscore;
+    player.weapons[2] := -1;
+    player.weapons[3] := -1;
+    player.weapons[4] := -1;
+    player.currentweapon := 0;
+    loadweapon(player.weapons[0]);
 
-   if not netmode then
-   begin
-     memset(player.inventory, 0,SizeOf(player.inventory));
-     player.inventory[7] := 2;
-     player.inventory[5] := 2;
-     player.inventory[4] := 2;
-     player.inventory[2] := 4;
-      end;
-   else
-   begin
-     if player.inventory[7]<2 then
+    if not netmode then
+    begin
+      memset(@player.inventory, 0, SizeOf(player.inventory));
       player.inventory[7] := 2;
-     if player.inventory[5]<2 then
       player.inventory[5] := 2;
-     if player.inventory[4]<2 then
       player.inventory[4] := 2;
-     if player.inventory[2]<4 then
       player.inventory[2] := 4;
-      end;
-   player.bodycount := 0;
-   player.ammo[0] := 100;
-   player.ammo[1] := 100;
-   player.ammo[2] := 100;
-   player.angst := player.maxangst;
-   player.shield := 200;
+    end
+    else
+    begin
+      if player.inventory[7] < 2 then
+        player.inventory[7] := 2;
+      if player.inventory[5] < 2 then
+        player.inventory[5] := 2;
+      if player.inventory[4] < 2 then
+        player.inventory[4] := 2;
+      if player.inventory[2] < 4 then
+        player.inventory[2] := 4;
     end;
+    player.bodycount := 0;
+    player.ammo[0] := 100;
+    player.ammo[1] := 100;
+    player.ammo[2] := 100;
+    player.angst := player.maxangst;
+    player.shield := 200;
+  end;
   player.holopic := 0;
 
   if not netmode then
   begin
-   newmap(player.map,restartvalue);
-   INT_TimerHook(PlayerCommand);
-    end;
+    newmap(player.map,restartvalue);
+    INT_TimerHook(PlayerCommand);
+  end
   else
-  respawnplayer;
+    respawnplayer;
 
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
 
   exitexists := false;
   specialeffecttime := 0;
   ExitLevel := false;
   if currentViewSize >= 5 then
-  VI_DrawPic(4,149,statusbar[2]);
+    VI_DrawPic(4, 149, statusbar[2]);
   if currentViewSize >= 4 then
-  VI_DrawMaskedPic(0, 0,statusbar[3]);
-  if netmode then NetGetData;
+    VI_DrawMaskedPic(0, 0, statusbar[3]);
+  if netmode then
+    NetGetData;
   turnrate := 0;
   moverate := 0;
   fallrate := 0;
@@ -3469,659 +3660,776 @@ begin
   deadrestart := false;
   player.primaries[0] := 0;
   player.primaries[1] := 0;
-  for(i := 0;i<7;i++)
-  player.secondaries[i] := 0;
-  end;
+  for i := 0 to 6 do
+    player.secondaries[i] := 0;
+end;
 
 
 procedure EndLevel;
 begin
-  VI_FadeOut(0,256, 0, 0, 0,64);
-  memset(screen, 0,64000);
+  VI_FadeOut(0, 256, 0, 0, 0,64);
+  memset(screen, 0, 64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
-  ++player.map;
+  inc(player.map);
   startover(1);
-  end;
+end;
 
 
 procedure WarpAnim;
 begin
   if Warping = 1 then
   begin
-   CA_ReadLump(CA_GetNamedNum('WARPLIGHTS'),colormaps);
-   Warping := 2;
+    CA_ReadLump(CA_GetNamedNum('WARPLIGHTS'), colormaps);
+    Warping := 2;
   end
   else if Warping = 2 then
   begin
-   if (lighting >= 128) changelight := -128;
-   else
-   begin
-     Warping := 3;
-     player.x := WarpX;
-     player.y := WarpY;
-      end;
+    if lighting >= 128 then
+      changelight := -128
+    else
+    begin
+      Warping := 3;
+      player.x := WarpX;
+      player.y := WarpY;
+    end;
   end
   else if Warping = 3 then
   begin
-   if (lighting<SC.ambientlight) changelight := 128;
-   else
-   begin
-     CA_ReadLump(CA_GetNamedNum('LIGHTS'),colormaps);
-     Warping := 0;
-      end;
+    if lighting < SC.ambientlight then
+      changelight := 128
+    else
+    begin
+      CA_ReadLump(CA_GetNamedNum('LIGHTS'), colormaps);
+      Warping := 0;
     end;
   end;
+end;
 
 
 procedure DrawHolo;
-begin
+var
   i, j, count, bottom, top, x, y: integer;
-  byte       *collumn;
-  scalepic_t *spic;
-
+  collumn: PByteArray;
+  spic: Pscalepic_t;
+begin
   spic := lumpmain[player.holopic]; // draw the pic for it
   x := 5;
-  for (i := 0;i<spic.width;i++,x++)
-  if spic.collumnofs[i] then
+  for i := 0 to spic.width - 1 do
   begin
-    collumn := (byte *)spic+spic.collumnofs[i];
-    top := *(collumn+1);
-    bottom := *(collumn);
-    count := bottom-top+1;
-    collumn := collumn + 2;
-    y := windowHeight-top-count-5;
-    for (j := 0;j<count;j++,collumn++,y++)
-     if (y >= 0) and (*collumn) *(viewylookup[y]+x) := *collumn;
-     end;
+    if spic.collumnofs[i] then
+    begin
+      collumn := @PByteArray(spic)[spic.collumnofs[i]];
+      top := collumn[1];
+      bottom := collumn[0];
+      count := bottom - top + 1;
+      collumn := @collumn[2];
+      y := windowHeight - top - count - 5;
+      for (j := 0;j<count;j++,
+      begin
+        if (y >= 0) and (collumn[0] <> 0) then
+          viewylookup[y][x]^ := collumn[0];
+        collumn := @collumn[1];
+        inc(y);
+      end;
+    end;
+    inc(x);
   end;
+end;
 
 
 procedure RunMenu;
 begin
   player.timecount := timecount;
   ShowMenu(0);
-  if (not netmode) timecount := player.timecount;
+  if not netmode then
+    timecount := player.timecount;
   activatemenu := false;
   INT_TimerHook(PlayerCommand);
   keyboardDelay := timecount + KBDELAY;
-  end;
+end;
 
 
 procedure RunHelp;
 begin
   player.timecount := timecount;
-  INT_TimerHook(NULL);
+  INT_TimerHook(nil);
   ShowHelp;
   INT_TimerHook(PlayerCommand);
   activatehelp := false;
   timecount := player.timecount;
   keyboardDelay := timecount + KBDELAY;
-  end;
+end;
 
 
 procedure RunQuickExit;
 begin
   QuickExit := false;
   MouseShow;
-  if (ShowQuit(PlayerCommand)) quitgame := true;
+  if ShowQuit(PlayerCommand) then
+    quitgame := true;
   MouseHide;
   keyboardDelay := timecount + KBDELAY;
-  end;
+end;
 
 
 procedure RunPause;
 begin
   if paused then
   begin
-   gamepause := true;
-   if netmode then NetPause;
-    end;
+    gamepause := true;
+    if netmode then
+      NetPause;
+  end;
   player.timecount := timecount;
   ShowPause;
   timecount := player.timecount;
-  if (paused) and (netmode) NetUnPause;
+  if paused and netmode then
+    NetUnPause;
   paused := false;
   gamepause := false;
   INT_TimerHook(PlayerCommand);
   keyboardDelay := timecount + KBDELAY;
-  end;
+end;
 
 
 procedure PrepareNexus;
-begin
+var
   i, j, mapspot, x, y: integer;
-
-  for(i := -MAPCOLS;i <= MAPCOLS;i+:= MAPCOLS)
-  for(j := -1;j <= 1;j++)
+begin
+  i := -MAPCOLS;
+  while i <= MAPCOLS do
   begin
-    mapspot := player.mapspot+i+j;
-    if (mapspot <> player.mapspot) and (floorpic[mapspot]) and (mapsprites[mapspot] = 0) then
+    for j := -1 to 1 do
     begin
-      x := ((player.mapspot+i+j)) and (63)*MAPSIZE+32;
-      y := ((player.mapspot+i+j)/64)*MAPSIZE+32;
-      SpawnSprite(S_EXIT,x shl FRACBITS,y shl FRACBITS, 0, 0, 0, 0, 0, 0);
-      SoundEffect(SN_NEXUS, 0,x shl FRACBITS,y shl FRACBITS);
-      SoundEffect(SN_NEXUS, 0,x shl FRACBITS,y shl FRACBITS);
-      exitexists := true;
-      writemsg('Translation Nexus Created!');
-      exit;
-       end;
-     end;
+      mapspot := player.mapspot + i + j;
+      if (mapspot <> player.mapspot) and (floorpic[mapspot] and mapsprites[mapspot] = 0) then
+      begin
+        x := ((player.mapspot + i + j) and 63) * MAPSIZE + 32;
+        y := ((player.mapspot + i + j) div 64) * MAPSIZE + 32;
+        SpawnSprite(S_EXIT, x shl FRACBITS, y shl FRACBITS, 0, 0, 0, 0, 0, 0);
+        SoundEffect(SN_NEXUS, 0, x shl FRACBITS, y shl FRACBITS);
+        SoundEffect(SN_NEXUS, 0, x shl FRACBITS, y shl FRACBITS);
+        exitexists := true;
+        writemsg('Translation Nexus Created!');
+        exit;
+      end;
+    end;
+    i := i + MAPCOLS;
   end;
+end;
 
 
 procedure RunBrief;
 begin
-  memcpy(viewbuffer,screen,64000);
+  memcpy(@viewbuffer, screen, 64000);
   MissionBriefing(player.map);
   INT_TimerHook(PlayerCommand);
-  memcpy(screen,viewbuffer,64000);
+  memcpy(screen, @viewbuffer, 64000);
   activatebrief := false;
-  end;
+end;
 
 
 procedure JamWarps;
-begin
-  scaleobj_t  *sp, *t;
+var
+  sp, t: Pscaleobj_t;
   mapspot, i: integer;
-  spawnarea_t *sa;
-
+  sa: Pspawnarea_t;
+begin
   if specialeffect <> SE_WARPJAMMER then
   begin
-   specialeffect := SE_WARPJAMMER;
-   specialeffecttime := timecount+70*60;
-   totaleffecttime := 70*60;
-   --player.inventory[11];
-   for (sp := firstscaleobj.next; sp <> @lastscaleobj;)
-    if (sp.typ = S_GENERATOR) or ((sp.typ >= S_GENSTART) and (sp.typ <= S_GENEND)) then
+    specialeffect := SE_WARPJAMMER;
+    specialeffecttime := timecount + 70 * 60;
+    totaleffecttime := 70 * 60;
+    dec(player.inventory[11]);
+
+    sp := firstscaleobj.next;
+    while sp <> @lastscaleobj do
     begin
-      mapspot := (sp.y shr FRACTILESHIFT)*MAPCOLS + (sp.x shr FRACTILESHIFT);
-      mapsprites[mapspot] := 0;
-      t := sp;
-      sp := sp.next;
-      RF_RemoveSprite(t);
-       end;
-    else
-     sp := sp.next;
-   sa := spawnareas;
-   for(i := 0;i<numspawnareas;i++,sa++)
-    sa.time := timecount;
-   writemsg('Used Warp Jammer');
+      if (sp.typ = S_GENERATOR) or ((sp.typ >= S_GENSTART) and (sp.typ <= S_GENEND)) then
+      begin
+        mapspot := (sp.y shr FRACTILESHIFT) * MAPCOLS + (sp.x shr FRACTILESHIFT);
+        mapsprites[mapspot] := 0;
+        t := sp;
+        sp := sp.next;
+        RF_RemoveSprite(t);
+      end
+      else
+        sp := sp.next;
     end;
-  warpjammer := false;
+
+    for i := 0 to numspawnareas - 1 do
+      spawnareas[i].time := timecount;
+
+    writemsg('Used Warp Jammer');
   end;
+  warpjammer := false;
+end;
 
 
 procedure SelectNewSong;
 begin
-  songnum++;
-  songnum mod  := 32;
+  inc(songnum);
+  songnum := songnum mod 32;
   selectsong(songnum);
   newsong := false;
+end;
+
+var
+  wpic: Ppic_t;
+  weapbob1, wx, wy: integer;
+
+procedure UpdateView(const px, py, pz: fixed_t; const angle: integer; const update: integer);
+var
+  weaponx, weapony, i, x: integer;
+  pic: Ppic_t;
+  dbg: string;
+begin
+  angle := angle and ANGLES;
+
+  if update <> 0 then
+  begin
+    weapbob1 := weapbob;
+    rtimecount := timecount;
   end;
 
+  RF_RenderView(px, py, pz, angle);
 
-procedure UpdateView(fixed_t px,fixed_t py,fixed_t pz,int angle,int update);
-begin
-  weaponx, weapony, i, x: integer;
-  pic_t        *pic;
-  static pic_t *wpic;
-  char         dbg[80];
-  static int   weapbob1, wx, wy;
+  if update = 1 then
+    TimeUpdate;
 
-  angle) and (:= ANGLES;
+  if player.holopic <> 0 then
+    DrawHolo;
 
-  if update then
-  weapbob1 := weapbob;
+  if netmode then
+    NetGetData;
 
-  if update then
-  rtimecount := timecount;
-  RF_RenderView(px,py,pz, angle);
-
-  if (update = 1) TimeUpdate;
-
-  if (player.holopic) DrawHolo;
-
-  if netmode then NetGetData;
-
-  if timecount<RearViewTime then
+  if timecount < RearViewTime then
   begin
-   x := windowWidth-66;
-   for(i := 1;i<64;i++)
-   begin
-     memcpy(viewylookup[i+1]+x,rearbuf+(i shl 6),64);
-     *(viewylookup[i+1]+x-1) := 30;
-     *(viewylookup[i+1]+x+64) := 30;
-      end;
-   memset(viewylookup[65]+x-1,30,66);
-   memset(viewylookup[1]+x-1,30,66);
+    x := windowWidth - 66;
+    for i := 1 to 63 do
+    begin
+      memcpy(@viewylookup[i+1][x], @rearbuf[i shl 6], 64);
+      viewylookup[i + 1][x - 1]^ := 30;
+      viewylookup[i + 1][x + 64]^ := 30;
     end;
+    memset(viewylookup[65][x - 1], 30, 66);
+    memset(viewylookup[1][x - 1], 30, 66);
+  end;
 
-(* update sprite movement *)
-  if (update = 1) TimeUpdate;
+  // update sprite movement
+  if update = 1 then
+    TimeUpdate;
 
-(* draw the weapon pic *)
+  // draw the weapon pic
 
-  if (player.angst)  // only if alive
+  if player.angst <> 0 then // only if alive
   begin
-   if update then
-    wpic := weaponpic[weapmode];
+    if update then
+      wpic := weaponpic[weapmode];
 
-   weaponx := ((windowWidth-wpic.width) shr 1) + (weapmove[weapbob1] shr 1);
-   weapony := windowHeight - wpic.height + (weapmove[weapbob1/2] shr 3);
+    weaponx := ((windowWidth - wpic.width) shr 1) + (weapmove[weapbob1] shr 1);
+    weapony := windowHeight - wpic.height + (weapmove[weapbob1 div 2] shr 3);
 
-     if (currentViewSize >= 6) weapony+:= 25;
-      else if (currentViewSize = 5) weapony+:= 15;
-     if (changingweapons) and (weaponlowering) then
-     begin
-       weaponychange := weaponychange + 15;
-       weapony := weapony + weaponychange;
-       if weapony >= windowHeight-20 then
-       begin
-   weaponlowering := false;
-   player.currentweapon := newweapon;
-   loadweapon(player.weapons[newweapon]);
-   weapmode := 0;
-   wpic := weaponpic[weapmode];
-   weaponychange := weaponpic[weapmode].height-20;
-   weapony := windowHeight-21;
-   weaponx := ((windowWidth-wpic.width) shr 1) + (weapmove[weapbob1] shr 1);
-    end;
-     end
-     else if changingweapons then
-     begin
-       weaponychange := weaponychange - 10;
-       if (weaponychange <= 0) changingweapons := false;
-  else weapony := weapony + weaponychange;
-        end;
-
-   if update then
-   begin
-     wx := weaponx;
-     wy := weapony;
-      end;
-   else
-   begin
-     weaponx := wx;
-     weapony := wy;
-      end;
-
-   if netmode then NetGetData;
-   if (weapmode = 0) VI_DrawMaskedPicToBuffer2(weaponx,weapony,wpic);
-    else VI_DrawMaskedPicToBuffer(weaponx,weapony,wpic);
+    if currentViewSize >= 6 then
+      weapony := weapony + 25
+    else if currentViewSize = 5 then
+      weapony := weapony + 15;
+    if changingweapons and weaponlowering then
+    begin
+      weaponychange := weaponychange + 15;
+      weapony := weapony + weaponychange;
+      if weapony >= windowHeight - 20 then
+      begin
+        weaponlowering := false;
+        player.currentweapon := newweapon;
+        loadweapon(player.weapons[newweapon]);
+        weapmode := 0;
+        wpic := weaponpic[weapmode];
+        weaponychange := weaponpic[weapmode].height - 20;
+        weapony := windowHeight - 21;
+        weaponx := ((windowWidth - wpic.width) shr 1) + (weapmove[weapbob1] shr 1);
+      end
+    end
+    else if changingweapons then
+    begin
+      weaponychange := weaponychange - 10;
+      if weaponychange <= 0 then
+        changingweapons := false
+      else
+        weapony := weapony + weaponychange;
     end;
 
-(* update sprite movement *)
-  if (update = 1) TimeUpdate;
+    if update then
+    begin
+      wx := weaponx;
+      wy := weapony;
+    end
+    else
+    begin
+      weaponx := wx;
+      weapony := wy;
+    end;
 
-(* update displays *)
+    if netmode then
+      NetGetData;
 
-  if (mapmode = 1) displaymapmode;
-  else if (mapmode = 2) displayswingmapmode;
-  else if (mapmode) MS_Error('PlayLoop: mapmode %i',mapmode);
+    if weapmode = 0 then
+      VI_DrawMaskedPicToBuffer2(weaponx, weapony, wpic)
+    else
+      VI_DrawMaskedPicToBuffer(weaponx, weapony, wpic);
+  end;
+
+  // update sprite movement
+  if update = 1 then
+    TimeUpdate;
+
+  // update displays
+
+  if mapmode = 1 then
+    displaymapmode
+  else if mapmode = 2 then
+    displayswingmapmode
+  else if mapmode <> 0 then
+    MS_Error('PlayLoop(): mapmode = %d', [mapmode]);
+
   if heatmode then
   begin
-   if (mapmode) displayheatmapmode;
-    else displayheatmode;
-    end;
+    if mapmode <> 0 then
+      displayheatmapmode
+    else
+      displayheatmode;
+  end;
+
   if motionmode then
   begin
-   if (mapmode) displaymotionmapmode;
-    else displaymotionmode;
-    end;
+    if mapmode <> 0 then
+      displaymotionmapmode
+    else
+      displaymotionmode;
+  end;
 
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
 
-  if (currentViewSize>0) and (currentViewSize <= 4) then
+  if (currentViewSize > 0) and (currentViewSize <= 4) then
   begin
-   if (currentViewSize = 4) pic := statusbar[2];
-    else pic := statusbar[currentViewSize-1];
-   VI_DrawMaskedPicToBuffer(statusbarloc[currentViewSize*2],statusbarloc[currentViewSize*2+1],pic);
-    end;
+    if currentViewSize = 4 then
+      pic := statusbar[2]
+    else
+      pic := statusbar[currentViewSize - 1];
+    VI_DrawMaskedPicToBuffer(statusbarloc[currentViewSize * 2], statusbarloc[currentViewSize * 2 + 1], pic);
+  end;
 
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
 
   updatedisplay;
 
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
 
-(* display the message string *)
+  // display the message string
   rewritemsg;
 
-(* finally draw it *)
+  // finally draw it
 
-  if netmode then NetGetData;
+  if netmode then
+    NetGetData;
 
   if ticker then
   begin
-   sprintf(dbg,'sp:%-4i tp:%-4i ver:%-4i e:%-4i mu:%-2i t:%3i:%2i',
-    numspans,transparentposts,vertexlist_p-vertexlist,entry_p-entries,greedcom.maxusage,timecount/4200,(timecount/70) mod 60);
-//     sprintf(dbg,'x: %i  y: %i',(player.x shr FRACBITS)) and (63,(player.y shr FRACBITS)) and (63);
-   fontbasecolor := 73;
-   font := font1;
-   printx := 2;
-   printy := 19;
-   FN_RawPrint2(dbg);
-    end;
+    sprintf(dbg, 'sp:%4d tp:%4d ver:%4d e:%4d mu:%2d t:%3d:%2d',
+      [numspans, transparentposts, vertexlist_p - vertexlist, entry_p - entries, greedcom.maxusage, timecount div 4200, (timecount div 70) mod 60)];
+    // sprintf(dbg, 'x: %d  y: %d', [(player.x shr FRACBITS) and 63, (player.y shr FRACBITS) and 63]);
+    fontbasecolor := 73;
+    font := font1;
+    printx := 2;
+    printy := 19;
+    FN_RawPrint2(dbg);
+  end;
+
   if netmsgstatus = 1 then
   begin
-   fontbasecolor := 73;
-   font := font1;
-   printx := 2;
-   printy := 19;
-   sprintf(dbg,'Message: %s',netmsg);
-   FN_RawPrint2(dbg);
+    fontbasecolor := 73;
+    font := font1;
+    printx := 2;
+    printy := 19;
+    sprintf(dbg, 'Message: %s', [netmsg]);
+    FN_RawPrint2(dbg);
   end
   else if netmsgstatus = 2 then
   begin
-   NetSendMessage(netmsg);
-   netmsgstatus := 0;
-    end;
-
-(* update sprite movement *)
-  if update = 1 then
-  TimeUpdate;
+    NetSendMessage(netmsg);
+    netmsgstatus := 0;
   end;
 
-procedure PlayLoop ;
-begin
-  i: integer;
+  // update sprite movement
+  if update = 1 then
+    TimeUpdate;
+end;
 
-  if netmode then NetWaitStart;
-  else timecount := 0;
+procedure PlayLoop;
+var
+  i: integer;
+begin
+  if netmode then
+    NetWaitStart
+  else
+    timecount := 0;
 
   while not quitgame do
   begin
-   if fliplayed then
-   begin
-     if deadrestart then
-     begin
-    memset(screen, 0,64000);
+    if fliplayed then
+    begin
+      if deadrestart then
+      begin
+        memset(screen, 0, 64000);
 
-    VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+        VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
 
-       startover(2);
-        end;
-     continue;
+        startover(2);
       end;
-   if netmode then NetGetData;
-   if toggleautorun then
-   begin
-     autorun) xor (:= 1;
-     if (autorun) writemsg('Auto-Run On');
-      else writemsg('Auto-Run Off');
-     toggleautorun := false;
-      end;
-   if toggleautotarget then
-   begin
-     autotarget) xor (:= 1;
-     if autotarget then
-      writemsg('Auto-Target On');
-     else
-      writemsg('Auto-Target Off');
-     toggleautotarget := false;
-      end;
-   if goiright then
-   begin
-     inventoryright;
-     goiright := false;
-      end;
-   if goileft then
-   begin
-     inventoryleft;
-     goileft := false;
-      end;
-   if useitem then
-   begin
-     useinventory;
-     useitem := false;
-      end;
-   if checktrigger then
-   begin
-     checktrigger := false;
-     CheckHere(true, player.x, player.y, player.angle);
-     if fliplayed then
       continue;
-      end;
-   if (warpjammer) JamWarps;
-   if netmode then NetGetData;
-   if falldamage then
-     begin  // just makes a grunt sound
-     SoundEffect(SN_HIT0+player.chartype,15, player.x, player.y);
-     if netmode then NetSoundEffect(SN_HIT0+player.chartype,15, player.x, player.y);
-     falldamage := 0;
-      end;
+    end;
 
-   if (player.levelscore = 0) and ( not exitexists) and ( not netmode) and (
-    ((primaries[0] <> -1) and (player.primaries[0] = pcount[0])) or (primaries[0] = -1)) and (
-    ((primaries[2] <> -1) and (player.primaries[1] = pcount[1])) or (primaries[2] = -1))
-    PrepareNexus;
-
-   if ExitLevel then
-   begin
-     EndLevel;
-     if player.map >= 22 then
-     begin
-       quitgame := true;
-       exit;
-        end;
-      end;
-
-   if netmode then NetGetData;
-
-   if timecount>specialeffecttime then
-   begin
-     specialeffect := 0;
-     specialeffecttime := $7FFFFFFF;
-      end;
-   if firegrenade then
-   begin
-     SpawnSprite(S_GRENADE, player.x, player.y, player.z, player.height-(50 shl FRACBITS), player.angle,(-player.scrollmin)) and (ANGLES, true, playernum);
-     SoundEffect(SN_GRENADE, 0, player.x, player.y);
-     if netmode then NetSoundEffect(SN_GRENADE, 0, player.x, player.y);
-     --player.inventory[2];
-     firegrenade := false;
-      end;
-
-   if netmode then NetGetData;
-
-   if (Warping) WarpAnim;
-
-   if netmode then NetGetData;
-
-(* check special code flag *)
-   if (specialcode) Special_Code(secretbuf);
-
-(* update sprite movement *)
-   TimeUpdate;
-
-(* update wallanimation *)
-   if timecount >= wallanimationtime then
-   begin
-     wallanimcount++;
-     case wallanimcount mod 3  of
-     begin
-       0:
-  flattranslation[57] := 58;
-  flattranslation[58] := 59;
-  flattranslation[59] := 57;
-  flattranslation[217] := 218;
-  flattranslation[218] := 219;
-  flattranslation[219] := 217;
-  walltranslation[228] := 229;
-  walltranslation[229] := 230;
-  walltranslation[230] := 228;
-  break;
-       1:
-  flattranslation[57] := 59;
-  flattranslation[58] := 57;
-  flattranslation[59] := 58;
-  flattranslation[217] := 219;
-  flattranslation[218] := 217;
-  flattranslation[219] := 218;
-  walltranslation[228] := 230;
-  walltranslation[229] := 228;
-  walltranslation[230] := 229;
-  break;
-       2:
-  flattranslation[57] := 57;
-  flattranslation[58] := 58;
-  flattranslation[59] := 59;
-  flattranslation[217] := 217;
-  flattranslation[218] := 218;
-  flattranslation[219] := 219;
-  walltranslation[228] := 228;
-  walltranslation[229] := 229;
-  walltranslation[230] := 230;
-  break;
-        end;
-     wallanimationtime := timecount+12;
-     if netmode then
+    if netmode then
       NetGetData;
-     if (floorflags[player.mapspot]) and (F_DAMAGE) and (player.z = RF_GetFloorZ(player.x, player.y)+player.height) then
-      hurt(30);
+
+    if toggleautorun then
+    begin
+      autorun := not autorun;
+      if autorun then
+        writemsg('Auto-Run On')
+      else
+        writemsg('Auto-Run Off');
+      toggleautorun := false;
+    end;
+
+    if toggleautotarget then
+    begin
+      autotarget := not autotarget;
+      if autotarget then
+        writemsg('Auto-Target On')
+      else
+        writemsg('Auto-Target Off');
+      toggleautotarget := false;
+    end;
+
+    if goiright then
+    begin
+      inventoryright;
+      goiright := false;
+    end;
+
+    if goileft then
+    begin
+      inventoryleft;
+      goileft := false;
+    end;
+
+    if useitem then
+    begin
+      useinventory;
+      useitem := false;
+    end;
+
+    if checktrigger then
+    begin
+      checktrigger := false;
+      CheckHere(true, player.x, player.y, player.angle);
+      if fliplayed then
+        continue;
+    end;
+
+    if warpjammer then
+      JamWarps;
+
+    if netmode then
+      NetGetData;
+
+    if falldamage then
+    begin // just makes a grunt sound
+      SoundEffect(SN_HIT0 + player.chartype, 15, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_HIT0 + player.chartype, 15, player.x, player.y);
+      falldamage := 0;
+    end;
+
+    if (player.levelscore = 0) and not exitexists and not netmode and
+      (((primaries[0] <> -1) and (player.primaries[0] = pcount[0])) or (primaries[0] = -1)) and
+      (((primaries[2] <> -1) and (player.primaries[1] = pcount[1])) or (primaries[2] = -1)) then
+      PrepareNexus;
+
+    if ExitLevel then
+    begin
+      EndLevel;
+      if player.map >= 22 then
+      begin
+        quitgame := true;
+        exit;
       end;
+    end;
 
-   CheckWarps(player.x, player.y);
-   if fliplayed then
-    continue;
+    if netmode then
+      NetGetData;
 
-   CheckDoors(player.x, player.y);
-   if netmode then NetGetData;
-   if (deadrestart) startover(2);
-   if (resizeScreen) ChangeViewSize(biggerScreen);
-   if netmode then NetGetData;
-   if (scrollview) ChangeScroll;
+    if timecount > specialeffecttime then
+    begin
+      specialeffect := 0;
+      specialeffecttime := $7FFFFFFF;
+    end;
 
-(* update sprite movement *)
-   TimeUpdate;
+    if firegrenade then
+    begin
+      SpawnSprite(S_GRENADE, player.x, player.y, player.z, player.height - (50 shl FRACBITS), player.angle, (-player.scrollmin) and ANGLES, true, playernum);
+      SoundEffect(SN_GRENADE, 0, player.x, player.y);
+      if netmode then
+        NetSoundEffect(SN_GRENADE, 0, player.x, player.y);
+      dec(player.inventory[2]);
+      firegrenade := false;
+    end;
 
-(* check display toggle flags *)
-   if toggleheatmode then
-   begin
-     if (heatmode) heatmode := false;
-     else
-     begin
-       heatmode := true;
-       if (mapmode = 2) mapmode := 1;
+    if netmode then
+      NetGetData;
+
+    if Warping then
+      WarpAnim;
+
+    if netmode then
+      NetGetData;
+
+    // check special code flag
+    if specialcode then
+      Special_Code(secretbuf);
+
+    // update sprite movement
+    TimeUpdate;
+
+    // update wallanimation
+    if timecount >= wallanimationtime then
+    begin
+      inc(wallanimcount);
+      case wallanimcount mod 3 of
+      0:
+        begin
+          flattranslation[57] := 58;
+          flattranslation[58] := 59;
+          flattranslation[59] := 57;
+          flattranslation[217] := 218;
+          flattranslation[218] := 219;
+          flattranslation[219] := 217;
+          walltranslation[228] := 229;
+          walltranslation[229] := 230;
+          walltranslation[230] := 228;
         end;
-     toggleheatmode := false;
-      end;
-   if togglemotionmode then
-   begin
-     if (motionmode) motionmode := false;
-     else
-     begin
-       motionmode := true;
-       if (mapmode = 2) mapmode := 1;
+
+      1:
+        begin
+          flattranslation[57] := 59;
+          flattranslation[58] := 57;
+          flattranslation[59] := 58;
+          flattranslation[217] := 219;
+          flattranslation[218] := 217;
+          flattranslation[219] := 218;
+          walltranslation[228] := 230;
+          walltranslation[229] := 228;
+          walltranslation[230] := 229;
         end;
-     togglemotionmode := false;
-      end;
-   if togglemapmode then
-   begin
-     case mapmode  of
-     begin
-       0:
-  mapmode := 1;
-  break;
-       1:
-  if (heatmode) or (motionmode) mapmode := 0;
-   else mapmode := 2;
-  break;
-       2:
-  mapmode := 0;
+
+      2:
+        begin
+          flattranslation[57] := 57;
+          flattranslation[58] := 58;
+          flattranslation[59] := 59;
+          flattranslation[217] := 217;
+          flattranslation[218] := 218;
+          flattranslation[219] := 219;
+          walltranslation[228] := 228;
+          walltranslation[229] := 229;
+          walltranslation[230] := 230;
         end;
-     togglemapmode := false;
       end;
-   if (togglegoalitem) NewGoalItem;
-   if ToggleRearView then
-   begin
-     RearViewOn) xor (:= 1;
-     ToggleRearView := false;
-     RearViewDelay := timecount;
+      wallanimationtime := timecount + 12;
+      if netmode then
+        NetGetData;
+      if (floorflags[player.mapspot]) and (F_DAMAGE) and (player.z = RF_GetFloorZ(player.x, player.y)+player.height) then
+        hurt(30);
+    end;
+
+    CheckWarps(player.x, player.y);
+    if fliplayed then
+      continue;
+
+    CheckDoors(player.x, player.y);
+    if netmode then
+      NetGetData;
+    if deadrestart then
+      startover(2);
+    if resizeScreen then
+      ChangeViewSize(biggerScreen);
+    if netmode then
+      NetGetData;
+    if scrollview then
+      ChangeScroll;
+
+    // update sprite movement *)
+    TimeUpdate;
+
+    // check display toggle flags
+    if toggleheatmode then
+    begin
+      if heatmode then
+        heatmode := false
+      else
+      begin
+        heatmode := true;
+        if mapmode = 2 then
+          mapmode := 1;
+      end;
+      toggleheatmode := false;
+    end;
+
+    if togglemotionmode then
+    begin
+      if motionmode then
+        motionmode := false
+      else
+      begin
+        motionmode := true;
+        if mapmode = 2 then
+          mapmode := 1;
+      end;
+      togglemotionmode := false;
+    end;
+
+    if togglemapmode then
+    begin
+      case mapmode  of
+      0:
+        begin
+          mapmode := 1;
+        end;
+
+      1:
+        begin
+          if heatmode or motionmode then
+            mapmode := 0
+          else
+            mapmode := 2;
+        end;
+
+      2:
+        begin
+          mapmode := 0;
+        end;
       end;
 
-   if netmode then NetGetData;
+      togglemapmode := false;
+    end;
 
-(* render the view *)
-   if (RearViewOn) and (timecount >= RearViewDelay) then
-   begin
-     RearViewTime := timecount+140;
-     RearView;
-     RearViewDelay := timecount+SC.camdelay;
-     if SC.camdelay = 70 then
-      RearViewOn := false;
-      end;
+    if togglegoalitem then
+      NewGoalItem;
 
-   if netmode then NetGetData;
+    if ToggleRearView then
+    begin
+      RearViewOn := not RearViewOn;
+      ToggleRearView := false;
+      RearViewDelay := timecount;
+    end;
 
-   scrollmin := player.scrollmin;
-   scrollmax := player.scrollmax;
-   
+    if netmode then
+      NetGetData;
+
+    // render the view
+    if RearViewOn and (timecount >= RearViewDelay) then
+    begin
+      RearViewTime := timecount + 140;
+      RearView;
+      RearViewDelay := timecount + SC.camdelay;
+      if SC.camdelay = 70 then
+        RearViewOn := false;
+    end;
+
+    if netmode then
+      NetGetData;
+
+    scrollmin := player.scrollmin;
+    scrollmax := player.scrollmax;
+
    (*for (i :=  0 ; i < 200 ; i++)
      memset(ylookup[i],i,320);
    VI_BlitView;*)
 
-   UpdateView(player.x, player.y, player.z, player.angle,1);
+    UpdateView(player.x, player.y, player.z, player.angle, 1);
 
-   RF_BlitView;
-   VI_BlitView;
-  
-   if (newsong) SelectNewSong;
+    RF_BlitView;
+    VI_BlitView;
 
-   if (activatemenu) RunMenu;
+    if newsong then
+      SelectNewSong;
 
-   if (activatehelp) RunHelp;
+    if activatemenu then
+      RunMenu;
 
-   if (activatebrief) RunBrief;
+    if activatehelp then
+      RunHelp;
 
-   TimeUpdate;
+    if activatebrief then
+      RunBrief;
 
-   if (QuickExit) RunQuickExit;
+    TimeUpdate;
 
-   if netmode then NetGetData;
+    if QuickExit then
+      RunQuickExit;
 
-   if (paused) or (netpaused) RunPause;
+    if netmode then
+      NetGetData;
 
-   ++frames;
+    if paused or netpaused then
+      RunPause;
 
-(* update sprite movement *)
-   TimeUpdate;
+    inc(frames);
 
-(* update lights if necessary *)
-   if (changelight <> 0) newlights;
+    // update sprite movement
+    TimeUpdate;
 
-(* update weapon to be displayed *)
-   while (weapmode) and (timecount >= weapdelay) do
-   begin
-     if (player.weapons[player.currentweapon] = 4) or (player.weapons[player.currentweapon] = 18) then
-     begin
-       if weapmode = 1 then
-       begin
-   if player.weapons[player.currentweapon] = 4 then
-   begin
-     SoundEffect(SN_BULLET4, 0, player.x, player.y);
-     if netmode then NetSoundEffect(SN_BULLET4, 0, player.x, player.y);
-      end;
-   if player.weapons[player.currentweapon] = 18 then
-   begin
-     SoundEffect(SN_BULLET18, 0, player.x, player.y);
-     if netmode then
-      NetSoundEffect(SN_BULLET18, 0, player.x, player.y);
-      end;
-    end;
-       weapmode := weaponstate[player.weapons[player.currentweapon]][weapmode];
-       if weapmode = 0 then
-  fireweapon;
+    // update lights if necessary
+    if changelight <> 0 then
+      newlights;
+
+    // update weapon to be displayed
+    while (weapmode <> 0) and (timecount >= weapdelay) do
+    begin
+      if (player.weapons[player.currentweapon] = 4) or (player.weapons[player.currentweapon] = 18) then
+      begin
+        if weapmode = 1 then
+        begin
+          if player.weapons[player.currentweapon] = 4 then
+          begin
+            SoundEffect(SN_BULLET4, 0, player.x, player.y);
+            if netmode then
+              NetSoundEffect(SN_BULLET4, 0, player.x, player.y);
+          end;
+          if player.weapons[player.currentweapon] = 18 then
+          begin
+            SoundEffect(SN_BULLET18, 0, player.x, player.y);
+            if netmode then
+              NetSoundEffect(SN_BULLET18, 0, player.x, player.y);
+          end;
         end;
-     else
-      weapmode := weaponstate[player.weapons[player.currentweapon]][weapmode];
-     weapdelay := timecount+8;
-      end;
-
-   if netmode then NetGetData;
+        weapmode := weaponstate[player.weapons[player.currentweapon]][weapmode];
+        if weapmode = 0 then
+          fireweapon;
+      end
+      else
+        weapmode := weaponstate[player.weapons[player.currentweapon]][weapmode];
+      weapdelay := timecount + 8;
     end;
+
+    if netmode then
+      NetGetData;
   end;
+end;
 
 
 procedure ActionHook;
@@ -4131,9 +4439,9 @@ end;
 
 
 procedure InitData;
-begin
+var
   i: integer;
-
+begin
   quitgame := false;
   mapmode := 0;
   heatmode := false;
@@ -4148,15 +4456,15 @@ begin
 //   demobuffer := CA_CacheLump(CA_GetNamedNum('demo'));
   if playback then
   begin
-   demobuffer := CA_LoadFile('demo1');
-   recordindex := 0;
-    end;
+    demobuffer := CA_LoadFile('demo1');
+    recordindex := 0;
+  end;
   if recording then
   begin
-   demobuffer := CA_CacheLump(CA_GetNamedNum('demo'));
-   memset(demobuffer, 0,RECBUFSIZE);
-   recordindex := 0;
-    end;
+    demobuffer := CA_CacheLump(CA_GetNamedNum('demo'));
+    memset(demobuffer, 0, RECBUFSIZE);
+    recordindex := 0;
+  end;
   probe.moveSpeed := MAXPROBE;
   probe.movesize := 16 shl FRACBITS; // half a tile
   probe.spawnid := playernum;
@@ -4168,19 +4476,19 @@ begin
   ChangeViewSize(false);
   ChangeViewSize(false);
   ChangeViewSize(false);
-  for (i := 0;i<currentViewSize;i++)
-  ChangeViewSize(true);
+  for i := 0 to currentViewSize - 1 do
+    ChangeViewSize(true);
   resetdisplay;
-  end;
+end;
 
 
 procedure SaveDemo;
+var
+  file: f;
 begin
-  FILE *f;
-
-  f := fopen('demo1','w');
-  fwrite(demobuffer,RECBUFSIZE,1,f);
-  fclose(f);
+  fopen(f, 'demo1', fOpenReadWrite);
+  fwrite(demobuffer, RECBUFSIZE, 1, f);
+  close(f);
 end;
 
 
