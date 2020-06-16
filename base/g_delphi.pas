@@ -160,6 +160,8 @@ function stricmp(const p1: pointer; const s2: string): integer; overload;
 // convertion
 function itoa(i: integer): string;
 
+function IntToStrZfill(const z: integer; const x: integer): string;
+
 function uitoa(l: longword): string;
 
 function ftoa(f: single): string;
@@ -255,7 +257,7 @@ end;
 
 function memset(const dest: pointer; const val: integer; const count: integer): pointer;
 begin
-  FillChar(dest^, count, val);
+  FillChar(dest ^, count, val);
   result := dest;
 end;
 
@@ -467,6 +469,17 @@ end;
 function itoa(i: integer): string;
 begin
   sprintf(result, '%d', [i]);
+end;
+
+function IntToStrZfill(const z: integer; const x: integer): string;
+var
+  i: integer;
+  len: integer;
+begin
+  result := itoa(x);
+  len := Length(result);
+  for i := len + 1 to z do
+    result := '0' + result;
 end;
 
 function uitoa(l: longword): string;
