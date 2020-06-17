@@ -24,16 +24,12 @@
 
 unit utils;
 
-{$IFDEF GAME1}
-  #define SAVENAME 'SAVE1.%i'
-#elif defined(GAME2)
-  #define SAVENAME 'SAVE2.%i'
-#elif defined(GAME3)
-  #define SAVENAME 'SAVE3.%i'
-{$ELSE}
-  #define SAVENAME 'SAVEGAME.%i'
-{$ENDIF}
+interface
 
+uses
+  protos_h;
+
+function SAVENAME: string;
 
 (**** VARIABLES ****)
 var
@@ -49,6 +45,43 @@ var
 
   startlocations: array[0..MAXSTARTLOCATIONS - 1, 0..1] of integer;
 
+procedure ChangeViewSize(const MakeLarger: boolean);
+
+procedure SaveGame(const n: integer);
+
+procedure LoadGame(const n: integer);
+
+procedure newplayer(const map: integer; const chartype: integer; const difficulty: integer);
+
+implementation
+
+uses
+  g_delphi,
+  constant,
+  d_disk,
+  d_misc,
+  event,
+  i_windows,
+  menu,
+  modplay,
+  net,
+  r_public_h,
+  r_public,
+  r_render,
+  spawn;
+
+function SAVENAME: string;
+begin
+  if GAME1 then
+    result := 'SAVE1.%d'
+  else if GAME2 then
+    result := 'SAVE2.%d'
+  else if GAME3 then
+    result := 'SAVE3.%d'
+  else
+    result := 'SAVEGAME.%d'
+end;
+
 
 (**** FUNCTIONS ****)
 
@@ -58,7 +91,7 @@ var
   i: integer;
   x, y, z: fixed_t;
 begin
-  if sp.deathevent then
+  if sp.deathevent <> 0 then
     RunEvent(sp.deathevent, false);
   case sp.typ of
   S_CLONE:
@@ -169,7 +202,7 @@ begin
   gameloading := true;
   for y := 0 to MAPROWS - 1 do
     for x := 0 to MAPCOLS - 1 do
-     if mapsprites[y * MAPCOLS + x] then
+     if mapsprites[y * MAPCOLS + x] <> 0 then
        SpawnSprite(mapsprites[y * MAPCOLS + x], (x * MAPSIZE + 32) shl FRACBITS, (y * MAPCOLS + 32) shl FRACBITS, 0, 0, 0, 0, false, 0);
   gameloading := false;
 end;
@@ -199,7 +232,7 @@ begin
         end;
       54:
         begin
-          mapflags[mapspot] := mapflags[mapspot] or (POLY_SLOPE;
+          mapflags[mapspot] := mapflags[mapspot] or POLY_SLOPE;
           mapflags[mapspot] := mapflags[mapspot] or (POLY_ULTOLR shl FLS_CEILING);
         end;
       55:
@@ -2040,7 +2073,7 @@ begin
   end;
 
 
-procedure newplayer(int map,int chartype,int difficulty);
+procedure newplayer(const map: integer; const chartype: integer; const difficulty: integer);
 begin
   parm: integer;
 

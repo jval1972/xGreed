@@ -50,7 +50,8 @@ uses
   r_conten,
   r_public,
   r_refdef,
-  r_render;
+  r_render,
+  utils;
 
 function SP_TryDoor(const xcenter, ycenter: fixed_t): boolean;
 var
@@ -678,7 +679,7 @@ begin
         if mapsprites[spriteloc] = SM_NETPLAYER then
         begin
           hsprite := firstscaleobj.next;
-          while hsprite <> @lastscaleobj do ;hsprite := hsprite.next)
+          while hsprite <> @lastscaleobj do
           begin
             if hsprite <> msprite then
             begin
@@ -711,15 +712,20 @@ begin
               mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
               if mapspot = spriteloc then
               begin
-                if (msprite.z<hsprite.z) or (msprite.z>hsprite.z+hsprite.height) continue;
-                if hsprite.hitpoints then
+                if (msprite.z < hsprite.z) or (msprite.z > hsprite.z + hsprite.height) then
+                begin
+                  hsprite := hsprite.next;
+                  continue;
+                end;
+                if hsprite.hitpoints <> 0 then
                 begin
                   if hsprite.typ <> S_MONSTER5 then
-                    hsprite.actiontime := hsprite.actiontime + 15;
+                    hsprite.actiontime := hsprite.actiontime + 15
                   else
                     hsprite.actiontime := hsprite.actiontime + 5;
                   hsprite.hitpoints := hsprite.hitpoints - msprite.damage;
-                  if (msprite.spawnid = 255) hsprite.enraged++;
+                  if msprite.spawnid = 255 then
+                    inc(hsprite.enraged);
 
                   if (msprite.typ = S_SOULBULLET) and (msprite.spawnid = playernum) then
                   begin

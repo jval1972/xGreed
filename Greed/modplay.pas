@@ -50,8 +50,12 @@ var
   MusicError, EffectChan, CurrentChan, FXLump: integer;
   MusicVol, effecttracks: integer;
 
+function SaveSetup(const SC: PSoundCard; const Filename: string): integer;
+
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
-  
+
+procedure SetVolumes(const amusic: integer; const afx: integer);
+
 implementation
 
 uses

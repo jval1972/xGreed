@@ -172,1107 +172,1249 @@ var
   quitmenu, menuexecute, downlevel, goright, goleft, waiting: boolean;
   savedir: array[0..MAXSAVEGAMES - 1] of string[22];
   waitpics: array[0..3] of Ppic_t;
-extern  SoundCard SC;
 
+
+implementation
+
+uses
+  g_delphi,
+  constant,
+  d_disk,
+  d_font,
+  d_ints,
+  d_ints_h,
+  d_misc,
+  intro,
+  modplay,
+  net,
+  raven,
+  r_render,
+  utils;
 
 (**** FUNCTIONS ****)
 
-procedure VI_DrawMaskedPic2(int x, int y, pic_t  *pic);
-(* Draws a formatted image to the screen, masked with zero *)
-begin
-  byte *dest, *source, *source2;
+// Draws a formatted image to the screen, masked with zero
+procedure VI_DrawMaskedPic2(x, y: integer; const pic: Ppic_t);
+var
+  dest: PByte;
+  source, source2: PByteArray;
   width, height, xcor: integer;
-
+begin
   x := x - pic.orgx;
   y := y - pic.orgy;
   height := pic.height;
   source := @pic.data;
-  while y<0 do
+  while y < 0 do
   begin
-   source := source + pic.width;
-   height--;
-   y++;
-    end;
-  while height-- do
-  begin
-   if y<200 then
-   begin
-     dest := ylookup[y]+x;
-     source2 := @viewbuffer[y * 320 + x];
-     xcor := x;
-     width := pic.width;
-     while width-- do
-     begin
-       if (xcor >= 0) and (xcor <= 319) and (*source) *dest := *source;
-  else *dest := *source2;
-       xcor++;
-       source++;
-       source2++;
-       dest++;
-        end;
-      end;
-   y++;
-    end;
+    source := @source[pic.width];
+    dec(height);
+    inc(y);
   end;
+  while height > 0 do
+  begin
+    if y < 200 then
+    begin
+      dest := @ylookup[y][x];
+      source2 := @viewbuffer[y * 320 + x];
+      xcor := x;
+      width := pic.width;
+      while width > 0 do
+      begin
+        if (xcor >= 0) and (xcor <= 319) and (source[0] <> 0) then
+          dest^ := source[0]
+        else
+          dest^ := source2[0];
+        inc(xcor);
+        source := @source[1];
+        source2 := @source2[1];
+        inc(dest);
+        dec(width);
+      end;
+    end;
+    inc(y);
+    dec(height);
+  end;
+end;
 
-
-procedure MenuCommand;
-
-
-bool ShowQuit(void (*kbdfunction);)
-begin
+function ShowQuit(const kbdfunction: PProcedure): boolean;
+var
   animtime, droptime: integer;
   anim, y, i, lump: integer;
-  short   mx, my;
-  pic_t   *pics[3];
-  char    c;
-  result: boolean;
-  byte    *scr;
-
-  INT_TimerHook(NULL);
-  scr := (byte *)malloc(64000);
-  if (scr = NULL) MS_Error('Error allocating ShowQuit buffer');
+  mx, my: smallint;
+  pics: array[0..2] of Ppic_t;
+  c: char;
+  scr: PByteArray;
+begin
+  INT_TimerHook(nil);
+  scr := malloc(64000);
+  if scr = nil then
+    MS_Error('Error allocating ShowQuit buffer');
   MouseHide;
-  memcpy(scr,viewbuffer,64000);
-  memcpy(viewbuffer,screen,64000);
+  memcpy(scr, @viewbuffer, 64000);
+  memcpy(@viewbuffer, screen, 64000);
   MouseShow;
-  if (netmode) TimeUpdate;
+  if netmode then
+    TimeUpdate;
   lump := CA_GetNamedNum('quit');
-  for(i := 0;i<3;i++) pics[i] := CA_CacheLump(lump+i);
-  timedelay := timecount+KBDELAY2;
+  for i := 0 to 2 do
+    pics[i] := CA_CacheLump(lump + i);
+  timedelay := timecount + KBDELAY2;
   Wait(KBDELAY2);
-  if (netmode) TimeUpdate;
+  if netmode then
+    TimeUpdate;
   newascii := false;
   anim := 0;
   MouseHide;
-  if (not SC.animation) or (netmode) then
+  if not SC.animation or netmode then
   begin
-   y := 68;
-   MouseShow;
-    end;
-  else y := -66;
+    y := 68;
+    MouseShow;
+  end
+  else
+    y := -66;
   droptime := timecount;
   animtime := timecount;
-  while 1 do
+  c := #0;
+  while true do
   begin
-   if (y >= 67) and (MouseGetClick and (mx,) and (my)) and (my >= 110) and (my <= 117) then
-   begin
-     if (mx >= 130) and (mx <= 153) then
-     begin
-       c := 'y';
-       break;
-     end
-     else if (mx >= 162) and (mx <= 186) then
-     begin
-       c := 'n';
-       break;
-        end;
-      end;
-
-   if (netmode) TimeUpdate;
-
-   if (newascii) and (y >= 67) then
-   begin
-     c := lastascii;
-     break;
-      end;
-   if (timecount >= droptime) and (y<67) then
-   begin
-     if (y >= 0) memcpy(ylookup[y],viewbuffer+320*y,640);
-     y := y + 2;
-     droptime := timecount+1;
-     VI_DrawMaskedPic2(111,y,pics[anim]);
-     if (y >= 67) MouseShow;
-      end;
-   if timecount >= animtime then
-   begin
-     anim++;
-     anim mod  := 3;
-     animtime := animtime + 10;
-     MouseHide;
-     VI_DrawMaskedPic2(111,y,pics[anim]);
-     MouseShow;
+    if (y >= 67) and MouseGetClick(mx, my) and (my >= 110) and (my <= 117) then
+    begin
+      if (mx >= 130) and (mx <= 153) then
+      begin
+        c := 'y';
+        break;
+      end
+      else if (mx >= 162) and (mx <= 186) then
+      begin
+        c := 'n';
+        break;
       end;
     end;
-  if (c = 'y') or (c = 'Y') result := true;
-  else result := false;
+
+    if netmode then
+      TimeUpdate;
+
+    if newascii and (y >= 67) then
+    begin
+      c := lastascii;
+      break;
+    end;
+    if (timecount >= droptime) and (y < 67) then
+    begin
+      if y >= 0 then
+        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+      y := y + 2;
+      droptime := timecount + 1;
+      VI_DrawMaskedPic2(111, y, pics[anim]);
+      if y >= 67 then
+        MouseShow;
+    end;
+    if timecount >= animtime then
+    begin
+      inc(anim);
+      anim := anim mod 3;
+      animtime := animtime + 10;
+      MouseHide;
+      VI_DrawMaskedPic2(111,y,pics[anim]);
+      MouseShow;
+    end;
+  end;
+
+  result := (c = 'y') or (c = 'Y');
   droptime := timecount;
   animtime := timecount;
-  if (not SC.animation) or (netmode) y := 200;
+  if not SC.animation or netmode then
+    y := 200;
   MouseHide;
-  while y<199 do
+  while y < 199 do
   begin
-   if timecount >= droptime then
-   begin
-     if (y >= 0) memcpy(ylookup[y],viewbuffer+320*y,640);
-     y := y + 2;
-     droptime := timecount+1;
-     VI_DrawMaskedPic2(111,y,pics[anim]);
-      end;
-   if timecount >= animtime then
-   begin
-     anim++;
-     anim mod  := 3;
-     animtime := animtime + 10;
-     VI_DrawMaskedPic2(111,y,pics[anim]);
-      end;
+    if timecount >= droptime then
+    begin
+      if y >= 0 then
+        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+      y := y + 2;
+      droptime := timecount + 1;
+      VI_DrawMaskedPic2(111,y,pics[anim]);
     end;
-  memcpy(screen,viewbuffer,64000);
-  memcpy(viewbuffer,scr,64000);
-  for(i := 0;i<3;i++) CA_FreeLump(lump+i);
+    if timecount >= animtime then
+    begin
+      inc(anim);
+      anim := anim mod 3;
+      animtime := animtime + 10;
+      VI_DrawMaskedPic2(111, y, pics[anim]);
+    end;
+  end;
+  memcpy(screen,@viewbuffer, 64000);
+  memcpy(@viewbuffer, scr, 64000);
+  for i := 0 to 2 do
+    CA_FreeLump(lump + i);
   MouseShow;
-  free(scr);
-  timedelay := timecount+KBDELAY2;
+  memfree(pointer(scr));
+  timedelay := timecount + KBDELAY2;
   turnrate := 0;
   moverate := 0;
   fallrate := 0;
   strafrate := 0;
   ResetMouse;
   INT_TimerHook(kbdfunction);
-  if (netmode) TimeUpdate;
-  return result;
-  end;
+  if netmode then
+    TimeUpdate;
+end;
 
 
 (******************************************************************************)
 
 
-procedure ShowMenuSliders(int value,int range);
-begin
+procedure ShowMenuSliders(const value, range: integer);
+var
   a, c, d, i: integer;
-
+begin
   MouseHide;
-  d := (value*49)/range;
-  for(a := 0;a<d;a++)
+  d := (value * 49) div range;
+  for a := 0 to d - 1 do
   begin
-   c := (a*32)/d + 140;
-   for(i := 49;i<65;i++)
-    *(ylookup[i]+a+42) := c;
+    c := (a * 32) div d + 140;
+    for i := 49 to 64 do
+      ylookup[i][a + 42] := c;
+  end;
+  if d < 49 then
+    for a := d to 48 do
+    begin
+      for i := 49 to 64 do
+        ylookup[i][a + 42] := 0;
     end;
-  if d<49 then
-  for(a := d;a<49;a++)
-  begin
-    for(i := 49;i<65;i++)
-     *(ylookup[i]+a+42) := 0;
-     end;
   MouseShow;
-  end;
+end;
 
 
-void SaveDirectory
+function _SAVEDIR: string;
 begin
-  FILE *f;
+  if GAME1 then
+    result := 'SAVE1.DIR'
+  else if GAME2 then
+    result := 'SAVE2.DIR'
+  else if GAME3 then
+    result := 'SAVE3.DIR'
+  else
+    result := 'SAVEGAME.DIR';
+end;
 
-{$IFDEF GAME1}
-  f := fopen('SAVE1.DIR','w');
-#elif defined(GAME2)
-  f := fopen('SAVE2.DIR','w');
-#elif defined(GAME3)
-  f := fopen('SAVE3.DIR','w');
-{$ELSE}
-  f := fopen('SAVEGAME.DIR','w');
-{$ENDIF}
-
-  if f = NULL then
-  MS_Error('SaveDirectory: Error creating SAVEGAME.DIR');
-  if (not fwrite(savedir,SizeOf(savedir),1,f)) then
-  MS_Error('SaveDirectory: Error saving SAVEGAME.DIR');
-  fclose(f);
-  end;
-
-
-void InitSaveDir
+procedure SaveDirectory;
+var
+  f: file;
+  dd: string;
 begin
+  dd := _SAVEDIR;
+  if not fopen(f, dd, fOpenReadWrite) then
+    MS_Error('SaveDirectory(): Error creating ' + dd);
+  if not fwrite(@savedir, SizeOf(savedir), 1, f) then
+    MS_Error('SaveDirectory(): Error saving ' + dd);
+  close(f);
+end;
+
+
+procedure InitSaveDir;
+var
   i: integer;
-
-  for(i := 0;i<MAXSAVEGAMES;i++)
-  begin
-   memset(savedir[i],(int)' ',20);
-   savedir[i][20] := 0;
-    end;
+begin
+  for i := 0 to MAXSAVEGAMES - 1 do
+    savedir[i] := '';
   SaveDirectory;
-  end;
+end;
 
 
 procedure ShowSaveDir;
-begin
-  FILE *f;
+var
+  f: file;
   i, j: integer;
+  dd: string;
+begin
+  dd := _SAVEDIR;
 
-{$IFDEF GAME1}
-  f := fopen('SAVE1.DIR','r');
-#elif defined(GAME2)
-  f := fopen('SAVE2.DIR','r');
-#elif defined(GAME3)
-  f := fopen('SAVE3.DIR','r');
-{$ELSE}
-  f := fopen('SAVEGAME.DIR','r');
-{$ENDIF}
-
-  if (f = NULL) InitSaveDir;
-  else
-  begin
-   if (not fread(savedir,SizeOf(savedir),1,f)) then
-    MS_Error('ShowSaveDir: Savegame directory read failure!');
-   fclose(f);
-    end;
+  if not fopen(f, dd, fOpenReadOnly) then
+    InitSaveDir
+  else if not fread(@savedir, SizeOf(savedir), 1, f) then
+    MS_Error('ShowSaveDir(): Savegame directory read failure!');
+  close(f);
   fontbasecolor := 93;
   font := font1;
   MouseHide;
-  for(i := 0;i<MAXSAVEGAMES;i++)
+  for i := 0 to MAXSAVEGAMES - 1 do
   begin
-   printx := 148;
-   printy := 34+i*10;
-   for(j := 0;j<6;j++)
-    memset(ylookup[printy+j]+printx,0,110);
-   FN_Printf(savedir[i]);
-    end;
-  MouseShow;
+    printx := 148;
+    printy := 34 + i * 10;
+    for j := 0 to 5 do
+      memset(@ylookup[printy + j][printx], 0, 110);
+    FN_Print(savedir[i]);
   end;
+  MouseShow;
+end;
 
 
 procedure MenuShowOptions;
 begin
   MouseHide;
-  case menucursor  of
-  begin
-   2: // music vol
-    VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menumussli')));
-    ShowMenuSliders(SC.musicvol,256);
-    break;
-   3: // sound vol
-    VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menusousli')));
-    ShowMenuSliders(SC.sfxvol,256);
-    break;
-   4: // violence
-    if SC.violence then
-     VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menuvioon')));
-    else
-     VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menuviooff')));
-    break;
-   5: // animation
-    if SC.animation then
-     VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menuanion')));
-    else
-     VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menuanioff')));
-    break;
-   6: // ambient light
-    VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menuambsli')));
-    ShowMenuSliders(SC.ambientlight,4096);
-    break;
-   7: // screen size
-    VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menuscrsli')));
-    ShowMenuSliders(10-SC.screensize,10);
-    break;
-   8: // asscam
-    VI_DrawPic(35,29,CA_CacheLump(CA_GetNamedNum('menucamsli')));
-    ShowMenuSliders(SC.camdelay,70);
-    break;
+  case menucursor of
+  2: // music vol
+    begin
+      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menumussli')));
+      ShowMenuSliders(SC.musicvol, 256);
     end;
-  MouseShow;
+
+  3: // sound vol
+    begin
+      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menusousli')));
+      ShowMenuSliders(SC.sfxvol, 256);
+    end;
+
+  4: // violence
+    begin
+      if SC.violence then
+        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuvioon')))
+      else
+        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuviooff')));
+    end;
+
+  5: // animation
+    begin
+      if SC.animation then
+        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuanion')))
+      else
+        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuanioff')));
+    end;
+
+  6: // ambient light
+    begin
+      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuambsli')));
+      ShowMenuSliders(SC.ambientlight, 4096);
+    end;
+
+  7: // screen size
+    begin
+      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuscrsli')));
+      ShowMenuSliders(10 - SC.screensize, 10);
+    end;
+
+  8: // asscam
+    begin
+      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menucamsli')));
+      ShowMenuSliders(SC.camdelay, 70);
+    end;
   end;
+  MouseShow;
+end;
 
 
 procedure MenuLeft;
 begin
   if menulevel = 4 then
   begin
-   MouseHide;
-   case menucursor  of
-   begin
-     2:
-      if SC.musicvol then
+    MouseHide;
+    case menucursor of
+    2:
       begin
-  SC.musicvol := SC.musicvol - 4;
-  if (SC.musicvol<0) SC.musicvol := 0;
-  SetVolumes(SC.musicvol,SC.sfxvol);
-  ShowMenuSliders(SC.musicvol,255);
-   end;
-      break;
-     3:
-      if SC.sfxvol then
-      begin
-  SC.sfxvol := SC.sfxvol - 4;
-  if (SC.sfxvol<0) SC.sfxvol := 0;
-  SetVolumes(SC.musicvol,SC.sfxvol);
-  ShowMenuSliders(SC.sfxvol,255);
-   end;
-      break;
-     4: // violence
-      SC.violence := true;
-      MenuShowOptions;
-      break;
-     5: // animation
-      SC.animation := true;
-      MenuShowOptions;
-      break;
-     6: // ambient
-      if SC.ambientlight then
-      begin
-  SC.ambientlight := SC.ambientlight - 64;
-  if (SC.ambientlight<0) SC.ambientlight := 0;
-  ShowMenuSliders(SC.ambientlight,4096);
-  changelight := SC.ambientlight;
-  lighting := 1;
-   end;
-      break;
-     7: // screensize
-      if SC.screensize<9 then
-      begin
-  SC.screensize++;
-  ShowMenuSliders(10-SC.screensize,10);
-  timedelay := timecount+KBDELAY2;
-  goleft := false;
-   end;
-      break;
-     8: // camera delay
-      if SC.camdelay then
-      begin
-  SC.camdelay--;
-  ShowMenuSliders(SC.camdelay,70);
-   end;
-      break;
+        if SC.musicvol <> 0 then
+        begin
+          SC.musicvol := SC.musicvol - 4;
+          if SC.musicvol < 0 then
+            SC.musicvol := 0;
+          SetVolumes(SC.musicvol, SC.sfxvol);
+          ShowMenuSliders(SC.musicvol, 255);
+        end;
       end;
-   MouseShow;
+
+    3:
+      begin
+        if SC.sfxvol <> 0 then
+        begin
+          SC.sfxvol := SC.sfxvol - 4;
+          if SC.sfxvol < 0 then
+            SC.sfxvol := 0;
+          SetVolumes(SC.musicvol, SC.sfxvol);
+          ShowMenuSliders(SC.sfxvol, 255);
+        end;
+      end;
+
+    4: // violence
+      begin
+        SC.violence := true;
+        MenuShowOptions;
+      end;
+
+    5: // animation
+      begin
+        SC.animation := true;
+        MenuShowOptions;
+      end;
+
+    6: // ambient
+      begin
+        if SC.ambientlight <> 0 then
+        begin
+          SC.ambientlight := SC.ambientlight - 64;
+          if SC.ambientlight < 0 then
+            SC.ambientlight := 0;
+          ShowMenuSliders(SC.ambientlight, 4096);
+          changelight := SC.ambientlight;
+          lighting := 1;
+        end;
+      end;
+
+    7: // screensize
+      begin
+        if SC.screensize < 9 then
+        begin
+          inc(SC.screensize);
+          ShowMenuSliders(10 - SC.screensize, 10);
+          timedelay := timecount + KBDELAY2;
+          goleft := false;
+        end;
+      end;
+
+    8: // camera delay
+      begin
+        if SC.camdelay <> 0 then
+        begin
+          dec(SC.camdelay);
+          ShowMenuSliders(SC.camdelay, 70);
+        end;
+      end;
     end;
+    MouseShow;
   end;
+end;
 
 
 procedure MenuRight;
 begin
   if menulevel = 4 then
   begin
-   MouseHide;
-   case menucursor  of
-   begin
-     2:
-      if SC.musicvol<255 then
+    MouseHide;
+    case menucursor of
+    2:
       begin
-  SC.musicvol := SC.musicvol + 4;
-  if (SC.musicvol>255) SC.musicvol := 255;
-  SetVolumes(SC.musicvol,SC.sfxvol);
-  ShowMenuSliders(SC.musicvol,255);
-   end;
-      break;
-     3:
-      if SC.sfxvol<255 then
-      begin
-  SC.sfxvol := SC.sfxvol + 4;
-  if (SC.sfxvol>255) SC.sfxvol := 255;
-  SetVolumes(SC.musicvol,SC.sfxvol);
-  ShowMenuSliders(SC.sfxvol,255);
-   end;
-      break;
-     4: // violence
-      SC.violence := false;
-      MenuShowOptions;
-      break;
-     5: // animation
-      SC.animation := false;
-      MenuShowOptions;
-      break;
-     6: // ambient
-      if SC.ambientlight<4096 then
-      begin
-  SC.ambientlight := SC.ambientlight + 64;
-  if (SC.ambientlight>4096) SC.ambientlight := 4096;
-  ShowMenuSliders(SC.ambientlight,4096);
-  changelight := SC.ambientlight;
-  lighting := 1;
-   end;
-      break;
-     7: // screensize
-      if SC.screensize then
-      begin
-  SC.screensize--;
-  ShowMenuSliders(10-SC.screensize,10);
-  timedelay := timecount+KBDELAY2;
-  goright := false;
-   end;
-      break;
-     8: // camera delay
-      if SC.camdelay<70 then
-      begin
-  SC.camdelay++;
-  ShowMenuSliders(SC.camdelay,70);
-   end;
-      break;
+        if SC.musicvol < 255 then
+        begin
+          SC.musicvol := SC.musicvol + 4;
+          if SC.musicvol > 255 then
+            SC.musicvol := 255;
+          SetVolumes(SC.musicvol, SC.sfxvol);
+          ShowMenuSliders(SC.musicvol, 255);
+        end;
       end;
-   MouseShow;
+
+    3:
+      begin
+        if SC.sfxvol < 255 then
+        begin
+          SC.sfxvol := SC.sfxvol + 4;
+          if SC.sfxvol > 255 then
+            SC.sfxvol := 255;
+          SetVolumes(SC.musicvol,SC.sfxvol);
+          ShowMenuSliders(SC.sfxvol, 255);
+        end;
+      end;
+
+    4: // violence
+      begin
+        SC.violence := false;
+        MenuShowOptions;
+      end;
+
+    5: // animation
+      begin
+        SC.animation := false;
+        MenuShowOptions;
+      end;
+
+    6: // ambient
+      begin
+        if SC.ambientlight < 4096 then
+        begin
+          SC.ambientlight := SC.ambientlight + 64;
+          if SC.ambientlight > 4096 then
+            SC.ambientlight := 4096;
+          ShowMenuSliders(SC.ambientlight, 4096);
+          changelight := SC.ambientlight;
+          lighting := 1;
+        end;
+      end;
+
+    7: // screensize
+      begin
+        if SC.screensize <> 0 then
+        begin
+          dec(SC.screensize);
+          ShowMenuSliders(10 - SC.screensize, 10);
+          timedelay := timecount + KBDELAY2;
+          goright := false;
+        end;
+      end;
+
+    8: // camera delay
+      begin
+        if SC.camdelay < 70 then
+        begin
+          inc(SC.camdelay);
+          ShowMenuSliders(SC.camdelay, 70);
+        end;
+      end;
     end;
+    MouseShow;
   end;
+end;
 
 
 procedure MenuCommand;
 begin
-
-  if (keyboard[SC_ESCAPE]) and (timecount>timedelay) then
+  if (keyboard[SC_ESCAPE] <> 0) and (timecount > timedelay) then
   begin
-   downlevel := true;
-   timedelay := timecount+KBDELAY2;
-    end;
-
-  if (keyboard[SC_UPARROW]) and (timecount>timedelay) then
-  begin
-   --menucursor;
-   if (menucursor<0) menucursor := menumax[menulevel]-1;
-   timedelay := timecount+KBDELAY2;
-  end
-  else if (keyboard[SC_DOWNARROW]) and (timecount>timedelay) then
-  begin
-   ++menucursor;
-   if (menucursor = menumax[menulevel]) menucursor := 0;
-   timedelay := timecount+KBDELAY2;
-    end;
-
-  if (keyboard[SC_RIGHTARROW]) and (timecount>timedelay) goright := true;
-  else if (keyboard[SC_LEFTARROW]) and (timecount>timedelay) goleft := true;
-
-  if (keyboard[SC_ENTER]) and (timecount>timedelay) then
-  begin
-   menuexecute := true;
-   timedelay := timecount+KBDELAY2;
-    end;
+    downlevel := true;
+    timedelay := timecount+KBDELAY2;
   end;
+
+  if (keyboard[SC_UPARROW] <> 0) and (timecount > timedelay) then
+  begin
+    dec(menucursor);
+    if menucursor < 0 then
+      menucursor := menumax[menulevel] - 1;
+    timedelay := timecount + KBDELAY2;
+  end
+  else if (keyboard[SC_DOWNARROW] <> 0) and (timecount > timedelay) then
+  begin
+    inc(menucursor);
+    if menucursor = menumax[menulevel] then
+      menucursor := 0;
+    timedelay := timecount+KBDELAY2;
+  end;
+
+  if (keyboard[SC_RIGHTARROW] <> 0) and (timecount > timedelay) then
+    goright := true
+  else if (keyboard[SC_LEFTARROW] <> 0) and (timecount > timedelay) then
+    goleft := true;
+
+  if (keyboard[SC_ENTER] <> 0) and (timecount > timedelay) then
+  begin
+    menuexecute := true;
+    timedelay := timecount+KBDELAY2;
+  end;
+end;
+
 procedure MenuStub;
 begin
-  end;
+end;
 
 
-procedure MenuShowCursor(int menucursor);
-begin
+procedure MenuShowCursor(const menucursor: integer);
+var
   x, y, w, h, i: integer;
-
-  if (menucursor = -1) or (menucursor = menucurloc) exit;
+begin
+  if (menucursor = -1) or (menucursor = menucurloc) then
+    exit;
   MouseHide;
-  VI_DrawMaskedPic(20,15,CA_CacheLump(CA_GetNamedNum('menumain')+menulevel));
+  VI_DrawMaskedPic(20, 15, CA_CacheLump(CA_GetNamedNum('menumain') + menulevel));
   menucurloc := menucursor;
   x := cursors[menulevel][menucurloc].x;
   y := cursors[menulevel][menucurloc].y;
   w := cursors[menulevel][menucurloc].w;
   h := cursors[menulevel][menucurloc].h;
-  memset(ylookup[y]+x,133,w);
-  memset(ylookup[y+h-1]+x,133,w);
-  for(i := y;i<y+h;i++)
+  memset(@ylookup[y][x], 133, w);
+  memset(@ylookup[y + h - 1][x], 133, w);
+  for i := y to y + h - 1 do
   begin
-   *(ylookup[i]+x) := 133;
-   *(ylookup[i]+x+w-1) := 133;
-    end;
-  MouseShow;
-  if (menulevel = 2) or (menulevel = 3) ShowSaveDir;
-  if (menulevel = 4) MenuShowOptions;
-
+    ylookup[i][x] := 133;
+    ylookup[i][x + w - 1] := 133;
   end;
+  MouseShow;
+  if (menulevel = 2) or (menulevel = 3) then
+    ShowSaveDir;
+  if menulevel = 4 then
+    MenuShowOptions;
+end;
 
 
-procedure ShowMenuLevel(int level);
+procedure ShowMenuLevel(const level: integer);
 begin
   if menulevel = 0 then
-  menumaincursor := menucursor;
+    menumaincursor := menucursor;
   menulevel := level;
   MouseHide;
-  VI_DrawMaskedPic(20,15,CA_CacheLump(CA_GetNamedNum('menumain')+level));
+  VI_DrawMaskedPic(20, 15, CA_CacheLump(CA_GetNamedNum('menumain') + level));
   MouseShow;
+  
   if menulevel = 0 then
-  menucursor := menumaincursor;
-  else if (menulevel = 1)
-  menucursor := 1;
+    menucursor := menumaincursor
+  else if menulevel = 1 then
+    menucursor := 1
   else if (menulevel = 2) or (menulevel = 3) then
   begin
-   if saveposition>0 then
-    menucursor := saveposition;
-   else
-    menucursor := 1;
-    end;
+    if saveposition > 0 then
+      menucursor := saveposition
+    else
+      menucursor := 1;
+  end
   else
-  menucursor := 2;
+    menucursor := 2;
+
   menucurloc := -1;
   MenuShowCursor(menucursor);
-  end;
+end;
 
 
-procedure GetSavedName(int menucursor);
-begin
+procedure GetSavedName(const menucursor: integer);
+var
   done: boolean;
   cursor, i: integer;
-
+begin
   MouseHide;
-  cursor := 20;
-  while (savedir[menucursor][cursor-1] = ' ') and (cursor>0) --cursor;
-  if (cursor = 20) cursor := 19;
-  savedir[menucursor][cursor] := '_';
+  cursor := MinI(Length(savedir[menucursor]), 20);
+  savedir[menucursor] := savedir[menucursor] + '_';
   done := false;
-  INT_TimerHook(NULL);
-  lastascii := 0;
+  INT_TimerHook(nil);
+  lastascii := #0;
   newascii := false;
-  while (not done) do
+  while not done do
   begin
-   printx := 148;
-   printy := 34+menucursor*10;
-   for(i := 0;i<6;i++)
-    memset(ylookup[printy+i]+printx,0,100);
-   FN_Printf(savedir[menucursor]);
-   while (not newascii)   // wait for a new key
-    MenuShowCursor(menucursor+1);
-   case lastascii  of
-   begin
-     27:
+    printx := 148;
+    printy := 34 + menucursor * 10;
+    for i := 0 to 5 do
+      memset(@ylookup[printy + i][printx], 0, 100);
+    FN_Print(savedir[menucursor]);
+    while not newascii do   // wait for a new key
+      MenuShowCursor(menucursor + 1);
+
+    case Ord(lastascii) of
+    13,
+    27:
       done := true;
-      break;
-     13:
-      done := true;
-      break;
-     8:
-      if cursor>0 then
+
+    8:
       begin
-  savedir[menucursor][cursor-1] := '_';
-  memset and (savedir[menucursor][cursor],(int)' ',20-cursor);
-  --cursor;
-   end;
-      break;
-     default:
-      if (isalnum(lastascii)) or (lastascii = ' ') or (lastascii = '.') or (
-       lastascii = '-') or (lastascii = '_') or (lastascii = '!') or (lastascii = ',') or (
-       lastascii = '?') or (lastascii = ''')
-       begin
-  savedir[menucursor][cursor] := lastascii;
-  if (cursor<19) ++cursor;
-  savedir[menucursor][cursor] := '_';
-  break;
-   end;
+        if Length(savedir[menucursor]) > 0 then
+          dec(savedir[menucursor][0]);
+        savedir[menucursor] := savedir[menucursor] + '_';
+        dec(cursor);
       end;
-   newascii := false;
+
+    else
+      if isalnum(lastascii) or (lastascii in [' ', '.', '-', '!', ',', '?', '''']) then
+      begin
+        if Length(savedir[menucursor]) = 0 then
+          savedir[menucursor] := lastascii
+        else if savedir[menucursor][Length(savedir[menucursor])] = '_' then
+          savedir[menucursor][Length(savedir[menucursor])] := lastascii
+        else
+          savedir[menucursor] := savedir[menucursor] + lastascii;
+        if cursor < 19 then
+          inc(cursor);
+        savedir[menucursor] := savedir[menucursor] + '_';
+      end;
     end;
-  savedir[menucursor][cursor] := ' ';
-  if (lastascii = 27) ShowSaveDir;
+    newascii := false;
+  end;
+
+  if Length(savedir[menucursor]) > 0 then
+    if savedir[menucursor][Length(savedir[menucursor])] = '_' then
+      dec(savedir[menucursor][0]);
+  if Ord(lastascii) = 27 then
+    ShowSaveDir
   else
   begin
-   downlevel := true;
-   SaveDirectory;
-   SaveGame(menucursor);
-    end;
-  timedelay := timecount+KBDELAY2;
+    downlevel := true;
+    SaveDirectory;
+    SaveGame(menucursor);
+  end;
+  timedelay := timecount + KBDELAY2;
   INT_TimerHook(MenuCommand);
   MouseShow;
-  end;
+end;
 
 
-procedure Execute(int level,int cursor);
+procedure ShowHelp;
+var
+  s: PByteArray;
+  f: file;
 begin
-  case level  of
+  s := malloc(64000);
+  if s = nil then
+    MS_Error('Error Allocating in ShowHelp');
+  memcpy(s, screen, 64000);
+  VI_FillPalette(0, 0, 0);
+  memset(screen, 0, 64000);
+
+  if ASSASSINATOR then
   begin
-   0: // main menu
-    case cursor  of
+    if not fopen(f, 'help.dat', fOpenReadOnly) then
+      MS_Error('Error Loading Help.Dat file');
+    fread(screen, 64000, 1,f);
+    fread(@colors, 768, 1,f);
+    close(f);
+  end
+  else
+    loadscreen('INFO1');
+  VI_SetPalette(@colors);
+  newascii := false;
+  while true do
+  begin
+    Wait(10);
+    if netmode then
+      TimeUpdate;
+    if newascii then
+      break;
+  end;
+  VI_FillPalette(0, 0, 0);
+  memset(screen, 0, 64000);
+
+  if DEMO then
+  begin
+    loadscreen('INFO2');
+    VI_SetPalette(@colors);
+    newascii := false;
+    while true do
     begin
+      Wait(10);
+      if netmode then
+        TimeUpdate;
+      if newascii then
+        break;
+    end;
+    VI_FillPalette(0, 0, 0);
+    memset(screen, 0, 64000);
+
+    loadscreen('INFO3');
+    VI_SetPalette(@colors);
+    newascii := false;
+    while true do
+    begin
+      Wait(10);
+      if netmode then
+        TimeUpdate;
+      if newascii then
+        break;
+    end;
+    memset(screen, 0, 64000);
+    VI_FillPalette(0, 0, 0);
+  end;
+
+  VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  memcpy(screen, s, 64000);
+  memfree(pointer(s));
+end;
+
+procedure Execute(const level: integer; const cursor: integer);
+begin
+  case level of
+  0: // main menu
+    begin
+      case cursor of
       0: // new game
-       if (not netmode) ShowMenuLevel(1);
-       break;
+        begin
+          if not netmode then
+            ShowMenuLevel(1);
+         end;
       1: // quit
-       if (ShowQuit(MenuCommand)) then
-       begin
-   quitgame := true;
-   quitmenu := true;
-    end;
-       break;
+        begin
+          if ShowQuit(MenuCommand) then
+          begin
+            quitgame := true;
+            quitmenu := true;
+          end;
+        end;
       2: // load
-       if (not netmode) ShowMenuLevel(2);
-       break;
+        begin
+          if not netmode then
+            ShowMenuLevel(2);
+        end;
       3: // save
-       if (not netmode) and (gameloaded) ShowMenuLevel(3);
-       break;
+        begin
+          if not netmode and gameloaded then
+            ShowMenuLevel(3);
+        end;
       4: // volume menu
-       ShowMenuLevel(4);
-       break;
+        begin
+          ShowMenuLevel(4);
+        end;
       5: // info
-       INT_TimerHook(NULL);
-       MouseHide;
-       ShowHelp;
-       MouseShow;
-       INT_TimerHook(MenuCommand);
-       break;
+        begin
+          INT_TimerHook(nil);
+          MouseHide;
+          ShowHelp;
+          MouseShow;
+          INT_TimerHook(MenuCommand);
+        end;
       6: // resume
-       quitmenu := true;
-       break;
-       end;
-    break;
-   1: // char selection
-    case cursor  of
-    begin
-      0: // quit
-       if (ShowQuit(MenuCommand)) then
-       begin
-   quitgame := true;
-   quitmenu := true;
+        begin
+          quitmenu := true;
+        end;
+      end;
     end;
-       break;
-      1:
-      2:
-      3:
-      4:
+
+  1: // char selection
+    begin
+      case cursor of
+      0: // quit
+        begin
+          if ShowQuit(MenuCommand) then
+          begin
+            quitgame := true;
+            quitmenu := true;
+          end;
+        end;
+      1,
+      2,
+      3,
+      4,
       5:
-       identity := cursor-1;
-       ShowMenuLevel(5);
-       break;
+        begin
+          identity := cursor - 1;
+          ShowMenuLevel(5);
+        end;
       6: // resume
-       downlevel := true;
-       break;
-       end;
-    break;
-   2: // load menu
-    case cursor  of
-    begin
-      0: // quit
-       if (ShowQuit(MenuCommand)) then
-       begin
-   quitgame := true;
-   quitmenu := true;
+        begin
+          downlevel := true;
+        end;
+      end;
     end;
-       break;
-      11: // back
-       downlevel := true;
-       break;
-      default:
-       MouseHide;
-       LoadGame(menucursor-1);
-       quitmenu := true;
-       MouseShow;
-       saveposition := cursor;
-       break;
-       end;
-    break;
-   3: // save menu
-    case cursor  of
+
+  2: // load menu
     begin
+      case cursor of
       0: // quit
-       if (ShowQuit(MenuCommand)) then
-       begin
-   quitgame := true;
-   quitmenu := true;
-    end;
-       break;
+        begin
+          if ShowQuit(MenuCommand) then
+          begin
+            quitgame := true;
+            quitmenu := true;
+          end;
+        end;
       11: // back
-       downlevel := true;
-       break;
-      default:
-       GetSavedName(menucursor-1);
-       saveposition := cursor;
-       break;
-       end;
-    break;
+        begin
+          downlevel := true;
+        end;
+      else
+        MouseHide;
+        LoadGame(menucursor - 1);
+        quitmenu := true;
+        MouseShow;
+        saveposition := cursor;
+      end;
+    end;
+
+  3: // save menu
+    begin
+      case cursor of
+      0: // quit
+        begin
+          if ShowQuit(MenuCommand) then
+          begin
+            quitgame := true;
+            quitmenu := true;
+          end;
+        end;
+      11: // back
+        begin
+          downlevel := true;
+        end;
+      else
+        GetSavedName(menucursor - 1);
+        saveposition := cursor;
+      end;
+    end;
+
    4: // option menu
-    case cursor  of
     begin
+      case cursor of
       0:
-       ShowMenuLevel(1);
-       break;
+        begin
+          ShowMenuLevel(1);
+        end;
       1:
-       if (ShowQuit(MenuCommand)) then
-       begin
-   quitgame := true;
-   quitmenu := true;
-    end;
-       break;
-      2: // music vol
-      3: // sound vol
-      4: // violence
-      5: // animations
-      6: // ambient light
-      7: // screen size
-      8: // camera delay
-       break;
+        begin
+          if ShowQuit(MenuCommand) then
+          begin
+            quitgame := true;
+            quitmenu := true;
+          end;
+        end;
+      2, // music vol
+      3, // sound vol
+      4, // violence
+      5, // animations
+      6, // ambient light
+      7, // screen size
+      8:; // camera delay
       9:
-       downlevel := true;
-       break;
-       end;
-    break;
-   5: // difficulty selection
-    case cursor  of
-    begin
-      0: // quit
-       if (ShowQuit(MenuCommand)) then
-       begin
-   quitgame := true;
-   quitmenu := true;
+        begin
+          downlevel := true;
+        end;
+      end;
     end;
-       break;
-      1:
-      2:
-      3:
-      4:
-      5:
+
+  5: // difficulty selection
+    begin
+      case cursor of
+      0: // quit
+        begin
+          if ShowQuit(MenuCommand) then
+          begin
+            quitgame := true;
+            quitmenu := true;
+          end;
+        end;
+      1,
+      2,
+      3,
+      4,
+      5,
       6:
-       timecount := 0;
-       frames := 0;
-       MouseHide;
-{$IFDEF GAME1}
-       newplayer(0,identity,6-cursor);
-#elif defined(GAME2)
-       newplayer(8,identity,6-cursor);
-#elif defined(GAME3)
-       newplayer(16,identity,6-cursor);
-{$ELSE}
-       newplayer(0,identity,6-cursor);
-{$ENDIF}
-       MouseShow;
-       quitmenu := true;
-       break;
+        begin
+          timecount := 0;
+          frames := 0;
+          MouseHide;
+          if GAME1 then
+            newplayer(0, identity, 6 - cursor)
+          else if GAME2 then
+            newplayer(8, identity, 6 - cursor)
+          else if GAME3 then
+            newplayer(16, identity, 6 - cursor)
+          else
+            newplayer(0, identity, 6 - cursor);
+          MouseShow;
+          quitmenu := true;
+        end;
       7:
-       ShowMenuLevel(1);
-       break;
-       end;
-    break;
+        begin
+          ShowMenuLevel(1);
+        end;
+      end;
     end;
   end;
+end;
 
 
 procedure MenuAnimate;
-begin
+var
   lump: integer;
-  pic_t   *frames[8];
+  frames: array[0..7] of Ppic_t;
   i, frame: integer;
   waittime: integer;
-
-  if (netmode) exit;
-  memcpy(viewbuffer,screen,64000);
+begin
+  if netmode then
+    exit;
+  memcpy(@viewbuffer, screen, 64000);
   lump := CA_GetNamedNum('menuanim');
-  for(i := 0;i<8;i++)
-  frames[i] := CA_CacheLump(lump+i);
+  for i := 0 to 7 do
+    frames[i] := CA_CacheLump(lump + i);
   frame := -1;
   waittime := timecount;
-  while 1 do
+  while true do
   begin
-   if timecount >= waittime then
-   begin
-     ++frame;
-     if (frame = 8) break;
-     VI_DrawMaskedPic2(20,15,frames[frame]);
-     waittime := waittime + 7;
-      end;
+    if timecount >= waittime then
+    begin
+      inc(frame);
+      if frame = 8 then
+        break;
+      VI_DrawMaskedPic2(20, 15, frames[frame]);
+      waittime := waittime + 7;
     end;
-  for(i := 0;i<8;i++)
-  CA_FreeLump(lump+i);
   end;
+  for i := 0 to 7 do
+    CA_FreeLump(lump + i);
+end;
 
 
 procedure CheckMouse;
-begin
+var
   i: integer;
-  short    x, y;
-  cursor_t *c;
+  x, y: smallint;
+  c: Pcursor_t;
+begin
+  if not MouseGetClick(x, y) then
+    exit;
 
-  if (not MouseGetClick and (x,) and (y)) exit;
-
-  for(i := 0;i<menumax[menulevel];i++)
+  for i := 0 to menumax[menulevel] - 1 do
   begin
-   c := @cursors[menulevel][i];
-   if (x<c.x+c.w) and (x>c.x) and (
-       y<c.y+c.h) and (y>c.y)
-       begin
-     menucursor := i;
-     MenuShowCursor(menucursor);
-     menuexecute := true;
-     exit;
-      end;
-    end;
-
-  if menulevel = 4 then
-  begin
-   case menucursor  of
-   begin
-     2:
-      if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
-      begin
-  SC.musicvol := ((x-40)*256)/49;
-  if (SC.musicvol>255) SC.musicvol := 255;
-  SetVolumes(SC.musicvol,SC.sfxvol);
-  ShowMenuSliders(SC.musicvol,255);
-   end;
-      break;
-     3:
-      if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
-      begin
-  SC.sfxvol := ((x-40)*256)/49;
-  if (SC.sfxvol>255) SC.sfxvol := 255;
-  SetVolumes(SC.musicvol,SC.sfxvol);
-  ShowMenuSliders(SC.sfxvol,255);
-   end;
-      break;
-     4:
-     5:
-      if (y >= 62) and (y <= 70) then
-      begin
-  if (x >= 50) and (x <= 61) goleft := true;
-  else if (x >= 72) and (x <= 83) goright := true;
-   end;
-      break;
-     6:
-      if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
-      begin
-  SC.ambientlight := ((x-40)*4096)/49;
-  if (SC.ambientlight>4096) SC.ambientlight := 4096;
-  ShowMenuSliders(SC.ambientlight,4096);
-  changelight := SC.ambientlight;
-  lighting := 1;
-   end;
-      break;
-     7:
-      if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
-      begin
-  SC.screensize := 9-(((x-40)*10)/49);
-  if (SC.screensize>9) SC.screensize := 9;
-  else if (SC.screensize<0) SC.screensize := 0;
-  ShowMenuSliders(10-SC.screensize,10);
-   end;
-      break;
-     8:
-      if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
-      begin
-  SC.camdelay := ((x-40)*70)/49;
-  if (SC.camdelay>70) SC.camdelay := 70;
-  ShowMenuSliders(SC.camdelay,70);
-   end;
-      break;
-      end;
+    c := @cursors[menulevel][i];
+    if (x < c.x + c.w) and (x > c.x) and
+       (y < c.y + c.h) and (y > c.y) then
+    begin
+      menucursor := i;
+      MenuShowCursor(menucursor);
+      menuexecute := true;
+      exit;
     end;
   end;
 
+  if menulevel = 4 then
+  begin
+    case menucursor of
+    2:
+      begin
+        if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
+        begin
+          SC.musicvol := ((x - 40) * 256) div 49;
+          if SC.musicvol > 255 then
+            SC.musicvol := 255;
+          SetVolumes(SC.musicvol,SC.sfxvol);
+          ShowMenuSliders(SC.musicvol, 255);
+        end;
+      end;
 
-procedure ShowMenu(int n);
+    3:
+      begin
+        if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
+        begin
+          SC.sfxvol := ((x - 40) * 256) div 49;
+          if SC.sfxvol > 255 then
+            SC.sfxvol := 255;
+          SetVolumes(SC.musicvol, SC.sfxvol);
+          ShowMenuSliders(SC.sfxvol, 255);
+        end;
+      end;
+
+    4,
+    5:
+      begin
+        if (y >= 62) and (y <= 70) then
+        begin
+          if (x >= 50) and (x <= 61) then
+            goleft := true
+          else if (x >= 72) and (x <= 83) then
+            goright := true;
+        end;
+      end;
+
+    6:
+      begin
+        if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
+        begin
+          SC.ambientlight := ((x - 40) * 4096) div 49;
+          if SC.ambientlight > 4096 then
+            SC.ambientlight := 4096;
+          ShowMenuSliders(SC.ambientlight, 4096);
+          changelight := SC.ambientlight;
+          lighting := 1;
+        end;
+      end;
+
+    7:
+      begin
+        if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
+        begin
+          SC.screensize := 9 - (((x - 40) * 10) div 49);
+          if SC.screensize > 9 then
+            SC.screensize := 9
+          else if SC.screensize < 0 then
+            SC.screensize := 0;
+          ShowMenuSliders(10 - SC.screensize, 10);
+        end;
+      end;
+
+    8:
+      begin
+        if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
+        begin
+          SC.camdelay := ((x - 40) * 70) div 49;
+          if SC.camdelay > 70 then
+            SC.camdelay := 70;
+          ShowMenuSliders(SC.camdelay, 70);
+        end;
+      end;
+    end;
+  end;
+end;
+
+
+procedure ShowMenu(const n: integer);
+var
+  scr: PByteArray;
 begin
-  byte *scr;
-
-  timedelay := timecount+KBDELAY2;
+  timedelay := timecount + KBDELAY2;
   INT_TimerHook(MenuCommand);
 
-  scr := (byte *)malloc(64000);
-  if (scr = NULL) MS_Error('ShowMenu: Out of Memory!');
-  memcpy(scr,screen,64000);
-  if (SC.animation) MenuAnimate;
+  scr := malloc(64000);
+  if scr = nil then
+    MS_Error('ShowMenu(): Out of Memory!');
+  memcpy(scr, screen, 64000);
+  if SC.animation then
+    MenuAnimate;
   MouseShow;
   ShowMenuLevel(n);
   quitmenu := false;
-  do
-  begin
-   MenuShowCursor(menucursor);
-   CheckMouse;
-   if menuexecute then
-   begin
-     Execute(menulevel,menucursor);
-     menuexecute := false;
-      end;
-   if downlevel then
-   begin
-     if (menulevel = 0) quitmenu := true;
-      else ShowMenuLevel(0);
-     downlevel := false;
-      end;
-   if goright then
-   begin
-     MenuRight;
-     goright := false;
-      end;
-   if goleft then
-   begin
-     MenuLeft;
-     goleft := false;
-      end;
-   if (netmode) TimeUpdate;
-    end; while (not quitmenu);
+  repeat
+    MenuShowCursor(menucursor);
+    CheckMouse;
+    if menuexecute then
+    begin
+      Execute(menulevel, menucursor);
+      menuexecute := false;
+    end;
+    if downlevel then
+    begin
+      if menulevel = 0 then
+        quitmenu := true
+      else
+        ShowMenuLevel(0);
+      downlevel := false;
+    end;
+    if goright then
+    begin
+      MenuRight;
+      goright := false;
+    end;
+    if goleft then
+    begin
+      MenuLeft;
+      goleft := false;
+    end;
+    if netmode then
+      TimeUpdate;
+  until quitmenu;
   MouseHide;
-  memcpy(screen,scr,64000);
-  free(scr);
+  memcpy(screen, scr, 64000);
+  memfree(pointer(scr));
   if gameloaded then
   begin
-   if SC.vrhelmet = 0 then
-   begin
-     while currentViewSize<SC.screensize do
-      ChangeViewSize(true);
-     while currentViewSize>SC.screensize do
-      ChangeViewSize(false);
-      end;
+    if SC.vrhelmet = 0 then
+    begin
+      while currentViewSize < SC.screensize do
+        ChangeViewSize(true);
+      while currentViewSize > SC.screensize do
+        ChangeViewSize(false);
     end;
-  SaveSetup and (SC,'SETUP.CFG');
+  end;
+  SaveSetup(@SC, 'SETUP.CFG');
   turnrate := 0;
   moverate := 0;
   fallrate := 0;
   strafrate := 0;
   ResetMouse;
-  end;
+end;
+
+//**************************************************************************
+
 
 (**************************************************************************)
 
-procedure ShowHelp;
-begin
-  byte *s;
-{$IFDEF ASSASSINATOR}
-  FILE *f;
-{$ENDIF}
-
-  s := (byte *)malloc(64000);
-  if (s = NULL) MS_Error('Error Allocating in ShowHelp');
-  memcpy(s,screen,64000);
-  VI_FillPalette(0,0,0);
-  memset(screen,0,64000);
-
-{$IFDEF ASSASSINATOR}
-  f := fopen('help.dat','rb');
-  if f = NULL then
-  MS_Error('Error Loading Help.Dat file');
-  fread(screen,64000,1,f);
-  fread(colors,768,1,f);
-  fclose(f);
-{$ELSE}
-  loadscreen('INFO1');
-{$ENDIF}
-  VI_SetPalette(colors);
-  newascii := false;
-  for(;)
-  begin
-   Wait(10);
-   if (netmode) TimeUpdate;
-   if (newascii) break;
-    end;
-  VI_FillPalette(0,0,0);
-  memset(screen,0,64000);
-
-{$IFDEF DEMO}
-  loadscreen('INFO2');
-  VI_SetPalette(colors);
-  newascii := false;
-  for(;)
-  begin
-   Wait(10);
-   if (netmode) TimeUpdate;
-   if (newascii) break;
-    end;
-  VI_FillPalette(0,0,0);
-  memset(screen,0,64000);
-
-  loadscreen('INFO3');
-  VI_SetPalette(colors);
-  newascii := false;
-  for(;)
-  begin
-   Wait(10);
-   if (netmode) TimeUpdate;
-   if (newascii) break;
-    end;
-  memset(screen,0,64000);
-  VI_FillPalette(0,0,0);
-{$ENDIF}
-
-  VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
-  memcpy(screen,s,64000);
-  free(s);
-  end;
-
-(**************************************************************************)
-
-bool CheckPause
+function CheckPause: boolean;
 begin
   if netmode then
   begin
-   NetGetData;
-   if (not gamepause) return  not netpaused;
-    else return newascii;
+    NetGetData;
+    if not gamepause then
+    begin
+      result := true;
+      exit;
     end;
-  return newascii;
   end;
+  result := newascii;
+end;
 
 
 procedure ShowPause;
-begin
+var
   animtime, droptime: integer;
   anim, y, i: integer;
   lump: integer;
-  pic_t   *pics[4];
-
-  INT_TimerHook(NULL);
-  memcpy(viewbuffer,screen,64000);
+  pics: array[0..3] of Ppic_t;
+begin
+  INT_TimerHook(nil);
+  memcpy(@viewbuffer, screen, 64000);
   lump := CA_GetNamedNum('pause');
-  for(i := 0;i<4;i++) pics[i] := CA_CacheLump(lump+i);
-  timedelay := timecount+KBDELAY2;
+  for i := 0 to 3 do
+    pics[i] := CA_CacheLump(lump + i);
+  timedelay := timecount + KBDELAY2;
   Wait(KBDELAY2);
   anim := 0;
-  if (not SC.animation) y := 72;
-  else y := -56;
+  if not SC.animation then
+    y := 72
+  else
+    y := -56;
   droptime := timecount;
   animtime := timecount;
   newascii := false;
   while not CheckPause do
   begin
-   if (timecount >= droptime) and (y<72) then
-   begin
-     if (y >= 0) memcpy(ylookup[y],viewbuffer+320*y,640);
-     y := y + 2;
-     droptime := timecount+1;
-      end;
-   if timecount >= animtime then
-   begin
-     anim++;
-     anim) and (:= 3;
-     animtime := animtime + 10;
-      end;
-   VI_DrawMaskedPic2(106,y,pics[anim]);
+    if (timecount >= droptime) and (y < 72) then
+    begin
+      if y >= 0 then
+        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+      y := y + 2;
+      droptime := timecount + 1;
     end;
-  if (not SC.animation) y := 200;
+    if timecount >= animtime then
+    begin
+      inc(anim);
+      anim := anim and 3;
+      animtime := animtime + 10;
+    end;
+    VI_DrawMaskedPic2(106, y, pics[anim]);
+  end;
+  if not SC.animation then
+    y := 200;
   droptime := timecount;
   animtime := timecount;
-  while y<199 do
+  while y < 199 do
   begin
-   if timecount >= droptime then
-   begin
-     if (y >= 0) memcpy(ylookup[y],viewbuffer+320*y,640);
-     y := y + 2;
-     droptime := timecount+1;
-      end;
-   if timecount >= animtime then
-   begin
-     anim++;
-     anim) and (:= 3;
-     animtime := animtime + 10;
-      end;
-   VI_DrawMaskedPic2(106,y,pics[anim]);
+    if timecount >= droptime then
+    begin
+      if y >= 0 then
+        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+      y := y + 2;
+      droptime := timecount + 1;
     end;
-  memcpy(screen,viewbuffer,64000);
-  for (i := 0;i<4;i++)
-  CA_FreeLump(lump+i);
+    if timecount >= animtime then
+    begin
+      inc(anim);
+      anim := anim and 3;
+      animtime := animtime + 10;
+    end;
+    VI_DrawMaskedPic2(106, y, pics[anim]);
   end;
+  memcpy(screen, @viewbuffer, 64000);
+  for i := 0 to 3 do
+    CA_FreeLump(lump + i);
+end;
 
 (*****************************************************************************)
 
 procedure StartWait;
-begin
+var
   i, lump: integer;
-
-  memcpy(viewbuffer,screen,64000);
+begin
+  memcpy(@viewbuffer, screen, 64000);
   lump := CA_GetNamedNum('wait');
-  for(i := 0;i<4;i++) waitpics[i] := CA_CacheLump(lump+i);
+  for i := 0 to 3 do
+    waitpics[i] := CA_CacheLump(lump + i);
   waitanim := 0;
-  VI_DrawMaskedPic2(106,72,waitpics[0]);
-  timedelay := timecount+10;
+  VI_DrawMaskedPic2(106, 72, waitpics[0]);
+  timedelay := timecount + 10;
   waiting := true;
-  end;
+end;
 
 
 procedure UpdateWait;
 begin
-  if timecount>timedelay then
+  if timecount > timedelay then
   begin
-   ++waitanim;
-   waitanim) and (:= 3;
-   VI_DrawMaskedPic2(106,72,waitpics[waitanim]);
-   timedelay := timecount+10;
-    end;
+    inc(waitanim);
+    waitanim := waitanim and 3;
+    VI_DrawMaskedPic2(106, 72, waitpics[waitanim]);
+    timedelay := timecount + 10;
   end;
+end;
 
 
 procedure EndWait;
-begin
+var
   lump, i: integer;
-
+begin
   lump := CA_GetNamedNum('wait');
-  for(i := 0;i<4;i++) CA_FreeLump(lump+i);
-  memcpy(screen,viewbuffer,64000);
+  for i := 0 to 3 do
+    CA_FreeLump(lump + i);
+  memcpy(screen, @viewbuffer, 64000);
   waiting := false;
-  end;
+end;
+
+end.
+

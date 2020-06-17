@@ -57,6 +57,8 @@ function I_timeSetEvent(const uDelay, uResolution: UINT;
 
 procedure I_PeekAndDisplatch;
 
+function clock: LongWord;
+
 implementation
 
 function I_MapVirtualKey(const uCode, uMapType: UINT): UINT;
@@ -96,6 +98,11 @@ var
 begin
   if PeekMessage(msg, 0, 0, 0, PM_REMOVE) then
     DispatchMessage(msg);
+end;
+
+function clock: LongWord;
+begin
+  result := GetTickCount;
 end;
 
 end.

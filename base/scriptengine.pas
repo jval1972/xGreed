@@ -810,13 +810,13 @@ end;
 
 function SC_TokensToList(const inp: string): TStringList;
 var
-  sc: TScriptEngine;
+  sce: TScriptEngine;
 begin
   result := TStringList.Create;
-  sc := TScriptEngine.Create(inp);
-  while sc.GetString do
-    result.Add(sc._string);
-  sc.Free;
+  sce := TScriptEngine.Create(inp);
+  while sce.GetString do
+    result.Add(sce._string);
+  sce.Free;
 end;
 
 end.

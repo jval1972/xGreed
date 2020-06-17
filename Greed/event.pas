@@ -68,6 +68,8 @@ var
     'KAAL_DIE.FLI'
   );
 
+procedure RunEvent(const eval: integer; const netsend: boolean);
+
 implementation
 
 uses

@@ -150,6 +150,8 @@ var
   BonusItem: bonus_t;
   SaveTheScreen, redo, newsong: boolean;
 
+procedure TimeUpdate;
+  
 implementation
 
 uses

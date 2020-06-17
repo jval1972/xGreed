@@ -127,6 +127,14 @@ procedure INT_TimerHook(const hook: PProcedure);
 
 procedure INT_Shutdown;
 
+function MouseGetClick(var x, y: smallint): boolean;
+
+procedure ResetMouse;
+
+procedure MouseHide;
+
+procedure MouseShow;
+
 implementation
 
 uses

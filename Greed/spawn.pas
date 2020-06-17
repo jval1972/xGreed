@@ -26,23 +26,25 @@ unit spawn;
 
 interface
 
-const
-  MAXSTARTLOCATIONS = 8;
+uses
+  g_delphi,
+  r_public_h;
 
 procedure DemandLoadMonster(const lump, num: integer);
+
+function SpawnSprite(const value: integer; const x, y, z: fixed_t; const zadj: fixed_t;
+  angle, angle2: integer; const active: boolean; const spawnid: integer): Pscaleobj_t;
 
 implementation
 
 uses
-  g_delphi,
   constant,
   d_disk,
   d_misc,
   protos_h,
   raven,
   r_refdef,
-  r_public,
-  r_public_h;
+  r_public;
 
 const
   MAXMETALPARTS = 100;
@@ -2633,8 +2635,3 @@ end;
 
 end.
 
-  
-  
-  
-  
-  

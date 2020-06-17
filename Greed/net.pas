@@ -59,7 +59,16 @@ const
   PEL_WRITE_ADR = $3c8;
   PEL_DATA = $3c9;
 
+var
+  playernum: integer = 1;
+
+procedure NetGetData;
+
 implementation
+
+procedure NetGetData;
+begin
+end;
 
 end.
 
@@ -182,7 +191,7 @@ char          msg[60];
 scaleobj_t    *playersprites[MAXPLAYERS], *sprite_p, *sprite2_p, *temp_p;
 pevent_t      playerdata[MAXPLAYERS];
 char          netnames[MAXPLAYERS][13];
-  playernum := 1, netpaused, netwarpjamtime: integer;
+  netpaused, netwarpjamtime: integer;
   netwarpjammer: boolean;
 int           playermapspot[MAXPLAYERS], pmapspot, oldsprites[MAXPLAYERS];
 ques_t        *que;

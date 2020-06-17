@@ -213,6 +213,9 @@ function CAddI(var a: integer; const b: integer): integer;
 
 function CSubI(var a: integer; const b: integer): integer;
 
+// C funcs
+function isalnum(const c: char): boolean;
+
 implementation
 
 uses
@@ -734,6 +737,11 @@ function CSubI(var a: integer; const b: integer): integer;
 begin
   a := a - b;
   result := a;
+end;
+
+function isalnum(const c: char): boolean;
+begin
+  result := ((c >= 'A') and (c <= 'Z')) or ((c >= 'z') and (c <= 'z')) or ((c >= '0') and (c <= '9'))
 end;
 
 end.

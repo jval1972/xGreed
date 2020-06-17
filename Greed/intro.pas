@@ -191,6 +191,8 @@ procedure loadscreen(const s: string);
 
 procedure DoIntroMenu;
 
+procedure Wait(time: integer);
+
 implementation
 
 uses
@@ -658,7 +660,7 @@ begin
   VI_FillPalette(0,0,0);
 
   quitgame := 0;
-  gameloaded := 0;
+  gameloaded := false;
 
   if not redo then
   MainIntro;

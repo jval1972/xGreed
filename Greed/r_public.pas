@@ -56,6 +56,8 @@ function RF_GetSprite: Pscaleobj_t;
 
 function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
 
+function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
+
 procedure RF_RemoveSprite(const spr: Pscaleobj_t);
 
 implementation
