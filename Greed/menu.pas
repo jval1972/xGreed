@@ -173,6 +173,9 @@ var
   savedir: array[0..MAXSAVEGAMES - 1] of string[22];
   waitpics: array[0..3] of Ppic_t;
 
+procedure UpdateWait;
+
+procedure StartWait;
 
 implementation
 

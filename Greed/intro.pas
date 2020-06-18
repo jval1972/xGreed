@@ -235,17 +235,17 @@ begin
 
   sprintf(str1,'CHAR%i',n);
   loadscreen(str1);
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   font := font1;
   for(i := 0;i<27;i++)
   begin
    UpdateSound;
    for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-    if charinfo[n-1][i][0] <> '.' then
+    if charinfo[n - 1][i][0] <> '.' then
     begin
       printx := 144;
-      printy := 19+6*i;
-      sprintf(str1,'%s',charinfo[n-1][i]);
+      printy := 19 + 6 * i;
+      sprintf(str1,'%s', charinfo[n - 1][i]);
       FN_RawPrint3(str1);
       Wait(2);
        end;
@@ -270,7 +270,7 @@ begin
      break;
       end;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
   end;
 
 
@@ -279,12 +279,12 @@ begin
   if ((keyboard[SC_ESCAPE]) or (keyboard[SC_ENTER])) and (timecount>keyboardDelay) then
   begin
    activatemenu := true;
-   keyboardDelay := timecount+20;
+   keyboardDelay := timecount + 20;
     end;
-  if (keyboard[SC_SPACE]) and (timecount>keyboardDelay) then
+  if (keyboard[SC_SPACE]) and (timecount > keyboardDelay) then
   begin
    nextchar := true;
-   keyboardDelay := timecount+20;
+   keyboardDelay := timecount + 20;
     end;
   end;
 
@@ -292,27 +292,27 @@ procedure DoIntroMenu;
 begin
   byte *temp, oldcolors[768];
 
-  memcpy(oldcolors,colors,768);
+  memcpy(oldcolors, colors, 768);
   temp := (byte *)malloc(64000);
   if (temp = NULL) MS_Error('DoIntroMenu: No memory for temp screen');
-  memcpy(temp,screen,64000);
-  memset(screen,0,64000);
+  memcpy(temp,screen, 64000);
+  memset(screen, 0, 64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   player.timecount := timecount;
   ShowMenu(0);
   if (not quitgame) and ( not gameloaded) then
   begin
-   memset(screen,0,64000);
-   memcpy(colors,oldcolors,768);
+   memset(screen, 0, 64000);
+   memcpy(colors,oldcolors, 768);
    VI_SetPalette(colors);
-   memcpy(screen,temp,64000);
+   memcpy(screen,temp, 64000);
     end;
   free(temp);
   timecount := player.timecount;
   activatemenu := false;
 // lock_region((void near *)IntroCommand,(char *)IntroStub - (char near *)IntroCommand);
   INT_TimerHook(IntroCommand);
-  keyboardDelay := timecount+KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
   end;
 
 
@@ -340,7 +340,7 @@ begin
   if CDROMGREEDDIR then
     path := Chr(cdr_drivenum + Ord('A') + ':\GREED\MOVIES\'
   else
-    path := Chr(cdr_drivenum + Ord('A') + ':\\MOVIES\\';
+    path := Chr(cdr_drivenum + Ord('A') + ':\MOVIES\';
   DemoIntroFlis(path);
 end;
 
@@ -352,99 +352,99 @@ begin
   fontbasecolor := 0;
   font := font1;
 
-  sprintf(name,'%sTEXT.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sTEXT.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sWARP01.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sWARP01.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sWARP02.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sWARP02.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sINSHIP01.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sINSHIP01.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sARBITER.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sARBITER.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sINSHIP02.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sINSHIP02.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
   Wait(140);
 
-  sprintf(name,'%sCHAR1.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sCHAR1.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sCHAR2.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sCHAR2.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sCHAR3.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sCHAR3.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sCHAR4.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sCHAR4.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sCHAR5.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sCHAR5.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sINSHIP03.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sINSHIP03.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sDROPPOD.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sDROPPOD.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sSHP1.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sSHP1.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sCITYBURN.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sCITYBURN.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sRUBBLE.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sRUBBLE.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sTHF1.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sTHF1.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sTHF2.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sTHF2.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sTHF3.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sTHF3.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sTHF4.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sTHF4.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sINSHIP04.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sINSHIP04.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
-  sprintf(name,'%sWARP05.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sWARP05.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 
 #ifndef ASSASSINATOR
-  sprintf(name,'%sLOGOFLY.FLI',path);
-  playfli(name,0);
-  if (CheckDemoExit) exit;
+  sprintf(name,'%sLOGOFLY.FLI', path);
+  playfli(name, 0);
+  if CheckDemoExit then exit;
 {$ENDIF}
 
   Wait(210);
@@ -459,36 +459,36 @@ begin
   fontbasecolor := 0;
   font := font1;
 
-  f := fopen('MOVIES\\TEXT.FLI','rb');
+  f := fopen('MOVIES\TEXT.FLI','rb');
   if f <> NULL then
   begin
    fclose(f);
-   DemoIntroFlis('MOVIES\\');
+   DemoIntroFlis('MOVIES\');
    exit;
     end;
 
-  VI_FillPalette(0,0,0);
+  VI_FillPalette(0, 0, 0);
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   Wait(210);
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
   loadscreen('C7LOGO');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   Wait(210);
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
   loadscreen('LOGO');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   Wait(210);
-  VI_FillPalette(63,63,63);
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  VI_FillPalette(63, 63, 63);
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
   loadscreen('INTRO00');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
   begin
    printy := 160;
@@ -503,14 +503,14 @@ begin
   for(i := 0;i<70;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
 
   loadscreen('INTRO01');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
   begin
    printy := 160;
@@ -522,14 +522,14 @@ begin
   for(i := 0;i<42;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
 
   loadscreen('INTRO02');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
   begin
    printy := 160;
@@ -542,15 +542,15 @@ begin
   for(i := 0;i<42;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  if (CheckDemoExit) exit;
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  if CheckDemoExit then exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
 
   loadscreen('INTRO03');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
   begin
    printy := 160;
@@ -562,11 +562,11 @@ begin
   for(i := 0;i<42;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  if (CheckDemoExit) exit;
-  VI_FillPalette(0,0,0);
-  if (CheckDemoExit) exit;
+  if CheckDemoExit then exit;
+  VI_FillPalette(0, 0, 0);
+  if CheckDemoExit then exit;
 
 
   loadscreen('INTRO04');
@@ -574,27 +574,27 @@ begin
   for(i := 0;i<21;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  if (CheckDemoExit) exit;
-  VI_FadeOut(0,256,64,64,64,48);
-  if (CheckDemoExit) exit;
+  if CheckDemoExit then exit;
+  VI_FadeOut(0, 256, 64, 64, 64, 48);
+  if CheckDemoExit then exit;
 
 
   loadscreen('INTRO05');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(i := 0;i<21;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  if (CheckDemoExit) exit;
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  if CheckDemoExit then exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
 
   loadscreen('INTRO06');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
   begin
    printy := 160;
@@ -604,48 +604,48 @@ begin
   for(i := 0;i<28;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  if (CheckDemoExit) exit;
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  if CheckDemoExit then exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
 
   loadscreen('INTRO07');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
   begin
    printy := 160;
-   FN_CenterPrintf('...AND IF IT'S NOT NAILED DOWN, STEAL IT.');
+   FN_CenterPrintf('...AND IF IT''S NOT NAILED DOWN, STEAL IT.');
    Wait(5);
     end;
   for(i := 0;i<28;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  if (CheckDemoExit) exit;
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  if CheckDemoExit then exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
 
   loadscreen('INTRO08');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
   begin
    printy := 160;
    FN_CenterPrintf(
-    'YOU'RE A SCAVENGER.  YOU'VE GOT A GUN.\n'
-    'LET'S GET SOME.');
+    'YOU''RE A SCAVENGER.  YOU'VE GOT A GUN.\n'
+    'LET''S GET SOME.');
    Wait(5);
     end;
   for(i := 0;i<28;i++)
   begin
    Wait(10);
-   if (CheckDemoExit) exit;
+   if CheckDemoExit then exit;
     end;
-  if (CheckDemoExit) exit;
-  VI_FadeOut(0,256,0,0,0,48);
-  if (CheckDemoExit) exit;
+  if CheckDemoExit then exit;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  if CheckDemoExit then exit;
   end;
 
 
@@ -655,9 +655,9 @@ begin
 
   INT_TimerHook(IntroCommand);
 
-  PlaySong('INTRO.S3M',0);
+  PlaySong('INTRO.S3M', 0);
 
-  VI_FillPalette(0,0,0);
+  VI_FillPalette(0, 0, 0);
 
   quitgame := 0;
   gameloaded := false;
@@ -669,7 +669,7 @@ begin
 
 // lock_region((void near *)IntroCommand,(char *)IntroStub - (char near *)IntroCommand);
 // INT_TimerHook(IntroCommand);
-  VI_FillPalette(0,0,0);
+  VI_FillPalette(0, 0, 0);
   activatemenu := false;
   for(;)
   begin
@@ -776,7 +776,7 @@ restart:
   begin
     redo :=  false;
     VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
-    newplayer(0,0,2);
+    newplayer(0, 0, 2);
     maingame;
    end;
   else

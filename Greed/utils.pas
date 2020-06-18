@@ -65,6 +65,7 @@ uses
   menu,
   modplay,
   net,
+  raven,
   r_public_h,
   r_public,
   r_render,
@@ -305,12 +306,12 @@ begin
     exit;
   end;
   UpdateWait;
-  for i := 1 numwalls - 8 do  // JVAL: SOS
+  for i := 1 to numwalls - 8 do  // JVAL: SOS
     CA_FreeLump(walllump + i);
   UpdateWait;
   if wallposts <> nil then
     memfree(pointer(wallposts));
-  memset(textures, 0, SizeOf(textures));
+  memset(@textures, 0, SizeOf(textures));
   UpdateWait;
   for i := 0 to MAPCOLS * MAPROWS - 1 do
   begin
@@ -320,7 +321,7 @@ begin
     textures[ceilingdef[i]] := true;
   end;
   UpdateWait;
-  textures[3] := 1;    // for sides of doors
+  textures[3] := true;    // for sides of doors
 
   if textures[228] or textures[229] or textures[230] then
   begin
@@ -380,7 +381,7 @@ begin
   for i := 1 to numflats - 1 do
     CA_FreeLump(flatlump + i);
   UpdateWait;
-  memset(textures, 0, SizeOf(textures));
+  memset(@textures, 0, SizeOf(textures));
   UpdateWait;
   for i := 0 to MAPCOLS * MAPROWS - 1 do
   begin
@@ -773,7 +774,7 @@ begin
   resizeScreen := 0;
   if MakeLarger then
   begin
-    if currentViewSize < MAXVIEWSIZE - 1 then 
+    if currentViewSize < MAXVIEWSIZE - 1 then
       inc(currentViewSize)
     else 
       exit;
@@ -834,60 +835,60 @@ begin
     mapspot := (sprite_p.y shr FRACTILESHIFT) * MAPCOLS + (sprite_p.x shr FRACTILESHIFT);
     case sprite_p.typ of
     S_MONSTER1:
-	  begin
+	    begin
         if not sprite_p.deathevent then
-		begin
+		    begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER1_NS
             else
               player.savesprites[mapspot] := S_MONSTER1;
           end
-          else 
+          else
             player.savesprites[mapspot] := S_DEADMONSTER1;
         end;
       end;
 
     S_MONSTER2:
-	  begin
-        if not sprite_p.deathevent then
 	    begin
+        if not sprite_p.deathevent then
+	      begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER2_NS
-            else 
+            else
               player.savesprites[mapspot] := S_MONSTER2;
           end;
         end;
       end;
 
     S_MONSTER3:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER3_NS
-            else 
+            else
               player.savesprites[mapspot] := S_MONSTER3;
           end
-          else 
+          else
             player.savesprites[mapspot] := S_DEADMONSTER3;
         end;
       end;
 
     S_MONSTER4:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER4_NS
-            else 
+            else
               player.savesprites[mapspot] := S_MONSTER4;
           end
           else
@@ -896,57 +897,57 @@ begin
       end;
 
     S_MONSTER5:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
             player.savesprites[mapspot] := S_MONSTER5
-          else 
+          else
             player.savesprites[mapspot] := S_DEADMONSTER5;
         end;
       end;
 
     S_MONSTER6:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER6_NS
-            else 
+            else
               player.savesprites[mapspot] := S_MONSTER6;
           end
-          else 
+          else
             player.savesprites[mapspot] := S_DEADMONSTER6;
         end;
       end;
 
     S_MONSTER7:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER7_NS
-            else 
+            else
               player.savesprites[mapspot] := S_MONSTER7;
           end
-          else 
+          else
             player.savesprites[mapspot] := S_DEADMONSTER7;
         end;
       end;
 
     S_MONSTER8:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER8_NS
-            else 
+            else
               player.savesprites[mapspot] := S_MONSTER8;
           end
           else
@@ -955,12 +956,12 @@ begin
       end;
 
     S_MONSTER9:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER9_NS
             else
               player.savesprites[mapspot] := S_MONSTER9;
@@ -971,14 +972,14 @@ begin
       end;
 
     S_MONSTER10:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER10_NS
-            else 
+            else
               player.savesprites[mapspot] := S_MONSTER10;
           end
           else
@@ -987,12 +988,12 @@ begin
       end;
 
     S_MONSTER11:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER11_NS
             else
               player.savesprites[mapspot] := S_MONSTER11;
@@ -1003,12 +1004,12 @@ begin
       end;
 
     S_MONSTER12:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER12_NS;
             else
               player.savesprites[mapspot] := S_MONSTER12;
@@ -1019,12 +1020,12 @@ begin
       end;
 
     S_MONSTER13:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER13_NS;
             else
               player.savesprites[mapspot] := S_MONSTER13;
@@ -1035,12 +1036,12 @@ begin
       end;
 
     S_MONSTER14:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER14_NS
             else
               player.savesprites[mapspot] := S_MONSTER14;
@@ -1051,12 +1052,12 @@ begin
       end;
 
     S_MONSTER15:
-	  begin
+	    begin
         if not sprite_p.deathevent then
         begin
           if sprite_p.hitpoints then
           begin
-            if sprite_p.nofalling <> 0 then 
+            if sprite_p.nofalling <> 0 then
               player.savesprites[mapspot] := S_MONSTER15_NS;
             else
               player.savesprites[mapspot] := S_MONSTER15;
@@ -1143,10 +1144,10 @@ begin
     end;
     sprite_p := sprite_p.next;
   end;
-  
+
   UpdateWait;
 
-  (* map triggers *)
+  // map triggers
   for i := 0 to MAPCOLS * MAPROWS - 1 do  // remember warps
   begin
     case mapsprites[i]  of
@@ -1181,7 +1182,7 @@ begin
     begin
       if (door_p.orientation = dr_vertical) or (door_p.orientation = dr_vertical2) then
         player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_VDOOR1
-      else 
+      else
         player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR1;
     end
     else if door_p.pic = CA_GetNamedNum('door_2') - walllump then
@@ -1228,7 +1229,7 @@ begin
     end;
 	inc(door_p);
   end;
-  
+
   UpdateWait;
 
   (* spawning areas / generators *)
@@ -1277,10 +1278,10 @@ begin
 	end;
 	inc(sa);
   end;
-  
+
   UpdateWait;
 
-  (* elevators *)
+  // elevators
   elev_p := firstelevobj.next;
   while elev_p <> @lastelevobj do
   begin
@@ -1327,7 +1328,7 @@ begin
     end;
     elev_p := elev_p.next;
   end;
-  
+
   UpdateWait;
 
   sprintf(fname, SAVENAME, [n]);
@@ -1386,117 +1387,117 @@ begin
       pattern := 0;
       sname := 'SONG0.S3M';
     end;
-   1:
+  1:
     begin
       pattern := 20;
       sname := 'SONG0.S3M';
     end;
-   2:
+  2:
     begin
       pattern := 37;
       sname := 'SONG0.S3M';
     end;
-   3:
+  3:
     begin
       pattern := 54;
       sname := 'SONG0.S3M';
     end;
-   4:
+  4:
     begin
       pattern := 73;
       sname := 'SONG0.S3M';
     end;
 
-   5:
+  5:
     begin
       pattern := 0;
       sname := 'SONG2.S3M';
     end;
-   6:
+  6:
     begin
       pattern := 26;
       sname := 'SONG2.S3M';
     end;
-   7:
+  7:
     begin
       pattern := 46;
       sname := 'SONG2.S3M';
     end;
-   8:
+  8:
     begin
       pattern := 64;
       sname := 'SONG2.S3M';
     end;
-   9:
+  9:
     begin
       pattern := 83;
       sname := 'SONG2.S3M';
     end;
 
-   10:
+  10:
     begin
       pattern := 0;
       sname := 'SONG3.S3M';
     end;
-   11:
+  11:
     begin
       pattern := 39;
       sname := 'SONG3.S3M';
     end;
-   12:
+  12:
     begin
       pattern := 58;
       sname := 'SONG3.S3M';
     end;
-   13:
+  13:
     begin
       pattern := 78;
       sname := 'SONG3.S3M';
     end;
-   14:
+  14:
     begin
       pattern := 94;
       sname := 'SONG3.S3M';
     end;
 
-   15:
+  15:
     begin
       pattern := 0;
       sname := 'SONG1.S3M';
     end;
-   16:
+  16:
     begin
       pattern := 24;
       sname := 'SONG1.S3M';
     end;
-   17:
+  17:
     begin
       pattern := 45;
       sname := 'SONG1.S3M';
     end;
 
-   18:
+  18:
     begin
       pattern := 0;
       sname := 'SONG4.S3M';
     end;
-   19:
+  19:
     begin
       pattern := 10;
       sname := 'SONG4.S3M';
     end;
-   20:
+  20:
     begin
       pattern := 21;
       sname := 'SONG4.S3M';
     end;
-   21:
+  21:
     begin
       pattern := 0;
       sname := 'SONG8.MOD';
     end;
 
-   22:
+  22:
     begin
       if netmode then
       begin
@@ -1510,53 +1511,53 @@ begin
       end;
     end;
 
-   23:
+  23:
     begin
       pattern := 0;
       sname := 'SONG5.MOD';
     end;
-   24:
+  24:
     begin
       pattern := 0;
       sname := 'SONG6.MOD';
     end;
-   25:
+  25:
     begin
       pattern := 0;
       sname := 'SONG7.MOD';
     end;
-   26:
+  26:
     begin
       pattern := 33;
       sname := 'SONG4.S3M';
     end;
-   27:
+  27:
     begin
       pattern := 0;
       sname := 'SONG9.MOD';
     end;
-   28:
+  28:
     begin
       pattern := 0;
       sname := 'SONG10.MOD';
     end;
-   29:
+  29:
     begin
       pattern := 0;
       sname := 'SONG11.MOD';
     end;
-   30:
+  30:
     begin
       pattern := 0;
       sname := 'SONG12.MOD';
     end;
-   31:
+  31:
     begin
       pattern := 0;
       sname := 'SONG13.MOD';
     end;
 
-   99:
+  99:
     begin
       pattern := 0;
       sname := 'PROBE.MOD';
@@ -1566,527 +1567,590 @@ begin
     pattern := 0;
     sname := 'SONG0.S3M';
   end;
-  
+
   PlaySong(sname, pattern);
 end;
 
 
 procedure EndGame1;
+var
+  name: string;
+  c: char;
 begin
-  char name[64];
-
   selectsong(22);
 
-{$IFDEF CDROMGREEDDIR}
-  sprintf(name,'%c:\\GREED\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-{$ELSE}
-  sprintf(name,'%c:\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-{$ENDIF}
+  c := Chr(cdr_drivenum + Ord('A'));
+  if CDROMGREEDDIR then
+  begin
+    name := c + ':\GREED\MOVIES\PRISON1.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\MOVIES\TEMPLE1.FLI';
+    playfli(name, 0);
+  end
+  else
+  begin
+    name := c + ':\MOVIES\PRISON1.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\TEMPLE1.FLI';
+    playfli(name, 0);
+  end;
 
   VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   Wait(140);
-  for(fontbasecolor := 64;fontbasecolor<73;++fontbasecolor)
+  fontbasecolor := 64;
+  while fontbasecolor < 73 do
   begin
-   printy := 80;
-   FN_PrintCentered(
-    'BY SUCCESSFULLY BRAVING THE DESARIAN'#13#10 +
-    'PENAL COLONY YOU EMERGE VICTORIOUS'#13#10 +
-    'WITH THE BRASS RING OF BYZANT IN HAND.'#13#10 +
-    '...BUT IT''S NOT OVER YET, HUNTER.'#13#10 +
-    'IT''S ON TO PHASE TWO OF THE HUNT, THE'#13#10 +
-    'CITY TEMPLE OF RISTANAK.  ARE YOU'#13#10 +
-    'PREPARED TO FACE THE Y''RKTARELIAN'#13#10 +
-    'PRIESTHOOD AND THEIR PAGAN GOD?'#13#10 +
-    'NOT BLOODY LIKELY...'#13#10#13#10#13#10#13#10#13#10#13#10 +
-    'TO BE CONTINUED...'#13#10);
-    end;
+    printy := 80;
+    FN_PrintCentered(
+      'BY SUCCESSFULLY BRAVING THE DESARIAN'#13#10 +
+      'PENAL COLONY YOU EMERGE VICTORIOUS'#13#10 +
+      'WITH THE BRASS RING OF BYZANT IN HAND.'#13#10 +
+      '...BUT IT''S NOT OVER YET, HUNTER.'#13#10 +
+      'IT''S ON TO PHASE TWO OF THE HUNT, THE'#13#10 +
+      'CITY TEMPLE OF RISTANAK.  ARE YOU'#13#10 +
+      'PREPARED TO FACE THE Y''RKTARELIAN'#13#10 +
+      'PRIESTHOOD AND THEIR PAGAN GOD?'#13#10 +
+      'NOT BLOODY LIKELY...'#13#10#13#10#13#10#13#10#13#10#13#10 +
+      'TO BE CONTINUED...'#13#10);
+    inc(fontbasecolor);
+  end;
+
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if (newascii) break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS1');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS2');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
-#ifndef ASSASSINATOR
-  loadscreen('CREDITS3');
-  VI_FadeIn(0,256,colors,48);
-  newascii := false;
-  for (;)
+  if not ASSASSINATOR then
   begin
-   Wait(10);
-   if (newascii) break;
+    loadscreen('CREDITS3');
+    VI_FadeIn(0, 256, colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
     end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
-{$ENDIF}
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
+  end;
 
   redo := true;
-  end;
+end;
 
 
 procedure EndGame2;
+var
+  name: string;
+  c: char;
 begin
-  char name[64];
-
   selectsong(22);
 
-{$IFDEF CDROMGREEDDIR}
-  sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-{$ELSE}
-  sprintf(name,'%c:\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-{$ENDIF}
+  c := Chr(cdr_drivenum + Ord('A'));
+  if CDROMGREEDDIR then
+  begin
+    name := c + ':\GREED\MOVIES\TEMPLE2.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\MOVIES\JUMPBAS1.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\MOVIES\JUMPBAS2.FLI';
+    playfli(name, 0);
+  end
+  else
+  begin
+    name := c + ':\MOVIES\TEMPLE2.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\JUMPBAS1.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\JUMPBAS2.FLI';
+    playfli(name, 0);
+  end;
 
 
   VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   Wait(140);
-  for(fontbasecolor := 64;fontbasecolor<73;++fontbasecolor)
+  fontbasecolor := 64;
+  while fontbasecolor < 73 do
   begin
-   printy := 80;
-   FN_PrintCentered(
-    'WITH Y''RKTAREL DEAD AND THE PRIESTHOOD'#13#10 +
-    'IN RUINS CONGRATULATE YOURSELF, HUNTER.'#13#10 +
-    'YOU''VE ANNHILIATED YET ANOTHER CULTURE'#13#10 +
-    'ALL FOR THE SAKE OF THE HUNT.'#13#10 +
-    '...BUT DON''T RELAX YET, FOR IT''S ON TO'#13#10 +
-    'PHASE THREE OF THE HUNT.  THIS TIME'#13#10 +
-    'YOU''LL BATTLE AN ENTIRE ARMY AS YOU FACE'#13#10 +
-    'OFF WITH LORD KAAL IN HIS SPACEBORN'#13#10 +
-    'MOUNTAIN CITADEL.'#13#10 +
-    'DO YOU HAVE WHAT IT TAKES TO SLAY LORD'#13#10 +
-    'KAAL AND WREST FROM HIM THE IMPERIAL SIGIL?'#13#10#13#10#13#10#13#10#13#10#13#10 +
-    'TO BE CONTINUED...'#13#10);
-    end;
+    printy := 80;
+    FN_PrintCentered(
+      'WITH Y''RKTAREL DEAD AND THE PRIESTHOOD'#13#10 +
+      'IN RUINS CONGRATULATE YOURSELF, HUNTER.'#13#10 +
+      'YOU''VE ANNHILIATED YET ANOTHER CULTURE'#13#10 +
+      'ALL FOR THE SAKE OF THE HUNT.'#13#10 +
+      '...BUT DON''T RELAX YET, FOR IT''S ON TO'#13#10 +
+      'PHASE THREE OF THE HUNT.  THIS TIME'#13#10 +
+      'YOU''LL BATTLE AN ENTIRE ARMY AS YOU FACE'#13#10 +
+      'OFF WITH LORD KAAL IN HIS SPACEBORN'#13#10 +
+      'MOUNTAIN CITADEL.'#13#10 +
+      'DO YOU HAVE WHAT IT TAKES TO SLAY LORD'#13#10 +
+      'KAAL AND WREST FROM HIM THE IMPERIAL SIGIL?'#13#10#13#10#13#10#13#10#13#10#13#10 +
+      'TO BE CONTINUED...'#13#10);
+    inc(fontbasecolor);
+  end;
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS1');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS2');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS3');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   redo := true;
-  end;
+end;
 
 
 procedure EndGame3;
+var
+  name: string;
+  c: char;
 begin
-  char name[64];
-
-{$IFDEF CDROMGREEDDIR}
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS3.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS4.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS5.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS6.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBS6B.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS7.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS8.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS9.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-{$ELSE}
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS3.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS4.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS5.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS6.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBS6B.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS7.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS8.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-  sprintf(name,'%c:\\MOVIES\\JUMPBAS9.FLI',cdr_drivenum+'A');
-  playfli(name, 0);
-{$ENDIF}
+  c := Chr(cdr_drivenum + Ord('A'));
+  if CDROMGREEDDIR then
+  begin
+    name := c + ':\GREED\\MOVIES\\JUMPBAS3.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\\MOVIES\\JUMPBAS4.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\\MOVIES\\JUMPBAS5.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\\MOVIES\\JUMPBAS6.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\\MOVIES\\JUMPBS6B.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\\MOVIES\\JUMPBAS7.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\\MOVIES\\JUMPBAS8.FLI';
+    playfli(name, 0);
+    name := c + ':\GREED\\MOVIES\\JUMPBAS9.FLI';
+    playfli(name, 0);
+  end
+  else
+  begin
+    name := c + ':\MOVIES\\JUMPBAS3.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\JUMPBAS4.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\JUMPBAS5.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\JUMPBAS6.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\JUMPBS6B.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\JUMPBAS7.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\JUMPBAS8.FLI';
+    playfli(name, 0);
+    name := c + ':\MOVIES\\JUMPBAS9.FLI';
+    playfli(name, 0);
+  end;
 
   VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   Wait(140);
-  for(fontbasecolor := 64;fontbasecolor<73;++fontbasecolor)
+  fontbasecolor := 64;
+  while fontbasecolor < 73 do
   begin
-   printy := 80;
-{$IFDEF GAME3}
-   FN_PrintCentered(
-    'WELL, YOU SUCCESSFULLY PULLED DOWN THE LAST'#13#10 +
-    'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.'#13#10 +
-    'YOU COULD HAVE RICHES, FAME AND POWER,'#13#10 +
-    'AND YOUR CHOICE OF PLEASURE PLANETS.'#13#10 +
-    'UNFORTUNATELY, YOU''RE STUCK ON A SHIP THAT''S'#13#10 +
-    'DRIFTING THROUGH HYPERSPACE.  IN SHORT'#13#10 +
-    'YOU''RE LOST.  LUCKY FOR THE PASSENGERS'#13#10 +
-    'THAT YOU''RE A HEROIC HUNTER THAT CAN SAVE'#13#10 +
-    'THEM FROM THEIR FATE IN THE CLUTCHES'#13#10 +
-    'OF THE MAZDEEN EMPEROR.  OR CAN YOU?'#13#10#13#10#13#10#13#10#13#10#13#10 +
-    'TO BE CONTINUED...'#13#10);
-{$ELSE}
-   FN_PrintCentered(
-    'WELL, YOU SUCCESSFULLY BRAVED A BLOODY RIOT, FACED'#13#10 +
-    'A GOD AND SURVIVED, AND PULLED DOWN THE LAST'#13#10 +
-    'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.'#13#10 +
-    'YOU COULD HAVE RICHES, FAME AND POWER,'#13#10 +
-    'AND YOUR CHOICE OF PLEASURE PLANETS.'#13#10 +
-    'UNFORTUNATELY, YOU''RE STUCK ON A SHIP THAT''S'#13#10 +
-    'DRIFTING THROUGH HYPERSPACE.  IN SHORT'#13#10 +
-    'YOU''RE LOST.  LUCKY FOR THE PASSENGERS'#13#10 +
-    'THAT YOU''RE A HEROIC HUNTER THAT CAN SAVE'#13#10 +
-    'THEM FROM THEIR FATE IN THE CLUTCHES'#13#10 +
-    'OF THE MAZDEEN EMPEROR.  OR CAN YOU?'#13#10#13#10#13#10#13#10#13#10#13#10 +
-    'TO BE CONTINUED...'#13#10);
-{$ENDIF}
-    end;
+    printy := 80;
+    if GAME3 then
+      FN_PrintCentered(
+        'WELL, YOU SUCCESSFULLY PULLED DOWN THE LAST'#13#10 +
+        'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.'#13#10 +
+        'YOU COULD HAVE RICHES, FAME AND POWER,'#13#10 +
+        'AND YOUR CHOICE OF PLEASURE PLANETS.'#13#10 +
+        'UNFORTUNATELY, YOU''RE STUCK ON A SHIP THAT''S'#13#10 +
+        'DRIFTING THROUGH HYPERSPACE.  IN SHORT'#13#10 +
+        'YOU''RE LOST.  LUCKY FOR THE PASSENGERS'#13#10 +
+        'THAT YOU''RE A HEROIC HUNTER THAT CAN SAVE'#13#10 +
+        'THEM FROM THEIR FATE IN THE CLUTCHES'#13#10 +
+        'OF THE MAZDEEN EMPEROR.  OR CAN YOU?'#13#10#13#10#13#10#13#10#13#10#13#10 +
+        'TO BE CONTINUED...'#13#10)
+    else
+      FN_PrintCentered(
+        'WELL, YOU SUCCESSFULLY BRAVED A BLOODY RIOT, FACED'#13#10 +
+        'A GOD AND SURVIVED, AND PULLED DOWN THE LAST'#13#10 +
+        'VESTIGES OF MILITARY AUTHORITY FOR THE SECTOR.'#13#10 +
+        'YOU COULD HAVE RICHES, FAME AND POWER,'#13#10 +
+        'AND YOUR CHOICE OF PLEASURE PLANETS.'#13#10 +
+        'UNFORTUNATELY, YOU''RE STUCK ON A SHIP THAT''S'#13#10 +
+        'DRIFTING THROUGH HYPERSPACE.  IN SHORT'#13#10 +
+        'YOU''RE LOST.  LUCKY FOR THE PASSENGERS'#13#10 +
+        'THAT YOU''RE A HEROIC HUNTER THAT CAN SAVE'#13#10 +
+        'THEM FROM THEIR FATE IN THE CLUTCHES'#13#10 +
+        'OF THE MAZDEEN EMPEROR.  OR CAN YOU?'#13#10#13#10#13#10#13#10#13#10#13#10 +
+        'TO BE CONTINUED...'#13#10);
+    inc(fontbasecolor);
+  end;
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS1');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS2');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   loadscreen('CREDITS3');
-  VI_FadeIn(0,256,colors,48);
+  VI_FadeIn(0, 256, colors, 48);
   newascii := false;
-  for (;)
+  while true do
   begin
-   Wait(10);
-   if (newascii) break;
-    end;
-  VI_FadeOut(0,256, 0, 0, 0,48);
-  memset(screen, 0,64000);
+    Wait(10);
+    if newascii then
+      break;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+  memset(screen, 0, 64000);
 
   redo := true;
-  end;
+end;
 
 
-procedure newmap(int map,int activate);
-begin
+procedure newmap(const map: integer; const activate: integer);
+var
   lump, i, n, songmap: integer;
-
-  if activate then
+  didend: boolean;
+begin
+  if activate <> 0 then
   begin
-   memset(player.westmap, 0, SizeOf(player.westmap));
-   memset(player.northmap, 0, SizeOf(player.northmap));
-   memset(player.events, 0, SizeOf(player.events));
-   player.x := -1;
-    end;
+    memset(player.westmap, 0, SizeOf(player.westmap));
+    memset(player.northmap, 0, SizeOf(player.northmap));
+    memset(player.events, 0, SizeOf(player.events));
+    player.x := -1;
+  end;
   player.map := map;
   songmap := map;
-  if ((map <> 8) and (map <> 16)) or (netmode) then
-  selectsong(songmap);
+  if ((map <> 8) and (map <> 16)) or netmode then
+    selectsong(songmap)
   else
-  StopMusic;
+    StopMusic;
   if activate = 1 then
-  MissionBriefing(map);
+    MissionBriefing(map);
   resetengine;
   lump := CA_GetNamedNum('map') + map + 1;
-{$IFDEF DEMO}
-  if (map = 3) and ( not netmode) ;
+  if DEMO then
+  begin
+    if (map <> 3) or netmode then
+    begin
+      LoadNewMap(lump);
+      if activate <> 0 then
+      begin
+        LoadScript(lump, true);
+        ActivateSpritesFromMap;
+      end
+      else
+        LoadScript(lump, false);
+    end;
+  end
   else
   begin
-   LoadNewMap(lump);
-   if activate then
-   begin
-     LoadScript(lump,true);
-     ActivateSpritesFromMap;
+    didend := false;
+    if GAME1 then
+    begin
+      if (map = 8) and not netmode then
+      begin
+        EndGame1;
+        didend := true;
       end;
-   else
-    LoadScript(lump, false);
-    end;
-{$ELSE}
-
-{$IFDEF GAME1}
-  if (map = 8) and ( not netmode) then
-  EndGame1;
-#elif defined(GAME2)
-  if (map = 16) and ( not netmode) then
-  EndGame2;
-{$ELSE}
-  if (map = 22) and ( not netmode) then
-  EndGame3;
-{$ENDIF}
-
-  else
-  begin
-   LoadNewMap(lump);
-   if activate then
-   begin
-     LoadScript(lump,true);
-     ActivateSpritesFromMap;
+    end
+    else if GAME2 then
+    begin
+      if (map = 16) and not netmode then
+      begin
+        EndGame2;
+        didend := true;
       end;
-   else
-    LoadScript(lump, false);
+    end
+    else
+    begin
+      if (map = 22) and not netmode then
+      begin
+        EndGame3;
+        didend := true;
+      end;
     end;
-{$ENDIF}
-  EndWait;
-  for(i := 0;i<5;i++)
-  if player.weapons[i] <> -1 then
-  begin
-    n := player.weapons[i];
-    weapons[n].charge := 100;
-    weapons[n].chargetime := timecount+weapons[n].chargerate;
-     end;
+    if not didend then
+    begin
+      LoadNewMap(lump);
+      if activate <> 0 then
+      begin
+        LoadScript(lump, true);
+        ActivateSpritesFromMap;
+      end
+      else
+        LoadScript(lump, false);
+      end;
+    end;
   end;
-
-
-procedure LoadGame(int n);
-begin
-  char fname[20];
-  handle, i, oldscore: integer;
-
-  sprintf(fname,SAVENAME,n);
-  if ((handle := open(fname,O_RDONLY) or (O_BINARY)) = -1) exit;
-  if (not read(handle,) and (player, SizeOf(player))) then
-  begin
-   close(handle);
-   MS_Error('LoadGame: Error loading %s!',fname);
+  EndWait;
+  for i := 0 to 4 do
+    if player.weapons[i] <> -1 then
+    begin
+      n := player.weapons[i];
+      weapons[n].charge := 100;
+      weapons[n].chargetime := timecount + weapons[n].chargerate;
     end;
+end;
+
+
+procedure LoadGame(const n: integer);
+var
+  fname: string;
+  i, oldscore: integer;
+  handle: file;
+begin
+  sprintf(fname, SAVENAME, [n]);
+  if (not fopen(handle, fname, fOpenReadOnly) then
+    exit;
+  if fread(@player SizeOf(player), 1, handle) then
+  begin
+    close(handle);
+    MS_Error('LoadGame(): Error loading %s!', [fname]);
+  end;
   close(handle);
   oldscore := player.levelscore;
 
   resetengine;
   gameloaded := true;
-  player.scrollmax := windowHeight+player.scrollmin;
+  player.scrollmax := windowHeight + player.scrollmin;
   timecount := player.timecount;
   keyboardDelay := 0;
-  BonusItem.time := timecount+2100;
+  BonusItem.time := timecount + 2100;
   wallanimationtime := player.timecount;
   spritemovetime := player.timecount;
 
   newmap(player.map, 0);
-  memcpy(mapsprites,player.savesprites, SizeOf(mapsprites));
+  memcpy(mapsprites, player.savesprites, SizeOf(mapsprites));
   ActivateSpritesFromMap;
   timecount := player.timecount;
   loadweapon(player.weapons[player.currentweapon]);
   player.levelscore := oldscore;
-  memcpy(westwall,player.westwall, SizeOf(westwall));
-  memcpy(northwall,player.northwall, SizeOf(northwall));
+  memcpy(westwall, player.westwall, SizeOf(westwall));
+  memcpy(northwall, player.northwall, SizeOf(northwall));
   eventloading := true;
-  for (i := 1;i<256;i++)
-  if player.events[i] then
-    RunEvent(i,true);
+  for i := 1 to 255 do
+    if player.events[i] then
+      RunEvent(i, true);
   eventloading := false;
-  end;
+end;
 
 
-procedure heal(int n);
+procedure heal(const n: integer);
 begin
   player.shield := player.shield + n;
-  if (player.shield>player.maxshield) player.shield := player.maxshield;
+  if player.shield > player.maxshield then
+    player.shield := player.maxshield;
   hurtborder := true;
-  end;
+end;
 
 
-procedure medpaks(int n);
+procedure medpaks(const n: integer);
 begin
-  if (player.angst <= 0) exit;
+  if player.angst <= 0 then
+    exit;
   player.angst := player.angst + n;
-  if (player.angst>player.maxangst) player.angst := player.maxangst;
+  if player.angst > player.maxangst then
+    player.angst := player.maxangst;
   hurtborder := true;
-  end;
+end;
 
 
-procedure hurt(int n);
+procedure hurt(n: integer);
 begin
-  if (godmode) or (player.angst = 0) exit;
+  if godmode or (player.angst = 0) then
+    exit;
 
   if specialeffect = SE_INVISIBILITY then
-  n := n / 3;
+    n := n div 3;
 
   if specialeffect = SE_REVERSOPILL then
   begin
-   medpaks(n/2);
-   heal(n/2);
-   exit;
-    end;
+    medpaks(n div 2);
+    heal(n div 2);
+    exit;
+  end;
   player.status := 1;
-  if n>player.shield then
+  if n > player.shield then
   begin
-   n := n - player.shield;
-   player.shield := 0;
-   player.angst := player.angst - n;
-   if (player.angst<0) player.angst := 0;
-    end;
-  else player.shield := player.shield - n;
+    n := n - player.shield;
+    player.shield := 0;
+    player.angst := player.angst - n;
+    if player.angst < 0 then
+      player.angst := 0;
+  end
+  else
+    player.shield := player.shield - n;
   hurtborder := true;
   if player.angst = 0 then
   begin
-   SoundEffect(SN_DEATH0+player.chartype,15,player.x,player.y);
-   if (netmode) NetSoundEffect(SN_DEATH0+player.chartype,15,player.x,player.y);
-   SoundEffect(SN_DEATH0+player.chartype,15,player.x,player.y);
-   if (netmode) NetSoundEffect(SN_DEATH0+player.chartype,15,player.x,player.y);
-    end;
+    SoundEffect(SN_DEATH0 + player.chartype, 15, player.x, player.y);
+    if netmode then
+      NetSoundEffect(SN_DEATH0 + player.chartype, 15, player.x, player.y);
+    SoundEffect(SN_DEATH0 + player.chartype, 15, player.x, player.y);
+    if netmode then
+      NetSoundEffect(SN_DEATH0 + player.chartype, 15, player.x, player.y);
+  end
   else
   begin
-   SoundEffect(SN_HIT0+player.chartype,15,player.x,player.y);
-   if (netmode) and (timecount>nethurtsoundtime) then
-   begin
-     NetSoundEffect(SN_HIT0+player.chartype,15,player.x,player.y);
-     nethurtsoundtime := timecount+35;
-      end;
+    SoundEffect(SN_HIT0 + player.chartype, 15, player.x, player.y);
+    if netmode and (timecount > nethurtsoundtime) then
+    begin
+      NetSoundEffect(SN_HIT0 + player.chartype, 15, player.x, player.y);
+      nethurtsoundtime := timecount+35;
     end;
   end;
+end;
 
 
-procedure newplayer(const map: integer; const chartype: integer; const difficulty: integer);
-begin
+procedure newplayer(const map: integer; chartype: integer; const difficulty: integer);
+var
   parm: integer;
-
+begin
   parm := MS_CheckParm('char');
-  if (parm) and (parm<my_argc-1) then
+  if (parm > 0) and (parm < my_argc - 1) then
   begin
-   chartype := atoi(my_argv[parm+1]);
-   if (chartype<0) or (chartype >= MAXCHARTYPES) then
-    MS_Error('Invalid Character Selection (%i)',chartype);
-    end;
+    chartype := atoi(my_argv[parm + 1]);
+    if (chartype < 0) or (chartype >= MAXCHARTYPES) then
+      MS_Error('Invalid Character Selection (%d)', [chartype]);
+  end;
 
   gameloaded := true;
-  memset and (player, 0, SizeOf(player));
+  memset(@player, 0, SizeOf(player));
   player.scrollmin := 0;
   player.scrollmax := windowHeight;
   player.x := -1;
@@ -2103,32 +2167,38 @@ begin
   player.chartype := chartype;
   player.difficulty := difficulty;
   resetengine;
-  case chartype  of
-  begin
-   0: // psyborg
-    player.weapons[0] := 7;
-    player.weapons[1] := 1;
-    break;
-   1: // lizard
-    player.weapons[0] := 8;
-    player.weapons[1] := 9;
-    break;
-   2: // mooman
-    player.weapons[0] := 13;
-    player.weapons[1] := 11;
-    break;
-   3: // specimen 7
-    player.weapons[0] := 14;
-    player.weapons[1] := 10;
-    break;
-   4: // trix
-    player.weapons[0] := 15;
-    player.weapons[1] := 12;
-    break;
-   5:
-    player.weapons[0] := 8;
-    player.weapons[1] := 9;
+  case chartype of
+  0: // psyborg
+    begin
+      player.weapons[0] := 7;
+      player.weapons[1] := 1;
     end;
+  1: // lizard
+    begin
+      player.weapons[0] := 8;
+      player.weapons[1] := 9;
+    end;
+  2: // mooman
+    begin
+      player.weapons[0] := 13;
+      player.weapons[1] := 11;
+    end;
+  3: // specimen 7
+    begin
+      player.weapons[0] := 14;
+      player.weapons[1] := 10;
+    end;
+  4: // trix
+    begin
+      player.weapons[0] := 15;
+      player.weapons[1] := 12;
+    end;
+  5:
+    begin
+      player.weapons[0] := 8;
+      player.weapons[1] := 9;
+    end;
+  end;
   player.weapons[2] := -1;
   player.weapons[3] := -1;
   player.weapons[4] := -1;
@@ -2139,477 +2209,510 @@ begin
   player.inventory[5] := 2;
   player.inventory[4] := 2;
   player.inventory[2] := 4;
-  newmap(player.map,1);
+  newmap(player.map, 1);
   timecount := 0;
   loadweapon(player.weapons[0]);
-  end;
+end;
 
 
-procedure addscore(int n);
+procedure addscore(const n: integer);
 begin
   player.score := player.score + n;
-  if (player.score>4000000000) player.score := 0;
+  if player.score > 4000000000 then
+    player.score := 0;
   player.levelscore := player.levelscore - n;
-  if (player.levelscore<0) player.levelscore := 0;
-  end;
-
-
-procedure ControlMovement;
+  if player.levelscore < 0 then
+    player.levelscore := 0;
+end;
 
 
 procedure respawnplayer;
-begin
+var
   mapspot: integer;
   x, y, n: integer;
-
-  do
-  begin
-   n := (clock+MS_RndT) mod MAXSTARTLOCATIONS;
-   x := startlocations[n][0];
-   y := startlocations[n][1];
-   mapspot := y*MAPCOLS+x;
-    end; while (mapsprites[mapspot]>0);
+begin
+  repeat
+    n := (clock + MS_RndT) mod MAXSTARTLOCATIONS;
+    x := startlocations[n][0];
+    y := startlocations[n][1];
+    mapspot := y * MAPCOLS + x;
+  until mapsprites[mapspot] <= 0;
   player.x := (x shl FRACTILESHIFT) + (32 shl FRACBITS);
   player.y := (y shl FRACTILESHIFT) + (32 shl FRACBITS);
-  player.z := RF_GetFloorZ(player.x,player.y)+player.height;
+  player.z := RF_GetFloorZ(player.x, player.y) + player.height;
   player.angle := NORTH;
   NetNewPlayerData;
-  end;
+end;
 
 
-procedure PlayerCommand;
-
-
-procedure MissionBriefing(int map);
-begin
+procedure MissionBriefing(const map: integer);
+var
   pprimaries, psecondaries, i, tprimaries, tsecondaries, oldtimecount: integer;
-  char str[255], name[64];
-  byte *scr;
+  str, name: string;
+  scr: PByteArray;
+  c: char;
+label
+  finale;
+begin
+  if netmode or nointro then
+    exit;
 
-  if (netmode) or (nointro) then
-   exit;
+  scr := malloc(64000);
+  if scr = nil then
+    MS_Error('Error allocating MissonBriefing buffer');
 
-  scr := (byte *)malloc(64000);
-  if scr = NULL then
-  MS_Error('Error allocating MissonBriefing buffer');
   memcpy(scr, @viewbuffer, 64000);
 
   oldtimecount := timecount;
 
-  INT_TimerHook(NULL);
+  INT_TimerHook(nil);
   font := font1;
 
   if map = 0 then
   begin
-   VI_FillPalette(0, 0, 0);
+    VI_FillPalette(0, 0, 0);
 
-  loadscreen('BRIEF3');
-  VI_BlitView;
-  VI_FadeIn(0,256,colors,64);
-   Wait(70);
-   newascii := false;
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-   begin
-     printy := 149;
-     FN_PrintCentered(
-      'WELCOME ABOARD HUNTER.'#13#10 +
-      'DUE TO INCREASED FUNDING FROM THE AVC YOU''LL BE EQUIPPED WITH THE'#13#10 +
-      'LATEST IN HUNTER HARDWARE.  ALONG WITH YOUR EXISTING AUTO MAPPER,'#13#10 +
-      'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS'#13#10 +
-      'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
-      'REAR VIEW.');
-   VI_BlitView;
-     Wait(3);
-      end;
-  
-   for (i :=  0 ; i < 200 ; i++)
-     memset(ylookup[i],i,320);
-   VI_BlitView;
-
-   for(;)
-   begin
-     Wait(10);
-     if (newascii) break;
-      end;
-   if (lastascii = 27) goto end;
-
-   loadscreen('BRIEF3');
-   newascii := false;
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-   begin
-     printy := 149;
-     FN_PrintCentered(
-      'A MENUING SYSTEM HAS ALSO BEEN INSTALLED ALLOWING YOU TO'#13#10 +
-      'FINE TUNE YOUR HARDWARE SETTINGS.  STAY ALERT THOUGH, YOUR MENU'#13#10 +
-      'OVERLAY CANCELS INPUT FROM YOUR VISUAL ARRAY SO DON''T EXPECT TO'#13#10 +
-      'SEE THINGS COMING WHILE YOU''RE ADJUSTING YOUR SETTINGS.');
-     Wait(3);
-      end;
-   for(;)
-   begin
-     Wait(10);
-     if (newascii) break;
-      end;
-   if (lastascii = 27) goto end;
-   VI_FadeOut(0,256, 0, 0, 0,64);
-
-
-   loadscreen('BRIEF1');
-   VI_FadeIn(0,256,colors,64);
-   Wait(70);
-   newascii := false;
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-   begin
-     printy := 139;
-     FN_PrintCentered(
-      'BUILT FROM A HOLLOWED ASTEROID, THE DESARIAN PENAL COLONY'#13#10 +
-      'HOUSES THE DREGS OF IMPERIAL SOCIETY.  A RIOT IS IN PROGRESS'#13#10 +
-      'WHICH SHOULD MAKE ITEM RETRIEVAL INTERESTING.'#13#10 +
-      'THE PRIMARY ITEM TO BE LOCATED HERE IS THE BYZANTIUM BRASS RING,'#13#10 +
-      'AN ANCIENT ARTIFACT NOW USED AS THE POWER CORE FOR THE COMPLEX.'#13#10 +
-      'SUCH AN ENIGMATIC ENERGY SOURCE IS OF OBVIOUS INTEREST TO A.V.C.'#13#10 +
-      'RESEARCH, SO ACQUIRING IT UNDAMAGED IS ESSENTIAL.'#13#10 +
-      'YOUR ENTRY POINT WILL BE AT THE BASE OF THE COMPLEX.'#13#10);
-     Wait(3);
-      end;
-   for(;)
-   begin
-     Wait(10);
-     if (newascii) break;
-      end;
-   if (lastascii = 27) goto end;
-   VI_FadeOut(0,256, 0, 0, 0,64);
-
-   loadscreen('BRIEF2');
-   VI_FadeIn(0,256,colors,64);
-   Wait(70);
-   newascii := false;
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-   begin
-     printy := 139;
-     FN_PrintCentered(
-      'EACH SUBLEVEL WILL HAVE A MANDATORY PRIMARY OBJECTIVE, AS WELL'#13#10 +
-      'AS OPTIONAL SECONDARY OBJECTIVES, ALL OF WHICH HELP YOU TO'#13#10 +
-      'ACHIEVE A STATED POINT TOTAL NEEDED TO ADVANCE TO THE NEXT LEVEL.'#13#10 +
-      'POINTS ARE ALSO AWARDED FOR KILLS AS WELL AS ACQUIRING RANDOMLY'#13#10 +
-      'PLACED OBJECTS TAKEN FROM THE SHIP''S INVENTORY. EXPECT'#13#10 +
-      'NON-COOPERATIVES (NOPS) FROM OTHER PARTS OF THE COLONY TO BE'#13#10 +
-      'BROUGHT IN AT REGULAR INTERVALS TO REPLACE CASUALTIES OF THE HUNT.'#13#10);
-     Wait(3);
-      end;
-   for(;)
-   begin
-     Wait(10);
-     if (newascii) break;
-      end;
-   if (lastascii = 27) goto end;
-
-   loadscreen('BRIEF2');
-   newascii := false;
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-   begin
-     printy := 139;
-     FN_PrintCentered(
-      'THIS MISSION WILL BEGIN IN THE INMATE PROCESSING AREA, WHERE'#13#10 +
-      'YOU ARE TO SEARCH FOR AN EXPERIMENTAL EXPLOSIVE HIDDEN'#13#10 +
-      'IN THE SUBLEVEL.'#13#10 +
-      'SECONDARY GOALS ARE PHOSPHER PELLETS AND DELOUSING KITS.'#13#10);
-     Wait(3);
-      end;
-   for(;)
-   begin
-     Wait(10);
-     if (newascii) break;
-      end;
-   if (lastascii = 27) goto end;
-
-   loadscreen('BRIEF2');
-   newascii := false;
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-   begin
-     printy := 139;
-     FN_PrintCentered(
-      'YOU WILL BE MONITORED.  POINTS WILL BE AWARDED FOR PRIMARY,'#13#10 +
-      'SECONDARY, AND RANDOM ITEMS, AS WELL AS FOR KILLING NOPS.'#13#10 +
-      'WHEN YOU''VE ACQUIRED THE PRIMARY ITEM AND YOUR POINT TOTAL'#13#10 +
-      'MEETS OR EXCEEDS 50000 WE''LL OPEN A TRANSLATION NEXUS.  WATCH'#13#10 +
-      'FOR THE FLASHING EXIT SIGN.  ENTER THE NEXUS AND WE''LL'#13#10 +
-      'TRANSLATE YOU TO THE NEXT AREA OF THE BASE.\n \nGOOD LUCK.');
-     Wait(3);
-      end;
-   for(;)
-   begin
-     Wait(10);
-     if (newascii) break;
-      end;
-   if (lastascii = 27) goto end;
-    end;
-{$IFDEF GAME1}
-  else if (map<8)
-#elif defined(GAME2)
-  else if (map<16)
-{$ELSE}
-  else if (map<22)
-{$ENDIF}
-begin
-   if map = 8 then
-   begin
-     player.levelscore := levelscore;
-     player.weapons[2] := -1;
-     player.weapons[3] := -1;
-     player.weapons[4] := -1;
-     player.currentweapon := 0;
-     loadweapon(player.weapons[0]);
-     memset(player.inventory, 0, SizeOf(player.inventory));
-     player.inventory[7] := 2;
-     player.inventory[5] := 2;
-     player.inventory[4] := 2;
-     player.inventory[2] := 4;
-     player.ammo[0] := 100;
-     player.ammo[1] := 100;
-     player.ammo[2] := 100;
-     player.angst := player.maxangst;
-     player.shield := 200;
-     selectsong(99);
-
-{$IFDEF CDROMGREEDDIR}
-
-  #ifndef GAME2
-      sprintf(name,'%c:\\GREED\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-  {$ENDIF}
-      sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-
-{$ELSE}
-
-  #ifndef GAME2
-      sprintf(name,'%c:\\MOVIES\\PRISON1.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-  {$ENDIF}
-      sprintf(name,'%c:\\MOVIES\\TEMPLE1.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-
-
-{$ENDIF}
-
-     selectsong(map);
-
-     VI_FillPalette(0, 0, 0);
-     loadscreen('BRIEF4');
-     VI_FadeIn(0,256,colors,64);
-     Wait(70);
-     newascii := false;
-     for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-     begin
-       printy := 139;
-       FN_PrintCentered(
-       'THIS IS THE CITY-TEMPLE OF RISTANAK, ANCIENT HOME TO THE'#13#10 +
-       'PRIESTHOOD OF YRKTAREL.  THE PRIESTHOOD HAS WORSHIPPED THEIR'#13#10 +
-       'PAGAN DEITY FOR CENTURIES IN PEACE... UNTIL NOW.'#13#10
-      );
-
-       Wait(3);
-        end;
-     for(;)
-     begin
-       Wait(10);
-       if (newascii) break;
-        end;
-     if (lastascii = 27) goto end;
-     VI_FadeOut(0,256, 0, 0, 0,64);
-
-     loadscreen('BRIEF5');
-     VI_FadeIn(0,256,colors,64);
-     Wait(70);
-     newascii := false;
-     for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-     begin
-       printy := 139;
-       FN_PrintCentered(
-       'THE PRIMARY OBJECTIVE FOR THE TEMPLE IS THE ENCODED'#13#10 +
-       'PERSONALITY MATRIX OF THE DEMON-SAINT B''RNOURD.  THIS IS,'#13#10 +
-       'OF COURSE, AN ITEM WHOSE POSSESSION, IF KNOWN, WOULD BRING'#13#10 +
-       'INSTANT DESTRUCTION.  THE IMPERIAL COUNCIL WOULD ORDER THE'#13#10 +
-       'SECTOR STERILIZED IF IT KNEW OF ITS EXISTENCE.'#13#10 +
-       'THE A.V.C. BELIEVES THE ENCODE TO CONTAIN FORGOTTEN'#13#10 +
-       'TECHNOLOGIES WHICH WOULD BE PRICELESS ON THE BLACK MARKET.'#13#10 +
-       'IT IS YOUR MISSION TO ACQUIRE IT.'#13#10
-      );
-
-       Wait(3);
-        end;
-     for(;)
-     begin
-       Wait(10);
-       if (newascii) break;
-        end;
-     if (lastascii = 27) goto end;
-     VI_FadeOut(0,256, 0, 0, 0,64);
-
-   end
-   else if map = 16 then
-   begin
-     player.levelscore := levelscore;
-     player.weapons[2] := -1;
-     player.weapons[3] := -1;
-     player.weapons[4] := -1;
-     player.currentweapon := 0;
-     loadweapon(player.weapons[0]);
-     memset(player.inventory, 0, SizeOf(player.inventory));
-     player.inventory[7] := 2;
-     player.inventory[5] := 2;
-     player.inventory[4] := 2;
-     player.inventory[2] := 4;
-     player.ammo[0] := 100;
-     player.ammo[1] := 100;
-     player.ammo[2] := 100;
-     player.angst := player.maxangst;
-     player.shield := 200;
-     selectsong(99);
-{$IFDEF CDROMGREEDDIR}
-
-  #ifndef GAME3
-      sprintf(name,'%c:\\GREED\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-  {$ENDIF}
-      sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-      sprintf(name,'%c:\\GREED\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-{$ELSE}
-
-  #ifndef GAME3
-      sprintf(name,'%c:\\MOVIES\\TEMPLE2.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-  {$ENDIF}
-      sprintf(name,'%c:\\MOVIES\\JUMPBAS1.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-      sprintf(name,'%c:\\MOVIES\\JUMPBAS2.FLI',cdr_drivenum+'A');
-      playfli(name, 0);
-{$ENDIF}
-
-
-     selectsong(map);
-
-     VI_FillPalette(0, 0, 0);
-
-     loadscreen('BRIEF6');
-     VI_FadeIn(0,256,colors,64);
-     Wait(70);
-     newascii := false;
-     for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-     begin
-       printy := 139;
-       FN_PrintCentered(
-       'DURING THE INSURRECTION AT ALPHA PRAM,  THE FOURTH PLANET IN'#13#10 +
-       'THE SYSTEM, WHICH WAS BASE TO THE ELITE GALACTIC CORPS, WAS'#13#10 +
-       'DESTROYED BY A BOVINARIAN VIOLATOR SHIP.  THE SHIELDING'#13#10 +
-       'SURROUNDING THE MOUNTAIN WHERE THE CORPS WAS BASED WAS SO'#13#10 +
-       'STRONG, HOWEVER, THAT THE MOUNTAIN SURVIVED.  THE BASE WAS'#13#10 +
-       'THEN MOUNTED TO A TROJAN GATE JUMP POINT AND TO THIS DAY IT'#13#10 +
-       'REMAINS AS A WAY POINT BETWEEN THE RIM WORLDS AND THE CORE'#13#10 +
-       'QUARTER, AS WELL AS HOUSING MILITARY MIGHT IN THIS SECTOR.'#13#10
-      );
-       Wait(3);
-        end;
-     for(;)
-     begin
-       Wait(10);
-       if (newascii) break;
-        end;
-     if (lastascii = 27) goto end;
-     VI_FadeOut(0,256, 0, 0, 0,64);
-
-     loadscreen('BRIEF7');
-     VI_FadeIn(0,256,colors,64);
-     Wait(70);
-     newascii := false;
-     for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-     begin
-       printy := 139;
-       FN_PrintCentered(
-       'THE PRIMARY OBJECTIVE FOR THIS WORLD IS THE IMPERIAL SIGIL.'#13#10 +
-       'IT IS THE SYMBOL OF POWER WHICH MAINTAINS THE CHANCELLOR'#13#10 +
-       'IN HIS POSITION OF DOMINANCE WITHIN THE SECTOR.  YOU HAVE BUT'#13#10 +
-       'TO TAKE THE SIGIL FROM THE CHANCELLOR HIMSELF.  UNFORTUNATELY'#13#10 +
-       'FOR YOU, THE DESPOTIC CHANCELLOR HAD HIS FLESH REPLACED'#13#10 +
-       'BY A CYBERNETIC SYMBIOTE IN ORDER TO INSURE HIS IMMORTALITY'#13#10 +
-       'AND SUBSEQUENT ETERNAL RULE OF THE CORPS.  OVER 30 ATTEMPTS'#13#10 +
-       'HAVE BEEN MADE TO WREST THE SIGIL FROM THE CHANCELLOR'S GRASP.'#13#10 +
-       'THEY ALL FAILED.'#13#10
-      );
-       Wait(3);
-        end;
-     for(;)
-     begin
-       Wait(10);
-       if (newascii) break;
-        end;
-     if (lastascii = 27) goto end;
-     VI_FadeOut(0,256, 0, 0, 0,64);
-
-      end;
-
-   VI_FillPalette(0, 0, 0);
-   if map<8 then
-    loadscreen('TRANS');
-   else if (map<16)
-    loadscreen('TRANS2');
-   else
-    loadscreen('TRANS3');
-   VI_FadeIn(0,256,colors,64);
-   newascii := false;
-   pprimaries := player.primaries[0]+player.primaries[1];
-   tprimaries := pcount[0] + pcount[1];
-   psecondaries := 0;
-   tsecondaries := 0;
-   for(i := 0;i<7;i++)
-   begin
-     psecondaries := psecondaries + player.secondaries[i];
-     tsecondaries := tsecondaries + scount[i];
-      end;
-   fontbasecolor := 8;
-   printx := 20;
-   printy := 30;
-   sprintf(str,'MISSION SUCCESSFUL!');
-   FN_RawPrint3(str);
-   printx := 25;
-   printy := 40;
-   sprintf(str,'PRIMARY GOALS STOLEN: %i of %i',pprimaries,tprimaries);
-   FN_RawPrint3(str);
-   printx := 25;
-   printy := 50;
-   sprintf(str,'SECONDARY GOALS STOLEN: %i of %i',psecondaries,tsecondaries);
-   FN_RawPrint3(str);
-   printx := 25;
-   printy := 65;
-   sprintf(str,'POINT TOTAL: %i',player.score);
-   FN_RawPrint3(str);
-   printx := 25;
-   printy := 75;
-   sprintf(str,'TOTAL KILLS: %i',player.bodycount);
-   FN_RawPrint3(str);
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-   begin
-     printy := 85;
-     FN_PrintCentered(missioninfo[map][0]);
-     FN_PrintCentered(missioninfo[map][1]);
-     FN_PrintCentered(missioninfo[map][2]);
-     Wait(3);
-      end;
-   for(;)
-   begin
-     Wait(10);
-     if (newascii) break;
-      end;
-   VI_FadeOut(0,256, 0, 0, 0,64);
+    loadscreen('BRIEF3');
+    VI_BlitView;
+    VI_FadeIn(0, 256, colors, 64);
+    Wait(70);
+    newascii := false;
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
+    begin
+      printy := 149;
+      FN_PrintCentered(
+        'WELCOME ABOARD HUNTER.'#13#10 +
+        'DUE TO INCREASED FUNDING FROM THE AVC YOU''LL BE EQUIPPED WITH THE'#13#10 +
+        'LATEST IN HUNTER HARDWARE.  ALONG WITH YOUR EXISTING AUTO MAPPER,'#13#10 +
+        'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS'#13#10 +
+        'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
+        'REAR VIEW.');
+      VI_BlitView;
+      Wait(3);
+      inc(fontbasecolor);
     end;
 
-end:
+    for i :=  0 to 199 do
+      memset(ylookup[i], i, 320);
+    VI_BlitView;
+
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
+    end;
+    if lastascii = 27 then
+      goto finale;
+
+    loadscreen('BRIEF3');
+    newascii := false;
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
+    begin
+      printy := 149;
+      FN_PrintCentered(
+        'A MENUING SYSTEM HAS ALSO BEEN INSTALLED ALLOWING YOU TO'#13#10 +
+        'FINE TUNE YOUR HARDWARE SETTINGS.  STAY ALERT THOUGH, YOUR MENU'#13#10 +
+        'OVERLAY CANCELS INPUT FROM YOUR VISUAL ARRAY SO DON''T EXPECT TO'#13#10 +
+        'SEE THINGS COMING WHILE YOU''RE ADJUSTING YOUR SETTINGS.');
+      Wait(3);
+      inc(fontbasecolor);
+    end;
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
+    end;
+    if lastascii = 27 then
+      goto finale;
+    VI_FadeOut(0, 256, 0, 0, 0, 64);
+
+    loadscreen('BRIEF1');
+    VI_FadeIn(0, 256, colors, 64);
+    Wait(70);
+    newascii := false;
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
+    begin
+      printy := 139;
+      FN_PrintCentered(
+        'BUILT FROM A HOLLOWED ASTEROID, THE DESARIAN PENAL COLONY'#13#10 +
+        'HOUSES THE DREGS OF IMPERIAL SOCIETY.  A RIOT IS IN PROGRESS'#13#10 +
+        'WHICH SHOULD MAKE ITEM RETRIEVAL INTERESTING.'#13#10 +
+        'THE PRIMARY ITEM TO BE LOCATED HERE IS THE BYZANTIUM BRASS RING,'#13#10 +
+        'AN ANCIENT ARTIFACT NOW USED AS THE POWER CORE FOR THE COMPLEX.'#13#10 +
+        'SUCH AN ENIGMATIC ENERGY SOURCE IS OF OBVIOUS INTEREST TO A.V.C.'#13#10 +
+        'RESEARCH, SO ACQUIRING IT UNDAMAGED IS ESSENTIAL.'#13#10 +
+        'YOUR ENTRY POINT WILL BE AT THE BASE OF THE COMPLEX.'#13#10);
+      Wait(3);
+      inc(fontbasecolor);
+    end;
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
+    end;
+    if lastascii = 27 then
+      goto finale;
+    VI_FadeOut(0, 256, 0, 0, 0, 64);
+
+    loadscreen('BRIEF2');
+    VI_FadeIn(0, 256, colors, 64);
+    Wait(70);
+    newascii := false;
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
+    begin
+      printy := 139;
+      FN_PrintCentered(
+        'EACH SUBLEVEL WILL HAVE A MANDATORY PRIMARY OBJECTIVE, AS WELL'#13#10 +
+        'AS OPTIONAL SECONDARY OBJECTIVES, ALL OF WHICH HELP YOU TO'#13#10 +
+        'ACHIEVE A STATED POINT TOTAL NEEDED TO ADVANCE TO THE NEXT LEVEL.'#13#10 +
+        'POINTS ARE ALSO AWARDED FOR KILLS AS WELL AS ACQUIRING RANDOMLY'#13#10 +
+        'PLACED OBJECTS TAKEN FROM THE SHIP''S INVENTORY. EXPECT'#13#10 +
+        'NON-COOPERATIVES (NOPS) FROM OTHER PARTS OF THE COLONY TO BE'#13#10 +
+        'BROUGHT IN AT REGULAR INTERVALS TO REPLACE CASUALTIES OF THE HUNT.'#13#10);
+      Wait(3);
+      inc(fontbasecolor);
+    end;
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
+    end;
+    if lastascii = 27 then
+      goto finale;
+
+    loadscreen('BRIEF2');
+    newascii := false;
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
+    begin
+      printy := 139;
+      FN_PrintCentered(
+        'THIS MISSION WILL BEGIN IN THE INMATE PROCESSING AREA, WHERE'#13#10 +
+        'YOU ARE TO SEARCH FOR AN EXPERIMENTAL EXPLOSIVE HIDDEN'#13#10 +
+        'IN THE SUBLEVEL.'#13#10 +
+        'SECONDARY GOALS ARE PHOSPHER PELLETS AND DELOUSING KITS.'#13#10);
+      Wait(3);
+      inc(fontbasecolor);
+    end;
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
+    end;
+    if lastascii = 27 then
+      goto finale;
+
+    loadscreen('BRIEF2');
+    newascii := false;
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
+    begin
+      printy := 139;
+      FN_PrintCentered(
+        'YOU WILL BE MONITORED.  POINTS WILL BE AWARDED FOR PRIMARY,'#13#10 +
+        'SECONDARY, AND RANDOM ITEMS, AS WELL AS FOR KILLING NOPS.'#13#10 +
+        'WHEN YOU''VE ACQUIRED THE PRIMARY ITEM AND YOUR POINT TOTAL'#13#10 +
+        'MEETS OR EXCEEDS 50000 WE''LL OPEN A TRANSLATION NEXUS.  WATCH'#13#10 +
+        'FOR THE FLASHING EXIT SIGN.  ENTER THE NEXUS AND WE''LL'#13#10 +
+        'TRANSLATE YOU TO THE NEXT AREA OF THE BASE.\n \nGOOD LUCK.');
+      Wait(3);
+      inc(fontbasecolor);
+    end;
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
+    end;
+    if lastascii = 27 then
+      goto finale;
+  end
+  else if (GAME1 and (map < 8)) or (GAME2 and (map < 16)) or (GAME3 and (map < 22)) then
+  begin
+    c := Chr(cdr_drivenum + Ord('A'));
+    if map = 8 then
+    begin
+      player.levelscore := levelscore;
+      player.weapons[2] := -1;
+      player.weapons[3] := -1;
+      player.weapons[4] := -1;
+      player.currentweapon := 0;
+      loadweapon(player.weapons[0]);
+      memset(@player.inventory, 0, SizeOf(player.inventory));
+      player.inventory[7] := 2;
+      player.inventory[5] := 2;
+      player.inventory[4] := 2;
+      player.inventory[2] := 4;
+      player.ammo[0] := 100;
+      player.ammo[1] := 100;
+      player.ammo[2] := 100;
+      player.angst := player.maxangst;
+      player.shield := 200;
+      selectsong(99);
+
+      if CDROMGREEDDIR then
+      begin
+        if not GAME2 then
+        begin
+          name := c + ':\GREED\MOVIES\PRISON1.FLI';
+          playfli(name, 0);
+        end;
+        name := c + ':\GREED\MOVIES\TEMPLE1.FLI';
+        playfli(name, 0);
+      end
+      else
+      begin
+        if not GAME2 then
+        begin
+          name := c + ':\MOVIES\PRISON1.FLI';
+          playfli(name, 0);
+        end;
+        name := c + ':\MOVIES\\TEMPLE1.FLI';
+        playfli(name, 0);
+      end;
+
+      selectsong(map);
+
+      VI_FillPalette(0, 0, 0);
+      loadscreen('BRIEF4');
+      VI_FadeIn(0, 256, colors, 64);
+      Wait(70);
+      newascii := false;
+      fontbasecolor := 0;
+      while fontbasecolor < 9 do
+      begin
+        printy := 139;
+        FN_PrintCentered(
+         'THIS IS THE CITY-TEMPLE OF RISTANAK, ANCIENT HOME TO THE'#13#10 +
+         'PRIESTHOOD OF YRKTAREL.  THE PRIESTHOOD HAS WORSHIPPED THEIR'#13#10 +
+         'PAGAN DEITY FOR CENTURIES IN PEACE... UNTIL NOW.'#13#10);
+        Wait(3);
+        inc(fontbasecolor);
+      end;
+      while true do
+      begin
+        Wait(10);
+        if newascii then
+          break;
+      end;
+      if lastascii = 27 then
+        goto finale;
+      VI_FadeOut(0, 256, 0, 0, 0, 64);
+
+      loadscreen('BRIEF5');
+      VI_FadeIn(0, 256, colors, 64);
+      Wait(70);
+      newascii := false;
+      fontbasecolor := 0;
+      while fontbasecolor < 9 do
+      begin
+        printy := 139;
+        FN_PrintCentered(
+         'THE PRIMARY OBJECTIVE FOR THE TEMPLE IS THE ENCODED'#13#10 +
+         'PERSONALITY MATRIX OF THE DEMON-SAINT B''RNOURD.  THIS IS,'#13#10 +
+         'OF COURSE, AN ITEM WHOSE POSSESSION, IF KNOWN, WOULD BRING'#13#10 +
+         'INSTANT DESTRUCTION.  THE IMPERIAL COUNCIL WOULD ORDER THE'#13#10 +
+         'SECTOR STERILIZED IF IT KNEW OF ITS EXISTENCE.'#13#10 +
+         'THE A.V.C. BELIEVES THE ENCODE TO CONTAIN FORGOTTEN'#13#10 +
+         'TECHNOLOGIES WHICH WOULD BE PRICELESS ON THE BLACK MARKET.'#13#10 +
+         'IT IS YOUR MISSION TO ACQUIRE IT.'#13#10);
+        Wait(3);
+        inc(fontbasecolor);
+      end;
+      while true do
+      begin
+        Wait(10);
+        if newascii then
+          break;
+      end;
+      if lastascii = 27 then
+        goto finale;
+      VI_FadeOut(0, 256, 0, 0, 0, 64);
+    end
+    else if map = 16 then
+    begin
+      player.levelscore := levelscore;
+      player.weapons[2] := -1;
+      player.weapons[3] := -1;
+      player.weapons[4] := -1;
+      player.currentweapon := 0;
+      loadweapon(player.weapons[0]);
+      memset(@player.inventory, 0, SizeOf(player.inventory));
+      player.inventory[7] := 2;
+      player.inventory[5] := 2;
+      player.inventory[4] := 2;
+      player.inventory[2] := 4;
+      player.ammo[0] := 100;
+      player.ammo[1] := 100;
+      player.ammo[2] := 100;
+      player.angst := player.maxangst;
+      player.shield := 200;
+      selectsong(99);
+
+      if CDROMGREEDDIR then
+      begin
+        if not GAME3 then
+        begin
+          name := c + ':\GREED\MOVIES\TEMPLE2.FLI';
+          playfli(name, 0);
+        end;
+        name := c + ':\GREED\MOVIES\JUMPBAS1.FLI';
+        playfli(name, 0);
+        name := c + ':\GREED\MOVIES\JUMPBAS2.FLI';
+        playfli(name, 0);
+      end
+      else
+      begin
+        if not GAME3 then
+        begin
+          name := c + ':\MOVIES\TEMPLE2.FLI';
+          playfli(name, 0);
+        end;
+        name := c + ':\MOVIES\JUMPBAS1.FLI';
+        playfli(name, 0);
+        name := c + ':\MOVIES\JUMPBAS2.FLI';
+        playfli(name, 0);
+      end;
+
+      selectsong(map);
+
+      VI_FillPalette(0, 0, 0);
+
+      loadscreen('BRIEF6');
+      VI_FadeIn(0, 256, colors, 64);
+      Wait(70);
+      newascii := false;
+      fontbasecolor := 0;
+      while fontbasecolor < 9 do
+      begin
+        printy := 139;
+        FN_PrintCentered(
+         'DURING THE INSURRECTION AT ALPHA PRAM,  THE FOURTH PLANET IN'#13#10 +
+         'THE SYSTEM, WHICH WAS BASE TO THE ELITE GALACTIC CORPS, WAS'#13#10 +
+         'DESTROYED BY A BOVINARIAN VIOLATOR SHIP.  THE SHIELDING'#13#10 +
+         'SURROUNDING THE MOUNTAIN WHERE THE CORPS WAS BASED WAS SO'#13#10 +
+         'STRONG, HOWEVER, THAT THE MOUNTAIN SURVIVED.  THE BASE WAS'#13#10 +
+         'THEN MOUNTED TO A TROJAN GATE JUMP POINT AND TO THIS DAY IT'#13#10 +
+         'REMAINS AS A WAY POINT BETWEEN THE RIM WORLDS AND THE CORE'#13#10 +
+         'QUARTER, AS WELL AS HOUSING MILITARY MIGHT IN THIS SECTOR.'#13#10);
+        Wait(3);
+        inc(fontbasecolor);
+      end;
+      while true do
+      begin
+        Wait(10);
+        if newascii then
+          break;
+      end;
+      if lastascii = 27 then
+        goto finale;
+      VI_FadeOut(0, 256, 0, 0, 0, 64);
+
+      loadscreen('BRIEF7');
+      VI_FadeIn(0, 256, colors, 64);
+      Wait(70);
+      newascii := false;
+      fontbasecolor := 0;
+      while fontbasecolor < 9 do
+      begin
+        printy := 139;
+        FN_PrintCentered(
+         'THE PRIMARY OBJECTIVE FOR THIS WORLD IS THE IMPERIAL SIGIL.'#13#10 +
+         'IT IS THE SYMBOL OF POWER WHICH MAINTAINS THE CHANCELLOR'#13#10 +
+         'IN HIS POSITION OF DOMINANCE WITHIN THE SECTOR.  YOU HAVE BUT'#13#10 +
+         'TO TAKE THE SIGIL FROM THE CHANCELLOR HIMSELF.  UNFORTUNATELY'#13#10 +
+         'FOR YOU, THE DESPOTIC CHANCELLOR HAD HIS FLESH REPLACED'#13#10 +
+         'BY A CYBERNETIC SYMBIOTE IN ORDER TO INSURE HIS IMMORTALITY'#13#10 +
+         'AND SUBSEQUENT ETERNAL RULE OF THE CORPS.  OVER 30 ATTEMPTS'#13#10 +
+         'HAVE BEEN MADE TO WREST THE SIGIL FROM THE CHANCELLOR''S GRASP.'#13#10 +
+         'THEY ALL FAILED.'#13#10);
+        Wait(3);
+        inc(fontbasecolor);
+      end;
+      while true do
+      begin
+        Wait(10);
+        if newascii then
+          break;
+      end;
+      if lastascii = 27 then
+        goto finale;
+      VI_FadeOut(0, 256, 0, 0, 0, 64);
+    end;
+
+    VI_FillPalette(0, 0, 0);
+    if map < 8 then
+      loadscreen('TRANS')
+    else if map < 16 then
+      loadscreen('TRANS2')
+    else
+      loadscreen('TRANS3');
+    VI_FadeIn(0, 256, colors, 64);
+    newascii := false;
+    pprimaries := player.primaries[0] + player.primaries[1];
+    tprimaries := pcount[0] + pcount[1];
+    psecondaries := 0;
+    tsecondaries := 0;
+    for i := 0 to 6 do
+    begin
+      psecondaries := psecondaries + player.secondaries[i];
+      tsecondaries := tsecondaries + scount[i];
+    end;
+    fontbasecolor := 8;
+    printx := 20;
+    printy := 30;
+    sprintf(str,'MISSION SUCCESSFUL!');
+    FN_RawPrint3(str);
+    printx := 25;
+    printy := 40;
+    sprintf(str, 'PRIMARY GOALS STOLEN: %d of %d', [pprimaries, tprimaries]);
+    FN_RawPrint3(str);
+    printx := 25;
+    printy := 50;
+    sprintf(str, 'SECONDARY GOALS STOLEN: %d of %d', [psecondaries, tsecondaries]);
+    FN_RawPrint3(str);
+    printx := 25;
+    printy := 65;
+    sprintf(str, 'POINT TOTAL: %d', [player.score]);
+    FN_RawPrint3(str);
+    printx := 25;
+    printy := 75;
+    sprintf(str, 'TOTAL KILLS: %d', [player.bodycount]);
+    FN_RawPrint3(str);
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
+    begin
+      printy := 85;
+      FN_PrintCentered(missioninfo[map][0]);
+      FN_PrintCentered(missioninfo[map][1]);
+      FN_PrintCentered(missioninfo[map][2]);
+      Wait(3);
+      inc(fontbasecolor);
+    end;
+    while true do
+    begin
+      Wait(10);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 64);
+  end;
+
+finale:
   memcpy(@viewbuffer, scr, 64000);
   free(scr);
-  memset(screen, 0,64000);
+  memset(screen, 0, 64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   timecount := oldtimecount;
-  end;
+end;
+
+end.
