@@ -1591,7 +1591,7 @@ begin
   begin
     name := c + ':\MOVIES\PRISON1.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\TEMPLE1.FLI';
+    name := c + ':\MOVIES\TEMPLE1.FLI';
     playfli(name, 0);
   end;
 
@@ -1804,40 +1804,40 @@ begin
   c := Chr(cdr_drivenum + Ord('A'));
   if CDROMGREEDDIR then
   begin
-    name := c + ':\GREED\\MOVIES\\JUMPBAS3.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBAS3.FLI';
     playfli(name, 0);
-    name := c + ':\GREED\\MOVIES\\JUMPBAS4.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBAS4.FLI';
     playfli(name, 0);
-    name := c + ':\GREED\\MOVIES\\JUMPBAS5.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBAS5.FLI';
     playfli(name, 0);
-    name := c + ':\GREED\\MOVIES\\JUMPBAS6.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBAS6.FLI';
     playfli(name, 0);
-    name := c + ':\GREED\\MOVIES\\JUMPBS6B.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBS6B.FLI';
     playfli(name, 0);
-    name := c + ':\GREED\\MOVIES\\JUMPBAS7.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBAS7.FLI';
     playfli(name, 0);
-    name := c + ':\GREED\\MOVIES\\JUMPBAS8.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBAS8.FLI';
     playfli(name, 0);
-    name := c + ':\GREED\\MOVIES\\JUMPBAS9.FLI';
+    name := c + ':\GREED\MOVIES\JUMPBAS9.FLI';
     playfli(name, 0);
   end
   else
   begin
-    name := c + ':\MOVIES\\JUMPBAS3.FLI';
+    name := c + ':\MOVIES\JUMPBAS3.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\JUMPBAS4.FLI';
+    name := c + ':\MOVIES\JUMPBAS4.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\JUMPBAS5.FLI';
+    name := c + ':\MOVIES\JUMPBAS5.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\JUMPBAS6.FLI';
+    name := c + ':\MOVIES\JUMPBAS6.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\JUMPBS6B.FLI';
+    name := c + ':\MOVIES\JUMPBS6B.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\JUMPBAS7.FLI';
+    name := c + ':\MOVIES\JUMPBAS7.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\JUMPBAS8.FLI';
+    name := c + ':\MOVIES\JUMPBAS8.FLI';
     playfli(name, 0);
-    name := c + ':\MOVIES\\JUMPBAS9.FLI';
+    name := c + ':\MOVIES\JUMPBAS9.FLI';
     playfli(name, 0);
   end;
 
@@ -2476,7 +2476,7 @@ begin
           name := c + ':\MOVIES\PRISON1.FLI';
           playfli(name, 0);
         end;
-        name := c + ':\MOVIES\\TEMPLE1.FLI';
+        name := c + ':\MOVIES\TEMPLE1.FLI';
         playfli(name, 0);
       end;
 
