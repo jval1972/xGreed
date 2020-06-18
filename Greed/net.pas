@@ -80,6 +80,10 @@ procedure NetSoundEffect(const n: integer; const variation: integer; const x, y:
 
 procedure NetNewPlayerData;
 
+procedure NetDeath(const bulletid: integer);
+
+procedure NetGetClosestPlayer(const sx, sy: integer);
+
 implementation
 
 procedure NetGetData;
@@ -96,6 +100,14 @@ begin
 end;
 
 procedure NetNewPlayerData;
+begin
+end;
+
+procedure NetDeath(const bulletid: integer);
+begin
+end;
+
+procedure NetGetClosestPlayer(const sx, sy: integer);
 begin
 end;
 

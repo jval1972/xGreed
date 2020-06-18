@@ -27,7 +27,8 @@ unit utils;
 interface
 
 uses
-  protos_h;
+  protos_h,
+  r_public_h;
 
 function SAVENAME: string;
 
@@ -45,6 +46,8 @@ var
 
   startlocations: array[0..MAXSTARTLOCATIONS - 1, 0..1] of integer;
 
+procedure KillSprite(const sp: Pscaleobj_t; const weapon: integer);
+
 procedure ChangeViewSize(const MakeLarger: boolean);
 
 procedure SaveGame(const n: integer);
@@ -54,6 +57,8 @@ procedure LoadGame(const n: integer);
 procedure MissionBriefing(const map: integer);
 
 procedure newplayer(const map: integer; chartype: integer; const difficulty: integer);
+
+procedure addscore(const n: integer);
 
 procedure heal(const n: integer);
 
@@ -81,7 +86,6 @@ uses
   playfli,
   raven,
   r_conten,
-  r_public_h,
   r_public,
   r_render,
   r_walls,

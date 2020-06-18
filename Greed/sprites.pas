@@ -42,6 +42,7 @@ implementation
 
 uses
   d_ints,
+  d_misc,
   modplay,
   net,
   protos_h,
@@ -616,7 +617,8 @@ end;
 function Int0: boolean;
 var
   hsprite, sp: Pscaleobj_t;
-  counter, mapspot, angle, angleinc, ret, i, oldfall: integer;
+  counter, mapspot, angle, angleinc, ret, i: integer;
+  oldfall: boolean;
   oldangle, oldmovespeed: integer;
   killed, blood: boolean;
 
@@ -746,7 +748,7 @@ begin
                     HitSprite(hsprite);
                     KillSprite(hsprite, msprite.typ);
                   end
-                  else if msprite.damage then
+                  else if msprite.damage <> 0 then
                   begin
                     oldangle := hsprite.angle;
                     oldmovespeed := hsprite.moveSpeed;
@@ -755,7 +757,7 @@ begin
                     sp := msprite;
                     msprite := hsprite;
                     oldfall := msprite.nofalling;
-                    msprite.nofalling := 0;
+                    msprite.nofalling := false;
                     SP_Thrust2;
                     msprite.nofalling := oldfall;
                     msprite := sp;
@@ -789,7 +791,7 @@ begin
             player.angle := player.angle and ANGLES;
           end;
         end;
-        if result = 2 then
+        if ret = 2 then
           killed := true;
         if killed then
         begin
@@ -1198,7 +1200,7 @@ end;
 
 //***************************************************************************
 
-function GetFireAngle(const sz: fixed_t; const x1, y1: integer; const px, py, pz: fixed_t): integer;
+function GetFireAngle(sz: fixed_t; const x1, y1: integer; px, py, pz: fixed_t): integer;
 var
   hsprite: Pscaleobj_t;
   x, y, z, d, spriteloc, mapspot: integer;
@@ -1212,7 +1214,7 @@ begin
     hsprite := firstscaleobj.next;
     while hsprite <> @lastscaleobj do
     begin
-      if hsprite.hitpoints then
+      if hsprite.hitpoints <> 0 then
       begin
         mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
         if mapspot = spriteloc then
@@ -1272,7 +1274,7 @@ begin
       exit;
     end;
     result := autoangle2[d][z];
-  end;
+  end
   else
     result := 0;
 end;
@@ -1457,7 +1459,7 @@ begin
           msprite.movemode := 5;
           msprite.basepic := msprite.startpic + 32;
           if msprite.typ = S_MONSTER7 then
-            fheight := 15 shl FRACBITS;
+            fheight := 15 shl FRACBITS
           else
             fheight := 40 shl FRACBITS;
           pangle := GetFireAngle(fheight, tx, ty, targx, targy, targz) - 15 + (MS_RndT and 31);
@@ -1509,7 +1511,7 @@ begin
     begin
       angleinc := ANGLES div 20;
       angle := 0;
-      for i := 0 to 19 do 20 do
+      for i := 0 to 19 do
       begin
         sp := SpawnSprite(S_MINEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle, 0, true, msprite.spawnid);
         angle := angle + angleinc;
@@ -1534,8 +1536,9 @@ begin
       if not activate then
       begin
         sp := firstscaleobj.next;
-        for sp <> @lastscaleobj do
-          if sp.hitpoints then
+        while sp <> @lastscaleobj do
+        begin
+          if sp.hitpoints <> 0 then
           begin
             sx := sp.x shr FRACTILESHIFT;
             sy := sp.y shr FRACTILESHIFT;
@@ -1545,7 +1548,8 @@ begin
               break;
             end;
           end;
-        sp := sp.next;
+          sp := sp.next;
+        end;
       end;
       for i := -1 to 1 do
         for j := -1 to 1 do
@@ -1654,7 +1658,7 @@ begin
   begin
     if (mapsprites[mapspot] = SM_CLONE) or (mapsprites[mapspot] = 1) then
     begin
-      y2 := y1 + 1;
+      y2^ := y1 + 1;
       result := 1 + (MS_RndT and 1);
       exit;
     end;
@@ -1714,7 +1718,7 @@ begin
     r := MS_RndT mod 3;
 
     if r = 1 then
-      angle := angle + DEGREE45;
+      angle := angle + DEGREE45
     else if r = 2 then
       angle := angle + NORTH;
 
@@ -2170,7 +2174,6 @@ begin
   begin
     msprite.modetime := timecount + 20;
     case msprite.movemode of
-    begin
     0, // left
     1: // mid
       begin
@@ -2335,6 +2338,8 @@ procedure Int10;
 var
   angle, sx, sy, px, py, tx, ty, pangle: integer;
   floorz, oldspeed, fheight: fixed_t;
+label
+  endscan;
 begin
   if (msprite.typ = S_MONSTER5) and (msprite.hitpoints < 5000) then
     msprite.hitpoints := msprite.hitpoints + 4
@@ -2418,7 +2423,7 @@ begin
       if tx > sx then
         angle := EAST
       else if tx < sx then
-        angle := WEST;
+        angle := WEST
       else
         angle := -1;
       if ty < sy then
@@ -2456,16 +2461,16 @@ begin
       msprite.basepic := msprite.startpic + 32;
       msprite.movemode := 6;
       if msprite.typ = S_MONSTER5 then
-        msprite.firetime := timecount+(10+3*player.difficulty);
+        msprite.firetime := timecount + (10 + 3 * player.difficulty)
       else
-        msprite.firetime := timecount+(40+5*player.difficulty);
+        msprite.firetime := timecount + (40 + 5 * player.difficulty);
 
       msprite.actiontime := timecount + 30;
       msprite.modetime := timecount + 15;
       if msprite.typ = S_MONSTER3 then
-        fheight := 3 shl FRACBITS;
-      else if (msprite.typ = S_MONSTER6)
-        fheight := 100 shl FRACBITS;
+        fheight := 3 shl FRACBITS
+      else if msprite.typ = S_MONSTER6 then
+        fheight := 100 shl FRACBITS
       else
         fheight := 40 shl FRACBITS;
 
@@ -2573,7 +2578,7 @@ begin
   begin
     if msprite.active then
     begin
-      if msprite.moveSpeed then
+      if msprite.moveSpeed <> 0 then
       case msprite.intelligence of
       0:
         begin
@@ -2668,7 +2673,7 @@ begin
     end
     else if msprite.intelligence <> 255 then
     begin
-      if msprite.moveSpeed then
+      if msprite.moveSpeed <> 0 then
       begin
         sx := msprite.x shr FRACTILESHIFT;
         sy := msprite.y shr FRACTILESHIFT;

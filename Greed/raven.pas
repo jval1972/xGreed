@@ -151,6 +151,8 @@ var
   SaveTheScreen, redo, newsong: boolean;
 
 procedure TimeUpdate;
+
+function Thrust(const angle: integer; const speed: fixed_t): boolean;
   
 implementation
 
