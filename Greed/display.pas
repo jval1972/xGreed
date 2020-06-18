@@ -141,13 +141,23 @@ implementation
 
 uses
   g_delphi,
+  constant,
   d_disk,
   d_font,
-  raven,
+  d_ints,
+  modplay,
+  net,
   protos_h,
+  raven,
+  r_conten,
   r_public_h,
+  r_public,
+  r_refdef,
+  r_render,
+  r_walls,
+  spawn,
   utils;
-  
+
 procedure resetdisplay;
 var
   i: integer;
@@ -383,7 +393,7 @@ begin
   begin
     c := (d * (i - (152 + ofs))) div 8 + 140;
     for j := 272 to 300 do
-      if viewylookup[i][j] = 254) then
+      if viewylookup[i][j] = 254 then
         viewylookup[i][j] := c;
   end;
   for i := 193 + ofs to 199 + ofs do
@@ -437,7 +447,7 @@ begin
 end;
 
 
-procedure displaycompass1(consnt ofs: integer);
+procedure displaycompass1(const ofs: integer);
 var
   c, x, y, i: integer;
   x1, y1: fixed_t;
@@ -447,7 +457,7 @@ begin
   y := 161 + ofs;
   y1 := y shl FRACBITS;
   c := 139;
-  for i := 0 to 9
+  for i := 0 to 9 do
   begin
     viewylookup[y][x] := c;
     x1 := x1 + costable[player.angle];
@@ -468,11 +478,11 @@ begin
   if motionmode then
     memset(@viewylookup[199 + ofs][246], 156, 6)
   else
-    memset(viewylookup[199 + ofs][246], 0, 6);
-  if mapmode then
+    memset(@viewylookup[199 + ofs][246], 0, 6);
+  if mapmode <> 0 then
     memset(@viewylookup[199 + ofs][226], 133, 6)
   else
-    memset(viewylookup[199 + ofs][226], 0, 6);
+    memset(@viewylookup[199 + ofs][226], 0, 6);
 end;
 
 
@@ -519,7 +529,7 @@ begin
     font := font3;         // number of items
     printx := 150;
     printy := 172 + ofs;
-    sprintf(str1, '%2d', player.inventory[inventorycursor]);
+    sprintf(str1, '%2d', [player.inventory[inventorycursor]]);
     FN_RawPrint2(str1);
     pic := lumpmain[lump]; // draw the pic for it
     x := 128 - (pic.width shr 1);
@@ -608,7 +618,7 @@ begin
           if collumn[0] <> 0 then
             viewylookup[y][x] := collumn[0];
           inc(y);
-          column := @column[1];
+          collumn := @collumn[1];
         end;
       end;
       inc(x);
@@ -620,8 +630,8 @@ begin
     p := Ppic_t(lumpmain[lump]);
     typ := 'Player ';
     name := netnames[goalitem - 1];
-    sprintf(str1, '%5d', fragcount[goalitem - 1]);
-    b := @p.data[0];
+    sprintf(str1, '%5d', [fragcount[goalitem - 1]]);
+    b := @p.data;
     for y := 0 to 29 do
       for x := 0 to 29 do
       begin
@@ -670,7 +680,7 @@ begin
     lump := BonusItem.sprite.basepic;
     score := BonusItem.score;
     typ := 'Bonus  ';
-    time := (BonusItem.time - timecount) / 70;
+    time := (BonusItem.time - timecount) div 70;
     if time > 10000 then
       time := 0;
     sprintf(str1,'%3d s', [time]);
@@ -723,7 +733,7 @@ begin
   printx := 53;
   printy := 162 + ofs;
   FN_RawPrint2(str1);
-  sprintf(str1,'%5d',score);
+  sprintf(str1,'%5d', [score]);
   printx := 53;
   printy := 172 + ofs;
   FN_RawPrint2(str1);
@@ -902,7 +912,7 @@ begin
     memset(@ylookup[199][246], 156, 6)
   else
     memset(@ylookup[199][246], 0, 6);
-  if mapmode then
+  if mapmode <> 0 then
     memset(@ylookup[199][226], 133, 6)
   else
     memset(@ylookup[199][226], 0, 6);
@@ -956,17 +966,17 @@ begin
       x := 128 - (pic.width shr 1);
       for i := 0 to pic.width - 1 do
       begin
-        if pic.collumnofs[i] then
+        if pic.collumnofs[i] <> 0 then
         begin
           collumn := @PByteArray(pic)[pic.collumnofs[i]];
           top := collumn[1];
           bottom := collumn[0];
           count := bottom - top + 1;
-          collumn := collumn + 2;
+          collumn := @collumn[2];
           y := 188 - top - count;
           for j := 0 to count - 1 do
           begin
-            if collumn[0] then
+            if collumn[0] <> 0 then
               ylookup[y][x] := collumn[0];
             inc(y);
             collumn := @collumn[1];
@@ -1052,18 +1062,18 @@ begin
     pic := lumpmain[lump];
     x := 34 - (pic.width shr 1);
     for i := 158 to 187 do
-      memset(ylookup[i][19], 0, 30);
+      memset(@ylookup[i][19], 0, 30);
     for  i := 0 to pic.width - 1 do
     begin
-      if pic.collumnofs[i] then
+      if pic.collumnofs[i] <> 0 then
       begin
-        collumn := PByteArray(pic)[pic.collumnofs[i]];
+        collumn := @PByteArray(pic)[pic.collumnofs[i]];
         top := collumn[1];
         bottom := collumn[0];
         count := bottom - top + 1;
         collumn := @collumn[2];
         y := 188 - top - count;
-        for j := 0 to count - 1 do;j++,collumn++,y++)
+        for j := 0 to count - 1 do
         begin
           if collumn[0] <> 0 then
             ylookup[y][x] := collumn[0];
@@ -1080,11 +1090,11 @@ begin
     p := lumpmain[lump];
     typ := 'Player';
     name := netnames[goalitem - 1];
-    sprintf(str1, '%d', fragcount[goalitem - 1]);
+    sprintf(str1, '%d', [fragcount[goalitem - 1]]);
     while Length(str1) < 5 do
       str1 := ' ' + str1;
 
-    b := @p.data[0];
+    b := @p.data;
     for  y := 0 to 29 do
       for x := 0 to 29 do
       begin
@@ -1096,7 +1106,7 @@ begin
   for i := 162 to 167 do
     memset(@ylookup[i][53], 0, 23);
   for i := 172 to 177 do
-    memset(@ylookup[i][53][ 0, 30);
+    memset(@ylookup[i][53], 0, 30);
   for i := 182 to 187 do
     memset(@ylookup[i][53], 0, 39);
   for i := 192 to 197 do
@@ -1166,7 +1176,7 @@ begin
     lump := BonusItem.sprite.basepic;
     score := BonusItem.score;
     typ := 'Bonus  ';
-    time := (BonusItem.time-timecount)/70;
+    time := (BonusItem.time - timecount) div 70;
     if time > 10000 then
       time := 0;
     sprintf(str1,'%3d s', [time]);
@@ -1208,15 +1218,15 @@ begin
   x := 34 - (pic.width shr 1);
   for i := 0 to pic.width - 1 do
   begin
-    if pic.collumnofs[i] then
+    if pic.collumnofs[i] <> 0 then
     begin
-      collumn := PByteArray(pic)[pic.collumnofs[i]];
+      collumn := @PByteArray(pic)[pic.collumnofs[i]];
       top := collumn[1];
       bottom := collumn[0];
       count := bottom - top + 1;
       collumn := @collumn[2];
       y := 188 - top - count;
-      for j := 0 to count - 1 d
+      for j := 0 to count - 1 do
       begin
         if collumn[0] <> 0 then
           ylookup[y][x] := collumn[0];
@@ -1260,7 +1270,7 @@ var
 begin
   n := player.weapons[player.currentweapon];
   if weapons[n].ammorate > 0 then
-    shots := player.ammo[weapons[n].ammotype]/weapons[n].ammorate
+    shots := player.ammo[weapons[n].ammotype] div weapons[n].ammorate
   else
     shots := 999;
   if shots <> oldshots then
@@ -1347,10 +1357,10 @@ begin
     exit;
   for i := 0 to 26 do
   begin
-    memset(viewylookup[i] + windowWidth - 54, 0, 54);
+    memset(@viewylookup[i][windowWidth - 54], 0, 54);
     viewylookup[i][windowWidth - 55] := 30;
   end;
-  memset(viewylookup[i] + windowWidth - 55, 30, 55);
+  memset(@viewylookup[i][windowWidth - 55], 30, 55);
   lump := inventorylump + inventorycursor;
   pic := lumpmain[lump]; // draw the pic for it
   x := windowWidth - 31;
@@ -1362,7 +1372,7 @@ begin
       top := collumn[1];
       bottom := collumn[0];
       count := bottom - top + 1;
-      collumn := collumn + 2;
+      collumn := @collumn[2];
       y := 28 - top - count;
       for j := 0 to count - 1 do
       begin
@@ -1445,7 +1455,7 @@ var
   angle: integer;
 begin
   viewylookup[y][x] := 26;
-  angle := ((player.angle + DEGREE45_2) and ANGLES) * 8) div ANGLES;
+  angle := (((player.angle + DEGREE45_2) and ANGLES) * 8) div ANGLES;
   case angle of
   0:
     begin
@@ -1524,7 +1534,7 @@ begin
     if (mapy < 0) or (mapy >= MAPROWS) then
       continue;
     mapx := px + minx;
-    mapspot := mapy*MAPCOLS + mapx;
+    mapspot := mapy * MAPCOLS + mapx;
     x := ofsx;
     for j := minx to maxx do
     begin
@@ -1533,7 +1543,7 @@ begin
         c := player.northmap[mapspot];
         if c = DOOR_COLOR then
         begin
-          for a := 0 to 4 do x++)
+          for a := 0 to 4 do
           begin
             if (x >= 0) and (x < windowWidth) and (y + 2 < windowHeight) and (y + 2 >= 0) then
               viewylookup[y + 2][x] := c;
@@ -1542,7 +1552,7 @@ begin
         end
         else
         begin
-          for a := 0 to 4 do x++)
+          for a := 0 to 4 do
           begin
             if (x >= 0) and (x < windowWidth) and (y < windowHeight) and (y >= 0) then
               viewylookup[y][x] := c;
@@ -1565,19 +1575,19 @@ begin
     mapx := px + j;
     if (mapx < 0) or (mapx >= MAPCOLS) then
       continue;
-    mapy := py+miny;
+    mapy := py + miny;
     mapspot := mapy * MAPCOLS + mapx;
     y := ofsy;
     for i := miny to maxy do
     begin
-      if (mapy >= 0) and (mapy<MAPROWS) and (player.westmap[mapspot]) then
+      if (mapy >= 0) and (mapy < MAPROWS) and (player.westmap[mapspot] <> 0) then
       begin
         c := player.westmap[mapspot];
         if c = DOOR_COLOR then
         begin
           for a := 0 to 4 do
           begin
-            if (y >= 0) and (y<windowHeight) and (x + 2 < windowWidth) and (x + 2 >= 0) then
+            if (y >= 0) and (y < windowHeight) and (x + 2 < windowWidth) and (x + 2 >= 0) then
               viewylookup[y][x + 2] := c;
             inc(y);
           end;
@@ -1592,7 +1602,7 @@ begin
           end;
         end;
         dec(y);
-      end;
+      end
       else
         y := y + 4;
       mapspot := mapspot + MAPCOLS;
@@ -1977,8 +1987,8 @@ begin
   begin
     if (sp.active) and (sp.hitpoints <> 0) then
     begin
-      x := ((sp.x shr FRACTILESHIFT) - px) shl 2) + ofsx;
-      y := ((sp.y shr FRACTILESHIFT) - py) shl 2) + ofsy;
+      x := (((sp.x shr FRACTILESHIFT) - px) shl 2) + ofsx;
+      y := (((sp.y shr FRACTILESHIFT) - py) shl 2) + ofsy;
       for a := 0 to 3 do
         if (y + a < windowHeight) and (y + a >= 0) then
           for b := 0 to 3 do

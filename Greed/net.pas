@@ -27,7 +27,8 @@ unit net;
 interface
 
 uses
-  protos_h;
+  protos_h,
+  r_public_h;
   
 const
   CMD_SEND = 1;
@@ -67,12 +68,28 @@ var
 
 var
   fragcount: array[0..MAXPLAYERS - 1] of integer;
+  playerdata: array[0..MAXPLAYERS - 1] of pevent_t;
+  netnames: array[0..MAXPLAYERS - 1] of string[13];
 
 procedure NetGetData;
+
+procedure NetSendSpawn(const value: integer; const x, y, z: fixed_t; const zadj: fixed_t;
+  const angle, angle2: integer; const active: boolean; const spawnid: integer);
+
+procedure NetSoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 
 implementation
 
 procedure NetGetData;
+begin
+end;
+
+procedure NetSendSpawn(const value: integer; const x, y, z: fixed_t; const zadj: fixed_t;
+  const angle, angle2: integer; const active: boolean; const spawnid: integer);
+begin
+end;
+
+procedure NetSoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 begin
 end;
 
@@ -195,8 +212,6 @@ mevent_t      *mevent;
 greedcom_t    *greedcom;
 char          msg[60];
 scaleobj_t    *playersprites[MAXPLAYERS], *sprite_p, *sprite2_p, *temp_p;
-pevent_t      playerdata[MAXPLAYERS];
-char          netnames[MAXPLAYERS][13];
   netpaused, netwarpjamtime: integer;
   netwarpjammer: boolean;
 int           playermapspot[MAXPLAYERS], pmapspot, oldsprites[MAXPLAYERS];
