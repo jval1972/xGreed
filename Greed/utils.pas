@@ -53,6 +53,12 @@ procedure LoadGame(const n: integer);
 
 procedure newplayer(const map: integer; const chartype: integer; const difficulty: integer);
 
+procedure heal(const n: integer);
+
+procedure medpaks(const n: integer);
+
+procedure hurt(n: integer);
+
 implementation
 
 uses
@@ -60,6 +66,7 @@ uses
   constant,
   d_disk,
   d_misc,
+  display,
   event,
   i_windows,
   menu,

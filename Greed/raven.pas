@@ -296,7 +296,7 @@ begin
     probe.z := player.z;
     probe.angle := player.angle + n + accuracy;
     probe.zadj := player.height;
-    probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
+    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
 
     while counter < MAXPROBE do
     begin
@@ -332,7 +332,7 @@ begin
     probe.z := player.z;
     probe.angle := player.angle + n - accuracy;
     probe.zadj := player.height;
-    probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
+    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
 
     while counter < MAXPROBE do
     begin
@@ -368,7 +368,7 @@ begin
     probe.z := player.z;
     probe.angle := player.angle + n + accuracy div 2;
     probe.zadj := player.height;
-    probe.startspot := (player.y shr FRACTILESHIFT)*MAPCOLS+(player.x shr FRACTILESHIFT);
+    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
 
     while counter < MAXPROBE do
     begin

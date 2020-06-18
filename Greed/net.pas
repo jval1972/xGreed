@@ -26,6 +26,9 @@ unit net;
 
 interface
 
+uses
+  protos_h;
+  
 const
   CMD_SEND = 1;
   CMD_GET = 2;
@@ -61,6 +64,9 @@ const
 
 var
   playernum: integer = 1;
+
+var
+  fragcount: array[0..MAXPLAYERS - 1] of integer;
 
 procedure NetGetData;
 
@@ -197,7 +203,6 @@ int           playermapspot[MAXPLAYERS], pmapspot, oldsprites[MAXPLAYERS];
 ques_t        *que;
   uart, irqintnum, maxcount: integer;
   pseg, pofs, rseg, rofs: integer;
-int           fragcount[MAXPLAYERS];
 
 extern SoundCard SC;
 
