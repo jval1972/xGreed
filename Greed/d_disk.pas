@@ -71,6 +71,8 @@ procedure CA_ReadLump(const lump: integer; const dest: pointer);
 
 procedure CA_FreeLump(const lump: integer);
 
+function CA_LumpName(const lump: integer): string;
+
 implementation
 
 uses
@@ -222,8 +224,22 @@ begin
   if (not lumpmain[lump]) exit;
   free(lumpmain[lump]);
   lumpmain[lump] := NULL;
-  end;
+end;
 
+function CA_LumpName(const lump: integer): string;
+var
+  c: PChar;
+  ofs: integer;
+begin
+  result := '';
+  ofs := infotable[lump].nameofs;
+  if ofs >= 0 then
+  begin
+    c := @infotable[ofs];
+    while c^ <> #0 do
+      result := result + c^;
+  end;
+end;
 
 end.
 

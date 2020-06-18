@@ -35,25 +35,25 @@ const
   MAXENTRIES = 1024;
 
 var
-  westwall: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  westflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  northwall: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  northflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  floorpic: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  floorflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  ceilingpic: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  ceilingflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  floorheight: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  ceilingheight: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  floordef: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  floordefflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  ceilingdef: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  ceilingdefflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  maplights: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  mapsprites: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  mapslopes: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  mapeffects: array[0..MAPROWS * MAPCOLS - 1] of byte;
-  mapflags: array[0..MAPROWS * MAPCOLS - 1] of byte;
+  westwall: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  westflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  northwall: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  northflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floorpic: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floorflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingpic: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floorheight: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingheight: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floordef: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  floordefflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingdef: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  ceilingdefflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  maplights: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapsprites: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapslopes: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapeffects: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
+  mapflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
   reallight: array[0..MAPROWS * MAPCOLS - 1] of integer;
   actionflag: integer;
   wallglow, wallglowindex: integer;
@@ -83,7 +83,7 @@ var
   vertexlist_p: Pvertex_t;
   costable: array[0..ANGLES] of fixed_t;
   sintable: array[0..ANGLES] of fixed_t;
-  viewbuffer: array[0..MAX_VIEW_WIDTH * MAX_VIEW_HEIGHT - 1] of pixel_t;
+  viewbuffer: packed array[0..MAX_VIEW_WIDTH * MAX_VIEW_HEIGHT - 1] of pixel_t;
   viewylookup: array[0..MAX_VIEW_HEIGHT - 1] of Ppixel_tArray;
   yslope: array[0..MAX_VIEW_HEIGHT + MAXSCROLL2 - 1] of fixed_t;
   xslope: array[0..MAX_VIEW_WIDTH] of fixed_t;
@@ -132,7 +132,6 @@ var
   point: Pvertex_t;
   mapspot2, fl, ch: integer;
 begin
-
   mapspot2 := tiley * MAPROWS + tilex;
   if mapspot <> mapspot2 then
   begin
