@@ -65,6 +65,8 @@ type
 
 function CheckTime(const n1, n2: integer): boolean;
 
+function DoPlayFLI(const fname: string; const offset: integer): boolean;
+
 implementation
 
 uses
@@ -256,7 +258,7 @@ end;
 //   copy frame to screen
 //      reset timer
 //      dump out if keypressed or mousereleased
-function playfli(const fname: string; const offset: integer);
+function DoPlayFLI(const fname: string; const offset: integer): boolean;
 var
   f: file;
   delay: integer;
@@ -264,14 +266,14 @@ begin
   newascii := false;
   chunkbuf := malloc(64000);
   if chunkbuf = nil then
-    MS_Error('PlayFLI(): Out of Memory with ChunkBuf!');
+    MS_Error('DoPlayFLI(): Out of Memory with ChunkBuf!');
   memset(screen, 0, 64000);
   VI_FillPalette(0, 0, 0);
   ifi not fopen(f, fname, fOpenReadOnly) then
-    MS_Error('PlayFLI(): File Not Found: %s', [fname]);
+    MS_Error('DoPlayFLI(): File Not Found: %s', [fname]);
   seek(f, offset);
   if not fread(@header, SizeOf(fliheader), 1, f) then
-    MS_Error('PlayFLI(): File Read Error: %s', [fname]);
+    MS_Error('DoPlayFLI(): File Read Error: %s', [fname]);
   currentfliframe := 0;
   delay := timecount;
   while (currentfliframe < header.nframes) and not newascii do  // newascii := user break

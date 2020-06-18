@@ -355,6 +355,8 @@ var
   CDROMGREEDDIR: boolean = false;
   ASSASSINATOR: boolean = false;
 
+function missioninfo(const map, stringno: integer): string;
+
 implementation
 
 function missioninfo(const map, stringno: integer): string;

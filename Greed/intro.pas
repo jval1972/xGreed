@@ -353,97 +353,97 @@ begin
   font := font1;
 
   sprintf(name,'%sTEXT.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sWARP01.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sWARP02.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sINSHIP01.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sARBITER.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sINSHIP02.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
   Wait(140);
 
   sprintf(name,'%sCHAR1.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sCHAR2.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sCHAR3.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sCHAR4.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sCHAR5.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sINSHIP03.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sDROPPOD.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sSHP1.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sCITYBURN.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sRUBBLE.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sTHF1.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sTHF2.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sTHF3.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sTHF4.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sINSHIP04.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
   sprintf(name,'%sWARP05.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 
 #ifndef ASSASSINATOR
   sprintf(name,'%sLOGOFLY.FLI', path);
-  playfli(name, 0);
+  DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
 {$ENDIF}
 

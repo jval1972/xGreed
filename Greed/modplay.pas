@@ -52,6 +52,10 @@ var
 
 function SaveSetup(const SC: PSoundCard; const Filename: string): integer;
 
+procedure PlaySong(const sname: string; const pattern: integer);
+
+procedure StopMusic;
+
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 
 procedure SetVolumes(const amusic: integer; const afx: integer);

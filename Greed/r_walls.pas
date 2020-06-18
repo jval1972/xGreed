@@ -47,6 +47,8 @@ var
   campixelangle: array[0..MAX_VIEW_WIDTH] of integer;
   campixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
 
+procedure InitWalls;
+
 implementation
 
 uses

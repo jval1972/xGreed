@@ -137,6 +137,8 @@ var
   heart: array[0..9] of Ppic_t;
   firegrenade: boolean;
 
+procedure resetdisplay;
+
 implementation
 
 uses
@@ -1360,7 +1362,7 @@ begin
     memset(@viewylookup[i][windowWidth - 54], 0, 54);
     viewylookup[i][windowWidth - 55] := 30;
   end;
-  memset(@viewylookup[i][windowWidth - 55], 30, 55);
+  memset(@viewylookup[27][windowWidth - 55], 30, 55);
   lump := inventorylump + inventorycursor;
   pic := lumpmain[lump]; // draw the pic for it
   x := windowWidth - 31;

@@ -70,6 +70,8 @@ var
 
 procedure RunEvent(const eval: integer; const netsend: boolean);
 
+procedure LoadScript(const lump: integer; const newgame: boolean);
+
 implementation
 
 uses
@@ -253,14 +255,14 @@ begin
       else if (zones[i].typ = FLITYPE) and (eval > 0) and not netmode then
       begin
         if DEMO then
-          playfli('GREED.BLO', infotable[CA_GetNamedNum(fliname[zones[i].endeval])].filepos)
+          DoPlayFLI('GREED.BLO', infotable[CA_GetNamedNum(fliname[zones[i].endeval])].filepos)
         else
         begin
           if CDROMGREEDDIR then
             name := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MOVIES\' + fliname[zones[i].endeval]
           else
             nameChr(cdr_drivenum + Ord('A')) + ':\MOVIES\' + fliname[zones[i].endeval];
-          playfli(name,0);
+          DoPlayFLI(name,0);
         end;
         font := font1;
         fontbasecolor := 8;
@@ -352,7 +354,7 @@ begin
 end;
 
 
-procedure LoadScript(int lump,bool newgame);
+procedure LoadScript(const lump: integer; const newgame: boolean);
 begin
   char       s[100], *fname, token[100];
   i, j, x, y, eval, line, etype, upper, lower, speed, result, endeval: integer;

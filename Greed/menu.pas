@@ -177,6 +177,8 @@ procedure UpdateWait;
 
 procedure StartWait;
 
+procedure EndWait;
+
 implementation
 
 uses

@@ -78,6 +78,8 @@ procedure NetSendSpawn(const value: integer; const x, y, z: fixed_t; const zadj:
 
 procedure NetSoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 
+procedure NetNewPlayerData;
+
 implementation
 
 procedure NetGetData;
@@ -90,6 +92,10 @@ begin
 end;
 
 procedure NetSoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
+begin
+end;
+
+procedure NetNewPlayerData;
 begin
 end;
 

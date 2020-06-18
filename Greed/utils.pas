@@ -51,7 +51,9 @@ procedure SaveGame(const n: integer);
 
 procedure LoadGame(const n: integer);
 
-procedure newplayer(const map: integer; const chartype: integer; const difficulty: integer);
+procedure MissionBriefing(const map: integer);
+
+procedure newplayer(const map: integer; chartype: integer; const difficulty: integer);
 
 procedure heal(const n: integer);
 
@@ -65,17 +67,24 @@ uses
   g_delphi,
   constant,
   d_disk,
+  d_font,
+  d_ints,
   d_misc,
+  d_video,
   display,
   event,
+  intro,
   i_windows,
   menu,
   modplay,
   net,
+  playfli,
   raven,
+  r_conten,
   r_public_h,
   r_public,
   r_render,
+  r_walls,
   spawn;
 
 function SAVENAME: string;
@@ -422,7 +431,8 @@ end;
 
 procedure LoadNewMap(const lump: integer);
 var
-  i, j, f: integer;
+  i, j: integer;
+  f: file;
   fname: string;
 begin
   StartWait;
@@ -434,92 +444,92 @@ begin
   togglegoalitem := true;
   RF_ClearWorld;
   UpdateWait;
-  if not MS_CheckParm('file') then
+  if MS_CheckParm('file') = 0 then
   begin
     seek(cachehandle, infotable[lump].filepos);
     UpdateWait;
-    fread(northwall, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@northwall, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(northflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@northflags, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(westwall, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@westwall, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(westflags, MAPROWS * MAPCOLS, cachehandle);
+    fread(@westflags, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(floorpic, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@floorpic, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(floorflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@floorflags, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(ceilingpic, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@ceilingpic, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(ceilingflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@ceilingflags, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(floorheight, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@floorheight, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(ceilingheight, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@ceilingheight, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(floordef, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@floordef, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(floordefflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@floordefflags, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(ceilingdef, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@ceilingdef, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(ceilingdefflags, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@ceilingdefflags, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(maplights, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@maplights, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(mapeffects, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@mapeffects, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(mapsprites, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@mapsprites, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
-    fread(mapslopes, MAPROWS * MAPCOLS, 1, cachehandle);
+    fread(@mapslopes, MAPROWS * MAPCOLS, 1, cachehandle);
     UpdateWait;
   end
   else
   begin
-    fname := infotable[lump].nameofs + (char *)infotable;
+    fname := CA_LumpName(lump);
     if not fopen(f, fname, fOpenReadOnly)then
       MS_Error('LoadNewMap(): Can''t open %s!', [fname]);
     UpdateWait;
-    fread(northwall, MAPROWS * MAPCOLS, 1, f);
+    fread(@northwall, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(northflags, MAPROWS * MAPCOLS, 1, f);
+    fread(@northflags, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(westwall, MAPROWS * MAPCOLS, 1, f);
+    fread(@westwall, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(westflags, MAPROWS * MAPCOLS, 1, f);
+    fread(@westflags, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(floorpic, MAPROWS * MAPCOLS, 1, f);
+    fread(@floorpic, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(floorflags, MAPROWS * MAPCOLS, 1, f);
+    fread(@floorflags, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(ceilingpic, MAPROWS * MAPCOLS, 1, f);
+    fread(@ceilingpic, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(ceilingflags, MAPROWS * MAPCOLS, 1, f);
+    fread(@ceilingflags, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(floorheight, MAPROWS * MAPCOLS, 1, f);
+    fread(@floorheight, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(ceilingheight, MAPROWS * MAPCOLS, 1, f);
+    fread(@ceilingheight, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(floordef, MAPROWS * MAPCOLS, 1, f);
+    fread(@floordef, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(floordefflags, MAPROWS * MAPCOLS, 1, f);
+    fread(@floordefflags, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(ceilingdef, MAPROWS * MAPCOLS, 1, f);
+    fread(@ceilingdef, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(ceilingdefflags, MAPROWS * MAPCOLS, 1, f);
+    fread(@ceilingdefflags, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(maplights, MAPROWS * MAPCOLS, 1, f);
+    fread(@maplights, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(mapeffects, MAPROWS * MAPCOLS, 1, f);
+    fread(@mapeffects, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(mapsprites, MAPROWS * MAPCOLS, 1, f);
+    fread(@mapsprites, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
-    fread(mapslopes, MAPROWS * MAPCOLS, 1, f);
+    fread(@mapslopes, MAPROWS * MAPCOLS, 1, f);
     UpdateWait;
     close(f);
   end;
-  memset(mapflags, 0, SizeOf(mapflags));
+  memset(@mapflags, 0, SizeOf(mapflags));
   UpdateWait;
   for i := 0 to MAPCOLS - 1 do
     for j := 0 to MAPROWS - 1 do
@@ -541,7 +551,6 @@ procedure loadweapon(const n: integer);
 var
   i: integer;
 begin
-
   if weaponlump <> 0 then
     for i := 0 to numweaponlumps - 1 do
       CA_FreeLump(weaponlump + i);
@@ -773,7 +782,7 @@ begin
   if SC.vrhelmet = 1 then
   begin
     if MakeLarger and (viewSizes[(currentViewSize + 1) * 2] <> 320) then
-      exit;
+      exit
     else if not MakeLarger and (viewSizes[(currentViewSize - 1) * 2] <> 320) then
       exit;
   end;
@@ -830,12 +839,12 @@ var
   elev_p: Pelevobj_t;
 begin
   StartWait;
-  memset(player.savesprites, 0, SizeOf(player.savesprites));
-  memcpy(player.westwall, westwall, SizeOf(westwall));
-  memcpy(player.northwall, northwall, SizeOf(northwall));
+  memset(@player.savesprites, 0, SizeOf(player.savesprites));
+  memcpy(@player.westwall, @westwall, SizeOf(westwall));
+  memcpy(@player.northwall, @northwall, SizeOf(northwall));
 
   UpdateWait;
-  (* sprites *)
+  // sprites
   sprite_p := firstscaleobj.next;
   while sprite_p <> @lastscaleobj do
   begin
@@ -843,11 +852,11 @@ begin
     case sprite_p.typ of
     S_MONSTER1:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
 		    begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER1_NS
             else
               player.savesprites[mapspot] := S_MONSTER1;
@@ -859,11 +868,11 @@ begin
 
     S_MONSTER2:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
 	      begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER2_NS
             else
               player.savesprites[mapspot] := S_MONSTER2;
@@ -873,11 +882,11 @@ begin
 
     S_MONSTER3:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER3_NS
             else
               player.savesprites[mapspot] := S_MONSTER3;
@@ -889,11 +898,11 @@ begin
 
     S_MONSTER4:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER4_NS
             else
               player.savesprites[mapspot] := S_MONSTER4;
@@ -905,9 +914,9 @@ begin
 
     S_MONSTER5:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
             player.savesprites[mapspot] := S_MONSTER5
           else
             player.savesprites[mapspot] := S_DEADMONSTER5;
@@ -916,11 +925,11 @@ begin
 
     S_MONSTER6:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER6_NS
             else
               player.savesprites[mapspot] := S_MONSTER6;
@@ -932,11 +941,11 @@ begin
 
     S_MONSTER7:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER7_NS
             else
               player.savesprites[mapspot] := S_MONSTER7;
@@ -948,11 +957,11 @@ begin
 
     S_MONSTER8:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER8_NS
             else
               player.savesprites[mapspot] := S_MONSTER8;
@@ -964,11 +973,11 @@ begin
 
     S_MONSTER9:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER9_NS
             else
               player.savesprites[mapspot] := S_MONSTER9;
@@ -980,11 +989,11 @@ begin
 
     S_MONSTER10:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER10_NS
             else
               player.savesprites[mapspot] := S_MONSTER10;
@@ -996,11 +1005,11 @@ begin
 
     S_MONSTER11:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER11_NS
             else
               player.savesprites[mapspot] := S_MONSTER11;
@@ -1012,12 +1021,12 @@ begin
 
     S_MONSTER12:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
-              player.savesprites[mapspot] := S_MONSTER12_NS;
+            if sprite_p.nofalling then
+              player.savesprites[mapspot] := S_MONSTER12_NS
             else
               player.savesprites[mapspot] := S_MONSTER12;
           end
@@ -1028,12 +1037,12 @@ begin
 
     S_MONSTER13:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
-              player.savesprites[mapspot] := S_MONSTER13_NS;
+            if sprite_p.nofalling then
+              player.savesprites[mapspot] := S_MONSTER13_NS
             else
               player.savesprites[mapspot] := S_MONSTER13;
           end
@@ -1044,11 +1053,11 @@ begin
 
     S_MONSTER14:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
+            if sprite_p.nofalling then
               player.savesprites[mapspot] := S_MONSTER14_NS
             else
               player.savesprites[mapspot] := S_MONSTER14;
@@ -1060,12 +1069,12 @@ begin
 
     S_MONSTER15:
 	    begin
-        if not sprite_p.deathevent then
+        if sprite_p.deathevent = 0 then
         begin
-          if sprite_p.hitpoints then
+          if sprite_p.hitpoints <> 0 then
           begin
-            if sprite_p.nofalling <> 0 then
-              player.savesprites[mapspot] := S_MONSTER15_NS;
+            if sprite_p.nofalling then
+              player.savesprites[mapspot] := S_MONSTER15_NS
             else
               player.savesprites[mapspot] := S_MONSTER15;
           end
@@ -1182,7 +1191,7 @@ begin
 
   (* doors *)
   last_p := @doorlist[numdoors];
-  door_p := doorlist;
+  door_p := @doorlist[0];
   while door_p <> last_p do
   begin
     if door_p.pic = CA_GetNamedNum('door_1') - walllump then
@@ -1240,7 +1249,7 @@ begin
   UpdateWait;
 
   (* spawning areas / generators *)
-  sa := spawnareas;
+  sa := @spawnareas[0];
   for i := 0 to numspawnareas - 1 do
   begin
     case sa.typ of
@@ -1295,7 +1304,7 @@ begin
     case elev_p.typ of
     E_NORMAL:
       begin
-        if not elev_p.nosave then
+        if elev_p.nosave = 0 then
         begin
           if elev_p.elevTimer = $70000000 then
             player.savesprites[elev_p.mapspot] := S_PAUSEDELEVATOR
@@ -1306,7 +1315,7 @@ begin
 
     E_TIMED:
       begin
-        case elev_p.elevTimer  of
+        case elev_p.elevTimer of
         12600:
           player.savesprites[elev_p.mapspot] := S_ELEVATOR3M;
         25200:
@@ -1375,19 +1384,22 @@ begin
   SwitchTime := 0;
   inventorytime := 0;
   nethurtsoundtime := 0;
-  midgetmode := 0;
+  midgetmode := false;
   fxtimecount := 0;
   ResetMouse;
 end;
 
 
-procedure selectsong(const songmap: integer);
+procedure selectsong(const asongmap: integer);
 var
   sname: string;
   pattern: integer;
+  songmap: integer;
 begin
   if DEMO then
-    songmap := songmap mod 5;
+    songmap := asongmap mod 5
+  else
+    songmap := asongmap;
   case songmap of
   0:
     begin
@@ -1590,22 +1602,22 @@ begin
   if CDROMGREEDDIR then
   begin
     name := c + ':\GREED\MOVIES\PRISON1.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\TEMPLE1.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
   end
   else
   begin
     name := c + ':\MOVIES\PRISON1.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\TEMPLE1.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
   end;
 
   VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   Wait(140);
   fontbasecolor := 64;
   while fontbasecolor < 73 do
@@ -1636,18 +1648,19 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
     Wait(10);
-    if (newascii) break;
+    if newascii then
+      break;
   end;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS1');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1659,7 +1672,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS2');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1673,7 +1686,7 @@ begin
   if not ASSASSINATOR then
   begin
     loadscreen('CREDITS3');
-    VI_FadeIn(0, 256, colors, 48);
+    VI_FadeIn(0, 256, @colors, 48);
     newascii := false;
     while true do
     begin
@@ -1700,27 +1713,27 @@ begin
   if CDROMGREEDDIR then
   begin
     name := c + ':\GREED\MOVIES\TEMPLE2.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS1.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS2.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
   end
   else
   begin
     name := c + ':\MOVIES\TEMPLE2.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS1.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS2.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
   end;
 
 
   VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   Wait(140);
   fontbasecolor := 64;
   while fontbasecolor < 73 do
@@ -1752,7 +1765,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1764,7 +1777,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS1');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1776,7 +1789,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS2');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1788,7 +1801,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS3');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1812,46 +1825,46 @@ begin
   if CDROMGREEDDIR then
   begin
     name := c + ':\GREED\MOVIES\JUMPBAS3.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS4.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS5.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS6.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBS6B.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS7.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS8.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\GREED\MOVIES\JUMPBAS9.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
   end
   else
   begin
     name := c + ':\MOVIES\JUMPBAS3.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS4.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS5.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS6.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBS6B.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS7.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS8.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
     name := c + ':\MOVIES\JUMPBAS9.FLI';
-    playfli(name, 0);
+    DoPlayFLI(name, 0);
   end;
 
   VI_FillPalette(0, 0, 0);
 
   loadscreen('REDCHARS');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   Wait(140);
   fontbasecolor := 64;
   while fontbasecolor < 73 do
@@ -1897,7 +1910,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1909,7 +1922,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS1');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1921,7 +1934,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS2');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1933,7 +1946,7 @@ begin
   memset(screen, 0, 64000);
 
   loadscreen('CREDITS3');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   newascii := false;
   while true do
   begin
@@ -1955,9 +1968,9 @@ var
 begin
   if activate <> 0 then
   begin
-    memset(player.westmap, 0, SizeOf(player.westmap));
-    memset(player.northmap, 0, SizeOf(player.northmap));
-    memset(player.events, 0, SizeOf(player.events));
+    memset(@player.westmap, 0, SizeOf(player.westmap));
+    memset(@player.northmap, 0, SizeOf(player.northmap));
+    memset(@player.events, 0, SizeOf(player.events));
     player.x := -1;
   end;
   player.map := map;
@@ -2021,7 +2034,6 @@ begin
       end
       else
         LoadScript(lump, false);
-      end;
     end;
   end;
   EndWait;
@@ -2042,9 +2054,9 @@ var
   handle: file;
 begin
   sprintf(fname, SAVENAME, [n]);
-  if (not fopen(handle, fname, fOpenReadOnly) then
+  if not fopen(handle, fname, fOpenReadOnly) then
     exit;
-  if fread(@player SizeOf(player), 1, handle) then
+  if fread(@player, SizeOf(player), 1, handle) then
   begin
     close(handle);
     MS_Error('LoadGame(): Error loading %s!', [fname]);
@@ -2062,16 +2074,16 @@ begin
   spritemovetime := player.timecount;
 
   newmap(player.map, 0);
-  memcpy(mapsprites, player.savesprites, SizeOf(mapsprites));
+  memcpy(@mapsprites, @player.savesprites, SizeOf(mapsprites));
   ActivateSpritesFromMap;
   timecount := player.timecount;
   loadweapon(player.weapons[player.currentweapon]);
   player.levelscore := oldscore;
-  memcpy(westwall, player.westwall, SizeOf(westwall));
-  memcpy(northwall, player.northwall, SizeOf(northwall));
+  memcpy(@westwall, @player.westwall, SizeOf(westwall));
+  memcpy(@northwall, @player.northwall, SizeOf(northwall));
   eventloading := true;
   for i := 1 to 255 do
-    if player.events[i] then
+    if player.events[i] <> 0 then
       RunEvent(i, true);
   eventloading := false;
 end;
@@ -2151,7 +2163,7 @@ begin
   parm := MS_CheckParm('char');
   if (parm > 0) and (parm < my_argc - 1) then
   begin
-    chartype := atoi(my_argv[parm + 1]);
+    chartype := atoi(my_argv(parm + 1));
     if (chartype < 0) or (chartype >= MAXCHARTYPES) then
       MS_Error('Invalid Character Selection (%d)', [chartype]);
   end;
@@ -2281,7 +2293,7 @@ begin
 
     loadscreen('BRIEF3');
     VI_BlitView;
-    VI_FadeIn(0, 256, colors, 64);
+    VI_FadeIn(0, 256, @colors, 64);
     Wait(70);
     newascii := false;
     fontbasecolor := 0;
@@ -2310,7 +2322,7 @@ begin
       if newascii then
         break;
     end;
-    if lastascii = 27 then
+    if lastascii = #27 then
       goto finale;
 
     loadscreen('BRIEF3');
@@ -2333,12 +2345,12 @@ begin
       if newascii then
         break;
     end;
-    if lastascii = 27 then
+    if lastascii = #27 then
       goto finale;
     VI_FadeOut(0, 256, 0, 0, 0, 64);
 
     loadscreen('BRIEF1');
-    VI_FadeIn(0, 256, colors, 64);
+    VI_FadeIn(0, 256, @colors, 64);
     Wait(70);
     newascii := false;
     fontbasecolor := 0;
@@ -2363,12 +2375,12 @@ begin
       if newascii then
         break;
     end;
-    if lastascii = 27 then
+    if lastascii = #27 then
       goto finale;
     VI_FadeOut(0, 256, 0, 0, 0, 64);
 
     loadscreen('BRIEF2');
-    VI_FadeIn(0, 256, colors, 64);
+    VI_FadeIn(0, 256, @colors, 64);
     Wait(70);
     newascii := false;
     fontbasecolor := 0;
@@ -2392,7 +2404,7 @@ begin
       if newascii then
         break;
     end;
-    if lastascii = 27 then
+    if lastascii = #27 then
       goto finale;
 
     loadscreen('BRIEF2');
@@ -2415,7 +2427,7 @@ begin
       if newascii then
         break;
     end;
-    if lastascii = 27 then
+    if lastascii = #27 then
       goto finale;
 
     loadscreen('BRIEF2');
@@ -2440,7 +2452,7 @@ begin
       if newascii then
         break;
     end;
-    if lastascii = 27 then
+    if lastascii = #27 then
       goto finale;
   end
   else if (GAME1 and (map < 8)) or (GAME2 and (map < 16)) or (GAME3 and (map < 22)) then
@@ -2471,27 +2483,27 @@ begin
         if not GAME2 then
         begin
           name := c + ':\GREED\MOVIES\PRISON1.FLI';
-          playfli(name, 0);
+          DoPlayFLI(name, 0);
         end;
         name := c + ':\GREED\MOVIES\TEMPLE1.FLI';
-        playfli(name, 0);
+        DoPlayFLI(name, 0);
       end
       else
       begin
         if not GAME2 then
         begin
           name := c + ':\MOVIES\PRISON1.FLI';
-          playfli(name, 0);
+          DoPlayFLI(name, 0);
         end;
         name := c + ':\MOVIES\TEMPLE1.FLI';
-        playfli(name, 0);
+        DoPlayFLI(name, 0);
       end;
 
       selectsong(map);
 
       VI_FillPalette(0, 0, 0);
       loadscreen('BRIEF4');
-      VI_FadeIn(0, 256, colors, 64);
+      VI_FadeIn(0, 256, @colors, 64);
       Wait(70);
       newascii := false;
       fontbasecolor := 0;
@@ -2511,12 +2523,12 @@ begin
         if newascii then
           break;
       end;
-      if lastascii = 27 then
+      if lastascii = #27 then
         goto finale;
       VI_FadeOut(0, 256, 0, 0, 0, 64);
 
       loadscreen('BRIEF5');
-      VI_FadeIn(0, 256, colors, 64);
+      VI_FadeIn(0, 256, @colors, 64);
       Wait(70);
       newascii := false;
       fontbasecolor := 0;
@@ -2541,7 +2553,7 @@ begin
         if newascii then
           break;
       end;
-      if lastascii = 27 then
+      if lastascii = #27 then
         goto finale;
       VI_FadeOut(0, 256, 0, 0, 0, 64);
     end
@@ -2570,24 +2582,24 @@ begin
         if not GAME3 then
         begin
           name := c + ':\GREED\MOVIES\TEMPLE2.FLI';
-          playfli(name, 0);
+          DoPlayFLI(name, 0);
         end;
         name := c + ':\GREED\MOVIES\JUMPBAS1.FLI';
-        playfli(name, 0);
+        DoPlayFLI(name, 0);
         name := c + ':\GREED\MOVIES\JUMPBAS2.FLI';
-        playfli(name, 0);
+        DoPlayFLI(name, 0);
       end
       else
       begin
         if not GAME3 then
         begin
           name := c + ':\MOVIES\TEMPLE2.FLI';
-          playfli(name, 0);
+          DoPlayFLI(name, 0);
         end;
         name := c + ':\MOVIES\JUMPBAS1.FLI';
-        playfli(name, 0);
+        DoPlayFLI(name, 0);
         name := c + ':\MOVIES\JUMPBAS2.FLI';
-        playfli(name, 0);
+        DoPlayFLI(name, 0);
       end;
 
       selectsong(map);
@@ -2595,7 +2607,7 @@ begin
       VI_FillPalette(0, 0, 0);
 
       loadscreen('BRIEF6');
-      VI_FadeIn(0, 256, colors, 64);
+      VI_FadeIn(0, 256, @colors, 64);
       Wait(70);
       newascii := false;
       fontbasecolor := 0;
@@ -2620,12 +2632,12 @@ begin
         if newascii then
           break;
       end;
-      if lastascii = 27 then
+      if lastascii = #27 then
         goto finale;
       VI_FadeOut(0, 256, 0, 0, 0, 64);
 
       loadscreen('BRIEF7');
-      VI_FadeIn(0, 256, colors, 64);
+      VI_FadeIn(0, 256, @colors, 64);
       Wait(70);
       newascii := false;
       fontbasecolor := 0;
@@ -2651,7 +2663,7 @@ begin
         if newascii then
           break;
       end;
-      if lastascii = 27 then
+      if lastascii = #27 then
         goto finale;
       VI_FadeOut(0, 256, 0, 0, 0, 64);
     end;
@@ -2663,7 +2675,7 @@ begin
       loadscreen('TRANS2')
     else
       loadscreen('TRANS3');
-    VI_FadeIn(0, 256, colors, 64);
+    VI_FadeIn(0, 256, @colors, 64);
     newascii := false;
     pprimaries := player.primaries[0] + player.primaries[1];
     tprimaries := pcount[0] + pcount[1];
@@ -2677,7 +2689,7 @@ begin
     fontbasecolor := 8;
     printx := 20;
     printy := 30;
-    sprintf(str,'MISSION SUCCESSFUL!');
+    str := 'MISSION SUCCESSFUL!';
     FN_RawPrint3(str);
     printx := 25;
     printy := 40;
@@ -2699,9 +2711,9 @@ begin
     while fontbasecolor < 9 do
     begin
       printy := 85;
-      FN_PrintCentered(missioninfo[map][0]);
-      FN_PrintCentered(missioninfo[map][1]);
-      FN_PrintCentered(missioninfo[map][2]);
+      FN_PrintCentered(missioninfo(map, 0));
+      FN_PrintCentered(missioninfo(map, 1));
+      FN_PrintCentered(missioninfo(map, 2));
       Wait(3);
       inc(fontbasecolor);
     end;
@@ -2716,7 +2728,7 @@ begin
 
 finale:
   memcpy(@viewbuffer, scr, 64000);
-  free(scr);
+  memfree(pointer(scr));
   memset(screen, 0, 64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   timecount := oldtimecount;

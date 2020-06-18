@@ -38,7 +38,7 @@ var
   windowLeft: integer = 0;
   windowTop: integer = 0;
   windowSize: integer = INIT_VIEW_HEIGHT * INIT_VIEW_WIDTH;
-  viewLocation: integer = $A0000;
+  viewLocation: pointer;
   CENTERX: fixed_t = INIT_VIEW_WIDTH div 2;
   CENTERY: fixed_t = INIT_VIEW_HEIGHT div 2;
   FSCALE: fixed_t;
@@ -59,6 +59,10 @@ function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
 function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
 
 procedure RF_RemoveSprite(const spr: Pscaleobj_t);
+
+procedure RF_ClearWorld;
+
+procedure SetViewSize(const width, height: integer);
 
 implementation
 
@@ -573,7 +577,7 @@ begin
 end;
 
 
-procedure SetViewSize(int width, int height);
+procedure SetViewSize(const width, height: integer);
 var
   i: integer;
 begin
