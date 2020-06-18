@@ -38,6 +38,8 @@ var
   hitx, hity, targx, targy, targz: fixed_t;
   spriteloc: integer; // where did it hit on a sprite
 
+procedure ActivationSound(const sp: Pscaleobj_t);
+  
 implementation
 
 uses

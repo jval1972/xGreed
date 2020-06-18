@@ -73,12 +73,18 @@ procedure CA_FreeLump(const lump: integer);
 
 function CA_LumpName(const lump: integer): string;
 
+function CA_LumpLen(const lump: integer): integer;
+
+function CA_LumpAsText(const lump: integer): string;
+
+function CA_FileAsText(const fname: string): string;
+
 implementation
 
 uses
   d_misc,
   menu;
-  
+
 procedure CA_ReadFile(const fname: string; const buffer: pointer; const len: LongWord);
 var
   handle: file;
@@ -239,6 +245,39 @@ begin
     while c^ <> #0 do
       result := result + c^;
   end;
+end;
+
+function CA_LumpLen(const lump: integer): integer;
+begin
+  infotable[lump].size;
+end;
+
+function CA_LumpAsText(const lump: integer): string;
+var
+  len: integer;
+  i: integer;
+  c: char;
+begin
+  len := infotable[lump].size;
+  SetLength(result, len);
+  seek(cachehandle, infotable[lump].filepos);
+  fread(@result[1], len, 1, cachefile);
+end;
+
+function CA_FileAsText(const fname: string): string;
+var
+  f: file;
+  len: integer;
+begin
+  if not fopen(f, fname, fOpenReadOnly) then
+  begin
+    result := '';
+    exit;
+  end;
+  len := fsize(f);
+  SetLength(result, len);
+  fread(@result[1], len, 1, f);
+  close(f);
 end;
 
 end.

@@ -76,21 +76,27 @@ implementation
 
 uses
   g_delphi,
+  Classes,
+  constant,
+  d_disk,
+  d_font,
+  d_ints,
+  d_misc,
+  d_video,
+  intro,
+  menu,
+  modplay,
+  playfli,
+  protos_h,
 //  net,
   raven,
   r_conten,
+  r_public,
+  r_render,
   scriptengine,
-  d_ints,
-  d_misc,
-  modplay,
-  protos_h,
-  sprites;
-
-procedure CHECKERROR(const line, result, n: integer);
-begin
-  if result <> n then
-    MS_Error('Must have %d parms on line %d. %d parms found.', [n, line, result]);
-end;
+  spawn,
+  sprites,
+  utils;
 
 procedure AddProcess(const n: integer);
 var
@@ -261,7 +267,7 @@ begin
           if CDROMGREEDDIR then
             name := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MOVIES\' + fliname[zones[i].endeval]
           else
-            nameChr(cdr_drivenum + Ord('A')) + ':\MOVIES\' + fliname[zones[i].endeval];
+            name := Chr(cdr_drivenum + Ord('A')) + ':\MOVIES\' + fliname[zones[i].endeval];
           DoPlayFLI(name,0);
         end;
         font := font1;
@@ -272,6 +278,7 @@ begin
         0: FN_PrintCentered('Do not taunt happy fun airlock.');
         1: FN_PrintCentered('Original recipe or extra crispy?');
         2: FN_PrintCentered('Thank you for recycling!');
+        end;
         fliplayed := 1;
         zones[i].eval := 0;
         zones[i].typ := -1;
@@ -355,284 +362,420 @@ end;
 
 
 procedure LoadScript(const lump: integer; const newgame: boolean);
-begin
-  char       s[100], *fname, token[100];
+var
+  s, fname: string;
+  sl: TStringList;
+  sc: TScriptEngine;
+  stmp: string;
   i, j, x, y, eval, line, etype, upper, lower, speed, result, endeval: integer;
   num, val, psprite, total, ceval, def1, def2, x1, y1, x2, y2, removeable: integer;
-  FILE       *f;
-  elevobj_t  *elevator_p;
-  zone_t     *z;
-  int        numloadsprites, loadsprites[16], loadspritesn[16], eventlump;
-
-  memset(triggers, 0, SizeOf(triggers));
-  memset(switches, 0, SizeOf(switches));
-  memset(zones, 0, SizeOf(zones));
-  memset(processes, 0, SizeOf(processes));
+  elevator_p: Pelevobj_t;
+  z: Pzone_t;
+  numloadsprites, eventlump: integer;
+  loadsprites, loadspritesn: array[0..15] of integer;
+begin
+  memset(@triggers, 0, SizeOf(triggers));
+  memset(@switches, 0, SizeOf(switches));
+  memset(@zones, 0, SizeOf(zones));
+  memset(@processes, 0, SizeOf(processes));
   numprocesses := 0;
   numzones := 0;
   fliplayed := 0;
   numloadsprites := 0;
 
-  memset(secondaries, -1, SizeOf(secondaries));
-  memset(primaries, -1, SizeOf(primaries));
-  memset(pcount, 0, SizeOf(pcount));
-  memset(scount, 0, SizeOf(scount));
+  memset(@secondaries, -1, SizeOf(secondaries));
+  memset(@primaries, -1, SizeOf(primaries));
+  memset(@pcount, 0, SizeOf(pcount));
+  memset(@scount, 0, SizeOf(scount));
   bonustime := 3150;
   levelscore := 100000;
   player.levelscore := 100000;
   eventlump := CA_GetNamedNum('BACKDROP');
+  sl := TStringList.Create;
 
-  if (MS_CheckParm('file')) then
+  if MS_CheckParm('file') > 0 then
   begin
-    fname := infotable[lump].nameofs + (char *)infotable;
-    strcpy(s, fname);
-   i := 0;
-   while (i<20) and (s[i] <> '.') and (s[i] <> 0) i++;
-   strcpy and (s[i],'.SUX');
-   f := fopen(s,'rt');
-   if (f = NULL) MS_Error('LoadScript: Error opening %s',s);
-    end;
+    fname := CA_LumpName(lump);
+    s := fname;
+    i := 1;
+    while (i <= Length(s)) and (s[i] <> '.') do inc(i);
+    SetLength(s, i);
+    s := s + '.SUX';
+    sl.Text := CA_FileAsText(s);
+  end
   else
-  begin
-   close(cachehandle);
-   lump := lump-CA_GetNamedNum('MAP')+CA_GetNamedNum('SUX');
-   f := fopen('GREED.BLO','rt');
-   if (f = NULL) MS_Error('LoadScript: Error reopening GREED.BLO');
-   fseek(f,infotable[lump].filepos,SEEK_SET);
-    end;
+    sl.Text := CA_LumpAsText(lump);
 
-  line := 1;
-  while 1 do
+  sc := TScriptEngine.Create(sl.Text);
+  while sc.GetString do
   begin
-   UpdateWait;
-   fscanf(f,' %s ',token);
-   if (stricmp(token,'END') = 0) then
-    break;
-   else if (stricmp(token,'TRIGGER') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i \n',) and (x,) and (y,) and (eval);
-     CHECKERROR(line, result, 3);
-     triggers[x][y] := eval;
-   end
-   else if (stricmp(token,'AREATRIGGER') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i %i \n',) and (x1,) and (y1,) and (x2,) and (y2,) and (eval);
-     CHECKERROR(line, result, 5);
-     for (i := y1;i <= y2;i++)
-      for (j := x1;j <= x2;j++)
-       triggers[j][i] := eval;
-   end
-   else if (stricmp(token,'WALLSWITCH') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i \n',) and (x,) and (y,) and (eval);
-     CHECKERROR(line, result, 3);
-     switches[x][y] := eval;
-   end
-   else if (stricmp(token,'ELEVATOR') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i %i %i %i %i \n',) and (x,) and (y,) and (eval,) and (endeval,) and (etype,) and (upper,) and (lower,) and (speed);
-     CHECKERROR(line, result, 8);
-     elevator_p := RF_GetElevator;
-     elevator_p.floor := lower;
-     elevator_p.mapspot := y*MAPCOLS+x;
-     elevator_p.ceiling := upper;
-     if etype = 0 then
-      elevator_p.position := lower;
-     else
-      elevator_p.position := upper;
-     elevator_p.typ := E_TRIGGERED;
-     elevator_p.elevTimer := $70000000;
-     elevator_p.speed := speed;
-     elevator_p.eval := eval;
-     elevator_p.endeval := endeval;
-     elevator_p.elevTimer := player.timecount;
-     elevator_p.nosave := 1;
-     floorheight[elevator_p.mapspot] := elevator_p.position;
-   end
-   else if (stricmp(token,'SPAWNELEVATOR') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i %i %i %i \n',) and (x,) and (y,) and (eval,) and (etype,) and (upper,) and (lower,) and (speed);
-     CHECKERROR(line, result, 7);
-     elevator_p := RF_GetElevator;
-     elevator_p.floor := lower;
-     elevator_p.mapspot := y*MAPCOLS+x;
-     elevator_p.ceiling := upper;
-     if etype = 0 then
-      elevator_p.position := lower;
-     else
-      elevator_p.position := upper;
-     elevator_p.typ := E_NORMAL;
-     elevator_p.elevTimer := $70000000;
-     elevator_p.speed := speed;
-     elevator_p.eval := eval;
-     elevator_p.endeval := endeval;
-     elevator_p.elevTimer := player.timecount;
-     elevator_p.nosave := 1;
-     floorheight[elevator_p.mapspot] := elevator_p.position;
-   end
-   else if (stricmp(token,'ACTIVATIONZONE') = 0) then
-   begin
-     z := @zones[numzones];
-     ++numzones;
-     if numzones = MAXZONES then
-      MS_Error('Out of mapzones');
-     result := fscanf(f,'%i %i %i %i %i %i \n',) and (z.x1,) and (z.y1,) and (z.x2,) and (z.y2,) and (z.eval,) and (z.removeable);
-     CHECKERROR(line, result, 6);
-     z.typ := ACTIVATIONTYPE;
-   end
-   else if (stricmp(token,'MAPZONE') = 0) then
-   begin
-     z := @zones[numzones];
-     ++numzones;
-     if numzones = MAXZONES then
-      MS_Error('Out of mapzones');
-     result := fscanf(f,'%i %i %i %i %i %i %i %i %i %i \n',) and (z.x1,) and (z.y1,) and (z.x2,) and (z.y2,) and (z.eval,) and (z.endeval,) and (z.layer,) and (z.newvalue,) and (z.rate,) and (z.removeable);
-     CHECKERROR(line, result, 10);
-     z.typ := MAPZONETYPE;
-   end
-   else if (stricmp(token,'BONUSTIME') = 0) then
-   begin
-     result := fscanf(f,'%i \n',) and (bonustime);
-     CHECKERROR(line, result, 1);
-     bonustime := bonustime * 70;
-   end
-   else if (stricmp(token,'PRIMARY') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i \n',) and (num,) and (val,) and (total,) and (psprite);
-     CHECKERROR(line, result, 4);
-     primaries[num*2] := psprite;
-     primaries[num*2+1] := val;
-     pcount[num] := total;
-   end
-   else if (stricmp(token,'SECONDARY') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i \n',) and (num,) and (val,) and (total,) and (psprite);
-     CHECKERROR(line, result, 4);
-     secondaries[num*2] := psprite;
-     secondaries[num*2+1] := val;
-     scount[num] := total;
-   end
-   else if (stricmp(token,'LEVELSCORE') = 0) then
-   begin
-     result := fscanf(f,'%i \n',) and (levelscore);
-     player.levelscore := levelscore;
-     CHECKERROR(line, result, 1);
-   end
-   else if (stricmp(token,'SPRITE') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i %i %i \n',) and (x,) and (y,) and (num,) and (ceval,) and (def1,) and (def2);
-     CHECKERROR(line, result, 6);
-     if (newgame) and (player.difficulty >= 5-def2) and (player.difficulty <= 5-def1) then
-     begin
-       gameloading := true;
-       mapsprites[y*MAPCOLS+x] := num;
-       gameloading := false;
-        end;
-   end
-   else if (stricmp(token,'SPAWN') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i %i %i %i %i \n',) and (x,) and (y,) and (eval,) and (num,) and (ceval,) and (def1,) and (def2,) and (removeable);
-     CHECKERROR(line, result, 8);
-     if (player.difficulty >= 5-def2) and (player.difficulty <= 5-def1) and (
-      (newgame) or ((not newgame) and ((not removeable) or ( not player.events[eval]))))
+    stmp := strupper(sc._String);
+    if stmp = 'END' then
+      break
+    else if stmp = 'TRIGGER' then
+    begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      triggers[x][y] := eval;
+      sc.Free;
+    end
+    else if stmp = 'AREATRIGGER' then
+    begin
+      sc.MustGetInteger;
+      x1 := sc._Integer;
+      sc.MustGetInteger;
+      y1 := sc._Integer;
+      sc.MustGetInteger;
+      x2 := sc._Integer;
+      sc.MustGetInteger;
+      y2 := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      for i := y1 to y2 do
+        for j := x1 to x2 do
+          triggers[j][i] := eval;
+    end
+    else if stmp = 'WALLSWITCH' then
+    begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      switches[x][y] := eval;
+    end
+    else if stmp = 'ELEVATOR' then
+    begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      sc.MustGetInteger;
+      endeval := sc._Integer;
+      sc.MustGetInteger;
+      etype := sc._Integer;
+      sc.MustGetInteger;
+      upper := sc._Integer;
+      sc.MustGetInteger;
+      lower := sc._Integer;
+      sc.MustGetInteger;
+      speed := sc._Integer;
+      elevator_p := RF_GetElevator;
+      elevator_p.floor := lower;
+      elevator_p.mapspot := y * MAPCOLS + x;
+      elevator_p.ceiling := upper;
+      if etype = 0 then
+        elevator_p.position := lower
+      else
+        elevator_p.position := upper;
+      elevator_p.typ := E_TRIGGERED;
+      elevator_p.elevTimer := $70000000;
+      elevator_p.speed := speed;
+      elevator_p.eval := eval;
+      elevator_p.endeval := endeval;
+      elevator_p.elevTimer := player.timecount;
+      elevator_p.nosave := 1;
+      floorheight[elevator_p.mapspot] := elevator_p.position;
+    end
+    else if stmp = 'SPAWNELEVATOR' then
+    begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      sc.MustGetInteger;
+      etype := sc._Integer;
+      sc.MustGetInteger;
+      upper := sc._Integer;
+      sc.MustGetInteger;
+      lower := sc._Integer;
+      sc.MustGetInteger;
+      speed := sc._Integer;
+      elevator_p := RF_GetElevator;
+      elevator_p.floor := lower;
+      elevator_p.mapspot := y * MAPCOLS + x;
+      elevator_p.ceiling := upper;
+      if etype = 0 then
+        elevator_p.position := lower
+      else
+        elevator_p.position := upper;
+      elevator_p.typ := E_NORMAL;
+      elevator_p.elevTimer := $70000000;
+      elevator_p.speed := speed;
+      elevator_p.eval := eval;
+      elevator_p.endeval := endeval;
+      elevator_p.elevTimer := player.timecount;
+      elevator_p.nosave := 1;
+      floorheight[elevator_p.mapspot] := elevator_p.position;
+    end
+    else if stmp = 'ACTIVATIONZONE' then
+    begin
+      z := @zones[numzones];
+      inc(numzones);
+      if numzones = MAXZONES then
+        MS_Error('Out of mapzones');
+      sc.MustGetInteger;
+      z.x1 := sc._Integer;
+      sc.MustGetInteger;
+      z.y1 := sc._Integer;
+      sc.MustGetInteger;
+      z.x2 := sc._Integer;
+      sc.MustGetInteger;
+      z.y2 := sc._Integer;
+      sc.MustGetInteger;
+      z.eval := sc._Integer;
+      sc.MustGetInteger;
+      z.removeable := sc._Integer;
+      z.typ := ACTIVATIONTYPE;
+    end
+    else if stmp = 'MAPZONE' then
+    begin
+      z := @zones[numzones];
+      inc(numzones);
+      if numzones = MAXZONES then
+        MS_Error('Out of mapzones');
+      z.x1 := sc._Integer;
+      sc.MustGetInteger;
+      z.y1 := sc._Integer;
+      sc.MustGetInteger;
+      z.x2 := sc._Integer;
+      sc.MustGetInteger;
+      z.y2 := sc._Integer;
+      sc.MustGetInteger;
+      z.eval := sc._Integer;
+      sc.MustGetInteger;
+      z.endeval := sc._Integer;
+      sc.MustGetInteger;
+      z.layer := sc._Integer;
+      sc.MustGetInteger;
+      z.newvalue := sc._Integer;
+      sc.MustGetInteger;
+      z.rate := sc._Integer;
+      sc.MustGetInteger;
+      z.removeable := sc._Integer;
+      z.typ := MAPZONETYPE;
+    end
+    else if stmp = 'BONUSTIME' then
+    begin
+      sc.MustGetInteger;
+      bonustime := sc._Integer * 70;
+    end
+    else if stmp = 'PRIMARY' then
+    begin
+      sc.MustGetInteger;
+      num := sc._Integer;
+      sc.MustGetInteger;
+      val := sc._Integer;
+      sc.MustGetInteger;
+      total := sc._Integer;
+      sc.MustGetInteger;
+      psprite := sc._Integer;
+      primaries[num * 2] := psprite;
+      primaries[num * 2 + 1] := val;
+      pcount[num] := total;
+    end
+    else if stmp = 'SECONDARY' then
+    begin
+      sc.MustGetInteger;
+      num := sc._Integer;
+      sc.MustGetInteger;
+      val := sc._Integer;
+      sc.MustGetInteger;
+      total := sc._Integer;
+      sc.MustGetInteger;
+      psprite := sc._Integer;
+      secondaries[num * 2] := psprite;
+      secondaries[num * 2 + 1] := val;
+      scount[num] := total;
+    end
+    else if stmp = 'LEVELSCORE' then
+    begin
+      sc.MustGetInteger;
+      player.levelscore := sc._Integer;
+    end
+    else if stmp = 'SPRITE' then
+    begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      num := sc._Integer;
+      sc.MustGetInteger;
+      ceval := sc._Integer;
+      sc.MustGetInteger;
+      def1 := sc._Integer;
+      sc.MustGetInteger;
+      def2 := sc._Integer;
+      if (newgame) and (player.difficulty >= 5 - def2) and (player.difficulty <= 5 - def1) then
       begin
-       z := @zones[numzones];
-       ++numzones;
-       if numzones = MAXZONES then
-  MS_Error('Out of mapzones');
-       z.x1 := x;
-       z.y1 := y;
-       z.eval := eval;
-       z.endeval := ceval;
-       z.stype := num;
-       z.typ := SPAWNTYPE;
-       z.removeable := removeable;
-        end;
-   end
-   else if (stricmp(token,'SPAWNTRIGGER') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i %i\n',) and (x,) and (y,) and (eval,) and (ceval,) and (removeable);
-     CHECKERROR(line, result, 5);
-     z := @zones[numzones];
-     ++numzones;
-     if numzones = MAXZONES then
-      MS_Error('Out of mapzones');
-     z.x1 := x;
-     z.y1 := y;
-     z.eval := eval;
-     z.endeval := ceval;
-     z.typ := TRIGGERTYPE;
-     z.removeable := removeable;
-   end
-   else if (stricmp(token,'SPAWNSOUND') = 0) then
-   begin
-     result := fscanf(f,'%i %i %i %i %i\n',) and (x,) and (y,) and (eval,) and (ceval,) and (removeable);
-     CHECKERROR(line, result, 5);
-     z := @zones[numzones];
-     ++numzones;
-     if numzones = MAXZONES then
-      MS_Error('Out of mapzones');
-     z.x1 := x;
-     z.y1 := y;
-     z.eval := eval;
-     z.endeval := ceval;
-     z.typ := SOUNDTYPE;
-     z.removeable := removeable;
-   end
-   else if (stricmp(token, 'SPAWNFLI') = 0) then
-   begin
-     result := fscanf(f,'%i %i \n',) and (eval,) and (ceval);
-     CHECKERROR(line, result, 2);
-     z := @zones[numzones];
-     ++numzones;
-     if numzones = MAXZONES then
-      MS_Error('Out of mapzones');
-     z.eval := eval;
-     z.endeval := ceval;
-     z.typ := FLITYPE;
-   end
-   else if (stricmp(token,'FORCELOAD') = 0) then
-   begin
-     result := fscanf(f,'%s %i \n',s,) and (x);
-     CHECKERROR(line, result, 2);
-     loadsprites[numloadsprites] := CA_GetNamedNum(s);
-     loadspritesn[numloadsprites] := x;
-     numloadsprites++;
-   end
-   else if (stricmp(token,'SPAWNAREATRIGGER') = 0) then
-   begin
-     z := @zones[numzones];
-     ++numzones;
-     if numzones = MAXZONES then
-      MS_Error('Out of mapzones');
-     result := fscanf(f,'%i %i %i %i %i %i %i \n',) and (z.x1,) and (z.y1,) and (z.x2,) and (z.y2,) and (z.eval,) and (z.endeval,) and (z.removeable);
-     CHECKERROR(line, result, 7);
-     z.typ := AREATRIGGERTYPE;
-   end
-   else if (stricmp(token,'BACKDROP') = 0) then
-   begin
-     result := fscanf(f,'%s \n',s);
-     CHECKERROR(line, result, 1);
-     eventlump := CA_GetNamedNum(s);
+        gameloading := true;
+        mapsprites[y * MAPCOLS + x] := num;
+        gameloading := false;
       end;
-   else while (fgetc(f) <> '\n') ;
-   line++;
-    end;
-  fclose(f);
-  if (not MS_CheckParm('file')) then
-  begin
-   if ((cachehandle := open('GREED.BLO',O_RDONLY) or (O_BINARY)) = -1) then
-    MS_Error('LoadScript: Can''t open GREED.BLO!');
-    end;
-  for (x := 0;x<numloadsprites;x++)
-  begin
-   UpdateWait;
-   DemandLoadMonster(loadsprites[x],loadspritesn[x]);
-   UpdateWait;
-    end;
-  lseek(cachehandle,infotable[eventlump].filepos+8,SEEK_SET);
-  read(cachehandle,backdrop,256*128);
-  lseek(cachehandle,infotable[eventlump+1].filepos+8,SEEK_SET);
-  read(cachehandle,backdrop+256*128,256*128);
-  RunEvent(0,false);
+    end
+    else if stmp = 'SPAWN' then
+    begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      sc.MustGetInteger;
+      num := sc._Integer;
+      sc.MustGetInteger;
+      ceval := sc._Integer;
+      sc.MustGetInteger;
+      def1 := sc._Integer;
+      sc.MustGetInteger;
+      def2 := sc._Integer;
+      sc.MustGetInteger;
+      removeable := sc._Integer;
+      if (player.difficulty >= 5 - def2) and (player.difficulty <= 5 - def1) and
+         (newgame or ((not newgame) and ((removeable = 0) or (player.events[eval] = 0)))) then
+      begin
+        z := @zones[numzones];
+        inc(numzones);
+        if numzones = MAXZONES then
+          MS_Error('Out of mapzones');
+        z.x1 := x;
+        z.y1 := y;
+        z.eval := eval;
+        z.endeval := ceval;
+        z.stype := num;
+        z.typ := SPAWNTYPE;
+        z.removeable := removeable;
+      end;
+   end
+   else if stmp = 'SPAWNTRIGGER' then
+   begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      sc.MustGetInteger;
+      ceval := sc._Integer;
+      sc.MustGetInteger;
+      removeable := sc._Integer;
+      z := @zones[numzones];
+      inc(numzones);
+      if numzones = MAXZONES then
+        MS_Error('Out of mapzones');
+      z.x1 := x;
+      z.y1 := y;
+      z.eval := eval;
+      z.endeval := ceval;
+      z.typ := TRIGGERTYPE;
+      z.removeable := removeable;
+    end
+    else if stmp = 'SPAWNSOUND' then
+   begin
+      sc.MustGetInteger;
+      x := sc._Integer;
+      sc.MustGetInteger;
+      y := sc._Integer;
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      sc.MustGetInteger;
+      ceval := sc._Integer;
+      sc.MustGetInteger;
+      removeable := sc._Integer;
+      z := @zones[numzones];
+      inc(numzones);
+      if numzones = MAXZONES then
+        MS_Error('Out of mapzones');
+      z.x1 := x;
+      z.y1 := y;
+      z.eval := eval;
+      z.endeval := ceval;
+      z.typ := SOUNDTYPE;
+      z.removeable := removeable;
+    end
+    else if stmp = 'SPAWNFLI' then
+    begin
+      sc.MustGetInteger;
+      eval := sc._Integer;
+      sc.MustGetInteger;
+      ceval := sc._Integer;
+      z := @zones[numzones];
+      inc(numzones);
+      if numzones = MAXZONES then
+        MS_Error('Out of mapzones');
+      z.eval := eval;
+      z.endeval := ceval;
+      z.typ := FLITYPE;
+    end
+    else if stmp = 'FORCELOAD' then
+    begin
+      sc.MustGetString;
+      s := sc._String;
+      sc.MustGetInteger;
+      x := sc._Integer;
+      loadsprites[numloadsprites] := CA_GetNamedNum(s);
+      loadspritesn[numloadsprites] := x;
+      inc(numloadsprites);
+    end
+    else if stmp = 'SPAWNAREATRIGGER' then
+    begin
+      z := @zones[numzones];
+      inc(numzones);
+      if numzones = MAXZONES then
+        MS_Error('Out of mapzones');
+      sc.MustGetInteger;
+      z.x1 := sc._Integer;
+      sc.MustGetInteger;
+      z.y1 := sc._Integer;
+      sc.MustGetInteger;
+      z.x2 := sc._Integer;
+      sc.MustGetInteger;
+      z.y2 := sc._Integer;
+      sc.MustGetInteger;
+      z.eval := sc._Integer;
+      sc.MustGetInteger;
+      z.endeval := sc._Integer;
+      sc.MustGetInteger;
+      z.removeable := sc._Integer;
+      z.typ := AREATRIGGERTYPE;
+    end
+    else if stmp = 'BACKDROP' then
+    begin
+      sc.MustGetString;
+      s := sc._String;
+      eventlump := CA_GetNamedNum(s);
+    end
+    else if stmp = 'REM' then
+    begin
+      sc.GetStringEOL;
+    end
   end;
+
+  sc.Free;
+  sl.Free;
+
+  for x := 0 to numloadsprites - 1 do
+  begin
+    UpdateWait;
+    DemandLoadMonster(loadsprites[x],loadspritesn[x]);
+    UpdateWait;
+  end;
+  seek(cachehandle, infotable[eventlump].filepos + 8);
+  x := 256 * 128;
+  fread(@backdrop, x, 1, cachehandle);
+  seek(cachehandle, infotable[eventlump + 1].filepos + 8);
+  fread(@backdrop[x], x, 1, cachehandle);
+  RunEvent(0, false);
+end;
+
+end.

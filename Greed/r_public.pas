@@ -54,6 +54,8 @@ function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
 function RF_GetSprite: Pscaleobj_t;
 
+function RF_GetElevator: Pelevobj_t;
+
 function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
 
 function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
