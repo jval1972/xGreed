@@ -31,7 +31,6 @@ uses
   constant in 'Greed\constant.pas',
   d_disk in 'Greed\d_disk.pas',
   d_font in 'Greed\d_font.pas',
-  d_font_h in 'Greed\d_font_h.pas',
   d_ints in 'Greed\d_ints.pas',
   d_ints_h in 'Greed\d_ints_h.pas',
   d_misc in 'Greed\d_misc.pas',

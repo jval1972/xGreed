@@ -2,7 +2,24 @@ unit i_main;
 
 interface
 
+uses
+  Windows;
+
+function WndProc(hWnd: HWND; Msg: UINT; wParam: WPARAM;
+  lParam: LPARAM): LRESULT; stdcall; export;
+
+function InitApplication(inst: HINST): boolean;
+
+function InitInstance(inst: HINST; nCmdShow: integer): boolean;
+
 implementation
+
+uses
+  Messages,
+  d_misc,
+  d_video,
+  i_windows,
+  raven;
 
 function WndProc(hWnd: HWND; Msg: UINT; wParam: WPARAM;
   lParam: LPARAM): LRESULT; stdcall; export;
@@ -13,54 +30,54 @@ begin
   case Msg of
   WM_PAINT:
     begin
-      hdc := BeginPaint(hWnd, @ps);
+      hdc := BeginPaint(hWnd, ps);
       VI_ResetPalette;
       VI_BlitView;
-      EndPaint(hWnd, @ps);
+      EndPaint(hWnd, ps);
     end;
   WM_CLOSE:
     quitgame := true;
   WM_DESTROY:
     PostQuitMessage(0);
   else
-    result := DefWindowProc(hWnd, msg, wParam, lParam));
+    result := DefWindowProc(hWnd, msg, wParam, lParam);
     exit;
   end;
   result := 0;
 end;
 
 
-BOOL InitApplication(HINSTANCE hInstance)
+function InitApplication(inst: HINST): boolean;
+var
+  wc: WNDCLASS;
+  a: ATOM;
 begin
-    WNDCLASS  wc;
-  ATOM    atom;
+  wc.style :=  0;
+  wc.lpfnWndProc := @WndProc;
+  wc.cbClsExtra := 0;
+  wc.cbWndExtra := 0;
+  wc.hInstance := inst;
+  wc.hIcon := 0;
+  wc.hCursor := 0;
+  wc.hbrBackground := HBRUSH(GetStockObject(BLACK_BRUSH));
+  wc.lpszMenuName :=  nil;
+  wc.lpszClassName := APPNAME;
 
-    wc.style :=  0;
-    wc.lpfnWndProc :=  (WNDPROC)WndProc;
-    wc.cbClsExtra :=  0;
-    wc.cbWndExtra :=  0;
-    wc.hInstance :=  hInstance;
-    wc.hIcon :=  NULL;
-    wc.hCursor :=  NULL;
-    wc.hbrBackground :=  (HBRUSH)GetStockObject(BLACK_BRUSH);
-    wc.lpszMenuName :=  NULL;
-    wc.lpszClassName := APPNAME;
-
-    atom :=  RegisterClass and (wc);
-    return atom <> 0 ? true : false;
-  end;
+  a :=  RegisterClass(wc);
+  result := a <> 0;
+end;
 
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+function InitInstance(inst: HINST; nCmdShow: integer): boolean;
+var
+  rc: TRect;  // Called in GetClientRect
 begin
-  RECT rc;  // Called in GetClientRect
+  rc.left := 0;
+  rc.right := 640;
+  rc.top := 0;
+  rc.bottom := 400;
 
-  rc.left :=  0;
-  rc.right :=  640;
-  rc.top :=  0;
-  rc.bottom :=  400;
-
-  AdjustWindowRect and (rc,WS_VISIBLE,FALSE);
+  AdjustWindowRect(rc, WS_VISIBLE, false);
 
   rc.right := rc.right - rc.left;
   rc.bottom := rc.bottom - rc.top;
@@ -76,20 +93,22 @@ begin
     rc.top,
     rc.right,
     rc.bottom,
-    NULL,
-    NULL,
+    0,
+    0,
     hInstance,
-    NULL);
+    nil
+  );
 
-  if (Window_Handle = 0)    // Check whether values returned by CreateWindow are valid.
-    return (FALSE);
-  
-    ShowWindow(Window_Handle,SW_SHOW);
-    UpdateWindow(Window_Handle);
-
-    return(TRUE);                  // Window handle hWnd is valid.
+  if Window_Handle = 0 then // Check whether values returned by CreateWindow are valid.
+  begin
+    result := false;
+    exit;
   end;
 
+  ShowWindow(Window_Handle, SW_SHOW);
+  UpdateWindow(Window_Handle);
 
+  result := TRUE; // Window handle hWnd is valid.
+end;
 
 end.
