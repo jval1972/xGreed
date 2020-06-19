@@ -49,6 +49,10 @@ var
 
 procedure InitWalls;
 
+procedure DrawWall(const x1, x2: integer);
+
+procedure DrawSteps(const x1, x2: integer);
+
 implementation
 
 uses

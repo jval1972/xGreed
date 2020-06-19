@@ -125,7 +125,13 @@ procedure FlowView;
 implementation
 
 uses
-  r_public;
+  d_ints,
+  d_misc,
+  r_conten,
+  r_plane,
+  r_public,
+  r_spans,
+  r_walls;
 
 // Returns a pointer to the vertex for a given coordinate
 // tx,tz will be the transformed coordinates
@@ -184,48 +190,76 @@ begin
   result := point;
 end;
 
-  ClipEdge: boolean;
-(* Sets p1.px and p2.px correctly for Z values < MINZ
-   Returns false if entire edge is too close or far away *)
-   begin
-  leftfrac, rightfrac, clipz, dx, dz: fixed_t;
 
-  if (p1.tz>MAXZ) and (p2.tz>MAXZ) return false; // entire face is too far away
-  if (p1.tz <= 0) and (p2.tz <= 0) return false; // totally behind the projection plane
-  if (p1.tz<MINZ) or (p2.tz<MINZ) then
+// Sets p1.px and p2.px correctly for Z values < MINZ
+// Returns false if entire edge is too close or far away
+function ClipEdge: boolean;
+var
+  leftfrac, rightfrac, clipz, dx, dz: fixed_t;
+begin
+  if (p1.tz > MAXZ) and (p2.tz > MAXZ) then
   begin
-   dx :=  p2.tx - p1.tx;
-   dz :=  p2.tz - p1.tz;
-   if p1.tz<MINZ then
-   begin
-     if (labs(dx+dz)<1024) return false;
-     leftfrac :=  FIXEDDIV(-p1.tx - p1.tz , dx+dz);
+    result := false; // entire face is too far away
+    exit;
+  end;
+  if (p1.tz <= 0) and (p2.tz <= 0) then
+  begin
+    result := false; // totally behind the projection plane
+    exit;
+  end;
+  if (p1.tz < MINZ) or (p2.tz < MINZ) then
+  begin
+    dx :=  p2.tx - p1.tx;
+    dz :=  p2.tz - p1.tz;
+    if p1.tz < MINZ then
+    begin
+      if absI(dx + dz) < 1024 then
+      begin
+        result := false;
+        exit;
       end;
-   if p2.tz<MINZ then
-   begin
-     if (labs(dz-dx)<1024) return false;
-     rightfrac :=  FIXEDDIV(p1.tx - p1.tz , dz-dx);
-     if (p1.tz<MINZ) and (rightfrac<leftfrac) return false;  // back face
-     clipz :=  p1.tz + FIXEDMUL(dz,rightfrac);
-     if (clipz<0) return false;
-     p2.px :=  windowWidth;
-      end;
+      leftfrac :=  FIXEDDIV(-p1.tx - p1.tz, dx + dz);
     end;
+    if p2.tz < MINZ then
+    begin
+      if absI(dz - dx) < 1024 then
+      begin
+        result := false;
+        exit;
+      end;
+      rightfrac :=  FIXEDDIV(p1.tx - p1.tz , dz - dx);
+      if (p1.tz < MINZ) and (rightfrac < leftfrac) then
+      begin
+        result := false;  // back face
+        exit;
+      end;
+      clipz :=  p1.tz + FIXEDMUL(dz, rightfrac);
+      if clipz < 0 then
+      begin
+        result := false;
+        exit;
+      end;
+      p2.px := windowWidth;
+    end;
+  end;
   if p1.tz<MINZ then
   begin
-   clipz :=  p1.tz + FIXEDMUL(dz,leftfrac);
-   if (clipz<0) return false;
-   p1.px :=  0;
+    clipz :=  p1.tz + FIXEDMUL(dz, leftfrac);
+    if clipz < 0 then
+    begin
+      result := false;
+      exit;
     end;
-  if (p1.px = p2.px) return false;
-  return true;
+    p1.px :=  0;
   end;
+  result := p1.px <> p2.px;
+end;
 
 
-procedure RenderTileWalls(entry_t *e);
-begin
+procedure RenderTileWalls(const e: Pentry_t);
+var
   xl, xh, tx, ty, x1, x2: integer;
-
+begin
   tilex := e.tilex;
   tiley := e.tiley;
   xclipl := e.xmin;
@@ -236,79 +270,96 @@ begin
 //  MS_Error('Invalid RenderTile (%i, %i, %i, %i)\n', e.tilex, e.tiley,
 //  e.xmin, e.xmax);
 //{$ENDIF}
-  mapspot := tiley*MAPCOLS+tilex;
-  maplight := ((int)maplights[mapspot] shl 3)+reallight[mapspot];
+  mapspot := tiley * MAPCOLS + tilex;
+  maplight := (maplights[mapspot] shl 3) + reallight[mapspot];
   wallshadow := mapeffects[mapspot];
   // validate or transform the four corner vertexes
-  vertex[0] := TransformVertex(tilex,tiley);
-  vertex[1] := TransformVertex(tilex+1,tiley);
-  vertex[2] := TransformVertex(tilex+1,tiley+1);
-  vertex[3] := TransformVertex(tilex,tiley+1);
+  vertex[0] := TransformVertex(tilex, tiley);
+  vertex[1] := TransformVertex(tilex + 1, tiley);
+  vertex[2] := TransformVertex(tilex + 1, tiley + 1);
+  vertex[3] := TransformVertex(tilex, tiley + 1);
   // handle a door if present
-  if (mapflags[mapspot]) and (FL_DOOR) then
+  if mapflags[mapspot] and FL_DOOR <> 0 then
   begin
-   doortile := true;
-   RenderDoor;      // sets doorxl / doorxh
-    end;
-  else doortile := false;
+    doortile := true;
+    RenderDoor;      // sets doorxl / doorxh
+  end
+  else
+    doortile := false;
   // draw or flow through the walls
-  for (side := 0; side<4; side++)
+  for side := 0 to 3 do
   begin
-   p1 := vertex[side];
-   p2 := vertex[(side+1)) and (3];
-   if (not ClipEdge) continue;
-   if (p1.px >= p2.px) continue;
-   case side of
-   begin
-     0: // north
-      walltype := northwall[mapspot];
-      wallflags := northflags[mapspot];
-      break;
-     1: // east
-      walltype := westwall[mapspot+1];
-      wallflags := westflags[mapspot+1];
-      break;
-     2: // south
-      walltype := northwall[mapspot+MAPCOLS];
-      wallflags := northflags[mapspot+MAPCOLS];
-      break;
-     3: // west
-      walltype := westwall[mapspot];
-      wallflags := westflags[mapspot];
+    p1 := vertex[side];
+    p2 := vertex[(side + 1) and 3];
+    if not ClipEdge then
+      continue;
+    if p1.px >= p2.px then
+      continue;
+    case side of
+    0: // north
+      begin
+        walltype := northwall[mapspot];
+        wallflags := northflags[mapspot];
       end;
-   x1 := p1.px<xclipl?xclipl : p1.px;
-   x2 := p2.px-1>xcliph?xcliph : p2.px-1;
-   if x1 <= x2 then
-     begin       // totally clipped off side
-     if walltype then
-     DrawWall(x1,x2);
-     DrawSteps(x1,x2);
+    1: // east
+      begin
+        walltype := westwall[mapspot + 1];
+        wallflags := westflags[mapspot + 1];
       end;
-   if (walltype = 0) or ((wallflags) and (F_TRANSPARENT)) then
-   begin
-     // restrict outward flow by the door, if present
-     xl := p1.px;
-     xh := p2.px-1;
-     // restrict by clipping window
-     if (xl<xclipl) xl := xclipl;
-     if (xh>xcliph) xh := xcliph;
-     // flow into the adjacent tile if there is at least a one pix
-     if xh >= xl then
-     begin
-       tx := tilex+adjacentx[side];
-       ty := tiley+adjacenty[side];
-       if (tx<0) or (tx >= MAPCOLS-1) or (ty<0) or (ty >= MAPROWS-1) continue;
-       entry_p.tilex := tx;
-       entry_p.tiley := ty;
-       entry_p.xmin := xl;
-       entry_p.xmax := xh;
-       entry_p.mapspot := (ty shl 6)+tx;
-       ++entrycounter;
-       entry_p.counter := entrycounter;
-       entrycount[entry_p.mapspot] := entrycounter;
-       ++entry_p;
+    2: // south
+      begin
+        walltype := northwall[mapspot + MAPCOLS];
+        wallflags := northflags[mapspot + MAPCOLS];
+      end;
+    3: // west
+      begin
+        walltype := westwall[mapspot];
+        wallflags := westflags[mapspot];
+      end;
+    end;
+    if p1.px < xclipl then
+      x1 := xclipl
+    else
+      x1 := p1.px;
+    if p2.px - 1 > xcliph then
+      x2 := xcliph
+    else
+      x2 := p2.px - 1;
+    if x1 <= x2 then
+    begin // totally clipped off side
+      if walltype <> 0 then
+        DrawWall(x1, x2);
+      DrawSteps(x1, x2);
+    end;
+    if (walltype = 0) or (wallflags and F_TRANSPARENT <> 0) then
+    begin
+      // restrict outward flow by the door, if present
+      xl := p1.px;
+      xh := p2.px - 1;
+      // restrict by clipping window
+      if xl < xclipl then
+        xl := xclipl;
+      if xh > xcliph then
+        xh := xcliph;
+      // flow into the adjacent tile if there is at least a one pix
+      if xh >= xl then
+      begin
+        tx := tilex + adjacentx[side];
+        ty := tiley + adjacenty[side];
+        if (tx < 0) or (tx >= MAPCOLS - 1) or (ty < 0) or (ty >= MAPROWS - 1) then
+          continue;
+        entry_p.tilex := tx;
+        entry_p.tiley := ty;
+        entry_p.xmin := xl;
+        entry_p.xmax := xh;
+        entry_p.mapspot := (ty shl 6) + tx;
+        inc(entrycounter);
+        entry_p.counter := entrycounter;
+        entrycount[entry_p.mapspot] := entrycounter;
+        inc(entry_p);
 {$IFDEF VALIDATE}
-       if (entry_p >= @entries[MAXENTRIES]) MS_Error('RenderTileWalls(): Entry Array OverFlow (%i >= %i)',entry_p-entries,MAXENTRIES);
+        if (entry_p = @entries[MAXENTRIES] then
+          MS_Error('RenderTileWalls(): Entry Array OverFlow (%d)', [MAXENTRIES]);
 {$ENDIF}
       end;
     end;
@@ -317,95 +368,115 @@ end;
 
 
 procedure SetupFrame;
-begin
+var
   i: integer;
+begin
+  memset(@viewbuffer, 0, windowSize);
 
-  memset(viewbuffer,0,windowSize);
-
-  (* Clears the wallz array, so posts that fade out into the distance won't block sprites *)
-  for(i := 0;i<windowWidth;i++)
-  wallz[i] := MAXZ+1;
+  // Clears the wallz array, so posts that fade out into the distance won't block sprites
+  for i := 0 to windowWidth - 1 do
+    wallz[i] := MAXZ + 1;
 
   // reset span counters
   numspans := 0;
   transparentposts := 0;
-  ++frameon;
-  vertexlist_p := vertexlist;    // put the first transformed vertex
+  inc(frameon);
+  vertexlist_p := @vertexlist[0];    // put the first transformed vertex
 
   // special effects
-  if rtimecount>fxtimecount then
+  if rtimecount > fxtimecount then
   begin
-   if (++wallglowindex = 32) wallglowindex := 0;
-   if (wallglowindex<16) wallglow := wallglowindex shl 1;
-    else wallglow := (32-wallglowindex) shl 1;
-   if (wallrotate = 63) wallrotate := 0;
-    else wallrotate++;
-   wallflicker1 := (MS_RndT) and (63);
-   wallflicker2 := (MS_RndT) and (63);
-   wallflicker3 := (MS_RndT) and (63);
-   if (frameon) and (1) wallflicker4 := (MS_RndT%63)-32;
-   wallcycle++;
-   wallcycle) and (:= 3;
-   fxtimecount := timecount+5;
-    end;
+    inc(wallglowindex);
+    if wallglowindex = 32 then
+      wallglowindex := 0;
+    if wallglowindex < 16 then
+      wallglow := wallglowindex shl 1
+    else wallglow :=
+      (32 - wallglowindex) shl 1;
+    if wallrotate = 63 then
+      wallrotate := 0
+    else
+      inc(wallrotate);
+    wallflicker1 := MS_RndT and 63;
+    wallflicker2 := MS_RndT and 63;
+    wallflicker3 := MS_RndT and 63;
+    if frameon and 1 <> 0 then
+      wallflicker4 := (MS_RndT mod 63) - 32;
+    inc(wallcycle);
+    wallcycle := wallcycle and 3;
+    fxtimecount := timecount + 5;
+  end;
 
   viewtilex := viewx shr TILEFRACSHIFT;
   viewtiley := viewy shr TILEFRACSHIFT;
   viewfineangle := viewangle shl FINESHIFT;
   viewcos := costable[viewangle];
   viewsin := sintable[viewangle];
-  xscale := FIXEDDIV(viewsin,FSCALE);
-  yscale := FIXEDDIV(viewcos,FSCALE);
-  end;
+  xscale := FIXEDDIV(viewsin, FSCALE);
+  yscale := FIXEDDIV(viewcos, FSCALE);
+end;
 
 
 procedure FlowView;
+var
+  process_p, nextprocess_p: Pentry_t;
 begin
-  entry_t *process_p, *nextprocess_p;
-
-  process_p := entries;
+  process_p := @entries[0];
   process_p.tilex := viewtilex;
   process_p.tiley := viewtiley;
-  process_p.mapspot := (viewtiley shl 6)+viewtilex;
+  process_p.mapspot := (viewtiley shl 6) + viewtilex;
   process_p.xmin := 0;
-  process_p.xmax := windowWidth-1;
-  entry_p := process_p+1;
-  memset(entrycount,0,MAPCOLS*MAPROWS*4);
+  process_p.xmax := windowWidth - 1;
+  entry_p := process_p;
+  inc(entry_p);
+  memset(@entrycount, 0, MAPCOLS * MAPROWS * SizeOf(integer));
   entrycounter := 1;
-  while process_p<entry_p do
+  while LongWord(process_p) < LongWord(entry_p) do
   begin
-   if (process_p.mapspot = -1) // entry has been merged
-   begin
-     process_p++;
-     continue;
-      end;
-
-    (* check for mergeable entries *)
-   if (entrycount[process_p.mapspot]>process_p.counter) // mergeable tile
-    for (nextprocess_p := process_p+1;nextprocess_p<entry_p;nextprocess_p++) // scan for mergeable entries
-     if nextprocess_p.mapspot = process_p.mapspot then
-     begin
-       if (nextprocess_p.xmin = process_p.xmax+1) process_p.xmax := nextprocess_p.xmax;
-       else if (nextprocess_p.xmax = process_p.xmin-1) process_p.xmin := nextprocess_p.xmin;
-       else // bad merge not 
-  MS_Error('Bad tile event combination:\n'
-     ' nextprocess_p := %d process_p := %d\n'
-     ' nextprocess_p.xmin := %d  nextprocess_p.xmax := %d\n'
-     ' process_p.xmin := %d  process_p.xmax := %d\n',
-     (int)nextprocess_p,(int)process_p,
-     nextprocess_p.xmin,nextprocess_p.xmax,
-     process_p.xmin,process_p.xmax);
-       entrycount[nextprocess_p.mapspot] := 0;
-       nextprocess_p.mapspot := -1;
-        end;
-
-     (* check for a dublicate entry *)
-   if (entrymap[process_p.mapspot] = frameon) goto end;
-
-   entrymap[process_p.mapspot] := frameon;
-   RenderTileWalls(process_p);
-   RenderTileEnds;
-end:
-   process_p++;
+    if process_p.mapspot = -1 then // entry has been merged
+    begin
+      inc(process_p);
+      continue;
     end;
+
+    // check for mergeable entries
+    if entrycount[process_p.mapspot] > process_p.counter then // mergeable tile
+    begin
+      nextprocess_p := process_p;
+      inc(nextprocess_p);
+      while LongWord(nextprocess_p) < LongWord(entry_p) do // scan for mergeable entries
+      begin
+        if nextprocess_p.mapspot = process_p.mapspot then
+        begin
+          if nextprocess_p.xmin = process_p.xmax + 1 then
+            process_p.xmax := nextprocess_p.xmax
+          else if nextprocess_p.xmax = process_p.xmin - 1 then
+            process_p.xmin := nextprocess_p.xmin
+          else // bad merge not
+            MS_Error('FlowView(): Bad tile event combination:'#13#10 +
+                     ' nextprocess_p := %d process_p := %d'#13#10 +
+                     ' nextprocess_p.xmin := %d  nextprocess_p.xmax := %d'#13#10 +
+                     ' process_p.xmin := %d  process_p.xmax := %d',
+                     [integer(nextprocess_p), integer(process_p),
+                      nextprocess_p.xmin, nextprocess_p.xmax,
+                      process_p.xmin, process_p.xmax]);
+          entrycount[nextprocess_p.mapspot] := 0;
+          nextprocess_p.mapspot := -1;
+        end;
+        inc(nextprocess_p);
+      end;
+    end;
+
+    // check for a dublicate entry
+    if entrymap[process_p.mapspot] <> frameon then
+    begin
+      entrymap[process_p.mapspot] := frameon;
+      RenderTileWalls(process_p);
+      RenderTileEnds;
+    end;
+    inc(process_p);
   end;
+end;
+
+end.
+

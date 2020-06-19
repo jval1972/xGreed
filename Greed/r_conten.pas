@@ -44,7 +44,9 @@ var
   numspawnareas, rtimecount: integer;
 
 procedure RenderSprites;
-  
+
+procedure RenderDoor;
+
 implementation
 
 uses
