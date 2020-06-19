@@ -43,6 +43,8 @@ var
   spawnareas: array[0..MAXSPAWNAREAS - 1] of spawnarea_t;
   numspawnareas, rtimecount: integer;
 
+procedure RenderSprites;
+  
 implementation
 
 uses

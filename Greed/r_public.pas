@@ -72,18 +72,25 @@ function RF_GetDoor(const tilex, tiley: integer): Pdoorobj_t;
 
 procedure RF_SetActionHook(const hook: PProcedure);
 
-procedure RF_SetLights(const blackz: fixed_t);
+procedure RF_SetLights(const ablackz: fixed_t);
 
 procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
 
-procedure SetViewSize(const width, height: integer);
+procedure SetViewSize(const awidth, aheight: integer);
 
 implementation
 
 uses
+  Math,
   d_disk,
   d_ints,
+  d_misc,
+  modplay,
+  raven,
+  r_conten,
   r_render,
+  r_spans,
+  r_walls,
   spawn;
 
 function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
@@ -136,7 +143,7 @@ begin
     if i mod 50 = 0 then
     begin
       printf('.');
-      if newascii and (lastascii = 27) then
+      if newascii and (lastascii = #27) then
         exit;
     end;
 
@@ -183,9 +190,9 @@ begin
     inc(i);
   until angle >= DEGREE45 + DEGREE45_2;
 
-  for i = MAXAUTO - 1 downto 1 do
+  for i := MAXAUTO - 1 downto 1 do
     for j := 0 to MAXAUTO - 1 do
-      if autoangle2[j][i] = -1 thhen
+      if autoangle2[j][i] = -1 then
         autoangle2[j][i] := autoangle2[j][i - 1];
   for i := MAXAUTO - 1 downto 1 do
     for j := 0 to MAXAUTO - 1 do
@@ -239,12 +246,12 @@ var
 begin
   for i := 0 to 64 do
   begin
-    intval := rint(atan((32.0 - (i + 1.0)) / 32.0) / PI * TANANGLES * 2.0);
+    intval := rint(arctan((32.0 - (i + 1.0)) / 32.0) / PI * TANANGLES * 2.0);
     pixelangle[i] := intval;
     pixelcosine[i] := cosines[intval and (TANANGLES * 4 - 1)];
   end;
-  memcpy(campixelangle, pixelangle, SizeOf(pixelangle));
-  memcpy(campixelcosine, pixelcosine, SizeOf(pixelcosine));
+  memcpy(@campixelangle, @pixelangle, SizeOf(pixelangle));
+  memcpy(@campixelcosine, @pixelcosine, SizeOf(pixelcosine));
 end;
 
 
@@ -254,7 +261,7 @@ var
   angle: double;
   lightlump: integer;
 begin
-  memset(framevalid, 0, SizeOf(framevalid));
+  memset(@framevalid, 0, SizeOf(framevalid));
   printf('.');
   frameon := 0;
   // trig tables
@@ -269,7 +276,7 @@ begin
   // set up lights
   // Allocates a page aligned buffer and load in the light tables
   lightlump := CA_GetNamedNum('lights');
-  numcolormaps := infotable[lightlump].size / 256;
+  numcolormaps := infotable[lightlump].size div 256;
   colormaps := malloc(256 * (numcolormaps + 1));
   //colormaps := (byte *)(((int)colormaps+255)) and (~0xff);// JVAL: Removed align
   CA_ReadLump(lightlump, colormaps);
@@ -310,16 +317,16 @@ begin
   firstscaleobj.next := @lastscaleobj;
   lastscaleobj.prev := @firstscaleobj;
   lastscaleobj.next := nil;
-  freescaleobj_p := scaleobjlist;
-  memset(scaleobjlist, 0, SizeOf(scaleobjlist));
+  freescaleobj_p := @scaleobjlist[0];
+  memset(@scaleobjlist, 0, SizeOf(scaleobjlist));
   for i := 0 to MAXSPRITES - 2 do
     scaleobjlist[i].next := @scaleobjlist[i + 1];
   firstelevobj.prev := nil;
   firstelevobj.next := @lastelevobj;
   lastelevobj.prev := @firstelevobj;
   lastelevobj.next := nil;
-  freeelevobj_p := elevlist;
-  memset(elevlist, 0, SizeOf(elevlist));
+  freeelevobj_p := @elevlist[0];
+  memset(@elevlist, 0, SizeOf(elevlist));
   for i := 0 to MAXELEVATORS - 2 do
     elevlist[i].next := @elevlist[i + 1];
   numdoors := 0;
@@ -353,9 +360,9 @@ begin
   freescaleobj_p := freescaleobj_p.next;
   memset(result, 0, SizeOf(scaleobj_t));
   result.next := @lastscaleobj;
-  new.prev := lastscaleobj.prev;
+  result.prev := lastscaleobj.prev;
   lastscaleobj.prev := result;
-  new.prev.next := result;
+  result.prev.next := result;
 end;
 
 
@@ -367,10 +374,10 @@ begin
   result := freeelevobj_p;
   freeelevobj_p := freeelevobj_p.next;
   memset(result, 0, SizeOf(elevobj_t));
-  new.next := @lastelevobj;
-  new.prev := lastelevobj.prev;
-  lastelevobj.prev := new;
-  new.prev.next := new;
+  result.next := @lastelevobj;
+  result.prev := lastelevobj.prev;
+  lastelevobj.prev := result;
+  result.prev.next := result;
 end;
 
 
@@ -403,7 +410,7 @@ end;
 
 
 function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
-begin
+var
   h1, h2, h3, h4: fixed_t;
   tilex, tiley, mapspot: integer;
   polytype: integer;
@@ -506,7 +513,7 @@ begin
   h3 := ceilingheight[mapspot + MAPSIZE] shl FRACBITS;
   h4 := ceilingheight[mapspot + MAPSIZE + 1] shl FRACBITS;
   fx := (x and (TILEUNIT - 1)) shr 6; // range from 0 to fracunit-1
-  fy := (y) and (TILEUNIT - 1)) shr 6;
+  fy := (y and (TILEUNIT - 1)) shr 6;
   if polytype = POLY_ULTOLR then
   begin
     if fx > fy then
@@ -523,7 +530,7 @@ begin
   end;
   top := h1 + FIXEDMUL(h2 - h1, fx);
   bottom := h3 + FIXEDMUL(h4 - h3, fx);
-  return top + FIXEDMUL(bottom - top, fy);
+  result := top + FIXEDMUL(bottom - top, fy);
 end;
 
 
@@ -539,12 +546,13 @@ end;
 
 
 // resets the color maps to new lighting values
-procedure RF_SetLights(const blackz: fixed_t);
+procedure RF_SetLights(const ablackz: fixed_t);
 var
   i, table: integer;
+  blackz: fixed_t;
 begin
   // linear diminishing, table is actually logrithmic
-  blackz :blackz shr FRACBITS;
+  blackz := ablackz shr FRACBITS;
   for i := 0 to MAXZ shr FRACBITS do
   begin
     table := (numcolormaps * i) div blackz;
@@ -559,7 +567,7 @@ procedure RF_CheckActionFlag;
 begin
   if SC.vrhelmet = 0 then
     TimeUpdate;
-  if not actionflag then
+  if actionflag = 0 then
     exit;
   actionhook;
   actionflag := 0;
@@ -593,14 +601,19 @@ begin
 end;
 
 
-procedure SetViewSize(const width, height: integer);
+procedure SetViewSize(const awidth, aheight: integer);
 var
   i: integer;
+  width, height: integer;
 begin
-  if width > MAX_VIEW_WIDTH then
-    width := MAX_VIEW_WIDTH;
-  if height > MAX_VIEW_HEIGHT then
-    height := MAX_VIEW_HEIGHT;
+  if awidth > MAX_VIEW_WIDTH then
+    width := MAX_VIEW_WIDTH
+  else
+    width := awidth;
+  if aheight > MAX_VIEW_HEIGHT then
+    height := MAX_VIEW_HEIGHT
+  else
+    height := aheight;
   windowHeight := height;
   windowWidth := width;
   windowSize := width * height;

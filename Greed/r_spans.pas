@@ -60,7 +60,9 @@ var
   mr_colormap: PByteArray;
 
 procedure ScalePost;
-  
+
+procedure DrawSpans;
+
 implementation
 
 uses

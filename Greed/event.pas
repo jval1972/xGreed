@@ -367,7 +367,7 @@ procedure LoadScript(const lump: integer; const newgame: boolean);
 var
   s, fname: string;
   sl: TStringList;
-  sc: TScriptEngine;
+  sce: TScriptEngine;
   stmp: string;
   i, j, x, y, eval, line, etype, upper, lower, speed, result, endeval: integer;
   num, val, psprite, total, ceval, def1, def2, x1, y1, x2, y2, removeable: integer;
@@ -408,67 +408,66 @@ begin
   else
     sl.Text := CA_LumpAsText(lump);
 
-  sc := TScriptEngine.Create(sl.Text);
-  while sc.GetString do
+  sce := TScriptEngine.Create(sl.Text);
+  while sce.GetString do
   begin
-    stmp := strupper(sc._String);
+    stmp := strupper(sce._String);
     if stmp = 'END' then
       break
     else if stmp = 'TRIGGER' then
     begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
       triggers[x][y] := eval;
-      sc.Free;
     end
     else if stmp = 'AREATRIGGER' then
     begin
-      sc.MustGetInteger;
-      x1 := sc._Integer;
-      sc.MustGetInteger;
-      y1 := sc._Integer;
-      sc.MustGetInteger;
-      x2 := sc._Integer;
-      sc.MustGetInteger;
-      y2 := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
+      sce.MustGetInteger;
+      x1 := sce._Integer;
+      sce.MustGetInteger;
+      y1 := sce._Integer;
+      sce.MustGetInteger;
+      x2 := sce._Integer;
+      sce.MustGetInteger;
+      y2 := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
       for i := y1 to y2 do
         for j := x1 to x2 do
           triggers[j][i] := eval;
     end
     else if stmp = 'WALLSWITCH' then
     begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
       switches[x][y] := eval;
     end
     else if stmp = 'ELEVATOR' then
     begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
-      sc.MustGetInteger;
-      endeval := sc._Integer;
-      sc.MustGetInteger;
-      etype := sc._Integer;
-      sc.MustGetInteger;
-      upper := sc._Integer;
-      sc.MustGetInteger;
-      lower := sc._Integer;
-      sc.MustGetInteger;
-      speed := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
+      sce.MustGetInteger;
+      endeval := sce._Integer;
+      sce.MustGetInteger;
+      etype := sce._Integer;
+      sce.MustGetInteger;
+      upper := sce._Integer;
+      sce.MustGetInteger;
+      lower := sce._Integer;
+      sce.MustGetInteger;
+      speed := sce._Integer;
       elevator_p := RF_GetElevator;
       elevator_p.floor := lower;
       elevator_p.mapspot := y * MAPCOLS + x;
@@ -488,20 +487,20 @@ begin
     end
     else if stmp = 'SPAWNELEVATOR' then
     begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
-      sc.MustGetInteger;
-      etype := sc._Integer;
-      sc.MustGetInteger;
-      upper := sc._Integer;
-      sc.MustGetInteger;
-      lower := sc._Integer;
-      sc.MustGetInteger;
-      speed := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
+      sce.MustGetInteger;
+      etype := sce._Integer;
+      sce.MustGetInteger;
+      upper := sce._Integer;
+      sce.MustGetInteger;
+      lower := sce._Integer;
+      sce.MustGetInteger;
+      speed := sce._Integer;
       elevator_p := RF_GetElevator;
       elevator_p.floor := lower;
       elevator_p.mapspot := y * MAPCOLS + x;
@@ -525,18 +524,18 @@ begin
       inc(numzones);
       if numzones = MAXZONES then
         MS_Error('Out of mapzones');
-      sc.MustGetInteger;
-      z.x1 := sc._Integer;
-      sc.MustGetInteger;
-      z.y1 := sc._Integer;
-      sc.MustGetInteger;
-      z.x2 := sc._Integer;
-      sc.MustGetInteger;
-      z.y2 := sc._Integer;
-      sc.MustGetInteger;
-      z.eval := sc._Integer;
-      sc.MustGetInteger;
-      z.removeable := sc._Integer;
+      sce.MustGetInteger;
+      z.x1 := sce._Integer;
+      sce.MustGetInteger;
+      z.y1 := sce._Integer;
+      sce.MustGetInteger;
+      z.x2 := sce._Integer;
+      sce.MustGetInteger;
+      z.y2 := sce._Integer;
+      sce.MustGetInteger;
+      z.eval := sce._Integer;
+      sce.MustGetInteger;
+      z.removeable := sce._Integer;
       z.typ := ACTIVATIONTYPE;
     end
     else if stmp = 'MAPZONE' then
@@ -545,79 +544,79 @@ begin
       inc(numzones);
       if numzones = MAXZONES then
         MS_Error('Out of mapzones');
-      z.x1 := sc._Integer;
-      sc.MustGetInteger;
-      z.y1 := sc._Integer;
-      sc.MustGetInteger;
-      z.x2 := sc._Integer;
-      sc.MustGetInteger;
-      z.y2 := sc._Integer;
-      sc.MustGetInteger;
-      z.eval := sc._Integer;
-      sc.MustGetInteger;
-      z.endeval := sc._Integer;
-      sc.MustGetInteger;
-      z.layer := sc._Integer;
-      sc.MustGetInteger;
-      z.newvalue := sc._Integer;
-      sc.MustGetInteger;
-      z.rate := sc._Integer;
-      sc.MustGetInteger;
-      z.removeable := sc._Integer;
+      z.x1 := sce._Integer;
+      sce.MustGetInteger;
+      z.y1 := sce._Integer;
+      sce.MustGetInteger;
+      z.x2 := sce._Integer;
+      sce.MustGetInteger;
+      z.y2 := sce._Integer;
+      sce.MustGetInteger;
+      z.eval := sce._Integer;
+      sce.MustGetInteger;
+      z.endeval := sce._Integer;
+      sce.MustGetInteger;
+      z.layer := sce._Integer;
+      sce.MustGetInteger;
+      z.newvalue := sce._Integer;
+      sce.MustGetInteger;
+      z.rate := sce._Integer;
+      sce.MustGetInteger;
+      z.removeable := sce._Integer;
       z.typ := MAPZONETYPE;
     end
     else if stmp = 'BONUSTIME' then
     begin
-      sc.MustGetInteger;
-      bonustime := sc._Integer * 70;
+      sce.MustGetInteger;
+      bonustime := sce._Integer * 70;
     end
     else if stmp = 'PRIMARY' then
     begin
-      sc.MustGetInteger;
-      num := sc._Integer;
-      sc.MustGetInteger;
-      val := sc._Integer;
-      sc.MustGetInteger;
-      total := sc._Integer;
-      sc.MustGetInteger;
-      psprite := sc._Integer;
+      sce.MustGetInteger;
+      num := sce._Integer;
+      sce.MustGetInteger;
+      val := sce._Integer;
+      sce.MustGetInteger;
+      total := sce._Integer;
+      sce.MustGetInteger;
+      psprite := sce._Integer;
       primaries[num * 2] := psprite;
       primaries[num * 2 + 1] := val;
       pcount[num] := total;
     end
     else if stmp = 'SECONDARY' then
     begin
-      sc.MustGetInteger;
-      num := sc._Integer;
-      sc.MustGetInteger;
-      val := sc._Integer;
-      sc.MustGetInteger;
-      total := sc._Integer;
-      sc.MustGetInteger;
-      psprite := sc._Integer;
+      sce.MustGetInteger;
+      num := sce._Integer;
+      sce.MustGetInteger;
+      val := sce._Integer;
+      sce.MustGetInteger;
+      total := sce._Integer;
+      sce.MustGetInteger;
+      psprite := sce._Integer;
       secondaries[num * 2] := psprite;
       secondaries[num * 2 + 1] := val;
       scount[num] := total;
     end
     else if stmp = 'LEVELSCORE' then
     begin
-      sc.MustGetInteger;
-      player.levelscore := sc._Integer;
+      sce.MustGetInteger;
+      player.levelscore := sce._Integer;
     end
     else if stmp = 'SPRITE' then
     begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      num := sc._Integer;
-      sc.MustGetInteger;
-      ceval := sc._Integer;
-      sc.MustGetInteger;
-      def1 := sc._Integer;
-      sc.MustGetInteger;
-      def2 := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      num := sce._Integer;
+      sce.MustGetInteger;
+      ceval := sce._Integer;
+      sce.MustGetInteger;
+      def1 := sce._Integer;
+      sce.MustGetInteger;
+      def2 := sce._Integer;
       if (newgame) and (player.difficulty >= 5 - def2) and (player.difficulty <= 5 - def1) then
       begin
         gameloading := true;
@@ -627,22 +626,22 @@ begin
     end
     else if stmp = 'SPAWN' then
     begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
-      sc.MustGetInteger;
-      num := sc._Integer;
-      sc.MustGetInteger;
-      ceval := sc._Integer;
-      sc.MustGetInteger;
-      def1 := sc._Integer;
-      sc.MustGetInteger;
-      def2 := sc._Integer;
-      sc.MustGetInteger;
-      removeable := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
+      sce.MustGetInteger;
+      num := sce._Integer;
+      sce.MustGetInteger;
+      ceval := sce._Integer;
+      sce.MustGetInteger;
+      def1 := sce._Integer;
+      sce.MustGetInteger;
+      def2 := sce._Integer;
+      sce.MustGetInteger;
+      removeable := sce._Integer;
       if (player.difficulty >= 5 - def2) and (player.difficulty <= 5 - def1) and
          (newgame or ((not newgame) and ((removeable = 0) or (player.events[eval] = 0)))) then
       begin
@@ -661,16 +660,16 @@ begin
    end
    else if stmp = 'SPAWNTRIGGER' then
    begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
-      sc.MustGetInteger;
-      ceval := sc._Integer;
-      sc.MustGetInteger;
-      removeable := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
+      sce.MustGetInteger;
+      ceval := sce._Integer;
+      sce.MustGetInteger;
+      removeable := sce._Integer;
       z := @zones[numzones];
       inc(numzones);
       if numzones = MAXZONES then
@@ -684,16 +683,16 @@ begin
     end
     else if stmp = 'SPAWNSOUND' then
    begin
-      sc.MustGetInteger;
-      x := sc._Integer;
-      sc.MustGetInteger;
-      y := sc._Integer;
-      sc.MustGetInteger;
-      eval := sc._Integer;
-      sc.MustGetInteger;
-      ceval := sc._Integer;
-      sc.MustGetInteger;
-      removeable := sc._Integer;
+      sce.MustGetInteger;
+      x := sce._Integer;
+      sce.MustGetInteger;
+      y := sce._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
+      sce.MustGetInteger;
+      ceval := sce._Integer;
+      sce.MustGetInteger;
+      removeable := sce._Integer;
       z := @zones[numzones];
       inc(numzones);
       if numzones = MAXZONES then
@@ -707,10 +706,10 @@ begin
     end
     else if stmp = 'SPAWNFLI' then
     begin
-      sc.MustGetInteger;
-      eval := sc._Integer;
-      sc.MustGetInteger;
-      ceval := sc._Integer;
+      sce.MustGetInteger;
+      eval := sce._Integer;
+      sce.MustGetInteger;
+      ceval := sce._Integer;
       z := @zones[numzones];
       inc(numzones);
       if numzones = MAXZONES then
@@ -721,10 +720,10 @@ begin
     end
     else if stmp = 'FORCELOAD' then
     begin
-      sc.MustGetString;
-      s := sc._String;
-      sc.MustGetInteger;
-      x := sc._Integer;
+      sce.MustGetString;
+      s := sce._String;
+      sce.MustGetInteger;
+      x := sce._Integer;
       loadsprites[numloadsprites] := CA_GetNamedNum(s);
       loadspritesn[numloadsprites] := x;
       inc(numloadsprites);
@@ -735,35 +734,35 @@ begin
       inc(numzones);
       if numzones = MAXZONES then
         MS_Error('Out of mapzones');
-      sc.MustGetInteger;
-      z.x1 := sc._Integer;
-      sc.MustGetInteger;
-      z.y1 := sc._Integer;
-      sc.MustGetInteger;
-      z.x2 := sc._Integer;
-      sc.MustGetInteger;
-      z.y2 := sc._Integer;
-      sc.MustGetInteger;
-      z.eval := sc._Integer;
-      sc.MustGetInteger;
-      z.endeval := sc._Integer;
-      sc.MustGetInteger;
-      z.removeable := sc._Integer;
+      sce.MustGetInteger;
+      z.x1 := sce._Integer;
+      sce.MustGetInteger;
+      z.y1 := sce._Integer;
+      sce.MustGetInteger;
+      z.x2 := sce._Integer;
+      sce.MustGetInteger;
+      z.y2 := sce._Integer;
+      sce.MustGetInteger;
+      z.eval := sce._Integer;
+      sce.MustGetInteger;
+      z.endeval := sce._Integer;
+      sce.MustGetInteger;
+      z.removeable := sce._Integer;
       z.typ := AREATRIGGERTYPE;
     end
     else if stmp = 'BACKDROP' then
     begin
-      sc.MustGetString;
-      s := sc._String;
+      sce.MustGetString;
+      s := sce._String;
       eventlump := CA_GetNamedNum(s);
     end
     else if stmp = 'REM' then
     begin
-      sc.GetStringEOL;
+      sce.GetStringEOL;
     end
   end;
 
-  sc.Free;
+  sce.Free;
   sl.Free;
 
   for x := 0 to numloadsprites - 1 do

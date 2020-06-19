@@ -118,6 +118,10 @@ var
   entrycounter: integer;
   fxtimecount: integer;
 
+procedure SetupFrame;
+
+procedure FlowView;
+
 implementation
 
 uses
@@ -306,10 +310,10 @@ begin
 {$IFDEF VALIDATE}
        if (entry_p >= @entries[MAXENTRIES]) MS_Error('RenderTileWalls(): Entry Array OverFlow (%i >= %i)',entry_p-entries,MAXENTRIES);
 {$ENDIF}
-        end;
       end;
     end;
   end;
+end;
 
 
 procedure SetupFrame;
@@ -355,7 +359,7 @@ begin
   end;
 
 
-void FlowView
+procedure FlowView;
 begin
   entry_t *process_p, *nextprocess_p;
 
