@@ -319,16 +319,16 @@ begin
   if temp = nil then
     MS_Error('DoIntroMenu(): No memory for temp screen');
   memcpy(temp, @screen, 64000);
-  memset(@screen, 0, 64000);
+  memset(screen, 0, 64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   player.timecount := timecount;
   ShowMenu(0);
   if not quitgame and not gameloaded then
   begin
-    memset(@screen, 0, 64000);
+    memset(screen, 0, 64000);
     memcpy(@colors, @oldcolors, 768);
     VI_SetPalette(@colors);
-    memcpy(@screen, temp, 64000);
+    memcpy(screen, temp, 64000);
   end;
   memfree(pointer(temp));
   timecount := player.timecount;

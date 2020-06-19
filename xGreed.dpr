@@ -59,7 +59,8 @@ uses
   utils in 'Greed\utils.pas',
   g_delphi in 'base\g_delphi.pas',
   i_windows in 'base\i_windows.pas',
-  scriptengine in 'base\scriptengine.pas';
+  scriptengine in 'base\scriptengine.pas',
+  i_main in 'Base\i_main.pas';
 
 var
   hGenWnd: HWND = 0;

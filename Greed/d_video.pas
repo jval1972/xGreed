@@ -56,25 +56,25 @@ var
 
 procedure VI_FillPalette(const red, green, blue: integer);
 
-procedure VI_SetPalette(const palette: PByteArray);
+procedure VI_SetPalette(const apal: PByteArray);
 
 procedure VI_ResetPalette;
 
-procedure VI_GetPalette(const palette: PByteArray);
+procedure VI_GetPalette(const apal: PByteArray);
 
-procedure VI_FadeOut(const start, stop: integer; const red, green, blue: integer;
+procedure VI_FadeOut(start, stop: integer; const red, green, blue: integer;
   const steps: integer);
 
-procedure VI_FadeIn(const start, stop: integer; const palette: PByteArray;
+procedure VI_FadeIn(start, stop: integer; const apal: PByteArray;
   const steps: integer);
 
 procedure VI_DrawPic(const x, y: integer; const pic: Ppic_t);
 
-procedure VI_DrawMaskedPic(const x, y: integer; const pic: Ppic_t);
+procedure VI_DrawMaskedPic(x, y: integer; const pic: Ppic_t);
 
-procedure VI_DrawTransPicToBuffer(const x, y: integer; const pic: Ppic_t);
+procedure VI_DrawTransPicToBuffer(x, y: integer; const pic: Ppic_t);
 
-procedure VI_DrawMaskedPicToBuffer2(const x, y: integer; const pic: Ppic_t);
+procedure VI_DrawMaskedPicToBuffer2(x, y: integer; const pic: Ppic_t);
 
 procedure VI_Init(const specialbuffer: integer);
 
@@ -82,18 +82,25 @@ procedure RF_BlitView;
 
 procedure VI_BlitView;
 
-procedure VI_DrawMaskedPicToBuffer(const x, y: integer; const pic: Ppic_t);
+procedure VI_DrawMaskedPicToBuffer(x, y: integer; const pic: Ppic_t);
 
 implementation
 
 uses
-  intro;
+  d_disk,
+  d_misc,
+  intro,
+  i_windows,
+  raven,
+  r_public_h,
+  r_public,
+  r_render;
   
 procedure VI_FillPalette(const red, green, blue: integer);
 begin
 end;
 
-procedure VI_SetPalette(const palette: PByteArray);
+procedure VI_SetPalette(const apal: PByteArray);
 var
   dc: HDC;
   i: integer;
@@ -104,11 +111,11 @@ begin
 
   for i := 0 to 255 do
   begin
-    entries[i].peRed := palette[j] shl 2;
+    entries[i].peRed := apal[j] shl 2;
     inc(j);
-    entries[i].peGreen := palette[j] shl 2;
+    entries[i].peGreen := apal[j] shl 2;
     inc(j);
-    entries[i].peBlue := palette[j] shl 2;
+    entries[i].peBlue := apal[j] shl 2;
     inc(j);
     entries[i].peFlags := PC_NOCOLLAPSE;
   end;
@@ -141,20 +148,21 @@ begin
 end;
 
 
-procedure VI_GetPalette(const palette: PByteArray);
+procedure VI_GetPalette(const apal: PByteArray);
 begin
+//  memset(apal, 0, 768);
 end;
 
 
-procedure VI_FadeOut(const start, stop: integer; const red, green, blue: integer;
+procedure VI_FadeOut(start, stop: integer; const red, green, blue: integer;
   const steps: integer);
 var
   basep: array[0..767] of byte;
   px, pdx, dx: array[0..767] of shortint;
   i, j: integer;
 begin
-  VI_GetPalette(basep);
-  memset(dx, 0, 768);
+  VI_GetPalette(@basep);
+  memset(@dx, 0, 768);
   for j := start to stop - 1 do
   begin
     pdx[j * 3] := (basep[j * 3] - red) mod steps;
@@ -184,150 +192,156 @@ begin
       end;
     end;
     Wait(1);
-    VI_SetPalette(basep);
+    VI_SetPalette(@basep);
   end;
   VI_FillPalette(red, green, blue);
 end;
 
 
-procedure VI_FadeIn(const start, stop: integer; const palette: PByteArray;
+procedure VI_FadeIn(start, stop: integer; const apal: PByteArray;
   const steps: integer);
-begin
-  byte        basep[768], work[768];
-  signed char px[768], pdx[768], dx[768];
+var
+  basep, work: packed array[0..767] of byte;
+  px, pdx, dx: packed array[0..767] of shortint;
   i, j: integer;
-
-  VI_GetPalette(basep);
-  memset(dx,0,768);
-  memset(work,0,768);
+begin
+  VI_GetPalette(@basep);
+  memset(@dx, 0, 768);
+  memset(@work, 0, 768);
   start := start * 3;
   stop := stop * 3;
-  for(j := start;j<stop;j++)
+  for j := start to stop - 1 do
   begin
-   pdx[j] := (palette[j]-basep[j]) mod steps;
-   px[j] := (palette[j]-basep[j])/steps;
-    end;
-  for (i := 0;i<steps;i++)
-  begin
-   for (j := start;j<stop;j++)
-   begin
-     work[j] := work[j] + px[j];
-     dx[j] := dx[j] + pdx[j];
-     if dx[j] >= steps then
-     begin
-       dx[j] := dx[j] - steps;
-       ++work[j];
-     end
-     else if dx[j] <= -steps then
-     begin
-       dx[j] := dx[j] + steps;
-       --work[j];
-        end;
-      end;
-   Wait(1);
-   VI_SetPalette(work);
-    end;
-  VI_SetPalette(palette);
+    pdx[j] := (apal[j] - basep[j]) mod steps;
+    px[j] := (apal[j] - basep[j]) div steps;
   end;
+  for i := 0 to steps - 1 do
+  begin
+    for j := start to stop - 1 do
+    begin
+      work[j] := work[j] + px[j];
+      dx[j] := dx[j] + pdx[j];
+      if dx[j] >= steps then
+      begin
+        dx[j] := dx[j] - steps;
+        inc(work[j]);
+      end
+      else if dx[j] <= -steps then
+      begin
+        dx[j] := dx[j] + steps;
+        dec(work[j]);
+      end;
+    end;
+    Wait(1);
+    VI_SetPalette(@work);
+  end;
+  VI_SetPalette(apal);
+end;
 
 
 procedure VI_DrawPic(const x, y: integer; const pic: Ppic_t);
-begin
-  byte *  dest;
-  byte *  source;
+var
+  dest, source: PByteArray;
   width: integer;
   height: integer;
-
-  width :=  pic.width;
-  height :=  pic.height;
-  source := ) and (pic.data;
-  dest :=  ylookup[y] + x;
-
-  while height-- do
-  begin
-    memcpy(dest,source,width);
-    dest := dest + SCREENWIDTH;
-    source := source + width;
-   end;
-  end;
-
-
-procedure VI_DrawMaskedPic(const x, y: integer; const pic: Ppic_t);
-(* Draws a formatted image to the screen, masked with zero *)
 begin
-  byte *dest, *source;
+  width := pic.width;
+  height := pic.height;
+  source := @pic.data;
+  dest := @ylookup[y][x];
+
+  while height > 0 do
+  begin
+    memcpy(dest, source, width);
+    dest := @dest[SCREENWIDTH];
+    source := @source[width];
+    dec(height);
+  end;
+end;
+
+
+// Draws a formatted image to the screen, masked with zero
+procedure VI_DrawMaskedPic(x, y: integer; const pic: Ppic_t);
+var
+  dest, source: PByteArray;
   width, height, xcor: integer;
-
+begin
   x := x - pic.orgx;
   y := y - pic.orgy;
   height := pic.height;
   source := @pic.data;
-  while y<0 do
+  while y < 0 do
   begin
-   source := source + pic.width;
-   height--;
-   y++;
-    end;
-  while height-- do
-  begin
-   if y<200 then
-   begin
-     dest := ylookup[y]+x;
-     xcor := x;
-     width := pic.width;
-     while width-- do
-     begin
-       if (xcor >= 0) and (xcor <= 319) and (*source) *dest := *source;
-       xcor++;
-       source++;
-       dest++;
-        end;
-      end;
-   y++;
-    end;
+    source := @source[pic.width];
+    dec(height);
+    inc(y);
   end;
+  while height > 0 do
+  begin
+    dec(height);
+    if y < 200 then
+    begin
+      dest := @ylookup[y][x];
+      xcor := x;
+      width := pic.width;
+      while width > 0 do
+      begin
+        if (xcor >= 0) and (xcor <= 319) and (source[0] <> 0) then
+          dest[0] := source[0];
+        inc(xcor);
+        source := @source[1];
+        dest := @dest[1];
+        dec(width);
+      end;
+    end;
+    inc(y);
+  end;
+end;
 
 
-procedure VI_DrawTransPicToBuffer(const x, y: integer; const pic: Ppic_t);
-(* Draws a transpartent, masked pic to the view buffer *)
-begin
-  byte *dest,*source;
+// Draws a transpartent, masked pic to the view buffer
+procedure VI_DrawTransPicToBuffer(x, y: integer; const pic: Ppic_t);
+var
+  dest, source: PByteArray;
   width,height: integer;
-
+begin
   x := x - pic.orgx;
   y := y - pic.orgy;
   height := pic.height;
   source := @pic.data;
-  while y<0 do
+  while y < 0 do
   begin
-   source := source + pic.width;
-   height--;
-   y++;
-    end;
-  while height-.0 do
-  begin
-   if y<200 then
-   begin
-     dest := viewylookup[y]+x;
-     width := pic.width;
-     while width-- do
-     begin
-       if (*source) *dest := *(translookup[*source-1]+*dest);
-       source++;
-       dest++;
-        end;
-      end;
-   y++;
-    end;
+   source := @source[pic.width];
+   dec(height);
+   inc(y);
   end;
+  while height > 0 do
+  begin
+    dec(height);
+    if y < 200 then
+    begin
+      dest := @viewylookup[y][x];
+      width := pic.width;
+      while width > 0 do
+      begin
+        if source[0] <> 0 then
+          dest[0] := translookup[source[0] - 1][dest[0]];
+        source := @source[1];
+        dest := @dest[1];
+        dec(width);
+      end;
+    end;
+    inc(y);
+  end;
+end;
 
 
-procedure VI_DrawMaskedPicToBuffer2(const x, y: integer; const pic: Ppic_t);
-(* Draws a masked pic to the view buffer *)
-begin
-  byte *dest, *source, *colormap;
+// Draws a masked pic to the view buffer
+procedure VI_DrawMaskedPicToBuffer2(x, y: integer; const pic: Ppic_t);
+var
+  dest, source, colormap: PByteArray;
   width, height, maplight: integer;
-
+begin
 // x-:= pic.orgx;
 // y-:= pic.orgy;
   height := pic.height;
@@ -336,187 +350,213 @@ begin
   wallshadow := mapeffects[player.mapspot];
   if wallshadow = 0 then
   begin
-   maplight := ((int)maplights[player.mapspot] shl 3)+reallight[player.mapspot];
-   if (maplight<0) colormap := zcolormap[0];
-    else if (maplight>MAXZLIGHT) colormap := zcolormap[MAXZLIGHT];
-    else colormap := zcolormap[maplight];
+    maplight := (maplights[player.mapspot] * 8) + reallight[player.mapspot];
+    if maplight < 0 then
+      colormap := zcolormap[0]
+    else if maplight > MAXZLIGHT then
+      colormap := zcolormap[MAXZLIGHT]
+    else
+      colormap := zcolormap[maplight];
   end
-  else if (wallshadow = 1) colormap := colormaps+(wallglow shl 8);
-  else if (wallshadow = 2) colormap := colormaps+(wallflicker1 shl 8);
-  else if (wallshadow = 3) colormap := colormaps+(wallflicker2 shl 8);
-  else if (wallshadow = 4) colormap := colormaps+(wallflicker3 shl 8);
+  else if wallshadow = 1 then
+    colormap := @colormaps[wallglow shl 8]
+  else if wallshadow = 2 then
+    colormap := @colormaps[wallflicker1 shl 8]
+  else if wallshadow = 3 then
+    colormap := @colormaps[wallflicker2 shl 8]
+  else if wallshadow = 4 then
+    colormap := @colormaps[wallflicker3 shl 8]
   else if (wallshadow >= 5) and (wallshadow <= 8) then
   begin
-   if (wallcycle = wallshadow-5) colormap := colormaps;
-   else
-   begin
-     maplight := ((int)maplights[player.mapspot] shl 3)+reallight[player.mapspot];
-     if (maplight<0) colormap := zcolormap[0];
-      else if (maplight>MAXZLIGHT) colormap := zcolormap[MAXZLIGHT];
-      else colormap := zcolormap[maplight];
-      end;
+    if (wallcycle = wallshadow - 5) then
+      colormap := colormaps
+    else
+    begin
+      maplight := (maplights[player.mapspot] * 8) + reallight[player.mapspot];
+      if maplight < 0 then
+        colormap := zcolormap[0]
+      else if maplight > MAXZLIGHT then
+        colormap := zcolormap[MAXZLIGHT]
+      else
+        colormap := zcolormap[maplight];
+    end;
   end
   else if wallshadow = 9 then
   begin
-   maplight := ((int)maplights[player.mapspot] shl 3)+reallight[player.mapspot]+wallflicker4;
-   if (maplight<0) colormap := zcolormap[0];
-    else if (maplight>MAXZLIGHT) colormap := zcolormap[MAXZLIGHT];
-    else colormap := zcolormap[maplight];
-    end;
-  if height+y>windowHeight then
-  height := windowHeight-y;
-  while height-.0 do
-  begin
-   dest := viewylookup[y]+x;
-   width := pic.width;
-   while width-- do
-   begin
-     if (*source) *dest := *(colormap + *(source));
-     source++;
-     dest++;
-      end;
-   y++;
-    end;
+    maplight := (maplights[player.mapspot] * 8) + reallight[player.mapspot] + wallflicker4;
+    if maplight < 0 then
+      colormap := zcolormap[0]
+    else if maplight > MAXZLIGHT then
+      colormap := zcolormap[MAXZLIGHT]
+    else
+      colormap := zcolormap[maplight];
   end;
+  if height + y > windowHeight then
+    height := windowHeight - y;
+  while height > 0 do
+  begin
+    dec(height);
+    dest := @viewylookup[y][x];
+    width := pic.width;
+    while width > 0 do
+    begin
+      if source[0] <> 0 then
+        dest[0] := colormap[source[0]];
+      source := @source[1];
+      dest := @dest[1];
+      dec(width);
+    end;
+    inc(y);
+  end;
+end;
 
 
 procedure VI_Init(const specialbuffer: integer);
-begin
-  HDC        dc;
+var
+  dc: HDC;
   y: integer;
   i: integer;
   j: integer;
-  BITMAPINFO *  bmi;
-  LOGPALETTE *  pal;
-  byte *      pal_data;
-
+  bmi: ^BITMAPINFO;
+  pal: ^LOGPALETTE;
+  pal_data: PByteArray;
+begin
   dc :=  GetDC(Window_Handle);
   Memory_DC :=  CreateCompatibleDC(dc);
 
-  bmi :=  malloc(SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
-  memset(bmi,0,SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
+  bmi := malloc(SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
+  memset(bmi, 0, SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
 
-  bmi.bmiHeader.biSize :=  SizeOf(BITMAPINFOHEADER);
-  bmi.bmiHeader.biWidth :=  SCREENWIDTH;   
-  bmi.bmiHeader.biHeight :=  SCREENHEIGHT;    
-  bmi.bmiHeader.biPlanes :=  1;
-  bmi.bmiHeader.biBitCount :=  8;
-  bmi.bmiHeader.biCompression :=  BI_RGB;  
+  bmi.bmiHeader.biSize := SizeOf(BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth := SCREENWIDTH;
+  bmi.bmiHeader.biHeight := SCREENHEIGHT;
+  bmi.bmiHeader.biPlanes := 1;
+  bmi.bmiHeader.biBitCount := 8;
+  bmi.bmiHeader.biCompression := BI_RGB;
 
-  for (i :=  0 ; i < 256 ; i++)
+  for i := 0 to 255 do
   begin
-    (WORD)*((WORD*)(bmi.bmiColors) + i) :=  i;
-   end;
+    bmi.bmiColors[i].rgbRed := i;
+    bmi.bmiColors[i].rgbGreen := i;
+    bmi.bmiColors[i].rgbBlue := i;
+    bmi.bmiColors[i].rgbReserved := 0;
+  end;
 
   pal :=  malloc(SizeOf(LOGPALETTE) + 256 * SizeOf(PALETTEENTRY));
   memset(pal,0,SizeOf(LOGPALETTE) + 256 * SizeOf(PALETTEENTRY));
 
-  pal.palVersion :=  $300;
-  pal.palNumEntries :=  256;
+  pal.palVersion := $300;
+  pal.palNumEntries := 256;
 
-  pal_data :=  CA_CacheLump(CA_GetNamedNum('palette'));
+  pal_data := CA_CacheLump(CA_GetNamedNum('palette'));
 
-  for (i :=  0,j :=  0 ; i < 256 ; i++)
+  j := 0;
+  for i := 0 to 255 do
   begin
-    pal.palPalEntry[i].peRed :=  pal_data[j++]  shl  2;
-    pal.palPalEntry[i].peGreen :=  pal_data[j++]  shl  2;
-    pal.palPalEntry[i].peBlue :=  pal_data[j++]  shl  2;
-    pal.palPalEntry[i].peFlags :=  PC_NOCOLLAPSE;
-   end;
+    pal.palPalEntry[i].peRed := pal_data[j] * 4;
+    inc(j);
+    pal.palPalEntry[i].peGreen := pal_data[j] * 4;
+    inc(j);
+    pal.palPalEntry[i].peBlue := pal_data[j] * 4;
+    inc(j);
+    pal.palPalEntry[i].peFlags := PC_NOCOLLAPSE;
+  end;
 
-  Palette :=  CreatePalette(pal);
+  Palette := CreatePalette(pal^);
   SelectPalette(dc,Palette,TRUE);
-  SelectPalette(Memory_DC,Palette,TRUE);
+  SelectPalette(Memory_DC, Palette, TRUE);
   RealizePalette(dc);
   RealizePalette(Memory_DC);
-  
-  free(pal);
 
-  Bitmap :=  CreateDIBSection(
-    Memory_DC,
-    bmi,
-    DIB_PAL_COLORS, 
-   ) and (screen,
-    NULL,
-    0);
+  memfree(pointer(pal));
 
-  free(bmi);
+  Bitmap := CreateDIBSection(Memory_DC, bmi^, DIB_PAL_COLORS, pointer(screen), 0, 0);
 
-  SelectObject(Memory_DC,Bitmap);
+  memfree(pointer(bmi));
 
-  ReleaseDC(Window_Handle,dc);
+  SelectObject(Memory_DC, Bitmap);
 
-  if screen = NULL then
-    MS_Error('VI_Init: Out of memory for screen');
+  ReleaseDC(Window_Handle, dc);
 
-  for (y :=  0 ; y < SCREENHEIGHT ; y++)
-    ylookup[y] :=  screen + y * SCREENWIDTH;
+  if screen = nil then
+    MS_Error('VI_Init(): Out of memory for screen');
+
+  for y := 0 to SCREENHEIGHT - 1 do
+    ylookup[y] := @screen[y * SCREENWIDTH];
 
   transparency := CA_CacheLump(CA_GetNamedNum('TRANSPARENCY'));
 
-  for(y :=  0 ; y < 255 ; y++)
-    translookup[y] :=  transparency + 256 * y;
-  end;
+  for y := 0 to 255 do
+    translookup[y] := @transparency[256 * y];
+end;
 
 
 procedure RF_BlitView;
+var
+  i, j: integer;
 begin
-  i :=  0: integer;
-  j :=  SCREENHEIGHT - 1: integer;
+  i := 0;
+  j := SCREENHEIGHT - 1;
 
-  for (; i < SCREENHEIGHT ; i++,j--)
-    memcpy(ylookup[i], viewylookup[j], SCREENWIDTH);
+  while i < SCREENHEIGHT do
+  begin
+    memcpy(@ylookup[i], @viewylookup[j], SCREENWIDTH);
+    inc(i);
+    dec(j);
   end;
-
+end;
 
 procedure VI_BlitView;
+var
+  dc: HDC;
 begin
-  HDC dc;
-
   dc :=  GetDC(Window_Handle);
-//  BitBlt(dc,0,0,SCREENWIDTH,SCREENHEIGHT,Memory_DC,0,0,SRCCOPY);
+//  BitBlt(dc, 0, 0, SCREENWIDTH, SCREENHEIGHT, Memory_DC, 0, 0, SRCCOPY);
   StretchBlt(dc, 0, 0, 2 * SCREENWIDTH, 2 * SCREENHEIGHT, Memory_DC, 0, 0, SCREENWIDTH, SCREENHEIGHT, SRCCOPY);
   ReleaseDC(Window_Handle,dc);
-  end;
+end;
 
 
-procedure VI_DrawMaskedPicToBuffer(const x, y: integer; const pic: Ppic_t);
-(* Draws a masked pic to the view buffer *)
+// Draws a masked pic to the view buffer
+procedure VI_DrawMaskedPicToBuffer(x, y: integer; const pic: Ppic_t);
+var
+  dest, source: PByteArray;
+  width, height, xcor: integer;
 begin
-  BYTE *  dest;
-  BYTE *  source;
-  width,height,xcor: integer;
-
   x := x - pic.orgx;
   y := y - pic.orgy;
   height :=  pic.height;
-  source := ) and (pic.data;
-  while y<0 do
+  source := @pic.data;
+  while y < 0 do
   begin
-    source := source + pic.width;
-    height--;
-   end;
-  while height-- do
-  begin
-    if y<200 then
-    begin
-      dest :=  @viewbuffer[(y * MAX_VIEW_WIDTH + x)];
-      xcor :=  x;
-      width :=  pic.width;
-      while width-- do
-      begin
-        if ((xcor >= 0)) and ((xcor <= 319)) then
-        begin
-          if *source then
-            *dest :=  *source;
-         end;
-        xcor++;
-        source++;
-        dest++;
-       end;
-     end;
-    y++;
-   end;
+    source := @source[pic.width];
+    dec(height);
+    inc(y);
   end;
+  while height > 0 do
+  begin
+    dec(height);
+    if y < 200 then
+    begin
+      dest := @viewbuffer[(y * MAX_VIEW_WIDTH + x)];
+      xcor := x;
+      width := pic.width;
+      while width > 0 do
+      begin
+        if (xcor >= 0) and (xcor <= 319) then
+        begin
+          if source[0] <> 0 then
+            dest[0] := source[0];
+        end;
+        inc(xcor);
+        source := @source[1];
+        dest := @dest[0];
+        dec(width);
+      end;
+    end;
+    inc(y);
+  end;
+end;
 
 end.
+

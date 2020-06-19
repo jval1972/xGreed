@@ -287,8 +287,10 @@ begin
   else
     doortile := false;
   // draw or flow through the walls
-  for side := 0 to 3 do
+  side := -1;
+  while side < 3 do
   begin
+    inc(side);
     p1 := vertex[side];
     p2 := vertex[(side + 1) and 3];
     if not ClipEdge then
