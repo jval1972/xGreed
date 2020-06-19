@@ -52,6 +52,8 @@ function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
+procedure RF_PreloadGraphics;
+
 function RF_GetSprite: Pscaleobj_t;
 
 function RF_GetElevator: Pelevobj_t;
@@ -75,6 +77,8 @@ procedure RF_SetActionHook(const hook: PProcedure);
 procedure RF_SetLights(const ablackz: fixed_t);
 
 procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
+
+procedure RF_Startup;
 
 procedure SetViewSize(const awidth, aheight: integer);
 

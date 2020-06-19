@@ -155,6 +155,8 @@ procedure TimeUpdate;
 
 function Thrust(const ang: integer; const speed: fixed_t): boolean;
 
+procedure maingame;
+
 implementation
 
 uses

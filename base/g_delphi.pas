@@ -140,6 +140,8 @@ function fsize(const FileName: string): integer;
 
 function ftell(var f: file): integer;
 
+function fexists(const filename: string): boolean;
+
 // String functions
 procedure sprintf(var s: string; const Fmt: string; const Args: array of const);
 
@@ -345,6 +347,11 @@ begin
   {$I+}
   if IOResult <> 0 then
     result := 0;
+end;
+
+function fexists(const filename: string): boolean;
+begin
+  result := FileExists(filename);
 end;
 
 procedure sprintf(var s: string; const Fmt: string; const Args: array of const);

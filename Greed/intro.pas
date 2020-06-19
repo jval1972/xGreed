@@ -197,10 +197,23 @@ implementation
 
 uses
   g_delphi,
+  i_windows,
+  constant,
+  d_font,
+  d_ints_h,
+  d_misc,
   d_video,
   d_disk,
   d_ints,
-  playfli;
+  display,
+  menu,
+  modplay,
+  net,
+  protos_h,
+  playfli,
+  raven,
+  r_public,
+  utils;
 
 procedure loadscreen(const s: string);
 var
@@ -223,473 +236,496 @@ var
   t: integer;
 begin
   t := timecount + time;
-  while not CheckTime(timecount,t)) do
+  while not CheckTime(timecount, t) do
     I_PeekAndDisplatch;
 end;
 
 
-procedure ShowPortrait(int n);
-begin
-  char str1[128];
+procedure ShowPortrait(const n: integer);
+var
+  str1: string;
   i: integer;
-
-  sprintf(str1,'CHAR%i',n);
+begin
+  sprintf(str1, 'CHAR%d', [n]);
   loadscreen(str1);
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   font := font1;
-  for(i := 0;i<27;i++)
+
+  for i := 0 to 26 do
   begin
-   UpdateSound;
-   for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
-    if charinfo[n - 1][i][0] <> '.' then
+    UpdateSound;
+    fontbasecolor := 0;
+    while fontbasecolor < 9 do
     begin
-      printx := 144;
-      printy := 19 + 6 * i;
-      sprintf(str1,'%s', charinfo[n - 1][i]);
-      FN_RawPrint3(str1);
-      Wait(2);
-       end;
-   if activatemenu then
-   begin
-     DoIntroMenu;
-     if (quitgame) or (gameloaded) exit;
+      if charinfo[n - 1][i][1] <> '.' then
+      begin
+        printx := 144;
+        printy := 19 + 6 * i;
+        str1 := charinfo[n - 1][i];
+        FN_RawPrint3(str1);
+        Wait(2);
       end;
+      inc(fontbasecolor);
     end;
-  for(i := 0;i<50;i++)
-  begin
-   UpdateSound;
-   Wait(35);
-   if activatemenu then
-   begin
-     DoIntroMenu;
-     if (quitgame) or (gameloaded) exit;
-      end;
-   if nextchar then
-   begin
-     nextchar := false;
-     break;
-      end;
+    if activatemenu then
+    begin
+      DoIntroMenu;
+      if quitgame or gameloaded then
+        exit;
     end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
   end;
+
+  for i := 0 to 49 do
+  begin
+    UpdateSound;
+    Wait(35);
+    if activatemenu then
+    begin
+      DoIntroMenu;
+      if quitgame or gameloaded then
+        exit;
+    end;
+    if nextchar then
+    begin
+      nextchar := false;
+      break;
+    end;
+  end;
+  VI_FadeOut(0, 256, 0, 0, 0, 48);
+end;
 
 
 procedure IntroCommand;
 begin
-  if ((keyboard[SC_ESCAPE]) or (keyboard[SC_ENTER])) and (timecount>keyboardDelay) then
+  if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay) then
   begin
-   activatemenu := true;
-   keyboardDelay := timecount + 20;
-    end;
-  if (keyboard[SC_SPACE]) and (timecount > keyboardDelay) then
-  begin
-   nextchar := true;
-   keyboardDelay := timecount + 20;
-    end;
+    activatemenu := true;
+    keyboardDelay := timecount + 20;
   end;
+  if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay) then
+  begin
+    nextchar := true;
+    keyboardDelay := timecount + 20;
+  end;
+end;
 
 procedure DoIntroMenu;
+var
+  oldcolors: packed array[0..767] of byte;
+  temp: PByteArray;
 begin
-  byte *temp, oldcolors[768];
-
-  memcpy(oldcolors, colors, 768);
-  temp := (byte *)malloc(64000);
-  if (temp = NULL) MS_Error('DoIntroMenu: No memory for temp screen');
-  memcpy(temp,screen, 64000);
-  memset(screen, 0, 64000);
+  memcpy(@oldcolors, @colors, 768);
+  temp := malloc(64000);
+  if temp = nil then
+    MS_Error('DoIntroMenu(): No memory for temp screen');
+  memcpy(temp, @screen, 64000);
+  memset(@screen, 0, 64000);
   VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   player.timecount := timecount;
   ShowMenu(0);
-  if (not quitgame) and ( not gameloaded) then
+  if not quitgame and not gameloaded then
   begin
-   memset(screen, 0, 64000);
-   memcpy(colors,oldcolors, 768);
-   VI_SetPalette(colors);
-   memcpy(screen,temp, 64000);
-    end;
-  free(temp);
+    memset(@screen, 0, 64000);
+    memcpy(@colors, @oldcolors, 768);
+    VI_SetPalette(@colors);
+    memcpy(@screen, temp, 64000);
+  end;
+  memfree(pointer(temp));
   timecount := player.timecount;
   activatemenu := false;
-// lock_region((void near *)IntroCommand,(char *)IntroStub - (char near *)IntroCommand);
   INT_TimerHook(IntroCommand);
   keyboardDelay := timecount + KBDELAY;
-  end;
+end;
 
 
-  CheckDemoExit: boolean;
-  begin
+function CheckDemoExit: boolean;
+begin
   if activatemenu then
   begin
-   activatemenu := false;
-   nextchar := false;
+    activatemenu := false;
+    nextchar := false;
 //   unlock_region((void near *)IntroCommand,(char *)IntroStub - (char near *)IntroCommand);
 //   INT_TimerHook(NULL);
-   return true;
-    end;
-  return false;
+    result := true;
+    exit;
+  end;
+  result := false;
+end;
+
+
+procedure DemoIntroFlis(const path: string);
+var
+  name: string;
+begin
+  fontbasecolor := 0;
+  font := font1;
+
+  name := path + 'TEXT.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'WARP01.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'WARP02.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'INSHIP01.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'ARBITER.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'INSHIP02.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+  Wait(140);
+
+  name := path + 'CHAR1.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'CHAR2.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'CHAR3.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'CHAR4.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'CHAR5.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'INSHIP03.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'DROPPOD.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'SHP1.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'CITYBURN.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'RUBBLE.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'THF1.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'THF2.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'THF3.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'THF4.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'INSHIP04.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  name := path + 'WARP05.FLI';
+  DoPlayFLI(name, 0);
+  if CheckDemoExit then exit;
+
+  if not ASSASSINATOR then
+  begin
+    name := path + 'LOGOFLY.FLI';
+    DoPlayFLI(name, 0);
+    if CheckDemoExit then exit;
   end;
 
-
-procedure DemoIntroFlis(char *path);
-
+  Wait(210);
+end;
 
 procedure MainIntro;
 var
   path: string;
 begin
   if CDROMGREEDDIR then
-    path := Chr(cdr_drivenum + Ord('A') + ':\GREED\MOVIES\'
+    path := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MOVIES\'
   else
-    path := Chr(cdr_drivenum + Ord('A') + ':\MOVIES\';
+    path := Chr(cdr_drivenum + Ord('A')) + ':\MOVIES\';
   DemoIntroFlis(path);
 end;
 
 
-procedure DemoIntroFlis(char *path);
-begin
-  char name[64];
-
-  fontbasecolor := 0;
-  font := font1;
-
-  sprintf(name,'%sTEXT.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sWARP01.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sWARP02.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sINSHIP01.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sARBITER.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sINSHIP02.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-  Wait(140);
-
-  sprintf(name,'%sCHAR1.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sCHAR2.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sCHAR3.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sCHAR4.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sCHAR5.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sINSHIP03.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sDROPPOD.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sSHP1.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sCITYBURN.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sRUBBLE.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sTHF1.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sTHF2.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sTHF3.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sTHF4.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sINSHIP04.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-  sprintf(name,'%sWARP05.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-
-#ifndef ASSASSINATOR
-  sprintf(name,'%sLOGOFLY.FLI', path);
-  DoPlayFLI(name, 0);
-  if CheckDemoExit then exit;
-{$ENDIF}
-
-  Wait(210);
-  end;
-
-
 procedure DemoIntro;
-begin
+var
   i: integer;
-  FILE *f;
-
+begin
   fontbasecolor := 0;
   font := font1;
 
-  f := fopen('MOVIES\TEXT.FLI','rb');
-  if f <> NULL then
+  if fexists('MOVIES\TEXT.FLI') then
   begin
-   fclose(f);
-   DemoIntroFlis('MOVIES\');
-   exit;
-    end;
+    DemoIntroFlis('MOVIES\');
+    exit;
+  end;
 
   VI_FillPalette(0, 0, 0);
   loadscreen('SOFTLOGO');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   Wait(210);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
   loadscreen('C7LOGO');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   Wait(210);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
   loadscreen('LOGO');
-  VI_FadeIn(0, 256, colors, 48);
+  VI_FadeIn(0, 256, @colors, 48);
   Wait(210);
   VI_FillPalette(63, 63, 63);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
   loadscreen('INTRO00');
-  VI_FadeIn(0, 256, colors, 48);
-  for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
+  VI_FadeIn(0, 256, @colors, 48);
+  fontbasecolor := 0;
+  while fontbasecolor < 9 do
   begin
-   printy := 160;
-   FN_CenterPrintf(
-    'IT IS THE YEAR 15392 DURING THE THIRD AGE OF MAN.\n'
-    'SCAVENGER HUNTS MEAN BIG MONEY FOR THE CRIMINAL\n'
-    'ELITE.  COVERTLY RECRUITED BY AN ENIGMATIC FACTION\n'
-    'OF THE A.V.C. YOU ARE A MEMBER OF THE RED HUNTER\n'
-    'ELITE ACQUISITION SQUAD.');
-   Wait(5);
-    end;
-  for(i := 0;i<70;i++)
+    printy := 160;
+    FN_PrintCentered(
+      'IT IS THE YEAR 15392 DURING THE THIRD AGE OF MAN.'#13#10 +
+      'SCAVENGER HUNTS MEAN BIG MONEY FOR THE CRIMINAL'#13#10 +
+      'ELITE.  COVERTLY RECRUITED BY AN ENIGMATIC FACTION'#13#10 +
+      'OF THE A.V.C. YOU ARE A MEMBER OF THE RED HUNTER'#13#10 +
+      'ELITE ACQUISITION SQUAD.'
+    );
+    Wait(5);
+    inc(fontbasecolor);
+  end;
+  for i := 0 to 69 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
 
   loadscreen('INTRO01');
-  VI_FadeIn(0, 256, colors, 48);
-  for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
+  VI_FadeIn(0, 256, @colors, 48);
+  fontbasecolor := 0;
+  while fontbasecolor < 9 do
   begin
-   printy := 160;
-   FN_CenterPrintf(
-    'USING YOUR NEEDLING SHIP, THE RED HUNTER, IT IS YOUR\n'
-    'JOB TO WARP THROUGH TO UNSUSPECTING FRINGE WORLDS...');
-   Wait(5);
-    end;
-  for(i := 0;i<42;i++)
+    printy := 160;
+    FN_PrintCentered(
+      'USING YOUR NEEDLING SHIP, THE RED HUNTER, IT IS YOUR'#13#10 +
+      'JOB TO WARP THROUGH TO UNSUSPECTING FRINGE WORLDS...'
+    );
+    Wait(5);
+    inc(fontbasecolor);
+  end;
+  for i := 0 to 41 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
 
   loadscreen('INTRO02');
-  VI_FadeIn(0, 256, colors, 48);
-  for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
+  VI_FadeIn(0, 256, @colors, 48);
+  fontbasecolor := 0;
+  while fontbasecolor < 9 do
   begin
-   printy := 160;
-   FN_CenterPrintf(
-    '...PLUMMET FROM ORBIT IN YOUR DROP SHIP, SUPPRESSING\n'
-    'NONCOOPERATIVE ENTITIES (NOPS) AS BEST YOU CAN IN\n'
-    'ORDER TO ACQUIRE YOUR PRIMARY TARGET ITEMS.');
-   Wait(5);
-    end;
-  for(i := 0;i<42;i++)
+    printy := 160;
+    FN_PrintCentered(
+      '...PLUMMET FROM ORBIT IN YOUR DROP SHIP, SUPPRESSING'#13#10 +
+      'NONCOOPERATIVE ENTITIES (NOPS) AS BEST YOU CAN IN'#13#10 +
+      'ORDER TO ACQUIRE YOUR PRIMARY TARGET ITEMS.'
+    );
+    Wait(5);
+    inc(fontbasecolor);
+  end;
+  for i := 0 to 41 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   if CheckDemoExit then exit;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
 
   loadscreen('INTRO03');
-  VI_FadeIn(0, 256, colors, 48);
-  for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
+  VI_FadeIn(0, 256, @colors, 48);
+  fontbasecolor := 0;
+  while fontbasecolor < 9 do
   begin
-   printy := 160;
-   FN_CenterPrintf(
-    'THE SIZE AND SPEED OF THE DROP SHIP SHOULD BE SUFFICIENT\n'
-    'TO DRIVE NONCOOPERATIVES FROM THE DROP ZONE UPON IMPACT.');
-   Wait(5);
-    end;
-  for(i := 0;i<42;i++)
+    printy := 160;
+    FN_PrintCentered(
+      'THE SIZE AND SPEED OF THE DROP SHIP SHOULD BE SUFFICIENT'#13#10 +
+      'TO DRIVE NONCOOPERATIVES FROM THE DROP ZONE UPON IMPACT.'
+    );
+    Wait(5);
+    inc(fontbasecolor);
+  end;
+  for i := 0 to 41 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   if CheckDemoExit then exit;
   VI_FillPalette(0, 0, 0);
   if CheckDemoExit then exit;
 
 
   loadscreen('INTRO04');
-  VI_SetPalette(colors);
-  for(i := 0;i<21;i++)
+  VI_SetPalette(@colors);
+  for i := 0 to 20 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   if CheckDemoExit then exit;
   VI_FadeOut(0, 256, 64, 64, 64, 48);
   if CheckDemoExit then exit;
 
 
   loadscreen('INTRO05');
-  VI_FadeIn(0, 256, colors, 48);
-  for(i := 0;i<21;i++)
+  VI_FadeIn(0, 256, @colors, 48);
+  for i := 0 to 20 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   if CheckDemoExit then exit;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
 
   loadscreen('INTRO06');
-  VI_FadeIn(0, 256, colors, 48);
-  for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
+  VI_FadeIn(0, 256, @colors, 48);
+  fontbasecolor := 0;
+  while fontbasecolor < 9 do
   begin
-   printy := 160;
-   FN_CenterPrintf('IN SHORT, IF IT'S MOVING AROUND, KILL IT...');
-   Wait(5);
-    end;
-  for(i := 0;i<28;i++)
+    printy := 160;
+    FN_PrintCentered('IN SHORT, IF IT''S MOVING AROUND, KILL IT...');
+    Wait(5);
+    inc(fontbasecolor);
+  end;
+  for i := 0 to 27 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   if CheckDemoExit then exit;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
 
   loadscreen('INTRO07');
-  VI_FadeIn(0, 256, colors, 48);
-  for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
+  VI_FadeIn(0, 256, @colors, 48);
+  fontbasecolor := 0;
+  while fontbasecolor < 9 do
   begin
-   printy := 160;
-   FN_CenterPrintf('...AND IF IT''S NOT NAILED DOWN, STEAL IT.');
-   Wait(5);
-    end;
-  for(i := 0;i<28;i++)
+    printy := 160;
+    FN_PrintCentered('...AND IF IT''S NOT NAILED DOWN, STEAL IT.');
+    Wait(5);
+    inc(fontbasecolor);
+  end;
+  for i := 0 to 27 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   if CheckDemoExit then exit;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
   loadscreen('INTRO08');
-  VI_FadeIn(0, 256, colors, 48);
-  for(fontbasecolor := 0;fontbasecolor<9;++fontbasecolor)
+  VI_FadeIn(0, 256, @colors, 48);
+  fontbasecolor := 0;
+  while fontbasecolor < 9 do
   begin
-   printy := 160;
-   FN_CenterPrintf(
-    'YOU''RE A SCAVENGER.  YOU'VE GOT A GUN.\n'
-    'LET''S GET SOME.');
-   Wait(5);
-    end;
-  for(i := 0;i<28;i++)
+    printy := 160;
+    FN_PrintCentered(
+      'YOU''RE A SCAVENGER.  YOU''VE GOT A GUN.'#13#10 +
+      'LET''S GET SOME.'
+    );
+    Wait(5);
+    inc(fontbasecolor);
+  end;
+  for i := 0 to 27 do
   begin
-   Wait(10);
-   if CheckDemoExit then exit;
-    end;
+    Wait(10);
+    if CheckDemoExit then exit;
+  end;
   if CheckDemoExit then exit;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
-  end;
+end;
 
 
-procedure intro;
-begin
+procedure dointro;
+var
   i: integer;
-
+begin
   INT_TimerHook(IntroCommand);
 
   PlaySong('INTRO.S3M', 0);
 
   VI_FillPalette(0, 0, 0);
 
-  quitgame := 0;
+  quitgame := false;
   gameloaded := false;
 
   if not redo then
-  MainIntro;
+    MainIntro;
 
-  redo := 0;
+  redo := false;
 
 // lock_region((void near *)IntroCommand,(char *)IntroStub - (char near *)IntroCommand);
 // INT_TimerHook(IntroCommand);
   VI_FillPalette(0, 0, 0);
   activatemenu := false;
-  for(;)
+  while true do
   begin
-   for(i := 1;i<6;i++)
-   begin
-     ShowPortrait(i);
-     if (quitgame) or (gameloaded) then
-     begin
-       INT_TimerHook(NULL);
-       exit;
-        end;
+    for i := 1 to 5 do
+    begin
+      ShowPortrait(i);
+      if quitgame or gameloaded then
+      begin
+        INT_TimerHook(nil);
+        exit;
       end;
     end;
   end;
+end;
 
 
 procedure LoadMiscData;
-begin
+var
   i: integer;
-
+begin
   printf('.');
   font1 := CA_CacheLump(CA_GetNamedNum('FONT1'));
   printf('.');
@@ -701,56 +737,61 @@ begin
   statusbar[2] := CA_CacheLump(CA_GetNamedNum('STATBAR3'));
   statusbar[3] := CA_CacheLump(CA_GetNamedNum('STATBAR4'));
   printf('.');
-  for(i := 0;i<10;i++)
-  heart[i] := CA_CacheLump(CA_GetNamedNum('HEART')+i);
+  for i := 0 to 9 do
+    heart[i] := CA_CacheLump(CA_GetNamedNum('HEART') + i);
   printf('.');
-  backdrop := malloc(256*256);
-  if backdrop = NULL then
-  MS_Error('Out of memory for BackDrop');
+  backdrop := malloc(256 * 256);
+  if backdrop = nil then
+    MS_Error('LoadMiscData(): Out of memory for BackDrop');
   printf('.');
-  for(i := 0;i<256;i++)
-  backdroplookup[i] := (byte*)backdrop+256*i;
+  for i := 0 to 255 do
+    backdroplookup[i] := @backdrop[256 * i];
   printf('.');
-  end;
+end;
 
 
-void checkexit
+procedure checkexit;
 begin
-  if (newascii) and (lastascii = 27) MS_Error('Cancel Startup');
+  if newascii and (lastascii = #27) then
+    MS_Error('Cancel Startup');
   newascii := false;
-  end;
+end;
 
 
 procedure LoadData;
-begin
-  netplay :=  false: boolean;
+var
+  netplay: boolean;
   parm: integer;
   netaddr: integer;
+begin
+  netplay := false;
 
-  if (MS_CheckParm('nointro')) then
-   nointro := true;
-  if (MS_CheckParm('record')) then
-   recording := true;
-  if (MS_CheckParm('playback')) then
-   playback := true;
-  if (MS_CheckParm('debugmode')) then
-   debugmode := true;
+  if MS_CheckParm('nointro') > 0 then
+    nointro := true;
+  if MS_CheckParm('record') > 0 then
+    recording := true;
+  if MS_CheckParm('playback') > 0 then
+    playback := true;
+  if MS_CheckParm('debugmode') > 0 then
+    debugmode := true;
   parm := MS_CheckParm('net');
-  if (parm) and (parm<my_argc-1) then
+  if (parm > 0) and (parm < my_argc - 1) then
   begin
-   netaddr := atoi(my_argv[parm+1]);
-   netplay := true;
-   netmode := 1;
-    end;
+    netaddr := atoi(my_argv(parm + 1));
+    netplay := true;
+    netmode := true;
+  end;
 
-  if (MS_CheckParm('nospawn')) nospawn := true;
-  if (MS_CheckParm('ticker')) ticker := true;
+  if MS_CheckParm('nospawn') > 0 then
+    nospawn := true;
+  if MS_CheckParm('ticker') > 0 then
+    ticker := true;
   CA_InitFile('GREED.BLO');
   if netplay then
   begin
-   NetInit((void *)netaddr);
-   nointro := true;
-    end;
+    NetInit(@netaddr);
+    nointro := true;
+  end;
   InitSound;
   INT_Setup;
   checkexit;
@@ -761,129 +802,39 @@ begin
   LoadMiscData;
   checkexit;
   VI_Init(0);
-  end;
+end;
 
 
-void startup
+procedure startup;
+label
+  restart;
 begin
   nointro :=  true;
-
   LoadData;
 
 restart:
-
   if nointro then
   begin
     redo :=  false;
     VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
     newplayer(0, 0, 2);
     maingame;
-   end;
+  end
   else
-    intro;
+    dointro;
 
   if not quitgame then
   begin
     maingame;
     if redo then
       goto restart;
-   end;
+   end
   else
     StopMusic;
 
   INT_Shutdown;
-  end;
+end;
 
 
-LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM uParam,LPARAM lParam)
-begin
-    HDC      hdc;
-    PAINTSTRUCT ps;
-
-    case message  of
-    begin
-    WM_PAINT:
-      hdc :=  BeginPaint(hWnd,) and (ps);
-      VI_ResetPalette;
-      VI_BlitView;
-      EndPaint(hWnd,) and (ps);
-      break;
-
-    WM_CLOSE:
-      quitgame :=  true;
-    break;
-
-    WM_DESTROY:
-      PostQuitMessage(0);
-    break;
-
-    default:
-      return (DefWindowProc(hWnd, message, uParam, lParam));
-     end;
-
-    return (0);
-  end;
-
-
-BOOL InitApplication(HINSTANCE hInstance)
-begin
-    WNDCLASS  wc;
-  ATOM    atom;
-
-    wc.style :=  0;
-    wc.lpfnWndProc :=  (WNDPROC)WndProc;
-    wc.cbClsExtra :=  0;
-    wc.cbWndExtra :=  0;
-    wc.hInstance :=  hInstance;
-    wc.hIcon :=  NULL;
-    wc.hCursor :=  NULL;
-    wc.hbrBackground :=  (HBRUSH)GetStockObject(BLACK_BRUSH);
-    wc.lpszMenuName :=  NULL;
-    wc.lpszClassName := APPNAME;
-
-    atom :=  RegisterClass and (wc);
-    return atom <> 0 ? true : false;
-  end;
-
-
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-begin
-  RECT rc;  // Called in GetClientRect
-
-  rc.left :=  0;
-  rc.right :=  640;
-  rc.top :=  0;
-  rc.bottom :=  400;
-
-  AdjustWindowRect and (rc,WS_VISIBLE,FALSE);
-
-  rc.right := rc.right - rc.left;
-  rc.bottom := rc.bottom - rc.top;
-  rc.top :=  0;
-  rc.left :=  0;
-
-  // Use the default window settings.
-  Window_Handle :=  CreateWindow(
-    APPNAME,
-    APPNAME,
-    WS_VISIBLE) or (WS_OVERLAPPED,
-    rc.left,
-    rc.top,
-    rc.right,
-    rc.bottom,
-    NULL,
-    NULL,
-    hInstance,
-    NULL);
-
-  if (Window_Handle = 0)    // Check whether values returned by CreateWindow are valid.
-    return (FALSE);
-  
-    ShowWindow(Window_Handle,SW_SHOW);
-    UpdateWindow(Window_Handle);
-
-    return(TRUE);                  // Window handle hWnd is valid.
-  end;
-
-
+end.
 

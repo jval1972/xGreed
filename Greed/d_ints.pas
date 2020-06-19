@@ -137,6 +137,8 @@ procedure MouseShow;
 
 procedure UpdateMouse;
 
+procedure INT_Setup;
+
 implementation
 
 uses

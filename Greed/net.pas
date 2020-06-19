@@ -108,6 +108,8 @@ procedure NetWaitStart;
 
 procedure NetQuitGame;
 
+procedure NetInit(const addr: pointer);
+
 implementation
 
 procedure NetGetData;
@@ -172,6 +174,10 @@ begin
 end;
 
 procedure NetQuitGame;
+begin
+end;
+
+procedure NetInit(const addr: pointer);
 begin
 end;
 

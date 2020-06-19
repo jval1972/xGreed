@@ -56,6 +56,8 @@ procedure PlaySong(const sname: string; const pattern: integer);
 
 procedure StopMusic;
 
+procedure InitSound;
+
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 
 procedure SetVolumes(const amusic: integer; const afx: integer);
