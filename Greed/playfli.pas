@@ -71,6 +71,8 @@ implementation
 
 uses
   g_delphi,
+  d_ints,
+  d_misc,
   d_video,
   r_render;
 
@@ -170,18 +172,18 @@ var
   y, y2: word;
   count: shortint;
   data, packets: byte;
-  line: PByte;
+  line: PByteArray;
 begin
   y := getword; // start y
   y2 := getword;  // number of lines to change
   inc(y2, y);
   while y < y2 do
   begin
-    line := viewylookup[y];
+    line := @viewylookup[y][0];
     packets := getbyte;
     for p := 0 to packets - 1 do
     begin
-      line := line + getbyte;
+      line := @line[getbyte];
       count := getshortint;
       if count < 0 then  // uncompressed
       begin
@@ -189,16 +191,16 @@ begin
         j := -count;
         for i := 0 to j - 1 do
         begin
-          line^ := data;
-          inc(line);
+          line[0] := data;
+          line := @line[1];
         end
       end// compressed
       else
       begin
         for i := 0 to count - 1 do
         begin
-          line^ := getbyte;
-          inc(line);
+          line[0] := getbyte;
+          line := @line[1];
         end;
       end;
     end;
@@ -269,10 +271,10 @@ begin
     MS_Error('DoPlayFLI(): Out of Memory with ChunkBuf!');
   memset(screen, 0, 64000);
   VI_FillPalette(0, 0, 0);
-  ifi not fopen(f, fname, fOpenReadOnly) then
+  if not fopen(f, fname, fOpenReadOnly) then
     MS_Error('DoPlayFLI(): File Not Found: %s', [fname]);
   seek(f, offset);
-  if not fread(@header, SizeOf(fliheader), 1, f) then
+  if not fread(@header, SizeOf(fliheader_t), 1, f) then
     MS_Error('DoPlayFLI(): File Read Error: %s', [fname]);
   currentfliframe := 0;
   delay := timecount;
@@ -284,7 +286,7 @@ begin
     memcpy(screen, @viewbuffer, 64000);       // copy
     inc(currentfliframe);
   end;
-  fclose(f);
+  close(f);
   memfree(pointer(chunkbuf));
   if currentfliframe < header.nframes then  // user break
   begin
