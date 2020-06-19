@@ -139,6 +139,26 @@ var
 
 procedure resetdisplay;
 
+procedure updatedisplay;
+
+procedure inventoryright;
+
+procedure inventoryleft;
+
+procedure useinventory;
+
+procedure displaymapmode;
+
+procedure displayswingmapmode;
+
+procedure displayheatmapmode;
+
+procedure displayheatmode;
+
+procedure displaymotionmapmode;
+
+procedure displaymotionmode;
+
 implementation
 
 uses

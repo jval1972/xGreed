@@ -70,6 +70,10 @@ var
   fragcount: array[0..MAXPLAYERS - 1] of integer;
   playerdata: array[0..MAXPLAYERS - 1] of pevent_t;
   netnames: array[0..MAXPLAYERS - 1] of string[13];
+  netwarpjammer: boolean = false;
+  netwarpjamtime: integer;
+  netpaused: boolean = false;
+  greedcom: Pgreedcom_t;
 
 procedure NetGetData;
 
@@ -80,9 +84,29 @@ procedure NetSoundEffect(const n: integer; const variation: integer; const x, y:
 
 procedure NetNewPlayerData;
 
+procedure NetItemPickup(const x, y: integer);
+
 procedure NetDeath(const bulletid: integer);
 
 procedure NetGetClosestPlayer(const sx, sy: integer);
+
+procedure NetOpenDoor(const x, y: fixed_t);
+
+procedure NetCheckHere(const centerx, centery: fixed_t; const angle: integer);
+
+procedure NetBonusItem;
+
+procedure NetSendPlayerData;
+
+procedure NetPause;
+
+procedure NetUnPause;
+
+procedure NetSendMessage(const s: string);
+
+procedure NetWaitStart;
+
+procedure NetQuitGame;
 
 implementation
 
@@ -103,11 +127,51 @@ procedure NetNewPlayerData;
 begin
 end;
 
+procedure NetItemPickup(const x, y: integer);
+begin
+end;
+
 procedure NetDeath(const bulletid: integer);
 begin
 end;
 
 procedure NetGetClosestPlayer(const sx, sy: integer);
+begin
+end;
+
+procedure NetOpenDoor(const x, y: fixed_t);
+begin
+end;
+
+procedure NetCheckHere(const centerx, centery: fixed_t; const angle: integer);
+begin
+end;
+
+procedure NetBonusItem;
+begin
+end;
+
+procedure NetSendPlayerData;
+begin
+end;
+
+procedure NetPause;
+begin
+end;
+
+procedure NetUnPause;
+begin
+end;
+
+procedure NetSendMessage(const s: string);
+begin
+end;
+
+procedure NetWaitStart;
+begin
+end;
+
+procedure NetQuitGame;
 begin
 end;
 
@@ -227,11 +291,8 @@ bevent_t      *bevent;
 ipevent_t     *ipevent;
 eevent_t      *eevent;
 mevent_t      *mevent;
-greedcom_t    *greedcom;
 char          msg[60];
 scaleobj_t    *playersprites[MAXPLAYERS], *sprite_p, *sprite2_p, *temp_p;
-  netpaused, netwarpjamtime: integer;
-  netwarpjammer: boolean;
 int           playermapspot[MAXPLAYERS], pmapspot, oldsprites[MAXPLAYERS];
 ques_t        *que;
   uart, irqintnum, maxcount: integer;

@@ -27,6 +27,7 @@ unit menu;
 interface
 
 uses
+  g_delphi,
   d_video;
 
 type
@@ -173,6 +174,14 @@ var
   savedir: array[0..MAXSAVEGAMES - 1] of string[22];
   waitpics: array[0..3] of Ppic_t;
 
+procedure ShowMenu(const n: integer);
+
+procedure ShowHelp;
+
+function ShowQuit(const kbdfunction: PProcedure): boolean;
+
+procedure ShowPause;
+
 procedure UpdateWait;
 
 procedure StartWait;
@@ -182,7 +191,6 @@ procedure EndWait;
 implementation
 
 uses
-  g_delphi,
   constant,
   d_disk,
   d_font,

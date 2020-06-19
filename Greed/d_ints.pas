@@ -135,6 +135,8 @@ procedure MouseHide;
 
 procedure MouseShow;
 
+procedure UpdateMouse;
+
 implementation
 
 uses

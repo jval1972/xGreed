@@ -60,11 +60,21 @@ procedure newplayer(const map: integer; chartype: integer; const difficulty: int
 
 procedure addscore(const n: integer);
 
+procedure respawnplayer;
+
 procedure heal(const n: integer);
 
 procedure medpaks(const n: integer);
 
 procedure hurt(n: integer);
+
+procedure loadweapon(const n: integer);
+
+procedure newmap(const map: integer; const activate: integer);
+
+procedure selectsong(const asongmap: integer);
+
+procedure ResetScalePostWidth(const NewWindowWidth: integer);
 
 implementation
 

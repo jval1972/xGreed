@@ -72,6 +72,8 @@ procedure RunEvent(const eval: integer; const netsend: boolean);
 
 procedure LoadScript(const lump: integer; const newgame: boolean);
 
+procedure Process;
+
 implementation
 
 uses

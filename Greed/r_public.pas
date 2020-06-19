@@ -56,6 +56,8 @@ function RF_GetSprite: Pscaleobj_t;
 
 function RF_GetElevator: Pelevobj_t;
 
+procedure RF_RemoveElevator(const e: Pelevobj_t);
+
 function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
 
 function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
@@ -63,6 +65,12 @@ function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
 procedure RF_RemoveSprite(const spr: Pscaleobj_t);
 
 procedure RF_ClearWorld;
+
+procedure RF_SetActionHook(const hook: PProcedure);
+
+procedure RF_SetLights(const blackz: fixed_t);
+
+procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
 
 procedure SetViewSize(const width, height: integer);
 

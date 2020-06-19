@@ -60,6 +60,8 @@ procedure SoundEffect(const n: integer; const variation: integer; const x, y: fi
 
 procedure SetVolumes(const amusic: integer; const afx: integer);
 
+procedure UpdateSound;
+
 implementation
 
 uses

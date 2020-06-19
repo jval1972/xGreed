@@ -39,7 +39,11 @@ var
   spriteloc: integer; // where did it hit on a sprite
 
 procedure ActivationSound(const sp: Pscaleobj_t);
-  
+
+function SP_Thrust: byte;
+
+procedure MoveSprites;
+
 implementation
 
 uses
