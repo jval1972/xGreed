@@ -52,6 +52,8 @@ var
   // coefficients of the plane equation for sloping polygons
   planeA, planeB, planeC, planeD: fixed_t;
 
+procedure RenderTileEnds;
+  
 implementation
 
 uses
