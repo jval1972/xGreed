@@ -201,6 +201,8 @@ type
 
 function pOp(const p: pointer; const offs: integer): pointer;
 
+function pDiff(const p1, p2: pointer; const size: integer): integer;
+
 // Math function
 function MinI(const x1, x2: integer): integer;
 
@@ -701,6 +703,11 @@ end;
 function pOp(const p: pointer; const offs: integer): pointer; 
 begin
   result := pointer(PCAST(p) + offs);
+end;
+
+function pDiff(const p1, p2: pointer; const size: integer): integer;
+begin
+  result := (Integer(p1) - Integer(p2)) div size;
 end;
 
 function MinI(const x1, x2: integer): integer;
