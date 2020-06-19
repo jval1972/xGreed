@@ -57,6 +57,9 @@ implementation
 
 uses
   d_disk,
+  {$IFDEF VALIDATE}
+  d_misc,
+  {$ENDIF}
   raven,
   r_public,
   r_render,
@@ -184,9 +187,9 @@ begin
   end;
 
   // the floor and ceiling height is the max of the points
-  ceiling := (ceiling shl FRACBITS) - viewz;
-  floor := -((floor shl FRACBITS) - viewz);   // distance below vi
-  sp_loopvalue := (wall^ * 4) shl FRACBITS;
+  ceiling := (ceiling * FRACUNIT) - viewz;
+  floor := -((floor * FRACUNIT) - viewz);   // distance below vi
+  sp_loopvalue := (wall^ * 4) * FRACUNIT;
 
   (* special effects *)
   if wallshadow = 1 then
@@ -203,7 +206,7 @@ begin
       sp_colormap := colormaps
     else
     begin
-      light := (pointz shr FRACBITS) + maplight;
+      light := (pointz div FRACUNIT) + maplight;
       if light > MAXZLIGHT then
         light := MAXZLIGHT
       else if light < 0 then
@@ -235,7 +238,7 @@ begin
     // wall special effects
     if wallshadow = 0 then
     begin
-      light := (pointz shr FRACBITS) + maplight;
+      light := (pointz div FRACUNIT) + maplight;
       if light > MAXZLIGHT then
         light := MAXZLIGHT
       else if light < 0 then
@@ -244,7 +247,7 @@ begin
     end
     else if wallshadow = 9 then
     begin
-      light := (pointz shr FRACBITS) + maplight + wallflicker4;
+      light := (pointz div FRACUNIT) + maplight + wallflicker4;
       if light > MAXZLIGHT then
         light := MAXZLIGHT
       else if light < 0 then
@@ -253,7 +256,7 @@ begin
     end;
 
     // calculate the texture post along the wall that was hit
-    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) shr FRACBITS;
+    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) div FRACUNIT;
 
     if rotateright <> 0 then
       texture := texture - wallrotate
@@ -274,7 +277,7 @@ begin
       continue;
 
     top := FIXEDDIV(ceiling, scale) + FRACUNIT;
-    topy := CENTERY - (top shr FRACBITS);
+    topy := CENTERY - (top div FRACUNIT);
     fracadjust := top and (FRACUNIT - 1);
     sp_frac := FIXEDMUL(fracadjust, sp_fracstep);
 
@@ -291,10 +294,10 @@ begin
       topy := scrollmin;
     end;
     bottom := FIXEDDIV(floor, scale) + FRACUNIT * 2;
-    if bottom >= (CENTERY + scrollmin) shl FRACBITS then
+    if bottom >= (CENTERY + scrollmin) * FRACUNIT then
       bottomy :=  scrollmax - 1
     else
-      bottomy := CENTERY + (bottom shr FRACBITS);
+      bottomy := CENTERY + (bottom div FRACUNIT);
     if (bottomy < scrollmin) or (topy >= scrollmax) or (topy = bottomy) then
       continue;
 
@@ -419,8 +422,8 @@ begin
   rotateup1 := floordefflags[tm] and F_UP;
   rotatedown1 := floordefflags[tm] and F_DOWN;
   cclip1 := ceiling1;
-  ceiling1 := (ceiling1 shl FRACBITS) - viewz;
-  floor1 := -((floor1 shl FRACBITS) - viewz); // distance below vi
+  ceiling1 := (ceiling1 * FRACUNIT) - viewz;
+  floor1 := -((floor1 * FRACUNIT) - viewz); // distance below vi
   walltype1 := walltranslation[walltype1];    // global animation
   wall1 := lumpmain[walllump + walltype1];    // to get wall height
   postindex1 := @wallposts[(walltype1 - 1) shl 6];  // 64 pointers to texture start
@@ -472,8 +475,8 @@ ceilingstep:
     walltype := 1;
 
   ceiling := true;
-  ceiling2 := (ceiling2 shl FRACBITS) - viewz;
-  floor2 := -((floor2 shl FRACBITS) - viewz);   // distance below vi
+  ceiling2 := (ceiling2 * FRACUNIT) - viewz;
+  floor2 := -((floor2 * FRACUNIT) - viewz);   // distance below vi
   walltype2 := ceilingdef[tm];
   walltype2 := walltranslation[walltype2];  // global animation
   wall2 := lumpmain[walllump + walltype2];  // to get wall height
@@ -509,7 +512,7 @@ skipceilingcalc:
     // wall special effects
     if wallshadow = 0 then
     begin
-      light := (pointz shr FRACBITS) + maplight;
+      light := (pointz div FRACUNIT) + maplight;
       if light > MAXZLIGHT then
         light := MAXZLIGHT
       else if light < 0 then
@@ -522,7 +525,7 @@ skipceilingcalc:
         sp_colormap := colormaps
       else
       begin
-        light := (pointz shr FRACBITS) + maplight;
+        light := (pointz div FRACUNIT) + maplight;
         if light > MAXZLIGHT then
           light := MAXZLIGHT
         else if light < 0 then
@@ -532,7 +535,7 @@ skipceilingcalc:
     end
     else if wallshadow = 9 then
     begin
-      light := (pointz shr FRACBITS) + maplight + wallflicker4;
+      light := (pointz div FRACUNIT) + maplight + wallflicker4;
       if light > MAXZLIGHT then
         light := MAXZLIGHT
       else if light < 0 then
@@ -540,7 +543,7 @@ skipceilingcalc:
       sp_colormap := zcolormap[light];
     end;
 
-    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) shr FRACBITS;
+    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) div FRACUNIT;
 
     scale := FIXEDMUL(pointz, ISCALE);
 
@@ -561,14 +564,14 @@ skipceilingcalc:
       texture2 := texture2 and 63;
       sp_source := postindex1[texture2];
       top := FIXEDDIV(ceiling1, scale);
-      topy := CENTERY - (top shr FRACBITS);
+      topy := CENTERY - (top div FRACUNIT);
       fracadjust := top and (FRACUNIT - 1);
       sp_frac := FIXEDMUL(fracadjust, sp_fracstep);
 
       if topy < scrollmin then
       begin
         sp_frac := sp_frac + (scrollmin - topy) * scale;
-        sp_loopvalue := (wall1^ * 4) shl FRACBITS;
+        sp_loopvalue := (wall1^ * 4) * FRACUNIT;
         while sp_frac >= sp_loopvalue do
           sp_frac := sp_frac - sp_loopvalue;
         topy := scrollmin;
@@ -579,10 +582,10 @@ skipceilingcalc:
         sp_frac := sp_frac + FRACUNIT * wallrotate;
 
       bottom := FIXEDDIV(floor1, scale) + FRACUNIT;
-      if bottom >= ((CENTERY + scrollmin) shl FRACBITS) then
+      if bottom >= ((CENTERY + scrollmin) * FRACUNIT) then
         bottomy := scrollmax - 1
       else
-        bottomy := CENTERY + (bottom shr FRACBITS);
+        bottomy := CENTERY + (bottom div FRACUNIT);
       if (bottomy < scrollmin) or (topy >= scrollmax) then
         goto contceiling;
       sp_count := bottomy - topy + 1;
@@ -624,14 +627,14 @@ contceiling:
       texture2 := texture2 and 63;
       sp_source := postindex2[texture2];
       top := FIXEDDIV(ceiling2, scale) + FRACUNIT;
-      topy := CENTERY - (top shr FRACBITS);
+      topy := CENTERY - (top div FRACUNIT);
       fracadjust := top and (FRACUNIT - 1);
       sp_frac := FIXEDMUL(fracadjust, sp_fracstep);
 
       if topy < scrollmin then
       begin
         sp_frac := sp_frac + (scrollmin - topy) * scale;
-        sp_loopvalue := (wall2^ * 4) shl FRACBITS;
+        sp_loopvalue := (wall2^ * 4) * FRACUNIT;
         while sp_frac >= sp_loopvalue do
           sp_frac := sp_frac - sp_loopvalue;
         topy := scrollmin;
@@ -642,13 +645,17 @@ contceiling:
         sp_frac := sp_frac + FRACUNIT * wallrotate;
 
       bottom := FIXEDDIV(floor2, scale) + FRACUNIT;
-      if bottom >= ((CENTERY + scrollmin) shl FRACBITS) then
+      if bottom >= ((CENTERY + scrollmin) * FRACUNIT) then
         bottomy := scrollmax - 1
-       else
-        bottomy := CENTERY + (bottom shr FRACBITS);
+      else
+        bottomy := CENTERY + (bottom div FRACUNIT);
       if (bottomy < scrollmin) or (topy >= scrollmax) then
         continue;
       sp_count := bottomy - topy + 1;
+  {$IFDEF VALIDATE}
+      if (bottomy - scrollmin < 0) or (bottomy - scrollmin >= MAX_VIEW_HEIGHT) then
+        MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, MAX_VIEW_HEIGHT - 1]);
+  {$ENDIF}
       sp_dest := @viewylookup[bottomy - scrollmin][x];
       span := (pointz shl ZTOFRAC) and ZMASK;
       spansx[numspans] := x;
@@ -666,7 +673,7 @@ contceiling:
       tpwalls_colormap[transparentposts] := sp_colormap;
       tpwalls_count[transparentposts] := sp_count;
       inc(transparentposts);
-{$IFDEF VALIDATE}
+  {$IFDEF VALIDATE}
       if transparentposts >= MAXPEND then
         MS_Error('Too many Pending Posts! (%d)', [MAXPEND]);
       if numspans >= MAXSPANS then

@@ -115,7 +115,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=0
 Release=1
-Build=2
+Build=3
 Debug=0
 PreRelease=0
 Special=0
@@ -126,7 +126,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=Jim Valavanis
 FileDescription=In Pursuit of Greed
-FileVersion=1.0.1.2
+FileVersion=1.0.1.3
 InternalName=xGreed
 LegalCopyright=(c) 2020, Jim Valavanis
 LegalTrademarks=(c) 2020, Jim Valavanis
@@ -134,9 +134,15 @@ OriginalFilename=xGreed.exe
 ProductName=xGreed
 ProductVersion=1.0.0.0
 Comments=Source port of Greed
+[HistoryLists\hlConditionals]
+Count=1
+Item0=VALIDATE
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlSearchPath]
+Count=1
+Item0=$(DELPHI)\Lib\Debug
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu

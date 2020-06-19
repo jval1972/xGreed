@@ -527,7 +527,7 @@ begin
   case n of
   13: // mooman #1
     begin
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_HANDBULLET, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       SoundEffect(SN_BULLET13, 0, player.x, player.y);
       if netmode then
@@ -538,7 +538,7 @@ begin
   14, // specimen #1
   15: // trix #1
     begin
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_HANDBULLET, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       SoundEffect(SN_BULLET8, 0, player.x, player.y);
       if netmode then
@@ -547,7 +547,7 @@ begin
 
   1: // psyborg #2
     begin
-      z := player.height - (52 shl FRACBITS);
+      z := player.height - (52 * FRACUNIT);
       angle2 := GetTargetAngle(0, z);
       SpawnSprite(S_BULLET1, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
       SoundEffect(SN_BULLET1, 0, player.x, player.y);
@@ -557,7 +557,7 @@ begin
 
   2:
     begin
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_BULLET2, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       SoundEffect(SN_BULLET5, 0, player.x, player.y);
       if netmode then
@@ -566,7 +566,7 @@ begin
 
   3:
     begin
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_BULLET3, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       SoundEffect(SN_BULLET3, 0, player.x, player.y);
       if netmode then
@@ -575,7 +575,7 @@ begin
 
   4:
     begin
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle - 48, GetTargetAngle(-16, z), true, playernum);
       SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle - 24, GetTargetAngle(-32, z), true, playernum);
       SpawnSprite(S_BULLET4, player.x, player.y, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
@@ -589,7 +589,7 @@ begin
 
   7: // psyborg #1
     begin
-      z := player.height - (52 shl FRACBITS);
+      z := player.height - (52 * FRACUNIT);
       angle2 := GetTargetAngle(0, z);
       SpawnSprite(S_BULLET7, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
       SoundEffect(SN_BULLET13, 0, player.x, player.y);
@@ -599,7 +599,7 @@ begin
 
   9: // lizard #2
     begin
-      z := player.height - (52 shl FRACBITS);
+      z := player.height - (52 * FRACUNIT);
       angle2 := GetTargetAngle(0, z);
       SpawnSprite(S_BULLET9, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
       SoundEffect(SN_BULLET9, 0, player.x, player.y);
@@ -609,7 +609,7 @@ begin
 
   10: // specimen #2
     begin
-      z := player.height - (52 shl FRACBITS);
+      z := player.height - (52 * FRACUNIT);
       angle2 := GetTargetAngle(0, z);
       SpawnSprite(S_BULLET10, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
       SoundEffect(SN_BULLET10, 0, player.x, player.y);
@@ -618,7 +618,7 @@ begin
     end;
   11: // mooman #2
     begin
-      z := player.height - (52 shl FRACBITS);
+      z := player.height - (52 * FRACUNIT);
       angle2 := GetTargetAngle(0, z);
       SpawnSprite(S_BULLET11, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
       SoundEffect(SN_BULLET1, 0, player.x, player.y);
@@ -631,12 +631,12 @@ begin
       angle := (player.angle - NORTH) and ANGLES;
       xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
       ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_BULLET12, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       angle := (player.angle + NORTH) and ANGLES;
       xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
       ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_BULLET12, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       SoundEffect(SN_BULLET12, 0, player.x, player.y);
       if netmode then
@@ -648,12 +648,12 @@ begin
       angle := (player.angle - NORTH) and ANGLES;
       xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
       ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_BULLET16, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       angle := (player.angle + NORTH) and ANGLES;
       xmove2 := FIXEDMUL(FRACUNIT * 4, costable[angle]);
       ymove2 := -FIXEDMUL(FRACUNIT * 4, sintable[angle]);
-      z := player.height - (50 shl FRACBITS);
+      z := player.height - (50 * FRACUNIT);
       SpawnSprite(S_BULLET16, player.x + xmove2, player.y + ymove2, player.z, z, player.angle, GetTargetAngle(0, z), true, playernum);
       SoundEffect(SN_BULLET12, 0, player.x, player.y);
       if netmode then
@@ -662,7 +662,7 @@ begin
 
   17: // blue gun
     begin
-      z := player.height - (64 shl FRACBITS);
+      z := player.height - (64 * FRACUNIT);
       angle2 := GetTargetAngle(0, z);
       SpawnSprite(S_BULLET17, player.x, player.y, player.z, z, player.angle, angle2, true, playernum);
       SoundEffect(SN_BULLET17, 0, player.x, player.y);
@@ -676,7 +676,7 @@ begin
       angle := 0;
       for i := 0 to 11 do
       begin
-        z := player.height - (52 shl FRACBITS);
+        z := player.height - (52 * FRACUNIT);
         angle2 := GetTargetAngle(0, z);
         SpawnSprite(S_BULLET18, player.x, player.y, player.z, z, angle, angle2, true, playernum);
         angle := angle + angleinc;
@@ -1229,7 +1229,7 @@ begin
             begin
               x := (cmapspot and 63) * MAPSIZE + 32;
               y := (cmapspot div 64) * MAPSIZE + 32;
-              SpawnSprite(player.weapons[index] + S_WEAPON0, x shl FRACBITS, y shl FRACBITS, 0, 0, 0, 0, false, 0);
+              SpawnSprite(player.weapons[index] + S_WEAPON0, x * FRACUNIT, y * FRACUNIT, 0, 0, 0, 0, false, 0);
               i := MAPCOLS * 2;
               break;
             end;
@@ -1313,8 +1313,8 @@ begin
       exit;
     if FindWarpDestination(x, y, mapsprites[mapspot]) then
     begin
-      WarpX := (x * MAPSIZE + 32) shl FRACBITS;
-      WarpY := (y * MAPSIZE + 32) shl FRACBITS;
+      WarpX := (x * MAPSIZE + 32) * FRACUNIT;
+      WarpY := (y * MAPSIZE + 32) * FRACUNIT;
       Warping := 1;
     end;
   end
@@ -1392,7 +1392,7 @@ begin
       else
         door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
 
-      door_p.position := door_p.doorSize shl FRACBITS;
+      door_p.position := door_p.doorSize * FRACUNIT;
     end;
     inc(door_p);
   end;
@@ -1899,7 +1899,7 @@ begin
     yh := (ycenter + PLAYERSIZE) shr FRACTILESHIFT;
   end;
 
-  pz := player.z - player.height + (26 shl FRACBITS);
+  pz := player.z - player.height + (26 * FRACUNIT);
   // check for solid walls
   for y := yl to yh do
     for x := xl to xh do
@@ -1922,12 +1922,12 @@ begin
           result := false;
           exit;
         end;
-        if RF_GetFloorZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS)) > pz then
+        if RF_GetFloorZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) > pz then
         begin
           result := false;
           exit;
         end;
-        if RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS)) < player.z + (10 shl FRACBITS) then
+        if RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) < player.z + (10 * FRACUNIT) then
         begin
           result := false;
           exit;
@@ -2379,17 +2379,17 @@ begin
   begin
     if (floorpic[player.mapspot] >= 57) and (floorpic[player.mapspot] <= 59) then
     begin
-      if player.z > RF_GetFloorZ(player.x, player.y) + (40 shl FRACBITS) then
+      if player.z > RF_GetFloorZ(player.x, player.y) + (40 * FRACUNIT) then
         player.z := player.z - FRACUNIT
-      else if player.z < RF_GetFloorZ(player.x, player.y) + (40 shl FRACBITS) then
-        player.z := RF_GetFloorZ(player.x, player.y) + (40 shl FRACBITS);
+      else if player.z < RF_GetFloorZ(player.x, player.y) + (40 * FRACUNIT) then
+        player.z := RF_GetFloorZ(player.x, player.y) + (40 * FRACUNIT);
     end
     else
     begin
-      if player.z > RF_GetFloorZ(player.x, player.y) + (12 shl FRACBITS) then
+      if player.z > RF_GetFloorZ(player.x, player.y) + (12 * FRACUNIT) then
         player.z := player.z - FRACUNIT
-      else if player.z < RF_GetFloorZ(player.x, player.y) + (12 shl FRACBITS) then
-        player.z := RF_GetFloorZ(player.x, player.y) + (12 shl FRACBITS);
+      else if player.z < RF_GetFloorZ(player.x, player.y) + (12 * FRACUNIT) then
+        player.z := RF_GetFloorZ(player.x, player.y) + (12 * FRACUNIT);
     end;
     if (keyboard[SC_SPACE] <> 0) then
       deadrestart := true;
@@ -2672,8 +2672,8 @@ begin
   begin
     while yl <= yh do
     begin
-      fz := RF_GetFloorZ((xl * 64 + 32) shl FRACBITS, (yl * 64 + 32) shl FRACBITS);
-      if (fz > maxz) and (fz < floorz + (20 shl FRACBITS)) then
+      fz := RF_GetFloorZ((xl * 64 + 32) * FRACUNIT, (yl * 64 + 32) * FRACUNIT);
+      if (fz > maxz) and (fz < floorz + (20 * FRACUNIT)) then
       begin
         maxz := fz;
         maxx := xl;
@@ -2692,7 +2692,7 @@ begin
   end;
   floorz := maxz + player.height;
 
-  if absI(player.z - floorz) <= 10 shl FRACBITS then
+  if absI(player.z - floorz) <= 10 * FRACUNIT then
   begin
     mapspot := maxy * MAPCOLS + maxx;
     if floorflags[mapspot] and F_RIGHT <> 0 then
@@ -2713,16 +2713,16 @@ begin
   else if player.z < floorz then
   begin
     if fallrate >= 12 * FRACUNIT then
-      falldamage := (fallrate shr FRACBITS) div 7;
+      falldamage := (fallrate div FRACUNIT) div 7;
     player.z := player.z + FRACUNIT shl 2;
     if player.z > floorz then
       player.z := floorz;
     fallrate := 0;
   end;
   floorz := RF_GetCeilingZ(player.x, player.y);
-  if player.z + (10 shl FRACBITS) > floorz then
+  if player.z + (10 * FRACUNIT) > floorz then
   begin
-    player.z := floorz - 10 shl FRACBITS;
+    player.z := floorz - 10 * FRACUNIT;
     fallrate := FALLUNIT;
   end;
 end;
@@ -2744,7 +2744,7 @@ begin
     lighting := lighting + changelight;
   if lighting <= 0 then
     lighting := 1;
-  RF_SetLights(lighting shl FRACBITS);
+  RF_SetLights(lighting * FRACUNIT);
   changelight := 0;
 end;
 
@@ -3411,8 +3411,8 @@ begin
       end;
 
       SpawnSprite(S_WARP,
-        (BonusItem.tilex * MAPSIZE + 32) shl FRACBITS,
-        (BonusItem.tiley * MAPSIZE + 32) shl FRACBITS,
+        (BonusItem.tilex * MAPSIZE + 32) * FRACUNIT,
+        (BonusItem.tiley * MAPSIZE + 32) * FRACUNIT,
         0, 0, 0, 0, false, 0);
     end;
 
@@ -3429,8 +3429,8 @@ begin
     BonusItem.time := timecount + bonustime + (clock and 1023);
     BonusItem.num := clock mod MAXRANDOMITEMS;
     BonusItem.name := randnames[BonusItem.num];
-    BonusItem.sprite := SpawnSprite(S_BONUSITEM, (BonusItem.tilex * MAPSIZE + 32) shl FRACBITS,(BonusItem.tiley * MAPSIZE + 32) shl FRACBITS, 0, 0, 0, 0, false, 0);
-    SpawnSprite(S_WARP, (BonusItem.tilex * MAPSIZE + 32) shl FRACBITS, (BonusItem.tiley * MAPSIZE + 32) shl FRACBITS, 0, 0, 0, 0, false, 0);
+    BonusItem.sprite := SpawnSprite(S_BONUSITEM, (BonusItem.tilex * MAPSIZE + 32) * FRACUNIT,(BonusItem.tiley * MAPSIZE + 32) * FRACUNIT, 0, 0, 0, 0, false, 0);
+    SpawnSprite(S_WARP, (BonusItem.tilex * MAPSIZE + 32) * FRACUNIT, (BonusItem.tiley * MAPSIZE + 32) * FRACUNIT, 0, 0, 0, 0, false, 0);
     BonusItem.sprite.basepic := BonusItem.sprite.basepic + BonusItem.num;
     oldgoalitem := -1;
     if netmode then
@@ -3832,9 +3832,9 @@ begin
       begin
         x := ((player.mapspot + i + j) and 63) * MAPSIZE + 32;
         y := ((player.mapspot + i + j) div 64) * MAPSIZE + 32;
-        SpawnSprite(S_EXIT, x shl FRACBITS, y shl FRACBITS, 0, 0, 0, 0, false, 0);
-        SoundEffect(SN_NEXUS, 0, x shl FRACBITS, y shl FRACBITS);
-        SoundEffect(SN_NEXUS, 0, x shl FRACBITS, y shl FRACBITS);
+        SpawnSprite(S_EXIT, x * FRACUNIT, y * FRACUNIT, 0, 0, 0, 0, false, 0);
+        SoundEffect(SN_NEXUS, 0, x * FRACUNIT, y * FRACUNIT);
+        SoundEffect(SN_NEXUS, 0, x * FRACUNIT, y * FRACUNIT);
         exitexists := true;
         writemsg('Translation Nexus Created!');
         exit;
@@ -4067,7 +4067,7 @@ begin
   begin
     sprintf(dbg, 'sp:%4d tp:%4d ver:%4d e:%4d mu:%2d t:%3d:%2d',
       [numspans, transparentposts, pDiff(vertexlist_p, @vertexlist, SizeOf(vertex_t)), pDiff(entry_p, @entries, SizeOf(entry_t)), greedcom.maxusage, timecount div 4200, (timecount div 70) mod 60]);
-    // sprintf(dbg, 'x: %d  y: %d', [(player.x shr FRACBITS) and 63, (player.y shr FRACBITS) and 63]);
+    // sprintf(dbg, 'x: %d  y: %d', [(player.x div FRACUNIT) and 63, (player.y div FRACUNIT) and 63]);
     fontbasecolor := 73;
     font := font1;
     printx := 2;
@@ -4208,7 +4208,7 @@ begin
 
     if firegrenade then
     begin
-      SpawnSprite(S_GRENADE, player.x, player.y, player.z, player.height - (50 shl FRACBITS), player.angle, (-player.scrollmin) and ANGLES, true, playernum);
+      SpawnSprite(S_GRENADE, player.x, player.y, player.z, player.height - (50 * FRACUNIT), player.angle, (-player.scrollmin) and ANGLES, true, playernum);
       SoundEffect(SN_GRENADE, 0, player.x, player.y);
       if netmode then
         NetSoundEffect(SN_GRENADE, 0, player.x, player.y);
@@ -4493,7 +4493,7 @@ begin
     recordindex := 0;
   end;
   probe.moveSpeed := MAXPROBE;
-  probe.movesize := 16 shl FRACBITS; // half a tile
+  probe.movesize := 16 * FRACUNIT; // half a tile
   probe.spawnid := playernum;
   ChangeViewSize(true);
   ChangeViewSize(true);

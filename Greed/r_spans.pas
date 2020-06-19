@@ -123,8 +123,8 @@ begin
 
   while i < j do
   begin
-    while part > data[j] do dec(j);
-    while data[i] > part do inc(i);
+    while part > data[CSubI(j, 1)] do;
+    while data[CAddI(i, 1)] > part do;
     if i >= j then
       break;
     SWAPL(@data[i], @data[j]);
@@ -183,7 +183,7 @@ begin
   dec(sp_loopvalue);
   while sp_count > 0 do
   begin
-    color :=  sp_source[sp_frac shr FRACBITS];
+    color :=  sp_source[sp_frac div FRACUNIT];
     if color <> 0 then
       sp_dest[0] :=  color;
     sp_dest := @sp_dest[windowWidth];
@@ -200,7 +200,7 @@ begin
   dec(sp_loopvalue);
   while sp_count > 0 do
   begin
-    sp_dest[0] := sp_source[sp_frac shr FRACBITS];
+    sp_dest[0] := sp_source[sp_frac div FRACUNIT];
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
     sp_frac := sp_frac and sp_loopvalue;
@@ -222,7 +222,7 @@ begin
 
   if span_p.shadow = 0 then
   begin
-    light := (pointz shr FRACBITS) + span_p.light;
+    light := (pointz div FRACUNIT) + span_p.light;
     if light > MAXZLIGHT then exit;
     if light < 0 then light := 0;
     sp_colormap := zcolormap[light];
@@ -241,7 +241,7 @@ begin
       sp_colormap := colormaps
     else
     begin
-      light := (pointz shr FRACBITS) + span_p.light;
+      light := (pointz div FRACUNIT) + span_p.light;
       if light > MAXZLIGHT then
         light := MAXZLIGHT
       else if light < 0 then
@@ -251,7 +251,7 @@ begin
   end
   else if span_p.shadow = 9 then
   begin
-    light := (pointz shr FRACBITS) + span_p.light + wallflicker4;
+    light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
     if light > MAXZLIGHT then
       light := MAXZLIGHT
     else if light < 0 then
@@ -261,11 +261,11 @@ begin
 
   sp_fracstep := FIXEDMUL(pointz, ISCALE);
   top := FIXEDDIV(span_p.y, scale);
-  topy := top shr FRACBITS;
+  topy := top div FRACUNIT;
   fracadjust := top and (FRACUNIT - 1);
   sp_frac := FIXEDMUL(fracadjust, sp_fracstep);
   topy := CENTERY - topy;
-  sp_loopvalue := 256 shl FRACBITS;
+  sp_loopvalue := 256 * FRACUNIT;
   if topy < scrollmin then
   begin
     sp_frac := sp_frac + (scrollmin - topy) * scale;
@@ -274,10 +274,10 @@ begin
     topy := scrollmin;
   end;
   bottom := FIXEDDIV(span_p.yh, scale);
-  if bottom >= (CENTERY + scrollmin) shl FRACBITS then
+  if bottom >= (CENTERY + scrollmin) * FRACUNIT then
     bottomy :=  scrollmax - 1
   else
-    bottomy := CENTERY + (bottom shr FRACBITS);
+    bottomy := CENTERY + (bottom div FRACUNIT);
   if (bottomy <= scrollmin) or (topy >= scrollmax) then exit;
   sp_count := bottomy - topy + 1;
   sp_dest := @viewylookup[bottomy - scrollmin][spanx];
@@ -300,7 +300,7 @@ begin
     dec(sp_count);
     if sp_count = 0 then
       break;
-    color := sp_source[sp_frac shr FRACBITS];
+    color := sp_source[sp_frac div FRACUNIT];
     if color <> 0 then
       sp_dest[0] := translookup[sp_colormap[color] - 1][sp_dest[0]];
     sp_dest := @sp_dest[windowWidth];
@@ -316,7 +316,7 @@ var
 begin
   while mr_count > 0 do
   begin
-    spot := (mr_yfrac shr (FRACBITS - 6)) and (63 * 64) + ((mr_xfrac shr FRACBITS) and 63);
+    spot := (mr_yfrac shr (FRACBITS - 6)) and (63 * 64) + ((mr_xfrac div FRACUNIT) and 63);
     mr_dest[0] := mr_colormap[mr_picture[spot]];
     mr_dest := @mr_dest[1];
     mr_xfrac := mr_xfrac + mr_xstep;
@@ -344,7 +344,7 @@ begin
   else if specialtype = st_transparent then sp_colormap := colormaps
   else if shadow = 0 then
   begin
-    light := (pointz shr FRACBITS) + span_p.light;
+    light := (pointz div FRACUNIT) + span_p.light;
     if light > MAXZLIGHT then exit;
     if light < 0 then light := 0;
     sp_colormap := zcolormap[light];
@@ -362,7 +362,7 @@ begin
     if wallcycle = span_p.shadow - 5 then sp_colormap := colormaps
     else
     begin
-      light := (pointz shr FRACBITS) + span_p.light;
+      light := (pointz div FRACUNIT) + span_p.light;
       if light > MAXZLIGHT then light := MAXZLIGHT
       else if light < 0 then light := 0;
       sp_colormap := zcolormap[light];
@@ -370,7 +370,7 @@ begin
   end
   else if shadow = 9 then
   begin
-    light := (pointz shr FRACBITS) + span_p.light + wallflicker4;
+    light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
     if light > MAXZLIGHT then light := MAXZLIGHT
     else if light < 0 then light := 0;
     sp_colormap := zcolormap[light];
@@ -388,7 +388,7 @@ begin
   sp_fracstep := fracstep;
   leftx := span_p.x2;
   leftx := leftx - pic.leftoffset shl bitshift;
-  x := CENTERX + (FIXEDMUL(leftx, scale) shr FRACBITS);
+  x := CENTERX + (FIXEDMUL(leftx, scale) div FRACUNIT);
   // step through the shape, drawing posts where visible
   xfrac := 0;
   if x < 0 then
@@ -396,12 +396,12 @@ begin
     xfrac := xfrac - fracstep * x;
     x := 0;
   end;
-  sp_loopvalue := 256 shl FRACBITS;
+  sp_loopvalue := 256 * FRACUNIT;
   height := pic.collumnofs[1] - pic.collumnofs[0];
 
   while x < windowWidth do
   begin
-    post := xfrac shr FRACBITS;
+    post := xfrac div FRACUNIT;
     if post >= pic.width then
       exit;   // shape finished drawing
     xfrac := xfrac + fracstep;
@@ -422,7 +422,7 @@ begin
     collumn := @collumn[2];
 
     // scale a post
-    bottomy := CENTERY - FIXEDMUL(bottomheight, scale) shr FRACBITS;
+    bottomy := CENTERY - FIXEDMUL(bottomheight, scale) div FRACUNIT;
     if bottomy < scrollmin then
     begin
       inc(x);
@@ -431,7 +431,7 @@ begin
     if bottomy >= scrollmax then
       bottomy := scrollmax - 1;
 
-    topy := CENTERY - FIXEDMUL(topheight, scale) shr FRACBITS;
+    topy := CENTERY - FIXEDMUL(topheight, scale) div FRACUNIT;
     if topy < scrollmin then
     begin
       sp_frac := (scrollmin - topy) * sp_fracstep;
@@ -536,14 +536,14 @@ begin
         // floor shadows
         if span_p.shadow = 0 then
         begin
-          light := (pointz shr FRACBITS) + span_p.light;
+          light := (pointz div FRACUNIT) + span_p.light;
           if light > MAXZLIGHT then goto abort1;
           if light < 0 then light := 0;
           mr_colormap := zcolormap[light];
         end
         else if span_p.shadow = 9 then
         begin
-          light := (pointz shr FRACBITS) + span_p.light + wallflicker4;
+          light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
           if light > MAXZLIGHT then goto abort1;
           if light < 0 then light := 0;
           mr_colormap := zcolormap[light];
@@ -572,13 +572,13 @@ begin
             mr_dest := @viewylookup[py][px];
             if windowHeight <> 64 then
               py := span_p.y + 64;
-            h1 := (hfrac * py) shr FRACBITS;
+            h1 := (hfrac * py) div FRACUNIT;
             if px <= w then
             begin
-              a := ((TANANGLES div 2) shl FRACBITS) + afrac * (w - px);
+              a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
               while (px <= w) and (mr_count>0) do
               begin
-                x := backtangents[a shr FRACBITS];
+                x := backtangents[a div FRACUNIT];
                 x2 := center - x + windowWidth - 257;
                 x2 := x2 and 255;
                 if mr_dest[0] = 255 then
@@ -591,10 +591,10 @@ begin
             end;
             if px > w then
             begin
-              a := ((TANANGLES div 2) shl FRACBITS) + afrac * (px - w);
+              a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
               while mr_count > 0 do
               begin
-                x1 := center + backtangents[a shr FRACBITS];
+                x1 := center + backtangents[a div FRACUNIT];
                 x1 := x1 and 255;
                 if mr_dest[0] = 255 then
                   mr_dest[0] := backdroplookup[h1][x1];
@@ -620,13 +620,13 @@ begin
         mr_dest := @viewylookup[py][px];
         if windowHeight <> 64 then
           py := span_p.y + 64;
-        h1 := (hfrac * py) shr FRACBITS;
+        h1 := (hfrac * py) div FRACUNIT;
         if px <= w then
         begin
-          a := ((TANANGLES div 2) shl FRACBITS) + afrac * (w - px);
+          a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
           while (px <= w) and (mr_count > 0) do
           begin
-            x := backtangents[a shr FRACBITS];
+            x := backtangents[a div FRACUNIT];
             x2 := center - x + windowWidth - 257;
             x2 := x2 and 255;
             mr_dest[0] := backdroplookup[h1][x2];
@@ -638,10 +638,10 @@ begin
         end;
         if px > w then
         begin
-          a := ((TANANGLES div 2) shl FRACBITS) + afrac * (px - w);
+          a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
           while mr_count > 0 do
           begin
-            x1 := center + backtangents[a shr FRACBITS];
+            x1 := center + backtangents[a div FRACUNIT];
             x1 := x1 and 255;
             mr_dest[0] := backdroplookup[h1][x1];
             a := a + afrac;
@@ -661,7 +661,7 @@ begin
         sp_frac := span_p.y;
         sp_fracstep := span_p.yh;
         sp_count := tpwalls_count[x];
-        sp_loopvalue := span_p.light shl FRACBITS;
+        sp_loopvalue := span_p.light * FRACUNIT;
         ScalePost;
       end;
 
@@ -676,14 +676,14 @@ begin
 
         if span_p.shadow = 0 then
         begin
-          light := (pointz shr FRACBITS) + span_p.light;
+          light := (pointz div FRACUNIT) + span_p.light;
           if light > MAXZLIGHT then goto abort1;
           if light < 0 then light := 0;
           mr_colormap := zcolormap[light];
         end
         else if span_p.shadow = 9 then
         begin
-          light := (pointz shr FRACBITS) + span_p.light + wallflicker4;
+          light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
           if light > MAXZLIGHT then goto abort1;
           if light < 0 then light := 0;
           mr_colormap := zcolormap[light];
@@ -725,13 +725,13 @@ begin
           mr_dest := @viewylookup[py][px];
           if windowHeight <> 64 then
             py := span_p.y + 64;
-          h1 := (hfrac * py) shr FRACBITS;
+          h1 := (hfrac * py) div FRACUNIT;
           if px <= w then
           begin
-            a := ((TANANGLES div 2) shl FRACBITS) + afrac * (w - px);
+            a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
             while (px <= w) and (mr_count > 0) do
             begin
-              x := backtangents[a shr FRACBITS];
+              x := backtangents[a div FRACUNIT];
               x2 := center - x + windowWidth - 257;
               x2 := x2 and 255;
               if mr_dest[0] = 255 then
@@ -744,10 +744,10 @@ begin
           end;
           if px > w then
           begin
-            a := ((TANANGLES div 2) shl FRACBITS) + afrac * (px - w);
+            a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
             while mr_count > 0 do
             begin
-              x1 := center + backtangents[a shr FRACBITS];
+              x1 := center + backtangents[a div FRACUNIT];
               x1 := x1 and 255;
               if mr_dest[0] = 255 then
                 mr_dest[0] := backdroplookup[h1][x1];
@@ -773,7 +773,7 @@ begin
         sp_frac := span_p.y;
         sp_fracstep := span_p.yh;
         sp_count := tpwalls_count[x];
-        sp_loopvalue := span_p.light shl FRACBITS;
+        sp_loopvalue := span_p.light * FRACUNIT;
         ScaleMaskedPost;
       end;
 
@@ -786,13 +786,13 @@ begin
         sp_frac := span_p.y;
         sp_fracstep := span_p.yh;
         sp_count := tpwalls_count[x];
-        sp_loopvalue := span_p.light shl FRACBITS;
+        sp_loopvalue := span_p.light * FRACUNIT;
         sp_dest := @sp_dest[-windowWidth * (sp_count - 1)]; // go to the top
         dec(sp_loopvalue);
         while sp_count > 0 do
         begin
           dec(sp_count);
-          color := sp_source[sp_frac shr FRACBITS];
+          color := sp_source[sp_frac div FRACUNIT];
           if color <> 0 then
             sp_dest[0] := translookup[sp_colormap[color] - 1][sp_dest[0]];
           sp_dest := @sp_dest[windowWidth];

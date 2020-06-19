@@ -81,7 +81,7 @@ begin
   if point.tz >= MINZ then
   begin
     scale := FIXEDDIV(FSCALE, point.tz);
-    point.px := CENTERX + (FIXEDMUL(point.tx, scale) shr FRACBITS);
+    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
   end;
   result := point;
 end;
@@ -289,7 +289,7 @@ begin
       continue;
 
     // calculate the texture post along the wall that was hit
-    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) shr FRACBITS;
+    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) div FRACUNIT;
     texture := texture and 63;
     sp_source := postindex[texture];
 
@@ -420,7 +420,7 @@ part2:
       continue;
 
     // calculate the texture post along the wall that was hit
-    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) shr FRACBITS;
+    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) div FRACUNIT;
     texture := texture and 63;
     sp_source := postindex[texture];
 
@@ -453,8 +453,8 @@ part3:
     begin
       ty := ty + FRACUNIT * 32;
       tx := tx + position;
-      p1 := TransformPoint(tx, ty + (5 shl FRACBITS));
-      p2 := TransformPoint(tx, ty - (5 shl FRACBITS));
+      p1 := TransformPoint(tx, ty + (5 * FRACUNIT));
+      p2 := TransformPoint(tx, ty - (5 * FRACUNIT));
       textureadjust := viewy + TILEGLOBAL - ty;
       baseangle := TANANGLES;
       distance := tx - viewx;
@@ -463,8 +463,8 @@ part3:
     begin
       tx := tx + FRACUNIT * 32;
       ty := ty + position;
-      p1 := TransformPoint(tx + (5 shl FRACBITS), ty);
-      p2 := TransformPoint(tx - (5 shl FRACBITS), ty);
+      p1 := TransformPoint(tx + (5 * FRACUNIT), ty);
+      p2 := TransformPoint(tx - (5 * FRACUNIT), ty);
       textureadjust := viewx + TILEGLOBAL - tx;
       baseangle := TANANGLES * 2;
       distance := viewy - ty;
@@ -473,8 +473,8 @@ part3:
     begin
       ty := ty + FRACUNIT * 32;
       tx := tx + FRACUNIT * 64 - position;
-      p1 := TransformPoint(tx, ty + (5 shl FRACBITS));
-      p2 := TransformPoint(tx, ty - (5 shl FRACBITS));
+      p1 := TransformPoint(tx, ty + (5 * FRACUNIT));
+      p2 := TransformPoint(tx, ty - (5 * FRACUNIT));
       textureadjust := viewy + TILEGLOBAL - ty;
       baseangle := TANANGLES;
       distance := tx - viewx;
@@ -483,8 +483,8 @@ part3:
     begin
       tx := tx + FRACUNIT * 32;
       ty := ty + FRACUNIT * 64 - position;
-      p1 := TransformPoint(tx + (5 shl FRACBITS), ty);
-      p2 := TransformPoint(tx - (5 shl FRACBITS), ty);
+      p1 := TransformPoint(tx + (5 * FRACUNIT), ty);
+      p2 := TransformPoint(tx - (5 * FRACUNIT), ty);
       textureadjust := viewx + TILEGLOBAL - tx;
       baseangle := TANANGLES * 2;
       distance := viewy - ty;
@@ -535,7 +535,7 @@ part3:
       continue;
 
     // calculate the texture post along the wall that was hit
-    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) shr FRACBITS;
+    texture := (textureadjust + FIXEDMUL(distance, tangents[angle])) div FRACUNIT;
     texture := texture and 63;
     sp_source := postindex[texture];
 

@@ -218,8 +218,8 @@ begin
         gameloading := true;
         if not eventloading or (zones[i].endeval <> 0) then
         begin
-          x1 := (zones[i].x1 * MAPSIZE + 32) shl FRACBITS;
-          y1 := (zones[i].y1 * MAPSIZE + 32) shl FRACBITS;
+          x1 := (zones[i].x1 * MAPSIZE + 32) * FRACUNIT;
+          y1 := (zones[i].y1 * MAPSIZE + 32) * FRACUNIT;
           SpawnSprite(S_WARP, x1, y1, RF_GetFloorZ(x1, y1) + 10 * FRACUNIT, 0, 0, 0, true, 0);
           sp := SpawnSprite(zones[i].stype, x1, y1, RF_GetFloorZ(x1, y1) + 10 * FRACUNIT, 0, 0, 0, true, 0);
           sp.deathevent := zones[i].endeval;
@@ -242,7 +242,7 @@ begin
       end
       else if (zones[i].typ = SOUNDTYPE) and (eval > 0) then
       begin
-        SoundEffect(zones[i].endeval, 0, (zones[i].x1 * MAPSIZE + 32) shl FRACBITS, (zones[i].y1 * MAPSIZE + 32) shl FRACBITS);
+        SoundEffect(zones[i].endeval, 0, (zones[i].x1 * MAPSIZE + 32) * FRACUNIT, (zones[i].y1 * MAPSIZE + 32) * FRACUNIT);
         if zones[i].removeable <> 0 then
         begin
           zones[i].typ := -1;

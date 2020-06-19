@@ -210,9 +210,9 @@ begin
         SpawnSprite(S_METALPARTS, sp.x, sp.y, sp.z + 64 * FRACUNIT, 0, 0, 0, false, 0);
       for i := 0 to 9 do
       begin
-        x := sp.x + ((-64 + (MS_RndT and 127)) shl FRACBITS);
-        y := sp.y + ((-64 + (MS_RndT and 127)) shl FRACBITS);
-        z := sp.z + ((MS_RndT and 127) shl FRACBITS);
+        x := sp.x + ((-64 + (MS_RndT and 127)) * FRACUNIT);
+        y := sp.y + ((-64 + (MS_RndT and 127)) * FRACUNIT);
+        z := sp.z + ((MS_RndT and 127) * FRACUNIT);
         SpawnSprite(S_EXPLODE + (MS_RndT and 1), x, y, z, 0, 0, 0, false, 0);
       end;
       SoundEffect(SN_EXPLODE1 + (clock and 1), 15, x, y);
@@ -234,7 +234,7 @@ begin
   for y := 0 to MAPROWS - 1 do
     for x := 0 to MAPCOLS - 1 do
      if mapsprites[y * MAPCOLS + x] <> 0 then
-       SpawnSprite(mapsprites[y * MAPCOLS + x], (x * MAPSIZE + 32) shl FRACBITS, (y * MAPCOLS + 32) shl FRACBITS, 0, 0, 0, 0, false, 0);
+       SpawnSprite(mapsprites[y * MAPCOLS + x], (x * MAPSIZE + 32) * FRACUNIT, (y * MAPCOLS + 32) * FRACUNIT, 0, 0, 0, 0, false, 0);
   gameloading := false;
 end;
 
@@ -2270,8 +2270,8 @@ begin
     y := startlocations[n][1];
     mapspot := y * MAPCOLS + x;
   until mapsprites[mapspot] <= 0;
-  player.x := (x shl FRACTILESHIFT) + (32 shl FRACBITS);
-  player.y := (y shl FRACTILESHIFT) + (32 shl FRACBITS);
+  player.x := (x shl FRACTILESHIFT) + (32 * FRACUNIT);
+  player.y := (y shl FRACTILESHIFT) + (32 * FRACUNIT);
   player.z := RF_GetFloorZ(player.x, player.y) + player.height;
   player.angle := NORTH;
   NetNewPlayerData;

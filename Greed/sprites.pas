@@ -213,12 +213,12 @@ begin
       end;
       if msprite <> @probe then
       begin
-        if msprite.z < RF_GetFloorZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS)) then
+        if msprite.z < RF_GetFloorZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) then
         begin
           result := 2;    // below floor
           exit;
         end;
-        if msprite.z > RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS)) then
+        if msprite.z > RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) then
         begin
           result := 2; // below ceiling
           exit;
@@ -319,7 +319,7 @@ begin
     yl := (ycenter - msprite.movesize) shr FRACTILESHIFT;
     yh := (ycenter + msprite.movesize) shr FRACTILESHIFT;
   end;
-  sz :=  msprite.z - msprite.zadj + (20 shl FRACBITS);
+  sz :=  msprite.z - msprite.zadj + (20 * FRACUNIT);
   sz2 :=  msprite.z - msprite.zadj;
   for y := yl to yh do
     for x := xl to xh do
@@ -333,20 +333,20 @@ begin
         exit;
       end;
 
-      floorz := RF_GetFloorZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS));
+      floorz := RF_GetFloorZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT));
       if floorz > sz then
       begin
         result := false;
         exit;
       end;
 
-      if msprite.nofalling and (floorz + (5 shl FRACBITS) < sz2) then
+      if msprite.nofalling and (floorz + (5 * FRACUNIT) < sz2) then
       begin
         result := false;
         exit;
       end;
 
-      ceilingz := RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 shl FRACBITS), (y shl FRACTILESHIFT) + (32 shl FRACBITS));
+      ceilingz := RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT));
       if ceilingz < msprite.z + msprite.height then
       begin
         result := false;
@@ -662,7 +662,7 @@ begin
   begin
     ret := SP_Thrust;
     if msprite.typ = S_BULLET3 then
-      msprite.z := RF_GetFloorZ(msprite.x, msprite.y) + (20 shl FRACBITS);
+      msprite.z := RF_GetFloorZ(msprite.x, msprite.y) + (20 * FRACUNIT);
 
     if ret <> 0 then
     begin
@@ -759,7 +759,7 @@ begin
                     oldangle := hsprite.angle;
                     oldmovespeed := hsprite.moveSpeed;
                     hsprite.angle := msprite.angle;
-                    hsprite.moveSpeed := (msprite.damage shr 2) shl FRACBITS;
+                    hsprite.moveSpeed := (msprite.damage shr 2) * FRACUNIT;
                     sp := msprite;
                     msprite := hsprite;
                     oldfall := msprite.nofalling;
@@ -813,7 +813,7 @@ begin
     angle := 0;
     for i := 0 to 11 do
     begin
-      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle, 0, true, msprite.spawnid);
+      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle, 0, true, msprite.spawnid);
       sp.maxmove := 3;
       sp.startspot := -1;
       angle := angle + angleinc;
@@ -822,7 +822,7 @@ begin
     angle := 0;
     for i := 0 to 7 do
     begin
-      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle,64, true, msprite.spawnid);
+      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle,64, true, msprite.spawnid);
       sp.maxmove := 2;
       sp.startspot := -1;
       angle := angle + angleinc;
@@ -831,7 +831,7 @@ begin
     angle := 0;
     for i := 0 to 7 do
     begin
-      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle,-64, true, msprite.spawnid);
+      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle,-64, true, msprite.spawnid);
       sp.maxmove := 2;
       sp.startspot := -1;
       angle := angle + angleinc;
@@ -845,7 +845,7 @@ begin
     angle := 0;
     for i := 0 to 7 do
     begin
-      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle, 0, true, msprite.spawnid);
+      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle, 0, true, msprite.spawnid);
       sp.maxmove := 3;
       sp.startspot := -1;
       angle := angle + angleinc;
@@ -854,7 +854,7 @@ begin
     angle := 0;
     for i := 0 to 5 do
     begin
-      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle,64, true, msprite.spawnid);
+      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle,64, true, msprite.spawnid);
       sp.maxmove := 2;
       sp.startspot := -1;
       angle := angle + angleinc;
@@ -863,7 +863,7 @@ begin
     angle := 0;
     for i := 0 to 5 do
     begin
-      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle,-64, true, msprite.spawnid);
+      sp := SpawnSprite(S_GRENADEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle,-64, true, msprite.spawnid);
       sp.maxmove := 2;
       sp.startspot := -1;
       angle := angle + angleinc;
@@ -1236,11 +1236,11 @@ begin
     begin
       px := hsprite.x;
       py := hsprite.y;
-      pz := hsprite.z + (32 shl FRACBITS);
+      pz := hsprite.z + (32 * FRACUNIT);
     end;
   end
   else
-    pz := pz + 20 shl FRACBITS;
+    pz := pz + 20 * FRACUNIT;
 
   if sz > pz then
   begin
@@ -1465,9 +1465,9 @@ begin
           msprite.movemode := 5;
           msprite.basepic := msprite.startpic + 32;
           if msprite.typ = S_MONSTER7 then
-            fheight := 15 shl FRACBITS
+            fheight := 15 * FRACUNIT
           else
-            fheight := 40 shl FRACBITS;
+            fheight := 40 * FRACUNIT;
           pangle := GetFireAngle(fheight, tx, ty, targx, targy, targz) - 15 + (MS_RndT and 31);
           SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31), pangle, true, 255);
           msprite.modetime := msprite.modetime + 8;
@@ -1519,7 +1519,7 @@ begin
       angle := 0;
       for i := 0 to 19 do
       begin
-        sp := SpawnSprite(S_MINEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle, 0, true, msprite.spawnid);
+        sp := SpawnSprite(S_MINEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle, 0, true, msprite.spawnid);
         angle := angle + angleinc;
       end;
       sp := SpawnSprite(S_EXPLODE, msprite.x, msprite.y, msprite.z, 0, 0, 0, true, 255);
@@ -1567,7 +1567,7 @@ begin
         angle := 0;
         for i := 0 to 15 do
         begin
-          sp := SpawnSprite(S_MINEBULLET, msprite.x, msprite.y, msprite.z, 20 shl FRACBITS, angle, 0, true, msprite.spawnid);
+          sp := SpawnSprite(S_MINEBULLET, msprite.x, msprite.y, msprite.z, 20 * FRACUNIT, angle, 0, true, msprite.spawnid);
           angle := angle + angleinc;
         end;
         sp := SpawnSprite(S_EXPLODE, msprite.x, msprite.y, msprite.z, 0, 0, 0, true, 255);
@@ -1745,7 +1745,7 @@ begin
       msprite.angle := angle and ANGLES;
       msprite.movemode := 4;
       msprite.basepic := msprite.startpic+24;
-      fheight := 40 shl FRACBITS;
+      fheight := 40 * FRACUNIT;
       pangle := GetFireAngle(fheight, px, py, 0, 0, 0);
       SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle, pangle, true, 255);
       msprite.modetime := timecount + 8;
@@ -1761,7 +1761,7 @@ begin
       msprite.angle := angle and ANGLES;
       msprite.movemode := 4;
       msprite.basepic := msprite.startpic + 24;
-      fheight := 40 shl FRACBITS;
+      fheight := 40 * FRACUNIT;
       pangle := GetFireAngle(fheight, px, py, 0, 0, 0);
       SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle, pangle, true, 255);
       msprite.modetime := timecount + 8;
@@ -2030,7 +2030,7 @@ endscan:
 
           msprite.movemode := 5;
           msprite.basepic := msprite.startpic + 32;
-          fheight := 40 shl FRACBITS;
+          fheight := 40 * FRACUNIT;
           pangle := GetFireAngle(fheight, tx, ty, targx, targy, targz);
           SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle, pangle, true, 255);
           msprite.modetime := msprite.modetime + 8;
@@ -2196,7 +2196,7 @@ begin
           angleinc := ANGLES div 16;
           for i := 0 to 15 do
           begin
-            SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, 32 shl FRACBITS, angle, 0, true, 255);
+            SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, 32 * FRACUNIT, angle, 0, true, 255);
             angle := angle + angleinc;
           end;
           SoundEffect(SN_MON11_FIRE, 7, msprite.x, msprite.y);
@@ -2218,7 +2218,7 @@ begin
           angleinc := ANGLES div 16;
           for i := 0 to 15 do
           begin
-            SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, 32 shl FRACBITS, angle, 0, true, 255);
+            SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, 32 * FRACUNIT, angle, 0, true, 255);
             angle := angle + angleinc;
           end;
           SoundEffect(SN_MON11_FIRE, 7, msprite.x, msprite.y);
@@ -2240,7 +2240,7 @@ begin
           angleinc := ANGLES div 16;
           for i := 0 to 15 do
           begin
-            SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, 32 shl FRACBITS, angle, 0, true, 255);
+            SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, 32 * FRACUNIT, angle, 0, true, 255);
             angle := angle + angleinc;
           end;
           SoundEffect(SN_MON11_FIRE, 7, msprite.x, msprite.y);
@@ -2285,7 +2285,7 @@ begin
           msprite.angle := angle and ANGLES;
           inc(msprite.movemode);
           msprite.basepic := msprite.startpic + 32;
-          fheight := 70 shl FRACBITS;
+          fheight := 70 * FRACUNIT;
           if (msprite.movemode = 5) and (MS_RndT < 32) then
           begin
             SpawnSprite(S_GRENADE, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31), 0, true, 255);
@@ -2474,11 +2474,11 @@ begin
       msprite.actiontime := timecount + 30;
       msprite.modetime := timecount + 15;
       if msprite.typ = S_MONSTER3 then
-        fheight := 3 shl FRACBITS
+        fheight := 3 * FRACUNIT
       else if msprite.typ = S_MONSTER6 then
-        fheight := 100 shl FRACBITS
+        fheight := 100 * FRACUNIT
       else
-        fheight := 40 shl FRACBITS;
+        fheight := 40 * FRACUNIT;
 
       pangle := GetFireAngle(fheight, tx, ty, targx, targy, targz) - 15 + (MS_RndT and 31);
       if (msprite.typ = S_MONSTER13) or (msprite.typ = S_MONSTER6) or (msprite.typ = S_MONSTER15) or (msprite.typ = S_MONSTER5) then

@@ -208,8 +208,8 @@ skiprightvertex:
         goto skiprightvertex;
       end;
       deltax := vertexx[rightvertex] - oldx;
-      rightfrac := oldx shl FRACBITS; // fix roundoff
-      rightstep := (deltax shl FRACBITS) div deltay;
+      rightfrac := oldx * FRACUNIT; // fix roundoff
+      rightstep := (deltax * FRACUNIT) div deltay;
     end;
     if mr_y = vertexy[leftvertex] then
     begin
@@ -222,8 +222,8 @@ skipleftvertex:
       if deltay = 0 then
         goto skipleftvertex;
       deltax := vertexx[leftvertex] - oldx;
-      leftfrac := oldx shl FRACBITS;  // fix roundoff
-      leftstep := (deltax shl FRACBITS) div deltay;
+      leftfrac := oldx * FRACUNIT;  // fix roundoff
+      leftstep := (deltax * FRACUNIT) div deltay;
     end;
     if vertexy[rightvertex] < vertexy[leftvertex] then
       stopy := vertexy[rightvertex]
@@ -247,8 +247,8 @@ skipleftvertex:
       stopy := scrollmax;
     while mr_y < stopy do
     begin
-      mr_x1 := leftfrac shr FRACBITS;
-      mr_x2 := rightfrac shr FRACBITS;
+      mr_x1 := leftfrac div FRACUNIT;
+      mr_x2 := rightfrac div FRACUNIT;
       if mr_x1 < xclipl then
         mr_x1 := xclipl;
       if mr_x2 > xcliph then
@@ -314,8 +314,8 @@ begin
       frac := FIXEDDIV((p1.tz - zmin), (p1.tz - p2.tz));
       cliptx := p1.tx + FIXEDMUL((p2.tx - p1.tx), frac);
       clipty := p1.ty + FIXEDMUL((p2.ty - p1.ty), frac);
-      vertexx[numvertex] := CENTERX + (FIXEDMUL(cliptx, scale) shr FRACBITS);
-      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) shr FRACBITS);
+      vertexx[numvertex] := CENTERX + (FIXEDMUL(cliptx, scale) div FRACUNIT);
+      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) div FRACUNIT);
       if ceilingbit and (vertexy[numvertex] > 640) then
       begin
         result := false;

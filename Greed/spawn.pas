@@ -108,9 +108,9 @@ begin
       begin
         sprite_p := RF_GetSprite;
         sprite_p.animation := 0 + (0 shl 1) + (5 shl 5) + ((2 + (MS_RndT) and (7)) shl 9) + ANIM_SELFDEST;
-        sprite_p.x := x + ((-3 + MS_RndT) and (7) shl FRACBITS);
-        sprite_p.y := y + ((-3 + MS_RndT) and (7) shl FRACBITS);
-        sprite_p.z := z + ((-3 + MS_RndT) and (7) shl FRACBITS);
+        sprite_p.x := x + ((-3 + MS_RndT) and (7) * FRACUNIT);
+        sprite_p.y := y + ((-3 + MS_RndT) and (7) * FRACUNIT);
+        sprite_p.z := z + ((-3 + MS_RndT) and (7) * FRACUNIT);
         sprite_p.basepic := slumps[S_WALLPUFF - S_START];
         sprite_p.active := true;
         sprite_p.heat := 100;
@@ -133,9 +133,9 @@ begin
        end;
     bloodcount++;
     sprite_p := RF_GetSprite;
-    sprite_p.x := x+((-3+MS_RndT) and (7) shl FRACBITS);
-    sprite_p.y := y+((-3+MS_RndT) and (7) shl FRACBITS);
-    sprite_p.z := z+((7+MS_RndT) and (15) shl FRACBITS);
+    sprite_p.x := x+((-3+MS_RndT) and (7) * FRACUNIT);
+    sprite_p.y := y+((-3+MS_RndT) and (7) * FRACUNIT);
+    sprite_p.z := z+((7+MS_RndT) and (15) * FRACUNIT);
     sprite_p.zadj := zadj;
     sprite_p.active := true;
     sprite_p.angle := MS_RndT*4;
@@ -160,9 +160,9 @@ begin
        end;
     bloodcount++;
     sprite_p := RF_GetSprite;
-    sprite_p.x := x+((-3+MS_RndT) and (7) shl FRACBITS);
-    sprite_p.y := y+((-3+MS_RndT) and (7) shl FRACBITS);
-    sprite_p.z := z+((7+MS_RndT) and (15) shl FRACBITS);
+    sprite_p.x := x+((-3+MS_RndT) and (7) * FRACUNIT);
+    sprite_p.y := y+((-3+MS_RndT) and (7) * FRACUNIT);
+    sprite_p.z := z+((7+MS_RndT) and (15) * FRACUNIT);
     sprite_p.zadj := zadj;
     sprite_p.active := true;
     sprite_p.angle := MS_RndT*4;
@@ -185,7 +185,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.startspot := mapspot;
       sprite_p.damage := 35;
@@ -206,7 +206,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -228,7 +228,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 96;
       sprite_p.startspot := mapspot;
@@ -252,7 +252,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 4 shl FRACBITS;
+      sprite_p.movesize := 4 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 112;
       sprite_p.startspot := mapspot;
@@ -275,7 +275,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 30;
       sprite_p.startspot := mapspot;
@@ -298,7 +298,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.startspot := mapspot;
       sprite_p.damage := 90;
@@ -321,7 +321,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 3 shl FRACBITS;
+      sprite_p.movesize := 3 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 500;
       sprite_p.startspot := mapspot;
@@ -343,7 +343,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 10;
       sprite_p.startspot := mapspot;
@@ -365,7 +365,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 2 shl FRACBITS;
+      sprite_p.movesize := 2 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 300;
       sprite_p.startspot := mapspot;
@@ -388,7 +388,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 3 shl FRACBITS;
+      sprite_p.movesize := 3 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 30;
       sprite_p.startspot := mapspot;
@@ -410,7 +410,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 100;
       sprite_p.startspot := mapspot;
@@ -434,7 +434,7 @@ begin
     sprite_p.zadj := zadj;
     sprite_p.z := z + zadj;
     sprite_p.basepic := slumps[value - S_START];
-    sprite_p.movesize := 5 shl FRACBITS;
+    sprite_p.movesize := 5 * FRACUNIT;
     sprite_p.active := true;
     sprite_p.heat := 5;
     sprite_p.damage := 1;
@@ -458,7 +458,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 5 shl FRACBITS;
+      sprite_p.movesize := 5 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 300;
       sprite_p.startspot := mapspot;
@@ -490,9 +490,9 @@ begin
     begin
       sprite_p := RF_GetSprite;
       sprite_p.animation := 0 + (0 shl 1) + (5 shl 5) + ((2 + MS_RndT and 7) shl 9) + ANIM_SELFDEST;
-      sprite_p.x := x + (-3 + MS_RndT and 7) shl FRACBITS;
-      sprite_p.y := y + (-3 + MS_RndT and 7) shl FRACBITS;
-      sprite_p.z := z + (-3 + MS_RndT and 7) shl FRACBITS;
+      sprite_p.x := x + (-3 + MS_RndT and 7) * FRACUNIT;
+      sprite_p.y := y + (-3 + MS_RndT and 7) * FRACUNIT;
+      sprite_p.z := z + (-3 + MS_RndT and 7) * FRACUNIT;
       sprite_p.basepic := slumps[value - S_START];
       sprite_p.active := true;
       sprite_p.heat := 100;
@@ -505,9 +505,9 @@ begin
     begin
       sprite_p := RF_GetSprite;
       sprite_p.animation := 0 + (0 shl 1) + (4 shl 5) + ((2 + MS_RndT and 7) shl 9) + ANIM_SELFDEST;
-      sprite_p.x := x + ((-3 + MS_RndT and 7) shl FRACBITS);
-      sprite_p.y := y + ((-3 + MS_RndT and 7) shl FRACBITS);
-      sprite_p.z := z + ((-3 + MS_RndT and 7) shl FRACBITS);
+      sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
+      sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);
+      sprite_p.z := z + ((-3 + MS_RndT and 7) * FRACUNIT);
       sprite_p.basepic := slumps[value - S_START];
       sprite_p.active := true;
       sprite_p.heat := 150;
@@ -520,9 +520,9 @@ begin
     begin
       sprite_p := RF_GetSprite;
       sprite_p.animation := 0 + (0 shl 1) + (4 shl 5) + ((5 + MS_RndT and 7) shl 9) + ANIM_SELFDEST;
-      sprite_p.x := x + ((-3 + MS_RndT and 7) shl FRACBITS);
-      sprite_p.y := y + ((-3 + MS_RndT and 7) shl FRACBITS);
-      sprite_p.z := z + ((-3 + MS_RndT and 7) shl FRACBITS);
+      sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
+      sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);
+      sprite_p.z := z + ((-3 + MS_RndT and 7) * FRACUNIT);
       sprite_p.basepic := slumps[value - S_START]; 
       sprite_p.heat := 600;
       sprite_p.active := true;
@@ -555,7 +555,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -576,7 +576,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 96;
       sprite_p.startspot := mapspot;
@@ -598,7 +598,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -620,7 +620,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -643,7 +643,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -664,7 +664,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 100;
       sprite_p.startspot := mapspot;
@@ -688,7 +688,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 0;
       sprite_p.startspot := mapspot;
@@ -709,7 +709,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 96;
       sprite_p.startspot := mapspot;
@@ -732,7 +732,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -753,7 +753,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.startspot := mapspot;
       sprite_p.damage := 20;
@@ -774,7 +774,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.startspot := mapspot;
       sprite_p.damage := 100;
@@ -794,7 +794,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -815,7 +815,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -836,7 +836,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 40;
       sprite_p.startspot := mapspot;
@@ -858,7 +858,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.startspot := mapspot;
       sprite_p.damage := 75;
@@ -878,7 +878,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[S_BULLET3-S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 96;
       sprite_p.startspot := -1;
@@ -902,7 +902,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 8 shl FRACBITS;
+      sprite_p.movesize := 8 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.heat := 112;
       sprite_p.startspot := -1;
@@ -926,7 +926,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.startspot := mapspot;
       sprite_p.damage := 100;
@@ -948,7 +948,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := slumps[value - S_START];
-      sprite_p.movesize := 1 shl FRACBITS;
+      sprite_p.movesize := 1 * FRACUNIT;
       sprite_p.active := true;
       sprite_p.startspot := -1;
       sprite_p.damage := 250;
@@ -974,9 +974,9 @@ begin
       end;
       inc(metalcount);
       sprite_p := RF_GetSprite;
-      sprite_p.x := x +(-15 + MS_RndT and 31) shl FRACBITS;
-      sprite_p.y := y +(-15 + MS_RndT and 31) shl FRACBITS;
-      sprite_p.z := z +(-32 + MS_RndT and 63) shl FRACBITS;
+      sprite_p.x := x +(-15 + MS_RndT and 31) * FRACUNIT;
+      sprite_p.y := y +(-15 + MS_RndT and 31) * FRACUNIT;
+      sprite_p.z := z +(-32 + MS_RndT and 63) * FRACUNIT;
       sprite_p.zadj := zadj;
       sprite_p.active := true;
       sprite_p.angle := MS_RndT * 4;
@@ -1078,7 +1078,7 @@ begin
   S_CLONE:
     begin
       sprite_p := RF_GetSprite;
-      sprite_p.moveSpeed := 10 shl FRACBITS;
+      sprite_p.moveSpeed := 10 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1088,11 +1088,11 @@ begin
       sprite_p.basepic := CA_GetNamedNum(charnames[spawnid]);
       sprite_p.scale := 1;
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 24 shl FRACBITS;
+      sprite_p.movesize := 24 * FRACUNIT;
       sprite_p.intelligence := 7;
       sprite_p.hitpoints := 700;
       sprite_p.typ := S_CLONE;
-      sprite_p.height := 54 shl FRACBITS;
+      sprite_p.height := 54 * FRACUNIT;
       sprite_p.bullet := S_MONSTERBULLET8;
       mapsprites[mapspot] := 1;
       if netmode and not gameloading then
@@ -1109,7 +1109,7 @@ begin
       sprite_p.zadj := zadj;
       sprite_p.z := z + zadj;
       sprite_p.basepic := CA_GetNamedNum('grenadeshot');
-      sprite_p.movesize := 10 shl FRACBITS;
+      sprite_p.movesize := 10 * FRACUNIT;
       sprite_p.hitpoints := 1;
       sprite_p.active := true;
       sprite_p.startspot := mapspot;
@@ -1125,9 +1125,9 @@ begin
     begin
       sprite_p := RF_GetSprite;
       sprite_p.animation := 0 + (0 shl 1) + (4 shl 5) + ((5+(MS_RndT) and (7)) shl 9) + ANIM_SELFDEST;
-      sprite_p.x := x + ((-3 + MS_RndT and 7) shl FRACBITS);
-      sprite_p.y := y + ((-3 + MS_RndT and 7) shl FRACBITS);
-      sprite_p.z := z + ((-3 + MS_RndT and 7) shl FRACBITS);
+      sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
+      sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);
+      sprite_p.z := z + ((-3 + MS_RndT and 7) * FRACUNIT);
       sprite_p.basepic := slumps[value - S_START];
       sprite_p.heat := 600;
       sprite_p.active := true;
@@ -1142,7 +1142,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER1_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1152,12 +1152,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('kman');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 80;
       sprite_p.typ := S_MONSTER1;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 160;
       sprite_p.bullet := S_MONSTERBULLET1;
       sprite_p.scale := 1;
@@ -1170,7 +1170,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER2_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1180,12 +1180,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('kfem');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 110;
       sprite_p.typ := S_MONSTER2;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 220;
       sprite_p.bullet := S_MONSTERBULLET2;
       sprite_p.scale := 1;
@@ -1198,22 +1198,22 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER3_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 7 shl FRACBITS;
+      sprite_p.moveSpeed := 7 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := 25 shl FRACBITS;
+      sprite_p.zadj := 25 * FRACUNIT;
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.rotate := rt_eight;
       sprite_p.basepic := CA_GetNamedNum('kprob');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.hitpoints := 150;
       sprite_p.typ := S_MONSTER3;
-      sprite_p.height := 20 shl FRACBITS;
+      sprite_p.height := 20 * FRACUNIT;
       sprite_p.score := 300;
       sprite_p.bullet := S_MONSTERBULLET3;
       sprite_p.scale := 1;
@@ -1226,7 +1226,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER4_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1236,11 +1236,11 @@ begin
       sprite_p.basepic := CA_GetNamedNum('kbot');
       DemandLoadMonster(sprite_p.basepic, 48);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.hitpoints := 350;
       sprite_p.typ := S_MONSTER4;
-      sprite_p.height := 45 shl FRACBITS;
+      sprite_p.height := 45 * FRACUNIT;
       sprite_p.score := 700;
       sprite_p.bullet := S_MONSTERBULLET4;
       sprite_p.scale := 1;
@@ -1253,7 +1253,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER5_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 6 shl FRACBITS;
+      sprite_p.moveSpeed := 6 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1263,11 +1263,11 @@ begin
       sprite_p.basepic := CA_GetNamedNum('kboss');
       DemandLoadMonster(sprite_p.basepic, 48);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 49 shl FRACBITS;
+      sprite_p.movesize := 49 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.hitpoints := 10000;
       sprite_p.typ := S_MONSTER5;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 30000;
       sprite_p.bullet := S_MONSTERBULLET5;
       sprite_p.scale := 1;
@@ -1280,7 +1280,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER6_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 7 shl FRACBITS;
+      sprite_p.moveSpeed := 7 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1290,12 +1290,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('pboss');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 5000;
       sprite_p.typ := S_MONSTER6;
-      sprite_p.height := 120 shl FRACBITS;
+      sprite_p.height := 120 * FRACUNIT;
       sprite_p.score := 15000;
       sprite_p.bullet := S_MONSTERBULLET6;
       mapsprites[mapspot] := 1;
@@ -1307,7 +1307,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER7_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1317,12 +1317,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('pst');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 150;
       sprite_p.typ := S_MONSTER7;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 300;
       sprite_p.bullet := S_MONSTERBULLET7;
       sprite_p.scale := 1;
@@ -1335,7 +1335,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER8_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1345,11 +1345,11 @@ begin
       sprite_p.basepic := CA_GetNamedNum('guard');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 5;
       sprite_p.hitpoints := 350;
       sprite_p.typ := S_MONSTER8;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 700;
       sprite_p.bullet := S_MONSTERBULLET8;
       sprite_p.scale := 1;
@@ -1362,7 +1362,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER9_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1372,12 +1372,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('trooper');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 5;
       sprite_p.heat := 24;
       sprite_p.hitpoints := 80;
       sprite_p.typ := S_MONSTER9;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 160;
       sprite_p.bullet := S_MONSTERBULLET9;
       sprite_p.scale := 1;
@@ -1390,7 +1390,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER10_NS then
          sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1400,12 +1400,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('prisoner');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 8;
       sprite_p.heat := 16;
       sprite_p.hitpoints := 20;
       sprite_p.typ := S_MONSTER10;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 40;
       sprite_p.bullet := S_MONSTERBULLET10;
       sprite_p.scale := 1;
@@ -1419,7 +1419,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER11_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 3 shl FRACBITS;
+      sprite_p.moveSpeed := 3 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1429,13 +1429,13 @@ begin
       sprite_p.basepic := CA_GetNamedNum('bigguard');
       DemandLoadMonster(sprite_p.basepic, 48);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 31 shl FRACBITS;
+      sprite_p.movesize := 31 * FRACUNIT;
       sprite_p.intelligence := 9;
       sprite_p.heat := 300;
       sprite_p.hitpoints := 1200;
       sprite_p.score := 10000;
       sprite_p.typ := S_MONSTER11;
-      sprite_p.height := 128 shl FRACBITS;
+      sprite_p.height := 128 * FRACUNIT;
       sprite_p.bullet := S_MONSTERBULLET11;
       sprite_p.deathevent := 255;
       mapsprites[mapspot] := 1;
@@ -1447,7 +1447,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER12_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1457,12 +1457,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('pss');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 90;
       sprite_p.typ := S_MONSTER12;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 180;
       sprite_p.bullet := S_MONSTERBULLET12;
       sprite_p.scale := 1;
@@ -1475,7 +1475,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER13_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1485,12 +1485,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('wiz');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 300;
       sprite_p.typ := S_MONSTER13;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 600;
       sprite_p.bullet := S_MONSTERBULLET13;
       sprite_p.scale := 1;
@@ -1503,7 +1503,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER14_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 4 shl FRACBITS;
+      sprite_p.moveSpeed := 4 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1513,12 +1513,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('veek');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 350;
       sprite_p.typ := S_MONSTER14;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 700;
       sprite_p.bullet := S_MONSTERBULLET14;
       sprite_p.scale := 1;
@@ -1531,7 +1531,7 @@ begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER15_NS then
         sprite_p.nofalling := true;
-      sprite_p.moveSpeed := 7 shl FRACBITS;
+      sprite_p.moveSpeed := 7 * FRACUNIT;
       sprite_p.angle := angle;
       sprite_p.active := active;
       sprite_p.x := x;
@@ -1541,12 +1541,12 @@ begin
       sprite_p.basepic := CA_GetNamedNum('tboss');
       DemandLoadMonster(sprite_p.basepic, 56);
       sprite_p.startpic := sprite_p.basepic;
-      sprite_p.movesize := 26 shl FRACBITS;
+      sprite_p.movesize := 26 * FRACUNIT;
       sprite_p.intelligence := 10;
       sprite_p.heat := 8;
       sprite_p.hitpoints := 3000;
       sprite_p.typ := S_MONSTER15;
-      sprite_p.height := 59 shl FRACBITS;
+      sprite_p.height := 59 * FRACUNIT;
       sprite_p.score := 15000;
       sprite_p.bullet := S_MONSTERBULLET15;
       mapsprites[mapspot] := 1;
@@ -1575,7 +1575,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (20 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (20 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1588,7 +1588,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (39 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (39 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1601,7 +1601,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (33 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (33 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1614,7 +1614,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (73 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (73 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1627,7 +1627,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (35 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (35 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1640,7 +1640,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (65 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (65 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1653,7 +1653,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (91 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (91 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1666,7 +1666,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (121 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (121 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1679,7 +1679,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (40 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (40 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1692,7 +1692,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (39 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (39 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1705,7 +1705,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (36 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (36 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1718,7 +1718,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (51 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (51 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1731,7 +1731,7 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.x := x;
       sprite_p.y := y;
-      sprite_p.zadj := RF_GetCeilingZ(x, y) - (49 shl FRACBITS) - RF_GetFloorZ(x, y);
+      sprite_p.zadj := RF_GetCeilingZ(x, y) - (49 * FRACUNIT) - RF_GetFloorZ(x, y);
       sprite_p.z := RF_GetFloorZ(x, y) + sprite_p.zadj;
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
@@ -1767,7 +1767,7 @@ begin
       sprite_p.basepic := CA_GetNamedNum('miscobj') + (value - S_ITEM1);
       DemandLoadMonster(sprite_p.basepic, 1);
       sprite_p.typ := value;
-      sprite_p.height := 48 shl FRACBITS;
+      sprite_p.height := 48 * FRACUNIT;
       mapsprites[mapspot] := 2;
     end;
   
@@ -2566,12 +2566,12 @@ begin
   S_GENERATOR2:
     begin
       sa := RF_GetSpawnArea;
-      sa.mapx := (x1 shl FRACTILESHIFT) + (32 shl FRACBITS);
-      sa.mapy := (y1 shl FRACTILESHIFT) + (32 shl FRACBITS);
+      sa.mapx := (x1 shl FRACTILESHIFT) + (32 * FRACUNIT);
+      sa.mapy := (y1 shl FRACTILESHIFT) + (32 * FRACUNIT);
       sa.mapspot := mapspot;
       sa.time := player.timecount + ((MS_RndT and 15) shl 6);
       sa.typ := value - S_GENERATOR1;
-      SpawnSprite(S_GENERATOR, (x1 * MAPSIZE + 32) shl FRACBITS, (y1 * MAPCOLS + 32) shl FRACBITS, 0, 0, MS_RndT * 4, 0, false, 0);
+      SpawnSprite(S_GENERATOR, (x1 * MAPSIZE + 32) * FRACUNIT, (y1 * MAPCOLS + 32) * FRACUNIT, 0, 0, MS_RndT * 4, 0, false, 0);
       mapsprites[mapspot] := 0;
     end;
   
@@ -2594,8 +2594,8 @@ begin
       if not nospawn then
       begin
         sa := RF_GetSpawnArea;
-        sa.mapx := (x1 shl FRACTILESHIFT) + (32 shl FRACBITS);
-        sa.mapy := (y1 shl FRACTILESHIFT) + (32 shl FRACBITS);
+        sa.mapx := (x1 shl FRACTILESHIFT) + (32 * FRACUNIT);
+        sa.mapy := (y1 shl FRACTILESHIFT) + (32 * FRACUNIT);
         sa.mapspot := mapspot;
         sa.time := player.timecount + ((MS_RndT and 15) shl 6);
         sa.typ := value - S_SPAWN1 + 10;
@@ -2609,8 +2609,8 @@ begin
       if not nospawn then
       begin
         sa := RF_GetSpawnArea;
-        sa.mapx := (x1 shl FRACTILESHIFT) + (32 shl FRACBITS);
-        sa.mapy := (y1 shl FRACTILESHIFT) + (32 shl FRACBITS);
+        sa.mapx := (x1 shl FRACTILESHIFT) + (32 * FRACUNIT);
+        sa.mapy := (y1 shl FRACTILESHIFT) + (32 * FRACUNIT);
         sa.mapspot := mapspot;
         sa.time := player.timecount + ((MS_RndT and 15) shl 6);
         sa.typ := value - S_SPAWN8_NS + 100;

@@ -325,7 +325,7 @@ begin
   sprite_p.angle := pevent.angle;
   sprite_p.typ := S_NETPLAYER;
   sprite_p.hitpoints := 500;
-  sprite_p.height := 60 shl FRACBITS;
+  sprite_p.height := 60 * FRACUNIT;
   pmapspot := (sprite_p.y shr FRACTILESHIFT)*MAPCOLS+(sprite_p.x shr FRACTILESHIFT);
   playermapspot[pevent.playerid] := pmapspot;
   if mapsprites[pmapspot] = 0 then
@@ -588,7 +588,7 @@ begin
      mapsprites[BonusItem.mapspot] := 0;
      break;
       end;
-   SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS,0,0,0,0,false,0);
+   SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) * FRACUNIT,(BonusItem.tiley*MAPSIZE+32) * FRACUNIT,0,0,0,0,false,0);
    end;
       do
       begin
@@ -600,8 +600,8 @@ begin
       BonusItem.time := bevent.time;
       BonusItem.num := bevent.num;
       BonusItem.name := randnames[BonusItem.num];
-      BonusItem.sprite := SpawnSprite(S_BONUSITEM,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS,0,0,0,0,false,0);
-      SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) shl FRACBITS,(BonusItem.tiley*MAPSIZE+32) shl FRACBITS,0,0,0,0,false,0);
+      BonusItem.sprite := SpawnSprite(S_BONUSITEM,(BonusItem.tilex*MAPSIZE+32) * FRACUNIT,(BonusItem.tiley*MAPSIZE+32) * FRACUNIT,0,0,0,0,false,0);
+      SpawnSprite(S_WARP,(BonusItem.tilex*MAPSIZE+32) * FRACUNIT,(BonusItem.tiley*MAPSIZE+32) * FRACUNIT,0,0,0,0,false,0);
       BonusItem.sprite.basepic := BonusItem.sprite.basepic + BonusItem.num;
       oldgoalitem := -1;
       writemsg('Bonus item located!');

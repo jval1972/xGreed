@@ -384,14 +384,14 @@ begin
       angle := 0;
       for i := 0 to 15 do
       begin
-        SpawnSprite(S_SOULBULLET, player.x, player.y, player.z, player.height - (52 shl FRACBITS),angle, 0, true, playernum);
+        SpawnSprite(S_SOULBULLET, player.x, player.y, player.z, player.height - (52 * FRACUNIT),angle, 0, true, playernum);
         angle := angle + angleinc;
       end;
       SoundEffect(SN_SOULSTEALER, 0, player.x, player.y);
       SoundEffect(SN_SOULSTEALER, 0, player.x, player.y);
       if netmode then
       begin
-        NetSendSpawn(S_SOULBULLET, player.x, player.y, player.z, player.height - (52 shl FRACBITS),angle, 0, true, playernum);
+        NetSendSpawn(S_SOULBULLET, player.x, player.y, player.z, player.height - (52 * FRACUNIT),angle, 0, true, playernum);
         NetSoundEffect(SN_SOULSTEALER, 0, player.x, player.y);
         NetSoundEffect(SN_SOULSTEALER, 0, player.x, player.y);
       end;
@@ -475,17 +475,17 @@ var
   x1, y1: fixed_t;
 begin
   x := 237;
-  x1 := x shl FRACBITS;
+  x1 := x * FRACUNIT;
   y := 161 + ofs;
-  y1 := y shl FRACBITS;
+  y1 := y * FRACUNIT;
   c := 139;
   for i := 0 to 9 do
   begin
     viewylookup[y][x] := c;
     x1 := x1 + costable[player.angle];
     y1 := y1 - FIXEDMUL(sintable[player.angle], 54394);
-    x := x1 shr FRACBITS;
-    y := y1 shr FRACBITS;
+    x := x1 div FRACUNIT;
+    y := y1 div FRACUNIT;
     dec(c);
   end;
 end;
@@ -894,31 +894,31 @@ begin
   if oldangle <> -1 then
   begin
     x := 237;
-    x1 := x shl FRACBITS;
+    x1 := x * FRACUNIT;
     y := 161;
-    y1 := y shl FRACBITS;
+    y1 := y * FRACUNIT;
     for i := 0 to 9 do
     begin
       ylookup[y][x] := 0;
       x1 := x1 + costable[oldangle];
       y1 := y1 - FIXEDMUL(sintable[oldangle], 54394);
-      x := x1 shr FRACBITS;
-      y := y1 shr FRACBITS;
+      x := x1 div FRACUNIT;
+      y := y1 div FRACUNIT;
     end;
   end;
   oldangle := player.angle;
   x := 237;
-  x1 := x shl FRACBITS;
+  x1 := x * FRACUNIT;
   y := 161;
-  y1 := y shl FRACBITS;
+  y1 := y * FRACUNIT;
   c := 139;
   for i := 0 to 9 do
   begin
     ylookup[y][x] := c;
     x1 := x1 + costable[oldangle];
     y1 := y1 - FIXEDMUL(sintable[oldangle], 54394);
-    x := x1 shr FRACBITS;
-    y := y1 shr FRACBITS;
+    x := x1 div FRACUNIT;
+    y := y1 div FRACUNIT;
     dec(c);
   end;
 end;
@@ -1694,10 +1694,10 @@ begin
   yfracstep := sines[((player.angle + SOUTH) and ANGLES) shl FINESHIFT];
   xfracstep2 := cosines[player.angle shl FINESHIFT];
   yfracstep2 := sines[player.angle shl FINESHIFT];
-  xfrac2 := ((windowWidth div 2) shl FRACBITS) - (py * xfracstep2 + px * xfracstep);
-  yfrac2 := ((windowHeight div 2) shl FRACBITS) - (py * yfracstep2 + px * yfracstep);
-  y := yfrac2 shr FRACBITS;
-  x := xfrac2 shr FRACBITS;
+  xfrac2 := ((windowWidth div 2) * FRACUNIT) - (py * xfracstep2 + px * xfracstep);
+  yfrac2 := ((windowHeight div 2) * FRACUNIT) - (py * yfracstep2 + px * yfracstep);
+  y := yfrac2 div FRACUNIT;
+  x := xfrac2 div FRACUNIT;
   mapspot := 0;
   // don't ask me to explain this not  not  not
   // basically you start at upper left corner, adding one axis increment
@@ -1710,8 +1710,8 @@ begin
     xfrac := xfrac2 + xfracstep * MapZoom * BonusItem.tilex + (xfracstep * MapZoom div 2);
     yfrac := yfrac2 + yfracstep * MapZoom * BonusItem.tilex + (yfracstep * MapZoom div 2);
 
-    x1 := xfrac shr FRACBITS;
-    y1 := yfrac shr FRACBITS;
+    x1 := xfrac div FRACUNIT;
+    y1 := yfrac div FRACUNIT;
 
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
       viewylookup[y1][x1] := 44;
@@ -1724,10 +1724,10 @@ begin
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
       viewylookup[y1][x1] := 44;
 
-    xfrac2 := ((windowWidth div 2) shl FRACBITS) - (py * xfracstep2 + px * xfracstep);
-    yfrac2 := ((windowHeight div 2) shl FRACBITS) - (py * yfracstep2 + px * yfracstep);
-    y := yfrac2 shr FRACBITS;
-    x := xfrac2 shr FRACBITS;
+    xfrac2 := ((windowWidth div 2) * FRACUNIT) - (py * xfracstep2 + px * xfracstep);
+    yfrac2 := ((windowHeight div 2) * FRACUNIT) - (py * yfracstep2 + px * yfracstep);
+    y := yfrac2 div FRACUNIT;
+    x := xfrac2 div FRACUNIT;
   end;
   if exitexists then
   begin
@@ -1737,8 +1737,8 @@ begin
     xfrac := xfrac2 + xfracstep * MapZoom * exitx + (xfracstep * MapZoom div 2);
     yfrac := yfrac2 + yfracstep * MapZoom * exitx + (yfracstep * MapZoom div 2);
 
-    x1 := xfrac shr FRACBITS;
-    y1 := yfrac shr FRACBITS;
+    x1 := xfrac div FRACUNIT;
+    y1 := yfrac div FRACUNIT;
 
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
       viewylookup[y1][x1] := 187;
@@ -1751,10 +1751,10 @@ begin
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
       viewylookup[y1][x1] := 187;
 
-    xfrac2 := ((windowWidth div 2) shl FRACBITS) - (py * xfracstep2 + px * xfracstep);
-    yfrac2 := ((windowHeight div 2) shl FRACBITS) - (py * yfracstep2 + px * yfracstep);
-    y := yfrac2 shr FRACBITS;
-    x := xfrac2 shr FRACBITS;
+    xfrac2 := ((windowWidth div 2) * FRACUNIT) - (py * xfracstep2 + px * xfracstep);
+    yfrac2 := ((windowHeight div 2) * FRACUNIT) - (py * yfracstep2 + px * yfracstep);
+    y := yfrac2 div FRACUNIT;
+    x := xfrac2 div FRACUNIT;
   end;
 
   for i := 0 to MAPCOLS - 1 do
@@ -1772,14 +1772,14 @@ begin
         begin
           for a := 0 to MapZoom do
           begin
-            y2 := y1 + (((MapZoom shr 1) * yfracstep2) shr FRACBITS);
-            x2 := x1 + (((MapZoom shr 1) * xfracstep2) shr FRACBITS);
+            y2 := y1 + (((MapZoom shr 1) * yfracstep2) div FRACUNIT);
+            x2 := x1 + (((MapZoom shr 1) * xfracstep2) div FRACUNIT);
             if (y2 >= 0) and (x2 >= 0) and (x2 < windowWidth) and (y2 < windowHeight) then
               viewylookup[y2][x2] := c;
             xfrac := xfrac + xfracstep;
-            x1 := xfrac shr FRACBITS;
+            x1 := xfrac div FRACUNIT;
             yfrac := yfrac + yfracstep;
-            y1 := yfrac shr FRACBITS;
+            y1 := yfrac div FRACUNIT;
           end;
         end
         else
@@ -1789,35 +1789,35 @@ begin
             if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
               viewylookup[y1][x1] := c;
             xfrac := xfrac + xfracstep;
-            x1 := xfrac shr FRACBITS;
+            x1 := xfrac div FRACUNIT;
             yfrac := yfrac + yfracstep;
-            y1 := yfrac shr FRACBITS;
+            y1 := yfrac div FRACUNIT;
           end;
         end;
         xfrac := xfrac - xfracstep;
-        x1 := xfrac shr FRACBITS;
+        x1 := xfrac div FRACUNIT;
         yfrac := yfrac - yfracstep;
-        y1 := yfrac shr FRACBITS;
+        y1 := yfrac div FRACUNIT;
       end
       else
       begin
         xfrac := xfrac + xfracstep * MapZoom;
-        x1 := xfrac shr FRACBITS;
+        x1 := xfrac div FRACUNIT;
         yfrac := yfrac + yfracstep * MapZoom;
-        y1 := yfrac shr FRACBITS;
+        y1 := yfrac div FRACUNIT;
       end;
       inc(mapspot);
     end;
     yfrac2 := yfrac2 + yfracstep2 * MapZoom;
-    y := yfrac2 shr FRACBITS;
+    y := yfrac2 div FRACUNIT;
     xfrac2 := xfrac2 + xfracstep2 * MapZoom;
-    x := xfrac2 shr FRACBITS;
+    x := xfrac2 div FRACUNIT;
   end;
 
-  xfrac := ((windowWidth div 2) shl FRACBITS) - (py * xfracstep2 + px * xfracstep);
-  yfrac := ((windowHeight div 2) shl FRACBITS) - (py * yfracstep2 + px * yfracstep);
-  y := yfrac shr FRACBITS;
-  x := xfrac shr FRACBITS;
+  xfrac := ((windowWidth div 2) * FRACUNIT) - (py * xfracstep2 + px * xfracstep);
+  yfrac := ((windowHeight div 2) * FRACUNIT) - (py * yfracstep2 + px * yfracstep);
+  y := yfrac div FRACUNIT;
+  x := xfrac div FRACUNIT;
   for i := 0 to MAPCOLS - 1 do
   begin
     xfrac2 := xfrac;
@@ -1834,14 +1834,14 @@ begin
         begin
           for a := 0 to MapZoom do
           begin
-            y2 := y1 + (((MapZoom shr 1) * yfracstep) shr FRACBITS);
-            x2 := x1 + (((MapZoom shr 1) * xfracstep) shr FRACBITS);
+            y2 := y1 + (((MapZoom shr 1) * yfracstep) div FRACUNIT);
+            x2 := x1 + (((MapZoom shr 1) * xfracstep) div FRACUNIT);
             if (y2 >= 0) and (x2 >= 0) and (x2 < windowWidth) and (y2 < windowHeight) then
               viewylookup[y2][x2] := c;
             xfrac2 := xfrac2 + xfracstep2;
-            x1 := xfrac2 shr FRACBITS;
+            x1 := xfrac2 div FRACUNIT;
             yfrac2 := yfrac2 + yfracstep2;
-            y1 := yfrac2 shr FRACBITS;
+            y1 := yfrac2 div FRACUNIT;
           end;
         end
         else
@@ -1851,29 +1851,29 @@ begin
             if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
               viewylookup[y1][x1] := c;
             xfrac2 := xfrac2 + xfracstep2;
-            x1 := xfrac2 shr FRACBITS;
+            x1 := xfrac2 div FRACUNIT;
             yfrac2 := yfrac2 + yfracstep2;
-            y1 := yfrac2 shr FRACBITS;
+            y1 := yfrac2 div FRACUNIT;
           end;
         end;
         xfrac2 := xfrac2 - xfracstep2;
-        x1 := xfrac2 shr FRACBITS;
+        x1 := xfrac2 div FRACUNIT;
         yfrac2 := yfrac2 - yfracstep2;
-        y1 := yfrac2 shr FRACBITS;
+        y1 := yfrac2 div FRACUNIT;
       end
       else
       begin
         xfrac2 := xfrac2 + xfracstep2 * MapZoom;
-        x1 := xfrac2 shr FRACBITS;
+        x1 := xfrac2 div FRACUNIT;
         yfrac2 := yfrac2 + yfracstep2 * MapZoom;
-        y1 := yfrac2 shr FRACBITS;
+        y1 := yfrac2 div FRACUNIT;
       end;
       mapspot := mapspot + MAPCOLS;
     end;
     yfrac := yfrac + yfracstep * MapZoom;
-    y := yfrac shr FRACBITS;
+    y := yfrac div FRACUNIT;
     xfrac := xfrac + xfracstep * MapZoom;
-    x := xfrac shr FRACBITS;
+    x := xfrac div FRACUNIT;
   end;
   viewylookup[windowHeight div 2 + 1][windowWidth div 2 + 1] := 40;
 end;

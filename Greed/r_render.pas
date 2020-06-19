@@ -90,7 +90,7 @@ var
   wallposts: PBytePArray;
   colormaps: PByteArray;
   numcolormaps: integer;
-  zcolormap: array[0..(MAXZ shr FRACBITS) + 1] of PByteArray;
+  zcolormap: array[0..(MAXZ div FRACUNIT) + 1] of PByteArray;
   viewx, viewy, viewz: fixed_t;
   viewcos, viewsin: fixed_t;
   xscale, yscale: fixed_t;         // FSCALE/viewcos , FSCALE/viewsin
@@ -146,18 +146,18 @@ begin
   if mapspot <> mapspot2 then
   begin
     if mapflags[mapspot] and FL_FLOOR <> 0 then
-      fl := (floorheight[mapspot2] shl FRACBITS) - viewz
+      fl := (floorheight[mapspot2] * FRACUNIT) - viewz
     else
-      fl := (floorheight[mapspot] shl FRACBITS) - viewz;
+      fl := (floorheight[mapspot] * FRACUNIT) - viewz;
     if mapflags[mapspot] and FL_CEILING <> 0 then
-      ch := (ceilingheight[mapspot2] shl FRACBITS) - viewz
+      ch := (ceilingheight[mapspot2] * FRACUNIT) - viewz
     else
-      ch := (ceilingheight[mapspot] shl FRACBITS) - viewz;
+      ch := (ceilingheight[mapspot] * FRACUNIT) - viewz;
   end
   else
   begin
-    fl := (floorheight[mapspot2] shl FRACBITS) - viewz;
-    ch := (ceilingheight[mapspot2] shl FRACBITS) - viewz;
+    fl := (floorheight[mapspot2] * FRACUNIT) - viewz;
+    ch := (ceilingheight[mapspot2] * FRACUNIT) - viewz;
   end;
   if (framevalid[mapspot2] = frameon) and (framefl[mapspot2] = fl) and (framech[mapspot2] = ch) then
   begin
@@ -179,9 +179,9 @@ begin
   if point.tz >= MINZ then
   begin
     scale := FIXEDDIV(FSCALE, point.tz);
-    point.px := CENTERX + (FIXEDMUL(point.tx, scale) shr FRACBITS);
-    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) shr FRACBITS);
-    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight,scale) shr FRACBITS);
+    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
+    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) div FRACUNIT);
+    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight,scale) div FRACUNIT);
   end;
   framevalid[mapspot2] := frameon;
   cornervertex[mapspot2] := point;
