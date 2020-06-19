@@ -70,7 +70,7 @@ const
   SOUTH = 768;
   DEGREE45 = 128;
   DEGREE45_2 = 64;
-  MINZ = FRACUNIT/2;
+  MINZ = FRACUNIT div 2;
   // first value is the maximum # of tiles to render outwards
   MAXZ = (32 shl (FRACBITS + TILESHIFT)) - 1;
   MAXZLIGHT = MAXZ shr FRACBITS;
