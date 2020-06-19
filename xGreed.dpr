@@ -72,7 +72,7 @@ begin
     Halt(0);
   end;
 
-  if hPrevInstance = 0  then
+//  if hPrevInstance = 0  then
     if not InitApplication(hInstance) then
       Halt(1);
 

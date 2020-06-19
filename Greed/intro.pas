@@ -193,6 +193,8 @@ procedure DoIntroMenu;
 
 procedure Wait(time: integer);
 
+procedure startup;
+
 implementation
 
 uses

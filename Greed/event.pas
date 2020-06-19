@@ -406,7 +406,7 @@ begin
     sl.Text := CA_FileAsText(s);
   end
   else
-    sl.Text := CA_LumpAsText(lump);
+    sl.Text := CA_LumpAsText(lump - CA_GetNamedNum('MAP') + CA_GetNamedNum('SUX'));
 
   sce := TScriptEngine.Create(sl.Text);
   while sce.GetString do
@@ -768,12 +768,12 @@ begin
   for x := 0 to numloadsprites - 1 do
   begin
     UpdateWait;
-    DemandLoadMonster(loadsprites[x],loadspritesn[x]);
+    DemandLoadMonster(loadsprites[x], loadspritesn[x]);
     UpdateWait;
   end;
   seek(cachehandle, infotable[eventlump].filepos + 8);
   x := 256 * 128;
-  fread(@backdrop, x, 1, cachehandle);
+  fread(@backdrop[0], x, 1, cachehandle);
   seek(cachehandle, infotable[eventlump + 1].filepos + 8);
   fread(@backdrop[x], x, 1, cachehandle);
   RunEvent(0, false);

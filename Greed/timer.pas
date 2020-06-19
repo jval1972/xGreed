@@ -64,7 +64,7 @@ end;
 procedure dStartTimer(const atimer: PProcedure; const rate: integer);
 begin
   User_Timer := atimer;
-  Timer_Event := I_timeSetEvent(1000 div rate, 10, TimerHandler, 0, TSE_TIME_PERIODIC);
+  Timer_Event := I_timeSetEvent(1000 div rate, 1, TimerHandler, 0, TSE_TIME_PERIODIC);
 end;
 
 end.
