@@ -201,35 +201,40 @@ begin
     if lumpmain[lump] = nil then
       MS_Error('CA_LumpPointer(): malloc failure of lump %d, with size %d',
         [lump, infotable[lump].size]);
-   seek(cachehandle, infotable[lump].filepos);
-   if (waiting) UpdateWait;
-   read(cachehandle,lumpmain[lump],infotable[lump].size);
-   if (waiting) UpdateWait;
-    end;
-  return lumpmain[lump];
+    seek(cachehandle, infotable[lump].filepos);
+    if waiting then
+      UpdateWait;
+    fread(lumpmain[lump], infotable[lump].size, 1, cachehandle);
+    if waiting then
+      UpdateWait;
   end;
+  result := lumpmain[lump];
+end;
 
 
 procedure CA_ReadLump(const lump: integer; const dest: pointer);
 (* reads a lump into a buffer *)
 begin
 {$IFDEF PARMCHECK}
-  if (lump >= fileinfo.numlumps) MS_Error('CA_ReadLump: %i>%i max lumps!',lump,fileinfo.numlumps);
+  if lump >= fileinfo.numlumps then
+    MS_Error('CA_ReadLump(): %d>%d max lumps!', [lump, fileinfo.numlumps]);
 {$ENDIF}
-  lseek(cachehandle, infotable[lump].filepos, SEEK_SET);
-  read(cachehandle,dest,infotable[lump].size);
-  end;
+  seek(cachehandle, infotable[lump].filepos);
+  fread(dest, infotable[lump].size, 1, cachehandle);
+end;
 
 
+// frees a cached lump
 procedure CA_FreeLump(const lump: integer);
-(* frees a cached lump *)
 begin
 {$IFDEF PARMCHECK}
-  if (lump >= fileinfo.numlumps) MS_Error('CA_FreeLump: %i>%i max lumps!',lump,fileinfo.numlumps);
+  if lump >= fileinfo.numlumps then
+    MS_Error('CA_FreeLump(): %d>%d max lumps!', [lump, fileinfo.numlumps]);
 {$ENDIF}
-  if (not lumpmain[lump]) exit;
-  free(lumpmain[lump]);
-  lumpmain[lump] := NULL;
+  if lumpmain[lump] = nil then
+    exit;
+  memfree(lumpmain[lump]);
+  lumpmain[lump] := nil; // JVAL: unused ?
 end;
 
 function CA_LumpName(const lump: integer): string;
@@ -249,7 +254,7 @@ end;
 
 function CA_LumpLen(const lump: integer): integer;
 begin
-  infotable[lump].size;
+  result := infotable[lump].size;
 end;
 
 function CA_LumpAsText(const lump: integer): string;
@@ -261,7 +266,7 @@ begin
   len := infotable[lump].size;
   SetLength(result, len);
   seek(cachehandle, infotable[lump].filepos);
-  fread(@result[1], len, 1, cachefile);
+  fread(@result[1], len, 1, cachehandle);
 end;
 
 function CA_FileAsText(const fname: string): string;
@@ -274,7 +279,7 @@ begin
     result := '';
     exit;
   end;
-  len := fsize(f);
+  len := ftell(f);
   SetLength(result, len);
   fread(@result[1], len, 1, f);
   close(f);
