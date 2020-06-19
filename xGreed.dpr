@@ -59,10 +59,13 @@ uses
   g_delphi in 'base\g_delphi.pas',
   i_windows in 'base\i_windows.pas',
   scriptengine in 'base\scriptengine.pas',
-  i_main in 'Base\i_main.pas';
+  i_main in 'Base\i_main.pas',
+  i_video in 'Base\i_video.pas',
+  DirectX in 'Base\DirectX.pas';
 
 var
   hGenWnd: HWND = 0;
+
 begin
   //Check if Generic.exe is running. If it's running then focus on the window
   hGenWnd := FindWindow('Greed', 'Greed');
@@ -79,9 +82,11 @@ begin
   if not InitInstance(hInstance, 0) then
     Halt(1);
 
+  I_InitGraphics;
   startup;
+  I_ShutDownGraphics;
 
-  DestroyWindow(Window_Handle);
+  DestroyWindow(hMainWnd);
 
   Halt(0);
 end.

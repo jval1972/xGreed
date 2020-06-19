@@ -31,7 +31,6 @@ uses
   r_public_h;
 
 var
-
   msprite: Pscaleobj_t;
   probe: scaleobj_t;
   spritehit, playerhit: boolean;

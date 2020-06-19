@@ -58,7 +58,7 @@ begin
   wc.cbClsExtra := 0;
   wc.cbWndExtra := 0;
   wc.hInstance := inst;
-  wc.hIcon := 0;
+  wc.hIcon := LoadIcon(HInstance, 'MAINICON');
   wc.hCursor := 0;
   wc.hbrBackground := HBRUSH(GetStockObject(BLACK_BRUSH));
   wc.lpszMenuName :=  nil;
@@ -73,23 +73,25 @@ function InitInstance(inst: HINST; nCmdShow: integer): boolean;
 var
   rc: TRect;  // Called in GetClientRect
 begin
+  I_SetDPIAwareness;
+  
   rc.left := 0;
   rc.right := 640;
   rc.top := 0;
   rc.bottom := 400;
 
-  AdjustWindowRect(rc, WS_VISIBLE, false);
+//  AdjustWindowRect(rc, WS_VISIBLE, false);
 
-  rc.right := rc.right - rc.left;
-  rc.bottom := rc.bottom - rc.top;
-  rc.top :=  0;
-  rc.left :=  0;
+//  rc.right := rc.right - rc.left;
+//  rc.bottom := rc.bottom - rc.top;
+//  rc.top :=  0;
+//  rc.left :=  0;
 
   // Use the default window settings.
-  Window_Handle := CreateWindow(
+  hMainWnd := CreateWindow(
     APPNAME,
     APPNAME,
-    WS_VISIBLE or WS_OVERLAPPED,
+    0, //{WS_VISIBLE or }WS_OVERLAPPED,
     rc.left,
     rc.top,
     rc.right,
@@ -100,14 +102,16 @@ begin
     nil
   );
 
-  if Window_Handle = 0 then // Check whether values returned by CreateWindow are valid.
+  SetWindowLong(hMainWnd, GWL_STYLE, 0);
+
+  if hMainWnd = 0 then // Check whether values returned by CreateWindow are valid.
   begin
     result := false;
     exit;
   end;
 
-  ShowWindow(Window_Handle, SW_SHOW);
-  UpdateWindow(Window_Handle);
+//  ShowWindow(hMainWnd, SW_SHOW);
+//  UpdateWindow(hMainWnd);
 
   result := true; // Window handle hWnd is valid.
 end;

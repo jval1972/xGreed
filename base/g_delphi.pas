@@ -220,6 +220,8 @@ function CSubI(var a: integer; const b: integer): integer;
 // C funcs
 function isalnum(const c: char): boolean;
 
+function ibetween(const x: integer; const x1, x2: integer): integer; 
+
 implementation
 
 uses
@@ -756,6 +758,16 @@ end;
 function isalnum(const c: char): boolean;
 begin
   result := ((c >= 'A') and (c <= 'Z')) or ((c >= 'z') and (c <= 'z')) or ((c >= '0') and (c <= '9'))
+end;
+
+function ibetween(const x: integer; const x1, x2: integer): integer; 
+begin
+  if x <= x1 then
+    result := x1
+  else if x >= x2 then
+    result := x2
+  else
+    result := x;
 end;
 
 end.

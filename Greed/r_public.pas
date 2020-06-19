@@ -183,10 +183,10 @@ begin
     angle := rint(atf);
     for j := 0 to MAXAUTO * 2 - 1 do
     begin
-      y := FIXEDMUL(sintable[angle], j shl FRACBITS);
-      x := FIXEDMUL(costable[angle], j shl FRACBITS);
-      x1 := x shr FRACBITS;
-      y1 := y shr FRACBITS;
+      y := FIXEDMUL(sintable[angle], j * FRACUNIT);
+      x := FIXEDMUL(costable[angle], j * FRACUNIT);
+      x1 := x div FRACUNIT;
+      y1 := y div FRACUNIT;
       if (x1 >= MAXAUTO) or (y1 >= MAXAUTO) or (autoangle2[x1][y1] <> -1) then
         continue;
       autoangle2[x1][y1] := angle;
@@ -240,7 +240,7 @@ begin
   end;
   cosines := @sines[TANANGLES];
   for i := 0 to TANANGLES * 2 - 1 do
-    backtangents[i] := ((windowWidth div 2) * tangents[i]) shr FRACBITS;
+    backtangents[i] := ((windowWidth div 2) * tangents[i]) div FRACUNIT;
 end;
 
 
@@ -426,18 +426,18 @@ begin
   mapspot := tiley * MAPSIZE + tilex;
   polytype := (mapflags[mapspot] and FL_FLOOR) shr FLS_FLOOR;
   if (floorpic[mapspot] >= 57) and (floorpic[mapspot] <= 59) then
-    water := -(20 shl FRACBITS)
+    water := -(20 * FRACUNIT)
   else
     water := 0;
   if polytype = POLY_FLAT then
   begin
-    result := (floorheight[mapspot] shl FRACBITS) + water;
+    result := (floorheight[mapspot] * FRACUNIT) + water;
     exit;
   end;
-  h1 := floorheight[mapspot] shl FRACBITS;
-  h2 := floorheight[mapspot + 1] shl FRACBITS;
-  h3 := floorheight[mapspot + MAPSIZE] shl FRACBITS;
-  h4 := floorheight[mapspot + MAPSIZE + 1] shl FRACBITS;
+  h1 := floorheight[mapspot] * FRACUNIT;
+  h2 := floorheight[mapspot + 1] * FRACUNIT;
+  h3 := floorheight[mapspot + MAPSIZE] * FRACUNIT;
+  h4 := floorheight[mapspot + MAPSIZE + 1] * FRACUNIT;
   fx := (x and (TILEUNIT - 1)) shr 6; // range from 0 to fracunit-1
   fy := (y and (TILEUNIT - 1)) shr 6;
   if polytype = POLY_SLOPE then
@@ -487,17 +487,17 @@ begin
   // flat
   if polytype = POLY_FLAT then
   begin
-    result := ceilingheight[mapspot] shl FRACBITS;
+    result := ceilingheight[mapspot] * FRACUNIT;
     exit;
   end;
   // constant slopes
   if polytype = POLY_SLOPE then
   begin
-    h1 := ceilingheight[mapspot] shl FRACBITS;
-    h2 := ceilingheight[mapspot + 1] shl FRACBITS;
+    h1 := ceilingheight[mapspot] * FRACUNIT;
+    h2 := ceilingheight[mapspot + 1] * FRACUNIT;
     if h1 = h2 then
     begin
-      h3 := ceilingheight[mapspot + MAPSIZE] shl FRACBITS;
+      h3 := ceilingheight[mapspot + MAPSIZE] * FRACUNIT;
       fy := (y and (TILEUNIT - 1)) shr 6;
       result := h1 + FIXEDMUL(h3 - h1, fy); // north/south slope
       exit;
@@ -512,10 +512,10 @@ begin
   // triangulated slopes
   // set the outside corner of the triangle that the point is NOT in s
   // plane with the other three
-  h1 := ceilingheight[mapspot] shl FRACBITS;
-  h2 := ceilingheight[mapspot + 1] shl FRACBITS;
-  h3 := ceilingheight[mapspot + MAPSIZE] shl FRACBITS;
-  h4 := ceilingheight[mapspot + MAPSIZE + 1] shl FRACBITS;
+  h1 := ceilingheight[mapspot] * FRACUNIT;
+  h2 := ceilingheight[mapspot + 1] * FRACUNIT;
+  h3 := ceilingheight[mapspot + MAPSIZE] * FRACUNIT;
+  h4 := ceilingheight[mapspot + MAPSIZE + 1] * FRACUNIT;
   fx := (x and (TILEUNIT - 1)) shr 6; // range from 0 to fracunit-1
   fy := (y and (TILEUNIT - 1)) shr 6;
   if polytype = POLY_ULTOLR then
@@ -556,8 +556,8 @@ var
   blackz: fixed_t;
 begin
   // linear diminishing, table is actually logrithmic
-  blackz := ablackz shr FRACBITS;
-  for i := 0 to MAXZ shr FRACBITS do
+  blackz := ablackz div FRACUNIT;
+  for i := 0 to MAXZ div FRACUNIT do
   begin
     table := (numcolormaps * i) div blackz;
     if table >= numcolormaps then
@@ -624,7 +624,7 @@ begin
   scrollmax := windowHeight + scrollmin;
   CENTERX := width div 2;
   CENTERY := height div 2;
-  FSCALE := (width div 2) shl FRACBITS;
+  FSCALE := (width div 2) * FRACUNIT;
   ISCALE := FRACUNIT div (width div 2);
 
   for i := 0 to height - 1 do
@@ -637,9 +637,9 @@ begin
   for i := -MAXSCROLL to height + MAXSCROLL - 1 do
     yslope[i + MAXSCROLL] := rint(-(i - 0.5 - CENTERY) / CENTERX * FRACUNIT);
   for i := 0 to TANANGLES * 2 - 1 do
-    backtangents[i] := ((width div 2) * tangents[i]) shr FRACBITS;
-  hfrac := FIXEDDIV(BACKDROPHEIGHT shl FRACBITS, (windowHeight div 2) shl FRACBITS);
-  afrac := FIXEDDIV(TANANGLES shl FRACBITS, width shl FRACBITS);
+    backtangents[i] := ((width div 2) * tangents[i]) div FRACUNIT;
+  hfrac := FIXEDDIV(BACKDROPHEIGHT * FRACUNIT, (windowHeight div 2) * FRACUNIT);
+  afrac := FIXEDDIV(TANANGLES * FRACUNIT, width * FRACUNIT);
 end;
 
 end.

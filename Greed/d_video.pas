@@ -91,11 +91,12 @@ uses
   d_misc,
   intro,
   i_windows,
+  i_video,
   raven,
   r_public_h,
   r_public,
   r_render;
-  
+
 procedure VI_FillPalette(const red, green, blue: integer);
 begin
 end;
@@ -107,6 +108,8 @@ var
   j: integer;
   entries: array[0..255] of PALETTEENTRY;
 begin
+  I_SetPalette(apal);
+  
   j := 0;
 
   for i := 0 to 255 do
@@ -120,7 +123,7 @@ begin
     entries[i].peFlags := PC_NOCOLLAPSE;
   end;
 
-  dc := GetDC(Window_Handle);
+  dc := GetDC(hMainWnd);
 
   SetPaletteEntries(Palette, 0, 256, entries);
 
@@ -132,7 +135,7 @@ begin
   RealizePalette(Memory_DC);
   RealizePalette(dc);
 
-  ReleaseDC(Window_Handle, dc);
+  ReleaseDC(hMainWnd, dc);
 end;
 
 
@@ -140,11 +143,11 @@ procedure VI_ResetPalette;
 var
   dc: HDC;
 begin
-  dc := GetDC(Window_Handle);
+  dc := GetDC(hMainWnd);
 
   RealizePalette(dc);
 
-  ReleaseDC(Window_Handle, dc);
+  ReleaseDC(hMainWnd, dc);
 end;
 
 
@@ -347,6 +350,7 @@ begin
   height := pic.height;
   source := @pic.data;
 
+  colormap := zcolormap[0]; // JVAL: Avoid compiler waring
   wallshadow := mapeffects[player.mapspot];
   if wallshadow = 0 then
   begin
@@ -421,7 +425,7 @@ var
   pal: ^LOGPALETTE;
   pal_data: PByteArray;
 begin
-  dc :=  GetDC(Window_Handle);
+  dc :=  GetDC(hMainWnd);
   Memory_DC :=  CreateCompatibleDC(dc);
 
   bmi := malloc(SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
@@ -476,7 +480,7 @@ begin
 
   SelectObject(Memory_DC, Bitmap);
 
-  ReleaseDC(Window_Handle, dc);
+  ReleaseDC(hMainWnd, dc);
 
   if screen = nil then
     MS_Error('VI_Init(): Out of memory for screen');
@@ -543,11 +547,13 @@ procedure VI_BlitView;
 var
   dc: HDC;
 begin
-  dc :=  GetDC(Window_Handle);
+  I_FinishUpdate;
+  exit;
+  dc :=  GetDC(hMainWnd);
 //  BitBlt(dc, 0, 0, SCREENWIDTH, SCREENHEIGHT, Memory_DC, 0, 0, SRCCOPY);
   StretchBlt(dc, 0, 0, 2 * SCREENWIDTH, 2 * SCREENHEIGHT, Memory_DC, 0, 0, SCREENWIDTH, SCREENHEIGHT, SRCCOPY);
-  ReleaseDC(Window_Handle, dc);
-  doit;
+  ReleaseDC(hMainWnd, dc);
+//  doit;
 end;
 
 

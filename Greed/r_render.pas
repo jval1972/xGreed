@@ -242,7 +242,7 @@ begin
       p2.px := windowWidth;
     end;
   end;
-  if p1.tz<MINZ then
+  if p1.tz < MINZ then
   begin
     clipz :=  p1.tz + FIXEDMUL(dz, leftfrac);
     if clipz < 0 then
