@@ -62,9 +62,13 @@ function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
 
 function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
 
+function RF_GetSpawnArea: Pspawnarea_t;
+
 procedure RF_RemoveSprite(const spr: Pscaleobj_t);
 
 procedure RF_ClearWorld;
+
+function RF_GetDoor(const tilex, tiley: integer): Pdoorobj_t;
 
 procedure RF_SetActionHook(const hook: PProcedure);
 
@@ -78,6 +82,7 @@ implementation
 
 uses
   d_disk,
+  d_ints,
   r_render,
   spawn;
 
@@ -322,6 +327,7 @@ begin
   bloodcount := 0;
   metalcount := 0;
 end;
+
 
 function RF_GetDoor(const tilex, tiley: integer): Pdoorobj_t;
 var

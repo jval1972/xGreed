@@ -40,11 +40,17 @@ implementation
 uses
   constant,
   d_disk,
+  d_ints,
   d_misc,
+  modplay,
+  net,
   protos_h,
   raven,
+  r_conten,
   r_refdef,
-  r_public;
+  r_render,
+  r_public,
+  utils;
 
 const
   MAXMETALPARTS = 100;
@@ -485,8 +491,8 @@ begin
       sprite_p := RF_GetSprite;
       sprite_p.animation := 0 + (0 shl 1) + (5 shl 5) + ((2 + MS_RndT and 7) shl 9) + ANIM_SELFDEST;
       sprite_p.x := x + (-3 + MS_RndT and 7) shl FRACBITS;
-      sprite_p.y := y + (-3 + MS_RndT and 7) shl FRACBITS);
-      sprite_p.z := z + (-3 + MS_RndT and 7) shl FRACBITS);
+      sprite_p.y := y + (-3 + MS_RndT and 7) shl FRACBITS;
+      sprite_p.z := z + (-3 + MS_RndT and 7) shl FRACBITS;
       sprite_p.basepic := slumps[value - S_START];
       sprite_p.active := true;
       sprite_p.heat := 100;
@@ -956,7 +962,7 @@ begin
       if metalcount > MAXMETALPARTS then
       begin
         s := firstscaleobj.next;
-        while s <> @lastscaleobj do;s := s.next)
+        while s <> @lastscaleobj do
         begin
           if s.typ = S_METALPARTS then
           begin
@@ -968,9 +974,9 @@ begin
       end;
       inc(metalcount);
       sprite_p := RF_GetSprite;
-      sprite_p.x := x +(-15 + MS_RndT and 31) shl FRACBITS);
-      sprite_p.y := y +(-15 + MS_RndT and 31) shl FRACBITS);
-      sprite_p.z := z +(-32 + MS_RndT and 63) shl FRACBITS);
+      sprite_p.x := x +(-15 + MS_RndT and 31) shl FRACBITS;
+      sprite_p.y := y +(-15 + MS_RndT and 31) shl FRACBITS;
+      sprite_p.z := z +(-32 + MS_RndT and 63) shl FRACBITS;
       sprite_p.zadj := zadj;
       sprite_p.active := true;
       sprite_p.angle := MS_RndT * 4;
@@ -1135,7 +1141,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER1_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1163,7 +1169,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER2_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1191,7 +1197,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER3_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 7 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1219,7 +1225,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER4_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1246,7 +1252,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER5_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 6 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1273,7 +1279,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER6_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 7 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1300,7 +1306,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER7_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1325,9 +1331,10 @@ begin
   
   S_MONSTER8_NS, // guard
   S_MONSTER8:
+    begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER8_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1354,7 +1361,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER9_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1382,7 +1389,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER10_NS then
-         sprite_p.nofalling := 1;
+         sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1411,7 +1418,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER11_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 3 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1439,7 +1446,7 @@ begin
   begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER12_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1467,7 +1474,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER13_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1495,7 +1502,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER14_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 4 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -1523,7 +1530,7 @@ begin
     begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER15_NS then
-        sprite_p.nofalling := 1;
+        sprite_p.nofalling := true;
       sprite_p.moveSpeed := 7 shl FRACBITS;
       sprite_p.angle := angle;
       sprite_p.active := active;
@@ -2104,7 +2111,7 @@ begin
     begin
       startlocations[0][0] := x1;
       startlocations[0][1] := y1;
-      if (player.x = -1) and ((netmode and greedcom.consoleplayer = 0) or not netmode) then
+      if (player.x = -1) and ((netmode and (greedcom.consoleplayer = 0)) or not netmode) then
       begin
         player.x := x;
         player.y := y;
@@ -2264,7 +2271,7 @@ begin
   S_VDOOR5: // vertical door 5
     begin
       door_p := RF_GetDoor(x1, y1);
-      if mapflags[mapspot - MAPCOLS] and FL_DOOR then
+      if mapflags[mapspot - MAPCOLS] and FL_DOOR <> 0 then
         door_p.orientation := dr_vertical2
       else 
         door_p.orientation := dr_vertical;
@@ -2280,7 +2287,7 @@ begin
     begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - 1] and FL_DOOR <> 0 then
-        door_p.orientation := dr_horizontal2;
+        door_p.orientation := dr_horizontal2
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
@@ -2340,7 +2347,7 @@ begin
     begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - 1] and FL_DOOR <> 0 then
-        door_p.orientation := dr_horizontal2;
+        door_p.orientation := dr_horizontal2
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
