@@ -107,10 +107,10 @@ begin
       if MS_RndT > 220 then
       begin
         sprite_p := RF_GetSprite;
-        sprite_p.animation := 0 + (0 shl 1) + (5 shl 5) + ((2 + (MS_RndT) and (7)) shl 9) + ANIM_SELFDEST;
-        sprite_p.x := x + ((-3 + MS_RndT) and (7) * FRACUNIT);
-        sprite_p.y := y + ((-3 + MS_RndT) and (7) * FRACUNIT);
-        sprite_p.z := z + ((-3 + MS_RndT) and (7) * FRACUNIT);
+        sprite_p.animation := 0 + (0 shl 1) + (5 shl 5) + ((2 + (MS_RndT and 7)) shl 9) + ANIM_SELFDEST;
+        sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
+        sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);
+        sprite_p.z := z + ((-3 + MS_RndT and 7) * FRACUNIT);
         sprite_p.basepic := slumps[S_WALLPUFF - S_START];
         sprite_p.active := true;
         sprite_p.heat := 100;
@@ -1124,7 +1124,7 @@ begin
   S_MINEPUFF:
     begin
       sprite_p := RF_GetSprite;
-      sprite_p.animation := 0 + (0 shl 1) + (4 shl 5) + ((5+(MS_RndT) and (7)) shl 9) + ANIM_SELFDEST;
+      sprite_p.animation := 0 + (0 shl 1) + (4 shl 5) + ((5 + (MS_RndT and 7)) shl 9) + ANIM_SELFDEST;
       sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
       sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);
       sprite_p.z := z + ((-3 + MS_RndT and 7) * FRACUNIT);

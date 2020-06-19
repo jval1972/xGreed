@@ -264,7 +264,7 @@ end;
 
 function memset(const dest: pointer; const val: integer; const count: integer): pointer;
 begin
-  FillChar(dest ^, count, val);
+  FillChar(dest^, count, val);
   result := dest;
 end;
 

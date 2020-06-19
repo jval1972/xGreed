@@ -869,7 +869,7 @@ begin
       angle := angle + angleinc;
     end;
     sp := SpawnSprite(S_EXPLODE, msprite.x, msprite.y, msprite.z, 0, 0, 0, true, 255);
-    SoundEffect(SN_EXPLODE1+(MS_RndT) and (1), 15, msprite.x, msprite.y);
+    SoundEffect(SN_EXPLODE1 + (MS_RndT and 1), 15, msprite.x, msprite.y);
   end;
   result := killed;
 end;
@@ -1523,7 +1523,7 @@ begin
         angle := angle + angleinc;
       end;
       sp := SpawnSprite(S_EXPLODE, msprite.x, msprite.y, msprite.z, 0, 0, 0, true, 255);
-      SoundEffect(SN_EXPLODE1+(MS_RndT) and (1), 15, msprite.x, msprite.y);
+      SoundEffect(SN_EXPLODE1 + (MS_RndT and 1), 15, msprite.x, msprite.y);
       result := true;
       exit;
     end

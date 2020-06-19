@@ -65,7 +65,7 @@ var
   hGenWnd: HWND = 0;
 begin
   //Check if Generic.exe is running. If it's running then focus on the window
-  hGenWnd := FindWindow('Greed','Greed');
+  hGenWnd := FindWindow('Greed', 'Greed');
   if hGenWnd <> 0 then
   begin
     SetForegroundWindow(hGenWnd);

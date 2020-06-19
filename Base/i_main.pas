@@ -43,7 +43,7 @@ begin
     result := DefWindowProc(hWnd, msg, wParam, lParam);
     exit;
   end;
-  result := 0;
+  result := DefWindowProc(hWnd, msg, wParam, lParam);
 end;
 
 
@@ -52,6 +52,7 @@ var
   wc: WNDCLASS;
   a: ATOM;
 begin
+  ZeroMemory(@wc, SizeOf(WNDCLASS));
   wc.style :=  0;
   wc.lpfnWndProc := @WndProc;
   wc.cbClsExtra := 0;
@@ -108,7 +109,7 @@ begin
   ShowWindow(Window_Handle, SW_SHOW);
   UpdateWindow(Window_Handle);
 
-  result := TRUE; // Window handle hWnd is valid.
+  result := true; // Window handle hWnd is valid.
 end;
 
 end.

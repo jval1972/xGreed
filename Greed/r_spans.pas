@@ -325,7 +325,8 @@ begin
   end;
 end;
 
-
+var
+  stubpic: array[0..4095] of integer;
 procedure DrawSprite;
 var
   leftx, scale, xfrac, fracstep: fixed_t;
@@ -377,6 +378,10 @@ begin
   end;
 
   pic := Pscalepic_t(span_p.picture);
+  if pic = nil then
+    pic := @stubpic;
+//  if pic = nil then
+//    exit; // JVAL: SOS
   sp := Pscaleobj_t(span_p.structure);
 
   bitshift := FRACBITS - sp.scale;
@@ -458,6 +463,8 @@ begin
   end;
 end;
 
+var
+xxxx: integer = 0;
 
 // Spans farther than MAXZ away should NOT have been entered into the list
 procedure DrawSpans;
@@ -666,7 +673,13 @@ begin
       end;
 
     sp_shape:
-      DrawSprite;
+    begin
+      inc(xxxx);
+      if xxxx = 16 then
+        DrawSprite
+      else
+        DrawSprite;
+    end;
 
     sp_slope,
     sp_slopesky:

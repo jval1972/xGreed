@@ -114,7 +114,7 @@ end;
 
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
 begin
-  if (abs(a) shr 14) >= abs(b) then
+  if (absI(a) shr 14) >= absI(b) then
   begin
     if a xor b < 0 then
       result := MININT

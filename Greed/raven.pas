@@ -3453,7 +3453,7 @@ begin
   if netmode then
   begin
     NetGetData;
-    if timecount>netsendtime then
+    if timecount > netsendtime then
     begin
       if player.angst <> 0 then
         NetSendPlayerData;
