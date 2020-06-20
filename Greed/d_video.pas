@@ -590,7 +590,7 @@ begin
         end;
         inc(xcor);
         source := @source[1];
-        dest := @dest[0];
+        dest := @dest[1];
         dec(width);
       end;
     end;
