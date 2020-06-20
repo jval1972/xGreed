@@ -156,7 +156,7 @@ begin
         inc(y);
         yh := yh + windowWidth;
       end;
-      inc(dest);
+      dest := @dest[1];
       inc(printx);
       dec(width);
     end;
@@ -240,7 +240,7 @@ begin
         inc(y);
         yh := yh + 320;
       end;
-      inc(dest);
+      dest := @dest[1];
       inc(printx);
       dec(width);
     end;
