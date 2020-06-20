@@ -638,8 +638,8 @@ begin
   span_p.x2 := pointx;
   span_p.y := sprite.z - viewz;
   span_p.structure := sprite;
-  mapy := sprite.y shr FRACTILESHIFT;
-  mapx := sprite.x shr FRACTILESHIFT;
+  mapy := sprite.y div FRACTILEUNIT;
+  mapx := sprite.x div FRACTILEUNIT;
   mapspot := mapy * MAPCOLS + mapx;
   if sprite.specialtype = st_noclip then
     span_p.shadow := Ord(st_noclip) shl 8

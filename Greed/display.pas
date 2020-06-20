@@ -329,8 +329,8 @@ begin
       begin
         if not sp.active and (sp.hitpoints = 0) then
         begin
-          x := (player.x - sp.x) shr FRACTILESHIFT;
-          y := (player.y - sp.y) shr FRACTILESHIFT;
+          x := (player.x - sp.x) div FRACTILEUNIT;
+          y := (player.y - sp.y) div FRACTILEUNIT;
           dist := x * x + y * y;
           if dist < mindist then
           begin
@@ -1545,8 +1545,8 @@ begin
   maxx := x div 2;
   ofsx := 1 - ((player.x shr (FRACBITS + 4)) and 3);
   ofsy := 1 - ((player.y shr (FRACBITS + 4)) and 3);
-  px := player.x shr FRACTILESHIFT;
-  py := player.y shr FRACTILESHIFT;
+  px := player.x div FRACTILEUNIT;
+  py := player.y div FRACTILEUNIT;
 
   y := ofsy - 4;
   for i := miny to maxy do  // display north maps
@@ -1687,8 +1687,8 @@ begin
     end;
   end;
 
-  px := (player.x shr FRACTILESHIFT) * MapZoom - ofsx;  // compute player position
-  py := (player.y shr FRACTILESHIFT) * MapZoom - ofsy;
+  px := (player.x div FRACTILEUNIT) * MapZoom - ofsx;  // compute player position
+  py := (player.y div FRACTILEUNIT) * MapZoom - ofsy;
   // compute incremental values for both diagonal axis
   xfracstep := cosines[((player.angle + SOUTH) and ANGLES) shl FINESHIFT];
   yfracstep := sines[((player.angle + SOUTH) and ANGLES) shl FINESHIFT];
@@ -1903,7 +1903,7 @@ begin
     viewylookup[i][2] := 73;
     viewylookup[i][67] := 73;
   end;
-  viewylookup[(player.y shr FRACTILESHIFT) + 21][(player.x shr FRACTILESHIFT) + 3] := 40;
+  viewylookup[(player.y div FRACTILEUNIT) + 21][(player.x div FRACTILEUNIT) + 3] := 40;
   if BonusItem.score <> 0 then
     viewylookup[BonusItem.tiley + 21][BonusItem.tilex + 3] := 44;
   if exitexists then
@@ -1925,8 +1925,8 @@ begin
   maxx := x div 2;
   ofsx := 1 - ((player.x shr (FRACBITS + 4)) and 3);
   ofsy := 1 - ((player.y shr (FRACBITS + 4)) and 3);
-  px := player.x shr FRACTILESHIFT;
-  py := player.y shr FRACTILESHIFT;
+  px := player.x div FRACTILEUNIT;
+  py := player.y div FRACTILEUNIT;
   y := ofsy - 4;
   for i := miny to maxy do
   begin
@@ -1972,8 +1972,8 @@ begin
   begin
     if sp.active and (sp.hitpoints <> 0) then
     begin
-      sx := sp.x shr FRACTILESHIFT;
-      sy := sp.y shr FRACTILESHIFT;
+      sx := sp.x div FRACTILEUNIT;
+      sy := sp.y div FRACTILEUNIT;
       viewylookup[sy + 21][sx + 3] := 152;
     end;
     sp := sp.next;
@@ -1986,7 +1986,7 @@ begin
     viewylookup[i][2] := 73;
     viewylookup[i][67] := 73;
   end;
-  viewylookup[(player.y shr FRACTILESHIFT) + 21][(player.x shr FRACTILESHIFT) + 3] := 40;
+  viewylookup[(player.y div FRACTILEUNIT) + 21][(player.x div FRACTILEUNIT) + 3] := 40;
   if BonusItem.score <> 0 then
     viewylookup[BonusItem.tiley + 21][BonusItem.tilex + 3] := 44;
   if exitexists then
@@ -2002,15 +2002,15 @@ var
 begin
   ofsx := 1 - ((player.x shr (FRACBITS + 4)) and 3) + windowWidth div 2;
   ofsy := 1 - ((player.y shr (FRACBITS + 4)) and 3) + windowHeight div 2;
-  px := player.x shr FRACTILESHIFT;
-  py := player.y shr FRACTILESHIFT;
+  px := player.x div FRACTILEUNIT;
+  py := player.y div FRACTILEUNIT;
   sp := firstscaleobj.next;
   while sp <> @lastscaleobj do
   begin
     if (sp.active) and (sp.hitpoints <> 0) then
     begin
-      x := (((sp.x shr FRACTILESHIFT) - px) shl 2) + ofsx;
-      y := (((sp.y shr FRACTILESHIFT) - py) shl 2) + ofsy;
+      x := (((sp.x div FRACTILEUNIT) - px) shl 2) + ofsx;
+      y := (((sp.y div FRACTILEUNIT) - py) shl 2) + ofsy;
       for a := 0 to 3 do
         if (y + a < windowHeight) and (y + a >= 0) then
           for b := 0 to 3 do

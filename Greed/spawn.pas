@@ -96,8 +96,8 @@ var
 begin
   sprite_p := nil;
 
-  x1 := x shr FRACTILESHIFT;
-  y1 := y shr FRACTILESHIFT;
+  x1 := x div FRACTILEUNIT;
+  y1 := y div FRACTILEUNIT;
   mapspot := y1 * MAPCOLS + x1;
   angle := angle and ANGLES;
 
@@ -2566,8 +2566,8 @@ begin
   S_GENERATOR2:
     begin
       sa := RF_GetSpawnArea;
-      sa.mapx := (x1 shl FRACTILESHIFT) + (32 * FRACUNIT);
-      sa.mapy := (y1 shl FRACTILESHIFT) + (32 * FRACUNIT);
+      sa.mapx := (x1 * FRACTILEUNIT) + (32 * FRACUNIT);
+      sa.mapy := (y1 * FRACTILEUNIT) + (32 * FRACUNIT);
       sa.mapspot := mapspot;
       sa.time := player.timecount + ((MS_RndT and 15) shl 6);
       sa.typ := value - S_GENERATOR1;
@@ -2594,8 +2594,8 @@ begin
       if not nospawn then
       begin
         sa := RF_GetSpawnArea;
-        sa.mapx := (x1 shl FRACTILESHIFT) + (32 * FRACUNIT);
-        sa.mapy := (y1 shl FRACTILESHIFT) + (32 * FRACUNIT);
+        sa.mapx := (x1 * FRACTILEUNIT) + (32 * FRACUNIT);
+        sa.mapy := (y1 * FRACTILEUNIT) + (32 * FRACUNIT);
         sa.mapspot := mapspot;
         sa.time := player.timecount + ((MS_RndT and 15) shl 6);
         sa.typ := value - S_SPAWN1 + 10;
@@ -2609,8 +2609,8 @@ begin
       if not nospawn then
       begin
         sa := RF_GetSpawnArea;
-        sa.mapx := (x1 shl FRACTILESHIFT) + (32 * FRACUNIT);
-        sa.mapy := (y1 shl FRACTILESHIFT) + (32 * FRACUNIT);
+        sa.mapx := (x1 * FRACTILEUNIT) + (32 * FRACUNIT);
+        sa.mapy := (y1 * FRACTILEUNIT) + (32 * FRACUNIT);
         sa.mapspot := mapspot;
         sa.time := player.timecount + ((MS_RndT and 15) shl 6);
         sa.typ := value - S_SPAWN8_NS + 100;

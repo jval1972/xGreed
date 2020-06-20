@@ -118,7 +118,7 @@ begin
   case side of
   0:  // south facing wall
     begin
-      distance := viewy - (tiley shl FRACTILESHIFT);
+      distance := viewy - (tiley * FRACTILEUNIT);
       textureadjust := viewx;
       baseangle := baseangle + TANANGLES * 2;
       if transparent <> 0 then
@@ -135,7 +135,7 @@ begin
     end;
   1:  // west facing wall
     begin
-      distance := ((tilex + 1) shl FRACTILESHIFT) - viewx;
+      distance := ((tilex + 1) * FRACTILEUNIT) - viewx;
       textureadjust := viewy;
       baseangle := baseangle + TANANGLES;
       if transparent <> 0 then
@@ -152,7 +152,7 @@ begin
     end;
   2:  // north facing wall
     begin
-      distance := ((tiley + 1) shl FRACTILESHIFT) - viewy;
+      distance := ((tiley + 1) * FRACTILEUNIT) - viewy;
       textureadjust := -viewx;
       baseangle := baseangle + TANANGLES * 2;
       if transparent <> 0 then
@@ -169,7 +169,7 @@ begin
     end;
   3:  // east facing wall
     begin
-      distance := viewx - (tilex shl FRACTILESHIFT);
+      distance := viewx - (tilex * FRACTILEUNIT);
       textureadjust := -viewy;
       baseangle := baseangle + TANANGLES;
       if transparent <> 0 then
@@ -377,7 +377,7 @@ begin
   case side of
   0:  // south facing wall
     begin
-      distance := viewy - (tiley shl FRACTILESHIFT);
+      distance := viewy - (tiley * FRACTILEUNIT);
       textureadjust := viewx;
       baseangle := baseangle + TANANGLES * 2;
       tm := mapspot - MAPCOLS;
@@ -385,7 +385,7 @@ begin
 
   1:  // west facing wall
     begin
-      distance := ((tilex + 1) shl FRACTILESHIFT) - viewx;
+      distance := ((tilex + 1) * FRACTILEUNIT) - viewx;
       textureadjust := viewy;
       baseangle := baseangle + TANANGLES;
       tm := mapspot + 1;
@@ -393,14 +393,14 @@ begin
 
   2:  // north facing wall
     begin
-      distance := ((tiley + 1) shl FRACTILESHIFT) - viewy;
+      distance := ((tiley + 1) * FRACTILEUNIT) - viewy;
       textureadjust := -viewx;
       baseangle := baseangle + TANANGLES * 2;
       tm := mapspot + MAPCOLS;
     end;
   3:  // east facing wall
     begin
-      distance := viewx - (tilex shl FRACTILESHIFT);
+      distance := viewx - (tilex * FRACTILEUNIT);
       textureadjust := -viewy;
       baseangle := baseangle + TANANGLES;
       tm := mapspot - 1;

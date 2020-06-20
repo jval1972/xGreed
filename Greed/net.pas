@@ -326,7 +326,7 @@ begin
   sprite_p.typ := S_NETPLAYER;
   sprite_p.hitpoints := 500;
   sprite_p.height := 60 * FRACUNIT;
-  pmapspot := (sprite_p.y shr FRACTILESHIFT)*MAPCOLS+(sprite_p.x shr FRACTILESHIFT);
+  pmapspot := (sprite_p.y div FRACTILEUNIT)*MAPCOLS+(sprite_p.x div FRACTILEUNIT);
   playermapspot[pevent.playerid] := pmapspot;
   if mapsprites[pmapspot] = 0 then
   mapsprites[pmapspot] := SM_NETPLAYER;
@@ -484,7 +484,7 @@ begin
       pmapspot := playermapspot[pevent.playerid];
       if mapsprites[pmapspot] = SM_NETPLAYER then
        mapsprites[pmapspot] := 0;
-      pmapspot := (sprite_p.y shr FRACTILESHIFT)*MAPCOLS+(sprite_p.x shr FRACTILESHIFT);
+      pmapspot := (sprite_p.y div FRACTILEUNIT)*MAPCOLS+(sprite_p.x div FRACTILEUNIT);
       if mapsprites[pmapspot] = 0 then
        mapsprites[pmapspot] := SM_NETPLAYER;
       playermapspot[pevent.playerid] := pmapspot;
@@ -672,7 +672,7 @@ begin
       for (sprite_p := firstscaleobj.next; sprite_p <> @lastscaleobj;sprite_p := sprite_p.next)
        if (sprite_p.typ = S_GENERATOR) or ((sprite_p.typ >= S_GENSTART) and (sprite_p.typ <= S_GENEND)) then
        begin
-   mapsprites[(sprite_p.y shr FRACTILESHIFT)*MAPCOLS + (sprite_p.x shr FRACTILESHIFT)] := 0;
+   mapsprites[(sprite_p.y div FRACTILEUNIT)*MAPCOLS + (sprite_p.x div FRACTILEUNIT)] := 0;
    temp_p := sprite_p;
    sprite_p := sprite_p.next;
    RF_RemoveSprite(temp_p);
@@ -861,8 +861,8 @@ begin
   if (playerdata[i].angst) and (playerdata[i].specialeffect <> SE_INVISIBILITY) then
    // gotta be alive) and (visible
    begin
-    px := playerdata[i].x shr FRACTILESHIFT;
-    py := playerdata[i].y shr FRACTILESHIFT;
+    px := playerdata[i].x div FRACTILEUNIT;
+    py := playerdata[i].y div FRACTILEUNIT;
     dist := (px-sx)*(px-sx) + (py-sy)*(py-sy);
     if dist<mindist then
     begin

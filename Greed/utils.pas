@@ -862,7 +862,7 @@ begin
   sprite_p := firstscaleobj.next;
   while sprite_p <> @lastscaleobj do
   begin
-    mapspot := (sprite_p.y shr FRACTILESHIFT) * MAPCOLS + (sprite_p.x shr FRACTILESHIFT);
+    mapspot := (sprite_p.y div FRACTILEUNIT) * MAPCOLS + (sprite_p.x div FRACTILEUNIT);
     case sprite_p.typ of
     S_MONSTER1:
 	    begin
@@ -2270,8 +2270,8 @@ begin
     y := startlocations[n][1];
     mapspot := y * MAPCOLS + x;
   until mapsprites[mapspot] <= 0;
-  player.x := (x shl FRACTILESHIFT) + (32 * FRACUNIT);
-  player.y := (y shl FRACTILESHIFT) + (32 * FRACUNIT);
+  player.x := (x * FRACTILEUNIT) + (32 * FRACUNIT);
+  player.y := (y * FRACTILEUNIT) + (32 * FRACUNIT);
   player.z := RF_GetFloorZ(player.x, player.y) + player.height;
   player.angle := NORTH;
   NetNewPlayerData;

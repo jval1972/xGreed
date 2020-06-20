@@ -72,10 +72,10 @@ begin
 
   // These values will probably have to be tweaked for doors that are along
   // the vertical opposite axis (northwall)
-  xl := ((xcenter - msprite.movesize) shr FRACTILESHIFT);
-  yl := ((ycenter - msprite.movesize(* - (TILEUNIT shr 1)*)) shr FRACTILESHIFT);
-  xh := ((xcenter + msprite.movesize) shr FRACTILESHIFT);
-  yh := ((ycenter + msprite.movesize(* - (TILEUNIT shr 1)*)) shr FRACTILESHIFT);
+  xl := ((xcenter - msprite.movesize) div FRACTILEUNIT);
+  yl := ((ycenter - msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
+  xh := ((xcenter + msprite.movesize) div FRACTILEUNIT);
+  yh := ((ycenter + msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
   // check for doors on the north wall
   for y := yl + 1 to yh do
     for x := xl to xh do
@@ -131,10 +131,10 @@ begin
     end;
 
   // check for doors on the west wall
-  xl := ((xcenter - msprite.movesize(* - (TILEUNIT shr 1)*)) shr FRACTILESHIFT);
-  yl := ((ycenter - msprite.movesize) shr FRACTILESHIFT);
-  xh := ((xcenter + msprite.movesize(* - (TILEUNIT shr 1)*)) shr FRACTILESHIFT);
-  yh := ((ycenter + msprite.movesize) shr FRACTILESHIFT);
+  xl := ((xcenter - msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
+  yl := ((ycenter - msprite.movesize) div FRACTILEUNIT);
+  xh := ((xcenter + msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
+  yh := ((ycenter + msprite.movesize) div FRACTILEUNIT);
   for y := yl to yh do
     for x := xl + 1 to xh do
     begin
@@ -196,10 +196,10 @@ function SP_TryMove(const xcenter, ycenter: fixed_t): integer;
 var
   xl, yl, xh, yh, x, y, mapspot: integer;
 begin
-  xl := ((xcenter - msprite.movesize) shr FRACTILESHIFT);
-  yl := ((ycenter - msprite.movesize) shr FRACTILESHIFT);
-  xh := ((xcenter + msprite.movesize) shr FRACTILESHIFT);
-  yh := ((ycenter + msprite.movesize) shr FRACTILESHIFT);
+  xl := ((xcenter - msprite.movesize) div FRACTILEUNIT);
+  yl := ((ycenter - msprite.movesize) div FRACTILEUNIT);
+  xh := ((xcenter + msprite.movesize) div FRACTILEUNIT);
+  yh := ((ycenter + msprite.movesize) div FRACTILEUNIT);
   for y := yl to yh do
     for x := xl to xh do
     begin
@@ -289,34 +289,34 @@ var
 begin
   if (angle < NORTH) or (angle > SOUTH) then
   begin
-    xl := xcenter shr FRACTILESHIFT;
-    xh := (xcenter + msprite.movesize) shr FRACTILESHIFT;
+    xl := xcenter div FRACTILEUNIT;
+    xh := (xcenter + msprite.movesize) div FRACTILEUNIT;
   end
   else if (angle > NORTH) and (angle < SOUTH) then
   begin
-    xh := xcenter shr FRACTILESHIFT;
-    xl := (xcenter - msprite.movesize) shr FRACTILESHIFT;
+    xh := xcenter div FRACTILEUNIT;
+    xl := (xcenter - msprite.movesize) div FRACTILEUNIT;
   end
   else
   begin
-    xl := (xcenter - msprite.movesize) shr FRACTILESHIFT;
-    xh := (xcenter + msprite.movesize) shr FRACTILESHIFT;
+    xl := (xcenter - msprite.movesize) div FRACTILEUNIT;
+    xh := (xcenter + msprite.movesize) div FRACTILEUNIT;
   end;
 
   if angle > WEST then
   begin
-    yl := ycenter shr FRACTILESHIFT;
-    yh := (ycenter + msprite.movesize) shr FRACTILESHIFT;
+    yl := ycenter div FRACTILEUNIT;
+    yh := (ycenter + msprite.movesize) div FRACTILEUNIT;
   end
   else if (angle < WEST) and (angle <> EAST) then
   begin
-    yl := (ycenter - msprite.movesize) shr FRACTILESHIFT;
-    yh := ycenter shr FRACTILESHIFT;
+    yl := (ycenter - msprite.movesize) div FRACTILEUNIT;
+    yh := ycenter div FRACTILEUNIT;
   end
   else
   begin
-    yl := (ycenter - msprite.movesize) shr FRACTILESHIFT;
-    yh := (ycenter + msprite.movesize) shr FRACTILESHIFT;
+    yl := (ycenter - msprite.movesize) div FRACTILEUNIT;
+    yh := (ycenter + msprite.movesize) div FRACTILEUNIT;
   end;
   sz :=  msprite.z - msprite.zadj + (20 * FRACUNIT);
   sz2 :=  msprite.z - msprite.zadj;
@@ -380,10 +380,10 @@ begin
     ms := 1;
   dx := msprite.x + xmove;
   dy := msprite.y + ymove;
-  smapspot := (msprite.y shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT);
+  smapspot := (msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT);
   if SP_TryMove2(msprite.angle, dx, dy, smapspot) and SP_TryDoor(dx, dy) then
   begin
-    if floorpic[(dy shr FRACTILESHIFT) * MAPCOLS + (dx shr FRACTILESHIFT)] = 0 then
+    if floorpic[(dy div FRACTILEUNIT) * MAPCOLS + (dx div FRACTILEUNIT)] = 0 then
     begin
       result := 0;
       exit;
@@ -392,7 +392,7 @@ begin
     mapsprites[smapspot] := 0;
     msprite.x := msprite.x + xmove;
     msprite.y := msprite.y + ymove;
-    mapsprites[(msprite.y shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT)] := ms;
+    mapsprites[(msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT)] := ms;
     result := 1;
     exit;
   end;
@@ -410,14 +410,14 @@ begin
   end;
   if SP_TryMove2(angle2, dx, msprite.y, smapspot) and SP_TryDoor(dx, msprite.y) then
   begin
-    if floorpic[(msprite.y shr FRACTILESHIFT) * MAPCOLS + (dx shr FRACTILESHIFT)] = 0 then
+    if floorpic[(msprite.y div FRACTILEUNIT) * MAPCOLS + (dx div FRACTILEUNIT)] = 0 then
     begin
       result := 0;
       exit;
     end;
     mapsprites[smapspot] := 0;
     msprite.x := msprite.x + xmove;
-    mapsprites[(msprite.y shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT)] := ms;
+    mapsprites[(msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT)] := ms;
     result := 2;
   end;
 
@@ -433,14 +433,14 @@ begin
   end;
   if SP_TryMove2(angle2, msprite.x, dy, smapspot) and SP_TryDoor(msprite.x, dy) then
   begin
-    if floorpic[(dy shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT)] = 0 then
+    if floorpic[(dy div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT)] = 0 then
     begin
       result := 0;
       exit;
     end;
     mapsprites[smapspot] := 0;
     msprite.y := msprite.y + ymove;
-    mapsprites[(msprite.y shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT)] := ms;
+    mapsprites[(msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT)] := ms;
     result := 3;
     exit;
   end;
@@ -493,8 +493,8 @@ begin
   begin
     if (sp.active = false) and (sp.moveSpeed <> 0) then
     begin
-      x := sp.x shr FRACTILESHIFT;
-      y := sp.y shr FRACTILESHIFT;
+      x := sp.x div FRACTILEUNIT;
+      y := sp.y div FRACTILEUNIT;
       if (absI(x - sx) < 5) and (absI(y - sy) < 5) then
       begin
         sp.active := true;
@@ -552,7 +552,7 @@ begin
     i := S_WALLPUFF;
   end;
   SpawnSprite(i, msprite.x, msprite.y, msprite.z, msprite.zadj, 0, 0, false, 0);
-  ActivateSprites(msprite.x shr FRACTILESHIFT, msprite.y shr FRACTILESHIFT);
+  ActivateSprites(msprite.x div FRACTILEUNIT, msprite.y div FRACTILEUNIT);
 end;
 
 
@@ -563,7 +563,7 @@ begin
     begin
       if not sp.active then
       begin
-        ActivateSprites(sp.x shr FRACTILESHIFT, sp.y shr FRACTILESHIFT);
+        ActivateSprites(sp.x div FRACTILEUNIT, sp.y div FRACTILEUNIT);
         sp.active := true;
       end;
       sp.modetime := timecount + 8;
@@ -591,7 +591,7 @@ begin
     begin
       if not sp.active then
       begin
-        ActivateSprites(sp.x shr FRACTILESHIFT, sp.y shr FRACTILESHIFT);
+        ActivateSprites(sp.x div FRACTILEUNIT, sp.y div FRACTILEUNIT);
         sp.active := true;
       end;
       sp.modetime := timecount + 8;
@@ -690,7 +690,7 @@ begin
           begin
             if hsprite <> msprite then
             begin
-              mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+              mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
               if mapspot = spriteloc then
               begin
                 if (msprite.z < hsprite.z) or (msprite.z > hsprite.z + hsprite.height) or (hsprite.typ <> S_NETPLAYER) then
@@ -716,7 +716,7 @@ begin
           begin
             if hsprite <> msprite then
             begin
-              mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+              mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
               if mapspot = spriteloc then
               begin
                 if (msprite.z < hsprite.z) or (msprite.z > hsprite.z + hsprite.height) then
@@ -1212,7 +1212,7 @@ var
   found: boolean;
 begin
   sz := sz + msprite.z;
-  if (x1 <> px shr FRACTILESHIFT) or (y1 <> py shr FRACTILESHIFT) then
+  if (x1 <> px div FRACTILEUNIT) or (y1 <> py div FRACTILEUNIT) then
   begin
     spriteloc := y1 * MAPCOLS + x1;
     found := false;
@@ -1221,7 +1221,7 @@ begin
     begin
       if hsprite.hitpoints <> 0 then
       begin
-        mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+        mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
         if mapspot = spriteloc then
         begin
           found := true;
@@ -1291,8 +1291,8 @@ var
   angle, sx, sy, px, py, tx, ty, pangle: integer;
   floorz, oldspeed, fheight: fixed_t;
 begin
-  sx := msprite.x shr FRACTILESHIFT;
-  sy := msprite.y shr FRACTILESHIFT;
+  sx := msprite.x div FRACTILEUNIT;
+  sy := msprite.y div FRACTILEUNIT;
   if netmode then
     NetGetClosestPlayer(sx, sy)
   else
@@ -1310,8 +1310,8 @@ begin
       targz := player.z;
     end;
   end;
-  px := targx shr FRACTILESHIFT;
-  py := targy shr FRACTILESHIFT;
+  px := targx div FRACTILEUNIT;
+  py := targy div FRACTILEUNIT;
 
   oldspeed := msprite.moveSpeed;
   if (absI(px - sx) < 6) and (absI(py - sy) < 6) then
@@ -1533,10 +1533,10 @@ begin
       else
         msprite.angle := msprite.angle - 8;
       msprite.angle := msprite.angle and ANGLES;
-      x := msprite.x shr FRACTILESHIFT;
-      y := msprite.y shr FRACTILESHIFT;
+      x := msprite.x div FRACTILEUNIT;
+      y := msprite.y div FRACTILEUNIT;
       activate := false;
-      if (absI(x - (player.x shr FRACTILESHIFT)) < 2) and (absI(y - (player.y shr FRACTILESHIFT)) < 2) then
+      if (absI(x - (player.x div FRACTILEUNIT)) < 2) and (absI(y - (player.y div FRACTILEUNIT)) < 2) then
         activate := true;
       if not activate then
       begin
@@ -1545,8 +1545,8 @@ begin
         begin
           if sp.hitpoints <> 0 then
           begin
-            sx := sp.x shr FRACTILESHIFT;
-            sy := sp.y shr FRACTILESHIFT;
+            sx := sp.x div FRACTILEUNIT;
+            sy := sp.y div FRACTILEUNIT;
             if (absI(x - sx) < 2) and (absI(y - sy) < 2) then
             begin
               activate := true;
@@ -1577,7 +1577,7 @@ begin
     end
     else if msprite.typ = S_INSTAWALL then
     begin
-      mapsprites[(msprite.y shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT)] := 0;
+      mapsprites[(msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT)] := 0;
       result := true;
       exit;
     end;
@@ -1714,8 +1714,8 @@ var
   angle, sx, sy, px, py, pangle, r: integer;
   floorz, fheight: fixed_t;
 begin
-  sx := msprite.x shr FRACTILESHIFT;
-  sy := msprite.y shr FRACTILESHIFT;
+  sx := msprite.x div FRACTILEUNIT;
+  sy := msprite.y div FRACTILEUNIT;
 
   if timecount > msprite.movetime then
   begin
@@ -1840,8 +1840,8 @@ label
   endscan,
   endscan2;
 begin
-  sx := msprite.x shr FRACTILESHIFT;
-  sy := msprite.y shr FRACTILESHIFT;
+  sx := msprite.x div FRACTILEUNIT;
+  sy := msprite.y div FRACTILEUNIT;
   if netmode then
     NetGetClosestPlayer(sx, sy)
   else
@@ -1859,8 +1859,8 @@ begin
       targz := player.z;
     end;
   end;
-  px := targx shr FRACTILESHIFT;
-  py := targy shr FRACTILESHIFT;
+  px := targx div FRACTILEUNIT;
+  py := targy div FRACTILEUNIT;
 
   oldspeed := msprite.moveSpeed;
   if (absI(px - sx) < 6) and (absI(py - sy) < 6) then
@@ -2076,8 +2076,8 @@ begin
   if msprite.hitpoints < 1000 then
     msprite.hitpoints := msprite.hitpoints + 10;
   msprite.enraged := 0;
-  sx := msprite.x shr FRACTILESHIFT;
-  sy := msprite.y shr FRACTILESHIFT;
+  sx := msprite.x div FRACTILEUNIT;
+  sy := msprite.y div FRACTILEUNIT;
   if netmode then
     NetGetClosestPlayer(sx, sy)
   else
@@ -2095,8 +2095,8 @@ begin
       targz := player.z;
     end;
   end;
-  px := targx shr FRACTILESHIFT;
-  py := targy shr FRACTILESHIFT;
+  px := targx div FRACTILEUNIT;
+  py := targy div FRACTILEUNIT;
 
   oldspeed := msprite.moveSpeed;
   if (absI(px - sx) < 6) and (absI(py - sy) < 6) then
@@ -2360,8 +2360,8 @@ begin
   end
   else if (msprite.typ = S_MONSTER14) and (msprite.hitpoints < 350) then
     msprite.hitpoints := msprite.hitpoints + 1;
-  sx := msprite.x shr FRACTILESHIFT;
-  sy := msprite.y shr FRACTILESHIFT;
+  sx := msprite.x div FRACTILEUNIT;
+  sy := msprite.y div FRACTILEUNIT;
   if netmode then
     NetGetClosestPlayer(sx, sy)
   else
@@ -2379,8 +2379,8 @@ begin
       targz := player.z;
     end;
   end;
-  px := targx shr FRACTILESHIFT;
-  py := targy shr FRACTILESHIFT;
+  px := targx div FRACTILEUNIT;
+  py := targy div FRACTILEUNIT;
 
   oldspeed := msprite.moveSpeed;
   if (absI(px - sx) < 6) and (absI(py - sy) < 6) then
@@ -2574,8 +2574,8 @@ begin
   begin
     targx := player.x;
     targy := player.y;
-    px := targx shr FRACTILESHIFT;
-    py := targy shr FRACTILESHIFT;
+    px := targx div FRACTILEUNIT;
+    py := targy div FRACTILEUNIT;
   end;
 
   msprite := firstscaleobj.next;
@@ -2662,7 +2662,7 @@ begin
 
       if not killed and (msprite.heat <> 0) then
       begin
-        mapspot := (msprite.y shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT);
+        mapspot := (msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT);
         if msprite.heat > 256 then
         begin
           c := msprite.heat shr 1;
@@ -2680,13 +2680,13 @@ begin
     begin
       if msprite.moveSpeed <> 0 then
       begin
-        sx := msprite.x shr FRACTILESHIFT;
-        sy := msprite.y shr FRACTILESHIFT;
+        sx := msprite.x div FRACTILEUNIT;
+        sy := msprite.y div FRACTILEUNIT;
         if netmode then
         begin
           NetGetClosestPlayer(sx, sy);
-          px := targx shr FRACTILESHIFT;
-          py := targy shr FRACTILESHIFT;
+          px := targx div FRACTILEUNIT;
+          py := targy div FRACTILEUNIT;
         end;
 
         if (absI(px - sx) < 6) and (absI(py - sy) < 6) then
@@ -2703,7 +2703,7 @@ begin
         msprite.z := floor;
       if msprite.heat <> 0 then
       begin
-        mapspot := (msprite.y shr FRACTILESHIFT) * MAPCOLS + (msprite.x shr FRACTILESHIFT);
+        mapspot := (msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT);
         if msprite.heat > 256 then
         begin
           c := msprite.heat shr 1;

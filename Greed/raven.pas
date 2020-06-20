@@ -195,7 +195,7 @@ begin
     begin
       if (elev_p.elevUp) and (CAddI(elev_p.position, elev_p.speed) >= elev_p.ceiling) then
       begin
-        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
         elev_p.position := elev_p.ceiling;
         if elev_p.typ = E_NORMAL then
           elev_p.elevDown := true
@@ -215,7 +215,7 @@ begin
       end
       else if (elev_p.elevDown) and (CSubI(elev_p.position, elev_p.speed) <= elev_p.floor) then
       begin
-        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) shl FRACTILESHIFT,(elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) * FRACTILEUNIT,(elev_p.mapspot shr 6) * FRACTILEUNIT);
         elev_p.position := elev_p.floor;
         if (elev_p.typ = E_NORMAL) or (elev_p.typ = E_SECRET) then
           elev_p.elevUp := true
@@ -285,7 +285,7 @@ begin
   probe.z := player.z;
   probe.angle := player.angle + n;
   probe.zadj := player.height;
-  probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+  probe.startspot := (player.y div FRACTILEUNIT) * MAPCOLS + (player.x div FRACTILEUNIT);
 
   while counter < MAXPROBE do
   begin
@@ -297,7 +297,7 @@ begin
         hsprite := hsprite.next;
       if hsprite.hitpoints <> 0 then
       begin
-        mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+        mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
         if mapspot = spriteloc then
         begin
           found := true;
@@ -318,7 +318,7 @@ begin
     probe.z := player.z;
     probe.angle := player.angle + n + accuracy;
     probe.zadj := player.height;
-    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+    probe.startspot := (player.y div FRACTILEUNIT) * MAPCOLS + (player.x div FRACTILEUNIT);
 
     while counter < MAXPROBE do
     begin
@@ -330,7 +330,7 @@ begin
           hsprite := hsprite.next;
         if hsprite.hitpoints <> 0 then
         begin
-          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
           if mapspot = spriteloc then
           begin
             found := true;
@@ -354,7 +354,7 @@ begin
     probe.z := player.z;
     probe.angle := player.angle + n - accuracy;
     probe.zadj := player.height;
-    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+    probe.startspot := (player.y div FRACTILEUNIT) * MAPCOLS + (player.x div FRACTILEUNIT);
 
     while counter < MAXPROBE do
     begin
@@ -366,7 +366,7 @@ begin
           hsprite := hsprite.next;
         if hsprite.hitpoints <> 0 then
         begin
-          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
           if mapspot = spriteloc then
           begin
             found := true;
@@ -390,7 +390,7 @@ begin
     probe.z := player.z;
     probe.angle := player.angle + n + accuracy div 2;
     probe.zadj := player.height;
-    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+    probe.startspot := (player.y div FRACTILEUNIT) * MAPCOLS + (player.x div FRACTILEUNIT);
 
     while counter < MAXPROBE do
     begin
@@ -402,7 +402,7 @@ begin
           hsprite := hsprite.next;
         if hsprite.hitpoints <> 0 then
         begin
-          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
           if mapspot = spriteloc then
           begin
             found := true;
@@ -426,7 +426,7 @@ begin
     probe.z := player.z;
     probe.angle := player.angle + n - accuracy div 2;
     probe.zadj := player.height;
-    probe.startspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+    probe.startspot := (player.y div FRACTILEUNIT) * MAPCOLS + (player.x div FRACTILEUNIT);
 
     while counter < MAXPROBE do
     begin
@@ -438,7 +438,7 @@ begin
           hsprite := hsprite.next;
         if hsprite.hitpoints <> 0 then
         begin
-          mapspot := (hsprite.y shr FRACTILESHIFT) * MAPCOLS + (hsprite.x shr FRACTILESHIFT);
+          mapspot := (hsprite.y div FRACTILEUNIT) * MAPCOLS + (hsprite.x div FRACTILEUNIT);
           if mapspot = spriteloc then
           begin
             found := true;
@@ -735,13 +735,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               if player.angst = player.maxangst then
@@ -777,13 +777,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               if player.shield = player.maxshield then
@@ -818,13 +818,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               hurtborder := true;
@@ -853,13 +853,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = S_AMMOBOX then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               hurtborder := true;
@@ -900,13 +900,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = S_MEDBOX then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               heal(250);
@@ -928,13 +928,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = S_GOODIEBOX then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               for i := 0 to 1 do
@@ -991,13 +991,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               hurtborder := true;
@@ -1038,7 +1038,7 @@ begin
       BonusItem.mapspot := -1;
       RF_RemoveSprite(BonusItem.sprite);
       mapsprites[mapspot] := 0;
-      SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+      SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
       BonusItem.name := '';
     end;
 
@@ -1049,14 +1049,14 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
               NetItemPickup(centerx, centery);
             RF_RemoveSprite(sprite);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
             if useit then
             begin
               heal(150);
@@ -1084,13 +1084,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) and (sprite.typ = value2) then
+        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) and (sprite.typ = value2) then
         begin
           if useit and netmode then
             NetItemPickup(centerx, centery);
           RF_RemoveSprite(sprite);
           mapsprites[mapspot] := 0;
-          SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
           if useit then
           begin
             heal(150);
@@ -1117,19 +1117,19 @@ begin
           elev_p.elevDown := true;
           elev_p.elevTimer := timecount;
           sound := true;
-          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
         end;
         if useit and netmode then
           NetItemPickup(centerx, centery);
         mapsprites[mapspot] := 0;
         if useit and sound then
         begin
-          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
           if netmode then
-            NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
-          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
           if netmode then
-            NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+            NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
         end;
         elev_p := elev_p.next;
       end;
@@ -1147,14 +1147,14 @@ begin
         begin
           elev_p.elevDown := true;
           elev_p.elevTimer := timecount;
-          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
           sound := true;
         end;
         if useit and netmode then
           NetItemPickup(centerx, centery);
         mapsprites[mapspot] := 0;
         if sound then
-          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
         elev_p := elev_p.next;
       end;
     end;
@@ -1172,13 +1172,13 @@ begin
           elev_p.elevUp := true;
           elev_p.elevTimer := timecount;
           sound := true;
-          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
         end;
         if useit and netmode then
           NetItemPickup(centerx, centery);
         mapsprites[mapspot] := 0;
         if sound then
-          SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
         elev_p := elev_p.next;
       end;
     end;
@@ -1269,8 +1269,8 @@ begin
         player.ammo[ammo] := player.ammo[ammo] + 100;
         if player.ammo[ammo] > MAXAMMO then
           player.ammo[ammo] := MAXAMMO;
-        SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
-        NetSoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+        SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+        NetSoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
         changingweapons := true;
         weaponlowering := true;
         newweapon := index;
@@ -1281,7 +1281,7 @@ begin
         sprite := firstscaleobj.next;
         while sprite <> @lastscaleobj do
         begin
-          if (sprite.x shr FRACTILESHIFT = centerx) and (sprite.y shr FRACTILESHIFT = centery) then
+          if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
             if sprite.typ = value2 then
             begin
               player.weapons[index] := value - SM_WEAPON0;
@@ -1289,7 +1289,7 @@ begin
               hurtborder := true;
               RF_RemoveSprite(sprite);
               mapsprites[mapspot] := 0;
-              SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+              SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
               exit;
             end;
           sprite := sprite.next;
@@ -1304,8 +1304,8 @@ procedure CheckWarps(const centerx, centery: fixed_t);
 var
   x, y, mapspot: integer;
 begin
-  x := centerx shr FRACTILESHIFT;
-  y := centery shr FRACTILESHIFT;
+  x := centerx div FRACTILEUNIT;
+  y := centery div FRACTILEUNIT;
   mapspot := y * MAPCOLS + x;
   if (mapsprites[mapspot] >= 128) and (mapsprites[mapspot] <= 130) then
   begin
@@ -1326,12 +1326,12 @@ begin
   end;
   if triggers[x][y] <> 0 then
   begin
-    SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+    SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
     if netmode then
-      NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
-    SoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+      NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+    SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
     if netmode then
-      NetSoundEffect(SN_TRIGGER, 0, centerx shl FRACTILESHIFT, centery shl FRACTILESHIFT);
+      NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
     RunEvent(triggers[x][y], true);
   end;
 end;
@@ -1342,8 +1342,8 @@ var
   x, y, mapspot: integer;
   door_p, last_p: Pdoorobj_t;
 begin
-  x := centerx shr FRACTILESHIFT;
-  y := centery shr FRACTILESHIFT;
+  x := centerx div FRACTILEUNIT;
+  y := centery div FRACTILEUNIT;
   last_p := @doorlist[numdoors];
   door_p := @doorlist[0];
   while door_p <> last_p do
@@ -1386,7 +1386,7 @@ begin
       begin
         door_p.doorClosing := true;
         door_p.doorOpen := false;
-        SoundEffect(SN_DOOR, 15, door_p.tilex shl FRACTILESHIFT, door_p.tiley shl FRACTILESHIFT);
+        SoundEffect(SN_DOOR, 15, door_p.tilex * FRACTILEUNIT, door_p.tiley * FRACTILEUNIT);
         door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
       end
       else
@@ -1628,7 +1628,7 @@ procedure SwitchWall(const x, y: integer; const angle: integer; const doubleswit
 var
   mapspot: integer;
 begin
-  SoundEffect(SN_WALLSWITCH, 0, x shl FRACTILESHIFT, y shl FRACTILESHIFT);
+  SoundEffect(SN_WALLSWITCH, 0, x * FRACTILEUNIT, y * FRACTILEUNIT);
   mapspot := y * MAPCOLS + x;
   if (angle >= SOUTH+DEGREE45) or (angle < DEGREE45) then
   begin
@@ -1731,10 +1731,10 @@ var
   door_p, last_p: Pdoorobj_t;
 begin
   // check for doors on the north wall
-  xl := ((xcenter - PLAYERSIZE) shr FRACTILESHIFT);
-  yl := ((ycenter - PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT);
-  xh := ((xcenter + PLAYERSIZE) shr FRACTILESHIFT);
-  yh := ((ycenter + PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT);
+  xl := ((xcenter - PLAYERSIZE) div FRACTILEUNIT);
+  yl := ((ycenter - PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT);
+  xh := ((xcenter + PLAYERSIZE) div FRACTILEUNIT);
+  yh := ((ycenter + PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT);
   for y := yl + 1 to yh do
     for x := xl to xh do
     begin
@@ -1756,8 +1756,8 @@ begin
               door_p.doorClosing := false;
               door_p.doorOpening := true;
               doorsound := true;
-              doorx := door_p.tilex shl FRACTILESHIFT;
-              doory := door_p.tiley shl FRACTILESHIFT;
+              doorx := door_p.tilex * FRACTILEUNIT;
+              doory := door_p.tiley * FRACTILEUNIT;
               if door_p.orientation = dr_horizontal then
                 TryDoor(xcenter + 64 * FRACUNIT, ycenter)
               else
@@ -1772,8 +1772,8 @@ begin
               door_p.doorClosing := false;
               door_p.doorOpening := true;
               doorsound := true;
-              doorx := door_p.tilex shl FRACTILESHIFT;
-              doory := door_p.tiley shl FRACTILESHIFT;
+              doorx := door_p.tilex * FRACTILEUNIT;
+              doory := door_p.tiley * FRACTILEUNIT;
               if door_p.orientation = dr_horizontal then
                 TryDoor(xcenter + 64 * FRACUNIT, ycenter)
               else
@@ -1795,10 +1795,10 @@ begin
     end;
 
   // check for doors on the west wall
-  xl := (xcenter - PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT;
-  yl := (ycenter - PLAYERSIZE)  shr FRACTILESHIFT;
-  xh := (xcenter + PLAYERSIZE - (TILEUNIT shr 1)) shr FRACTILESHIFT;
-  yh := (ycenter + PLAYERSIZE) shr FRACTILESHIFT;
+  xl := (xcenter - PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT;
+  yl := (ycenter - PLAYERSIZE)  div FRACTILEUNIT;
+  xh := (xcenter + PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT;
+  yh := (ycenter + PLAYERSIZE) div FRACTILEUNIT;
   for y := yl to yh do
     for x := xl + 1 to xh do
     begin
@@ -1820,8 +1820,8 @@ begin
               door_p.doorOpening := true;
               door_p.doorClosing := false;
               doorsound := true;
-              doorx := door_p.tilex shl FRACTILESHIFT;
-              doory := door_p.tiley shl FRACTILESHIFT;
+              doorx := door_p.tilex * FRACTILEUNIT;
+              doory := door_p.tiley * FRACTILEUNIT;
               if door_p.orientation = dr_vertical then
                 TryDoor(xcenter, ycenter + 64 * FRACUNIT)
               else
@@ -1836,8 +1836,8 @@ begin
               door_p.doorClosing := false;
               door_p.doorOpening := true;
               doorsound := true;
-              doorx := door_p.tilex shl FRACTILESHIFT;
-              doory := door_p.tiley shl FRACTILESHIFT;
+              doorx := door_p.tilex * FRACTILEUNIT;
+              doory := door_p.tiley * FRACTILEUNIT;
               if door_p.orientation = dr_vertical then
                 TryDoor(xcenter, ycenter + 64 * FRACUNIT)
               else
@@ -1869,34 +1869,34 @@ var
 begin
   if (angle < NORTH) or (angle > SOUTH) then
   begin
-    xl := xcenter shr FRACTILESHIFT;
-    xh := (xcenter + PLAYERSIZE) shr FRACTILESHIFT;
+    xl := xcenter div FRACTILEUNIT;
+    xh := (xcenter + PLAYERSIZE) div FRACTILEUNIT;
   end
   else if (angle > NORTH) and (angle < SOUTH) then
   begin
-    xh := xcenter shr FRACTILESHIFT;
-    xl := (xcenter - PLAYERSIZE) shr FRACTILESHIFT;
+    xh := xcenter div FRACTILEUNIT;
+    xl := (xcenter - PLAYERSIZE) div FRACTILEUNIT;
   end
   else
   begin
-    xh := (xcenter + PLAYERSIZE) shr FRACTILESHIFT;
-    xl := (xcenter - PLAYERSIZE) shr FRACTILESHIFT;
+    xh := (xcenter + PLAYERSIZE) div FRACTILEUNIT;
+    xl := (xcenter - PLAYERSIZE) div FRACTILEUNIT;
   end;
 
   if angle > WEST then
   begin
-    yl := ycenter shr FRACTILESHIFT;
-    yh := (ycenter + PLAYERSIZE) shr FRACTILESHIFT;
+    yl := ycenter div FRACTILEUNIT;
+    yh := (ycenter + PLAYERSIZE) div FRACTILEUNIT;
   end
   else if (angle < WEST) and (angle <> EAST) then
   begin
-    yl := (ycenter - PLAYERSIZE) shr FRACTILESHIFT;
-    yh := ycenter shr FRACTILESHIFT;
+    yl := (ycenter - PLAYERSIZE) div FRACTILEUNIT;
+    yh := ycenter div FRACTILEUNIT;
   end
   else
   begin
-    yl := (ycenter - PLAYERSIZE) shr FRACTILESHIFT;
-    yh := (ycenter + PLAYERSIZE) shr FRACTILESHIFT;
+    yl := (ycenter - PLAYERSIZE) div FRACTILEUNIT;
+    yh := (ycenter + PLAYERSIZE) div FRACTILEUNIT;
   end;
 
   pz := player.z - player.height + (26 * FRACUNIT);
@@ -1922,12 +1922,12 @@ begin
           result := false;
           exit;
         end;
-        if RF_GetFloorZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) > pz then
+        if RF_GetFloorZ((x * FRACTILEUNIT) + (32 * FRACUNIT), (y * FRACTILEUNIT) + (32 * FRACUNIT)) > pz then
         begin
           result := false;
           exit;
         end;
-        if RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) < player.z + (10 * FRACUNIT) then
+        if RF_GetCeilingZ((x * FRACTILEUNIT) + (32 * FRACUNIT), (y * FRACTILEUNIT) + (32 * FRACUNIT)) < player.z + (10 * FRACUNIT) then
         begin
           result := false;
           exit;
@@ -1948,8 +1948,8 @@ label
   skipit;
 begin
   TryDoor(centerx, centery);
-  x := centerx shr FRACTILESHIFT;
-  y := centery shr FRACTILESHIFT;
+  x := centerx div FRACTILEUNIT;
+  y := centery div FRACTILEUNIT;
   mapspot := y * MAPCOLS + x;
   switchit := false;
 
@@ -2015,7 +2015,7 @@ skipit:
             switchit := true;
             elev_p.elevDown := true;
             elev_p.elevTimer := timecount;
-            CheckHere(false, x1 shl FRACTILESHIFT, y1 shl FRACTILESHIFT, angle);
+            CheckHere(false, x1 * FRACTILEUNIT, y1 * FRACTILEUNIT, angle);
           end;
         end;
         elev_p := elev_p.next;
@@ -2062,7 +2062,7 @@ begin
   dy := player.y + ymove;
   if TryMove(angle, dx, dy) and TryDoor(dx, dy) then
   begin
-    if floorpic[(dy shr FRACTILESHIFT) * MAPCOLS + (dx shr FRACTILESHIFT)] = 0 then
+    if floorpic[(dy div FRACTILEUNIT) * MAPCOLS + (dx div FRACTILEUNIT)] = 0 then
     begin
       result := false;
       exit;
@@ -2080,7 +2080,7 @@ begin
     angle2 := WEST;
   if TryMove(angle2, dx, player.y) and TryDoor(dx, player.y) then
   begin
-    if floorpic[(player.y shr FRACTILESHIFT) * MAPCOLS + (dx shr FRACTILESHIFT)] = 0 then
+    if floorpic[(player.y div FRACTILEUNIT) * MAPCOLS + (dx div FRACTILEUNIT)] = 0 then
     begin
       result := false;
       exit;
@@ -2096,7 +2096,7 @@ begin
     angle2 := NORTH;
   if TryMove(angle2, player.x, dy) and TryDoor(player.x, dy) then
   begin
-    if floorpic[(dy shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT)] = 0 then
+    if floorpic[(dy div FRACTILEUNIT) * MAPCOLS + (player.x div FRACTILEUNIT)] = 0 then
     begin
       result := false;
       exit;
@@ -2119,7 +2119,7 @@ begin
   xmove := FIXEDMUL(speed, costable[angle]);
   ymove := -FIXEDMUL(speed, sintable[angle]);
   result := ClipMove(angle, xmove, ymove);
-  player.mapspot := (player.y shr FRACTILESHIFT) * MAPCOLS + (player.x shr FRACTILESHIFT);
+  player.mapspot := (player.y div FRACTILEUNIT) * MAPCOLS + (player.x div FRACTILEUNIT);
 end;
 
 
@@ -2662,10 +2662,10 @@ begin
   end;
 
   // compute falling or stepping up higher
-  xl := (player.x - FRACUNIT * 8) shr FRACTILESHIFT;
-  xh := (player.x + FRACUNIT * 8) shr FRACTILESHIFT;
-  yl := (player.y - FRACUNIT * 8) shr FRACTILESHIFT;
-  yh := (player.y + FRACUNIT * 8) shr FRACTILESHIFT;
+  xl := (player.x - FRACUNIT * 8) div FRACTILEUNIT;
+  xh := (player.x + FRACUNIT * 8) div FRACTILEUNIT;
+  yl := (player.y - FRACUNIT * 8) div FRACTILEUNIT;
+  yh := (player.y + FRACUNIT * 8) div FRACTILEUNIT;
   floorz := player.z - player.height;
   maxz := 0;
   while xl <= xh do // JVAL: SOS -> does not reset y1 ?
@@ -2687,8 +2687,8 @@ begin
   if maxz = 0 then
   begin
     maxz := RF_GetFloorZ(player.x, player.y);
-    maxx := player.x shr FRACTILESHIFT;
-    maxy := player.y shr FRACTILESHIFT;
+    maxx := player.x div FRACTILEUNIT;
+    maxy := player.y div FRACTILEUNIT;
   end;
   floorz := maxz + player.height;
 
@@ -2785,7 +2785,7 @@ begin
     begin
       if sprite_p.hitpoints <> 0 then
       begin
-        mapsprites[(sprite_p.y shr FRACTILESHIFT) * MAPCOLS + (sprite_p.x shr FRACTILESHIFT)] := 0;
+        mapsprites[(sprite_p.y div FRACTILEUNIT) * MAPCOLS + (sprite_p.x div FRACTILEUNIT)] := 0;
         hsprite_p := sprite_p;
         sprite_p := sprite_p.prev;
         KillSprite(hsprite_p, S_BULLET3);
@@ -3873,7 +3873,7 @@ begin
     begin
       if (sp.typ = S_GENERATOR) or ((sp.typ >= S_GENSTART) and (sp.typ <= S_GENEND)) then
       begin
-        mapspot := (sp.y shr FRACTILESHIFT) * MAPCOLS + (sp.x shr FRACTILESHIFT);
+        mapspot := (sp.y div FRACTILEUNIT) * MAPCOLS + (sp.x div FRACTILEUNIT);
         mapsprites[mapspot] := 0;
         t := sp;
         sp := sp.next;

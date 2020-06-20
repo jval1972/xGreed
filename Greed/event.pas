@@ -155,14 +155,14 @@ begin
         elev_p.elevUp := true;
         elev_p.eval := 0;
         elev_p.elevTimer := timecount;
-        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
       end
       else if elev_p.position = elev_p.ceiling then
       begin
         elev_p.elevDown := true;
         elev_p.eval := 0;
         elev_p.elevTimer := timecount;
-        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) shl FRACTILESHIFT, (elev_p.mapspot shr 6) shl FRACTILESHIFT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
       end;
     end;
     elev_p := elev_p.next;
@@ -186,8 +186,8 @@ begin
         begin
           if (sp.active = false) and (sp.moveSpeed <> 0) then
           begin
-            x := sp.x shr FRACTILESHIFT;
-            y := sp.y shr FRACTILESHIFT;
+            x := sp.x div FRACTILEUNIT;
+            y := sp.y div FRACTILEUNIT;
             if (x >= zones[i].x1) and (x <= zones[i].x2) and (y >= zones[i].y1) and (y <= zones[i].y2) then
             begin
               sp.active := true;
