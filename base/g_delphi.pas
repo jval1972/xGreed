@@ -220,7 +220,16 @@ function CSubI(var a: integer; const b: integer): integer;
 // C funcs
 function isalnum(const c: char): boolean;
 
-function ibetween(const x: integer; const x1, x2: integer): integer; 
+// Shifts
+function _SHL(const x: integer; const bits: integer): integer;
+
+function _SHLW(const x: LongWord; const bits: LongWord): LongWord;
+
+function _SHR(const x: integer; const bits: integer): integer;
+
+function _SHRW(const x: LongWord; const bits: LongWord): LongWord;
+
+function ibetween(const x: integer; const x1, x2: integer): integer;
 
 implementation
 
@@ -758,6 +767,28 @@ end;
 function isalnum(const c: char): boolean;
 begin
   result := ((c >= 'A') and (c <= 'Z')) or ((c >= 'z') and (c <= 'z')) or ((c >= '0') and (c <= '9'))
+end;
+
+function _SHL(const x: integer; const bits: integer): integer; assembler;
+asm
+  mov ecx, edx
+  sal eax, cl
+end;
+
+function _SHLW(const x: LongWord; const bits: LongWord): LongWord;
+begin
+  result := x shl bits;
+end;
+
+function _SHR(const x: integer; const bits: integer): integer; assembler;
+asm
+  mov ecx, edx
+  sar eax, cl
+end;
+
+function _SHRW(const x: LongWord; const bits: LongWord): LongWord;
+begin
+  result := x shr bits;
 end;
 
 function ibetween(const x: integer; const x1, x2: integer): integer; 
