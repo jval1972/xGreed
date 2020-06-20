@@ -306,7 +306,7 @@ begin
     sp_dest := @viewylookup[bottomy - scrollmin][x];
     if transparent <> 0 then
     begin
-      span := (pointz shl ZTOFRAC) and ZMASK;
+      span := (pointz * ZTOFRACUNIT) and ZMASK;
       spansx[numspans] := x;
       span := span or numspans;
       spantags[numspans] := span;
@@ -590,7 +590,7 @@ skipceilingcalc:
         goto contceiling;
       sp_count := bottomy - topy + 1;
       sp_dest := @viewylookup[bottomy - scrollmin][x];
-      span := (pointz shl ZTOFRAC) and ZMASK;
+      span := (pointz * ZTOFRACUNIT) and ZMASK;
       spansx[numspans] := x;
       span := span or numspans;
       spantags[numspans] := span;
@@ -657,7 +657,7 @@ contceiling:
         MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, MAX_VIEW_HEIGHT - 1]);
   {$ENDIF}
       sp_dest := @viewylookup[bottomy - scrollmin][x];
-      span := (pointz shl ZTOFRAC) and ZMASK;
+      span := (pointz * ZTOFRACUNIT) and ZMASK;
       spansx[numspans] := x;
       span := span or numspans;
       spantags[numspans] := span;

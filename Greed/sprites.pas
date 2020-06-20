@@ -97,7 +97,7 @@ begin
             begin
               door_p.doorOpening := true;
               door_p.doorClosing := false;
-              SoundEffect(SN_DOOR, 15, door_p.tilex shl FRACTILESHIFT, door_p.tiley shl FRACTILESHIFT);
+              SoundEffect(SN_DOOR, 15, door_p.tilex * FRACTILEUNIT, door_p.tiley * FRACTILEUNIT);
               door_p.doorTimer := door_p.doorTimer + 20;
               if door_p.orientation = dr_horizontal then
                 SP_TryDoor(xcenter + 64 * FRACUNIT, ycenter)
@@ -110,7 +110,7 @@ begin
             begin
               door_p.doorClosing := false;
               door_p.doorOpening := true;
-              SoundEffect(SN_DOOR, 15, door_p.tilex shl FRACTILESHIFT, door_p.tiley shl FRACTILESHIFT);
+              SoundEffect(SN_DOOR, 15, door_p.tilex * FRACTILEUNIT, door_p.tiley * FRACTILEUNIT);
               door_p.doorTimer := door_p.doorTimer + 20;
               if door_p.orientation = dr_horizontal then
                 SP_TryDoor(xcenter + 64 * FRACUNIT, ycenter)
@@ -155,7 +155,7 @@ begin
             begin
               door_p.doorOpening := true;
               door_p.doorClosing := false;
-              SoundEffect(SN_DOOR, 15, door_p.tilex shl FRACTILESHIFT, door_p.tiley shl FRACTILESHIFT);
+              SoundEffect(SN_DOOR, 15, door_p.tilex * FRACTILEUNIT, door_p.tiley * FRACTILEUNIT);
               door_p.doorTimer := door_p.doorTimer + 20;
               if door_p.orientation = dr_vertical then
                 SP_TryDoor(xcenter, ycenter + 64 * FRACUNIT)
@@ -168,7 +168,7 @@ begin
             begin
               door_p.doorClosing := false;
               door_p.doorOpening := true;
-              SoundEffect(SN_DOOR, 15, door_p.tilex shl FRACTILESHIFT, door_p.tiley shl FRACTILESHIFT);
+              SoundEffect(SN_DOOR, 15, door_p.tilex * FRACTILEUNIT, door_p.tiley * FRACTILEUNIT);
               door_p.doorTimer := door_p.doorTimer + 20;
               if door_p.orientation = dr_vertical then
                 SP_TryDoor(xcenter, ycenter + 64 * FRACUNIT)
@@ -212,12 +212,12 @@ begin
       end;
       if msprite <> @probe then
       begin
-        if msprite.z < RF_GetFloorZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) then
+        if msprite.z < RF_GetFloorZ((x * FRACTILEUNIT) + (32 * FRACUNIT), (y * FRACTILEUNIT) + (32 * FRACUNIT)) then
         begin
           result := 2;    // below floor
           exit;
         end;
-        if msprite.z > RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT)) then
+        if msprite.z > RF_GetCeilingZ((x * FRACTILEUNIT) + (32 * FRACUNIT), (y * FRACTILEUNIT) + (32 * FRACUNIT)) then
         begin
           result := 2; // below ceiling
           exit;
@@ -332,7 +332,7 @@ begin
         exit;
       end;
 
-      floorz := RF_GetFloorZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT));
+      floorz := RF_GetFloorZ((x * FRACTILEUNIT) + (32 * FRACUNIT), (y * FRACTILEUNIT) + (32 * FRACUNIT));
       if floorz > sz then
       begin
         result := false;
@@ -345,7 +345,7 @@ begin
         exit;
       end;
 
-      ceilingz := RF_GetCeilingZ((x shl FRACTILESHIFT) + (32 * FRACUNIT), (y shl FRACTILESHIFT) + (32 * FRACUNIT));
+      ceilingz := RF_GetCeilingZ((x * FRACTILEUNIT) + (32 * FRACUNIT), (y * FRACTILEUNIT) + (32 * FRACUNIT));
       if ceilingz < msprite.z + msprite.height then
       begin
         result := false;
@@ -1743,7 +1743,7 @@ begin
         angle := WEST;
       msprite.angle := angle and ANGLES;
       msprite.movemode := 4;
-      msprite.basepic := msprite.startpic+24;
+      msprite.basepic := msprite.startpic + 24;
       fheight := 40 * FRACUNIT;
       pangle := GetFireAngle(fheight, px, py, 0, 0, 0);
       SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle, pangle, true, 255);
@@ -1780,7 +1780,7 @@ begin
         if (msprite.lastx <> msprite.x) or (msprite.lasty <> msprite.y) then
         begin
           inc(msprite.movemode);
-          msprite.basepic := msprite.startpic + msprite.movemode*8;
+          msprite.basepic := msprite.startpic + msprite.movemode * 8;
           msprite.lasty := msprite.y;
           msprite.lastx := msprite.x;
         end;

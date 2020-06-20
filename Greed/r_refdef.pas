@@ -45,6 +45,7 @@ const
   MAXSPANS = 4096;
   ZSHIFT = 12;
   ZTOFRAC = 4;    { shift the Z into frac position }
+  ZTOFRACUNIT = 1 shl ZTOFRAC;
   ZMASK = $fffff shl ZSHIFT;  // 20 bits
   SPANMASK = $000000fff;      // 12 bits
   MAXPEND = 3072;

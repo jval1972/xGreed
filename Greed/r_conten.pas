@@ -184,8 +184,8 @@ begin
 
   // transform both endpoints of the door
   // p1 is the anchored point, p2 is the moveable point
-  tx := tilex shl (TILESHIFT + FRACBITS);
-  ty := tiley shl (TILESHIFT + FRACBITS);
+  tx := tilex * (TILESIZE * FRACUNIT);
+  ty := tiley * (TILESIZE * FRACUNIT);
   position := door_p.position;
   case door_p.orientation of
   dr_horizontal:
@@ -234,6 +234,9 @@ begin
       if player.westmap[mapspot] = 0 then
         player.westmap[mapspot] := DOOR_COLOR;
     end;
+  else
+    MS_Error('RenderDoor(): Unknown door orientation (%d)', [Ord(door_p.orientation)]);
+    exit;
   end;
 
   if p1.px > p2.px then
@@ -294,7 +297,7 @@ begin
     sp_source := postindex[texture];
 
     // post the span in the draw list
-    span := (pointz shl ZTOFRAC) and ZMASK;
+    span := (pointz * ZTOFRACUNIT) and ZMASK;
     spansx[numspans] := x;
     span := span or numspans;
     spantags[numspans] := span;
@@ -315,8 +318,8 @@ begin
   end;
 
 part2:
-  tx := tilex shl (TILESHIFT + FRACBITS);
-  ty := tiley shl (TILESHIFT + FRACBITS);
+  tx := tilex * (TILESIZE * FRACUNIT);
+  ty := tiley * (TILESIZE * FRACUNIT);
   position := door_p.position;
   case door_p.orientation of
   dr_horizontal:
@@ -425,7 +428,7 @@ part2:
     sp_source := postindex[texture];
 
     // post the span in the draw list
-    span := (pointz shl ZTOFRAC) and ZMASK;
+    span := (pointz * ZTOFRACUNIT) and ZMASK;
     spansx[numspans] := x;
     span := span or numspans;
     spantags[numspans] := span;
@@ -446,8 +449,8 @@ part2:
     end;
 
 part3:
-  tx := tilex shl (TILESHIFT + FRACBITS);
-  ty := tiley shl (TILESHIFT + FRACBITS);
+  tx := tilex * (TILESIZE * FRACUNIT);
+  ty := tiley * (TILESIZE * FRACUNIT);
   case door_p.orientation of
   dr_horizontal:
     begin
@@ -540,7 +543,7 @@ part3:
     sp_source := postindex[texture];
 
     // post the span in the draw list
-    span := (pointz shl ZTOFRAC) and ZMASK;
+    span := (pointz * ZTOFRACUNIT) and ZMASK;
     spansx[numspans] := x;
     span := span or numspans;
     spantags[numspans] := span;
@@ -629,7 +632,7 @@ begin
   // transform the point
   pointx := FIXEDMUL(deltax, viewsin) + FIXEDMUL(deltay, viewcos);
   // post the span event
-  span := (pointz shl ZTOFRAC) and ZMASK;
+  span := (pointz * ZTOFRACUNIT) and ZMASK;
   span := span or numspans;
   spantags[numspans] := span;
   span_p := @spans[numspans];

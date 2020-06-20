@@ -95,7 +95,7 @@ begin
   if pointz > MAXZ then
     exit;
   // post the span in the draw list
-  span := (pointz shl ZTOFRAC) and ZMASK;
+  span := (pointz * ZTOFRACUNIT) and ZMASK;
   spansx[numspans] := mr_x1;
   span := span or numspans;
   spantags[numspans] := span;
@@ -139,7 +139,7 @@ begin
   if pointz2 > MAXZ then
     exit;
   // post the span in the draw list
-  span := (pointz shl ZTOFRAC) and ZMASK;
+  span := (pointz * ZTOFRACUNIT) and ZMASK;
   spansx[numspans] := mr_x1;
   span := span or numspans;
   spantags[numspans] := span;
