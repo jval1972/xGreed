@@ -392,9 +392,9 @@ begin
     if wallglowindex = 32 then
       wallglowindex := 0;
     if wallglowindex < 16 then
-      wallglow := wallglowindex shl 1
-    else wallglow :=
-      (32 - wallglowindex) shl 1;
+      wallglow := wallglowindex * 2
+    else
+      wallglow := (32 - wallglowindex) * 2;
     if wallrotate = 63 then
       wallrotate := 0
     else

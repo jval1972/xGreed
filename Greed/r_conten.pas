@@ -590,7 +590,7 @@ begin
 
   if (sprite.animation <> 0) and (rtimecount >= sprite.animationTime) then
   begin
-    animationGraphic := (sprite.animation and ANIM_CG_MASK) shr 1;
+    animationGraphic := (sprite.animation and ANIM_CG_MASK) div 2;
     animationMax := (sprite.animation and ANIM_MG_MASK) shr 5;
     animationDelay := (sprite.animation and ANIM_DELAY_MASK) shr 9;
     if animationGraphic < animationMax - 1 then
@@ -605,12 +605,12 @@ begin
     end;
     picnum := picnum + animationGraphic;
     sprite.animation := (sprite.animation and ANIM_LOOP_MASK) +
-                        (animationGraphic shl 1) + (animationMax shl 5) + (animationDelay shl 9) +
+                        (animationGraphic * 2) + (animationMax shl 5) + (animationDelay shl 9) +
                         (sprite.animation and ANIM_SELFDEST);
     sprite.animationTime := timecount + animationDelay;
   end
   else if sprite.animation <> 0 then
-    picnum := picnum + (sprite.animation and ANIM_CG_MASK) shr 1;
+    picnum := picnum + (sprite.animation and ANIM_CG_MASK) div 2;
 
   deltax := sprite.x - viewx;
   if (deltax < -MAXZ) or (deltax > MAXZ) then

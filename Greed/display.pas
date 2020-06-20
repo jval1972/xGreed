@@ -554,7 +554,7 @@ begin
     sprintf(str1, '%2d', [player.inventory[inventorycursor]]);
     FN_RawPrint2(str1);
     pic := lumpmain[lump]; // draw the pic for it
-    x := 128 - (pic.width shr 1);
+    x := 128 - (pic.width div 2);
     for i := 0 to pic.width - 1 do
     begin
       if pic.collumnofs[i] <> 0 then
@@ -624,7 +624,7 @@ begin
     sprintf(str1,'%3d s ', [time]);
     name := BonusItem.name;
     pic := lumpmain[lump];
-    x := 34 - (pic.width shr 1);
+    x := 34 - (pic.width div 2);
     for i := 0 to pic.width - 1 do
     begin
       if pic.collumnofs[i] <> 0 then
@@ -730,7 +730,7 @@ begin
   end;
 
   pic := lumpmain[lump];
-  x := 34 - (pic.width shr 1);
+  x := 34 - (pic.width div 2);
   for i := 0 to pic.width - 1 do
   begin
     if pic.collumnofs[i] <> 0 then
@@ -985,7 +985,7 @@ begin
       printy := 163;
       FN_RawPrint(inventorynames[inventorycursor]);
       pic := lumpmain[lump]; // draw the pic for it
-      x := 128 - (pic.width shr 1);
+      x := 128 - (pic.width div 2);
       for i := 0 to pic.width - 1 do
       begin
         if pic.collumnofs[i] <> 0 then
@@ -1082,7 +1082,7 @@ begin
     sprintf(str1,'%3d s', [time]);
     name := BonusItem.name;
     pic := lumpmain[lump];
-    x := 34 - (pic.width shr 1);
+    x := 34 - (pic.width div 2);
     for i := 158 to 187 do
       memset(@ylookup[i][19], 0, 30);
     for  i := 0 to pic.width - 1 do
@@ -1237,7 +1237,7 @@ begin
   for i := 158 to 187 do
     memset(@ylookup[i][19], 0, 30);
   pic := lumpmain[lump];
-  x := 34 - (pic.width shr 1);
+  x := 34 - (pic.width div 2);
   for i := 0 to pic.width - 1 do
   begin
     if pic.collumnofs[i] <> 0 then
@@ -1772,8 +1772,8 @@ begin
         begin
           for a := 0 to MapZoom do
           begin
-            y2 := y1 + (((MapZoom shr 1) * yfracstep2) div FRACUNIT);
-            x2 := x1 + (((MapZoom shr 1) * xfracstep2) div FRACUNIT);
+            y2 := y1 + (((MapZoom div 2) * yfracstep2) div FRACUNIT);
+            x2 := x1 + (((MapZoom div 2) * xfracstep2) div FRACUNIT);
             if (y2 >= 0) and (x2 >= 0) and (x2 < windowWidth) and (y2 < windowHeight) then
               viewylookup[y2][x2] := c;
             xfrac := xfrac + xfracstep;
@@ -1834,8 +1834,8 @@ begin
         begin
           for a := 0 to MapZoom do
           begin
-            y2 := y1 + (((MapZoom shr 1) * yfracstep) div FRACUNIT);
-            x2 := x1 + (((MapZoom shr 1) * xfracstep) div FRACUNIT);
+            y2 := y1 + (((MapZoom div 2) * yfracstep) div FRACUNIT);
+            x2 := x1 + (((MapZoom div 2) * xfracstep) div FRACUNIT);
             if (y2 >= 0) and (x2 >= 0) and (x2 < windowWidth) and (y2 < windowHeight) then
               viewylookup[y2][x2] := c;
             xfrac2 := xfrac2 + xfracstep2;

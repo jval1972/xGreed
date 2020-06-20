@@ -1732,9 +1732,9 @@ var
 begin
   // check for doors on the north wall
   xl := ((xcenter - PLAYERSIZE) div FRACTILEUNIT);
-  yl := ((ycenter - PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT);
+  yl := ((ycenter - PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT);
   xh := ((xcenter + PLAYERSIZE) div FRACTILEUNIT);
-  yh := ((ycenter + PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT);
+  yh := ((ycenter + PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT);
   for y := yl + 1 to yh do
     for x := xl to xh do
     begin
@@ -1795,9 +1795,9 @@ begin
     end;
 
   // check for doors on the west wall
-  xl := (xcenter - PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT;
+  xl := (xcenter - PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT;
   yl := (ycenter - PLAYERSIZE)  div FRACTILEUNIT;
-  xh := (xcenter + PLAYERSIZE - (TILEUNIT shr 1)) div FRACTILEUNIT;
+  xh := (xcenter + PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT;
   yh := (ycenter + PLAYERSIZE) div FRACTILEUNIT;
   for y := yl to yh do
     for x := xl + 1 to xh do

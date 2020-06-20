@@ -73,9 +73,9 @@ begin
   // These values will probably have to be tweaked for doors that are along
   // the vertical opposite axis (northwall)
   xl := ((xcenter - msprite.movesize) div FRACTILEUNIT);
-  yl := ((ycenter - msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
+  yl := ((ycenter - msprite.movesize) div FRACTILEUNIT);
   xh := ((xcenter + msprite.movesize) div FRACTILEUNIT);
-  yh := ((ycenter + msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
+  yh := ((ycenter + msprite.movesize) div FRACTILEUNIT);
   // check for doors on the north wall
   for y := yl + 1 to yh do
     for x := xl to xh do
@@ -131,9 +131,9 @@ begin
     end;
 
   // check for doors on the west wall
-  xl := ((xcenter - msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
+  xl := ((xcenter - msprite.movesize) div FRACTILEUNIT);
   yl := ((ycenter - msprite.movesize) div FRACTILEUNIT);
-  xh := ((xcenter + msprite.movesize(* - (TILEUNIT shr 1)*)) div FRACTILEUNIT);
+  xh := ((xcenter + msprite.movesize) div FRACTILEUNIT);
   yh := ((ycenter + msprite.movesize) div FRACTILEUNIT);
   for y := yl to yh do
     for x := xl + 1 to xh do
@@ -2665,7 +2665,7 @@ begin
         mapspot := (msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT);
         if msprite.heat > 256 then
         begin
-          c := msprite.heat shr 1;
+          c := msprite.heat div 2;
           for i := -1 to 1 do
             for j := -1 to 1 do
               reallight[mapspot + (i * MAPCOLS) + j] := reallight[mapspot + (i * MAPCOLS) + j] - c;
@@ -2706,7 +2706,7 @@ begin
         mapspot := (msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT);
         if msprite.heat > 256 then
         begin
-          c := msprite.heat shr 1;
+          c := msprite.heat div 2;
           for i := -1 to 1 do
             for j := -1 to 1 do
               reallight[mapspot + (i * MAPCOLS) + j] := reallight[mapspot + (i * MAPCOLS) + j] - c;
