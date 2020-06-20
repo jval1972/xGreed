@@ -2569,7 +2569,7 @@ begin
       sa.mapx := (x1 * FRACTILEUNIT) + (32 * FRACUNIT);
       sa.mapy := (y1 * FRACTILEUNIT) + (32 * FRACUNIT);
       sa.mapspot := mapspot;
-      sa.time := player.timecount + ((MS_RndT and 15) shl 6);
+      sa.time := player.timecount + ((MS_RndT and 15) * 64);
       sa.typ := value - S_GENERATOR1;
       SpawnSprite(S_GENERATOR, (x1 * MAPSIZE + 32) * FRACUNIT, (y1 * MAPCOLS + 32) * FRACUNIT, 0, 0, MS_RndT * 4, 0, false, 0);
       mapsprites[mapspot] := 0;
@@ -2597,7 +2597,7 @@ begin
         sa.mapx := (x1 * FRACTILEUNIT) + (32 * FRACUNIT);
         sa.mapy := (y1 * FRACTILEUNIT) + (32 * FRACUNIT);
         sa.mapspot := mapspot;
-        sa.time := player.timecount + ((MS_RndT and 15) shl 6);
+        sa.time := player.timecount + ((MS_RndT and 15) * 64);
         sa.typ := value - S_SPAWN1 + 10;
       end;
       mapsprites[mapspot] := 0;
@@ -2612,7 +2612,7 @@ begin
         sa.mapx := (x1 * FRACTILEUNIT) + (32 * FRACUNIT);
         sa.mapy := (y1 * FRACTILEUNIT) + (32 * FRACUNIT);
         sa.mapspot := mapspot;
-        sa.time := player.timecount + ((MS_RndT and 15) shl 6);
+        sa.time := player.timecount + ((MS_RndT and 15) * 64);
         sa.typ := value - S_SPAWN8_NS + 100;
       end;
       mapsprites[mapspot] := 0;

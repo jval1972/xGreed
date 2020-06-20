@@ -271,7 +271,7 @@ begin
 //  e.xmin, e.xmax);
 //{$ENDIF}
   mapspot := tiley * MAPCOLS + tilex;
-  maplight := (maplights[mapspot] shl 3) + reallight[mapspot];
+  maplight := (maplights[mapspot] * 8) + reallight[mapspot];
   wallshadow := mapeffects[mapspot];
   // validate or transform the four corner vertexes
   vertex[0] := TransformVertex(tilex, tiley);
@@ -354,7 +354,7 @@ begin
         entry_p.tiley := ty;
         entry_p.xmin := xl;
         entry_p.xmax := xh;
-        entry_p.mapspot := (ty shl 6) + tx;
+        entry_p.mapspot := (ty * 64) + tx;
         inc(entrycounter);
         entry_p.counter := entrycounter;
         entrycount[entry_p.mapspot] := entrycounter;
@@ -426,7 +426,7 @@ begin
   process_p := @entries[0];
   process_p.tilex := viewtilex;
   process_p.tiley := viewtiley;
-  process_p.mapspot := (viewtiley shl 6) + viewtilex;
+  process_p.mapspot := (viewtiley * 64) + viewtilex;
   process_p.xmin := 0;
   process_p.xmax := windowWidth - 1;
   entry_p := process_p;

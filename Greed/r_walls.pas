@@ -110,7 +110,7 @@ var
 begin
   walltype := walltranslation[walltype];        // global animation
   wall := lumpmain[walllump + walltype];        // to get wall height
-  postindex := @wallposts[(walltype - 1) shl 6];  // 64 pointers to texture start
+  postindex := @wallposts[(walltype - 1) * 64];  // 64 pointers to texture start
   baseangle := viewfineangle;
   transparent := wallflags and F_TRANSPARENT;
   floor := floorheight[mapspot];
@@ -193,13 +193,13 @@ begin
 
   (* special effects *)
   if wallshadow = 1 then
-    sp_colormap := @colormaps[wallglow shl 8]
+    sp_colormap := @colormaps[wallglow * 256]
   else if wallshadow = 2 then
-    sp_colormap := @colormaps[wallflicker1 shl 8]
+    sp_colormap := @colormaps[wallflicker1 * 256]
   else if wallshadow = 3 then
-    sp_colormap := @colormaps[wallflicker2 shl 8]
+    sp_colormap := @colormaps[wallflicker2 * 256]
   else if wallshadow = 4 then
-    sp_colormap := @colormaps[wallflicker3 shl 8]
+    sp_colormap := @colormaps[wallflicker3 * 256]
   else if (wallshadow >= 5) and (wallshadow <= 8) then
   begin
     if wallcycle = wallshadow - 5 then
@@ -426,7 +426,7 @@ begin
   floor1 := -((floor1 * FRACUNIT) - viewz); // distance below vi
   walltype1 := walltranslation[walltype1];    // global animation
   wall1 := lumpmain[walllump + walltype1];    // to get wall height
-  postindex1 := @wallposts[(walltype1 - 1) shl 6];  // 64 pointers to texture start
+  postindex1 := @wallposts[(walltype1 - 1) * 64];  // 64 pointers to texture start
 
 ceilingstep:
 
@@ -480,7 +480,7 @@ ceilingstep:
   walltype2 := ceilingdef[tm];
   walltype2 := walltranslation[walltype2];  // global animation
   wall2 := lumpmain[walllump + walltype2];  // to get wall height
-  postindex2 := @wallposts[(walltype2 - 1) shl 6];  // 64 pointers to texture start
+  postindex2 := @wallposts[(walltype2 - 1) * 64];  // 64 pointers to texture start
   rotateleft2 := ceilingdefflags[tm] and F_LEFT;
   rotateright2 := ceilingdefflags[tm] and F_RIGHT;
   rotateup2 := ceilingdefflags[tm] and F_UP;
@@ -489,13 +489,13 @@ ceilingstep:
 skipceilingcalc:
 
   if wallshadow = 1 then
-    sp_colormap := @colormaps[wallglow shl 8]
+    sp_colormap := @colormaps[wallglow * 256]
   else if wallshadow = 2 then
-    sp_colormap := @colormaps[wallflicker1 shl 8]
+    sp_colormap := @colormaps[wallflicker1 * 256]
   else if wallshadow = 3 then
-    sp_colormap := @colormaps[wallflicker2 shl 8]
+    sp_colormap := @colormaps[wallflicker2 * 256]
   else if wallshadow = 4 then
-    sp_colormap := @colormaps[wallflicker3 shl 8];
+    sp_colormap := @colormaps[wallflicker3 * 256];
 
   // step through the individual posts
   for x := x1 to x2 do

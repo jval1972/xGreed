@@ -155,14 +155,14 @@ begin
         elev_p.elevUp := true;
         elev_p.eval := 0;
         elev_p.elevTimer := timecount;
-        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
       end
       else if elev_p.position = elev_p.ceiling then
       begin
         elev_p.elevDown := true;
         elev_p.eval := 0;
         elev_p.elevTimer := timecount;
-        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
       end;
     end;
     elev_p := elev_p.next;

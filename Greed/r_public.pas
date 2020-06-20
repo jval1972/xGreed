@@ -438,8 +438,8 @@ begin
   h2 := floorheight[mapspot + 1] * FRACUNIT;
   h3 := floorheight[mapspot + MAPSIZE] * FRACUNIT;
   h4 := floorheight[mapspot + MAPSIZE + 1] * FRACUNIT;
-  fx := (x and (TILEUNIT - 1)) shr 6; // range from 0 to fracunit-1
-  fy := (y and (TILEUNIT - 1)) shr 6;
+  fx := (x and (TILEUNIT - 1)) div 64; // range from 0 to fracunit-1
+  fy := (y and (TILEUNIT - 1)) div 64;
   if polytype = POLY_SLOPE then
   begin
     if h1 = h2 then
@@ -498,13 +498,13 @@ begin
     if h1 = h2 then
     begin
       h3 := ceilingheight[mapspot + MAPSIZE] * FRACUNIT;
-      fy := (y and (TILEUNIT - 1)) shr 6;
+      fy := (y and (TILEUNIT - 1)) div 64;
       result := h1 + FIXEDMUL(h3 - h1, fy); // north/south slope
       exit;
     end
     else
     begin
-      fx := (x and (TILEUNIT - 1)) shr 6;
+      fx := (x and (TILEUNIT - 1)) div 64;
       result := h1 + FIXEDMUL(h2 - h1, fx); // east/west slope
       exit;
     end;
@@ -516,8 +516,8 @@ begin
   h2 := ceilingheight[mapspot + 1] * FRACUNIT;
   h3 := ceilingheight[mapspot + MAPSIZE] * FRACUNIT;
   h4 := ceilingheight[mapspot + MAPSIZE + 1] * FRACUNIT;
-  fx := (x and (TILEUNIT - 1)) shr 6; // range from 0 to fracunit-1
-  fy := (y and (TILEUNIT - 1)) shr 6;
+  fx := (x and (TILEUNIT - 1)) div 64; // range from 0 to fracunit-1
+  fy := (y and (TILEUNIT - 1)) div 64;
   if polytype = POLY_ULTOLR then
   begin
     if fx > fy then

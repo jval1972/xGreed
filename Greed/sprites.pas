@@ -758,7 +758,7 @@ begin
                     oldangle := hsprite.angle;
                     oldmovespeed := hsprite.moveSpeed;
                     hsprite.angle := msprite.angle;
-                    hsprite.moveSpeed := (msprite.damage shr 2) * FRACUNIT;
+                    hsprite.moveSpeed := (msprite.damage div 4) * FRACUNIT;
                     sp := msprite;
                     msprite := hsprite;
                     oldfall := msprite.nofalling;
@@ -2669,7 +2669,7 @@ begin
           for i := -1 to 1 do
             for j := -1 to 1 do
               reallight[mapspot + (i * MAPCOLS) + j] := reallight[mapspot + (i * MAPCOLS) + j] - c;
-          reallight[mapspot] := reallight[mapspot] - msprite.heat shr 2;
+          reallight[mapspot] := reallight[mapspot] - msprite.heat div 4;
         end
         else
           reallight[mapspot] := reallight[mapspot] - msprite.heat;
@@ -2710,7 +2710,7 @@ begin
           for i := -1 to 1 do
             for j := -1 to 1 do
               reallight[mapspot + (i * MAPCOLS) + j] := reallight[mapspot + (i * MAPCOLS) + j] - c;
-          reallight[mapspot] := reallight[mapspot] - msprite.heat shr 2;
+          reallight[mapspot] := reallight[mapspot] - msprite.heat div 4;
           msprite.heat := msprite.heat - 64;
         end
         else

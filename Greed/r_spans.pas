@@ -226,13 +226,13 @@ begin
     sp_colormap := zcolormap[light];
   end
   else if span_p.shadow = 1 then
-    sp_colormap := @colormaps[wallglow shl 8]
+    sp_colormap := @colormaps[wallglow * 256]
   else if span_p.shadow = 2 then
-    sp_colormap := @colormaps[wallflicker1 shl 8]
+    sp_colormap := @colormaps[wallflicker1 * 256]
   else if span_p.shadow = 3 then
-    sp_colormap := @colormaps[wallflicker2 shl 8]
+    sp_colormap := @colormaps[wallflicker2 * 256]
   else if span_p.shadow = 4 then
-    sp_colormap := @colormaps[wallflicker3 shl 8]
+    sp_colormap := @colormaps[wallflicker3 * 256]
   else if (span_p.shadow >= 5) and (span_p.shadow <= 8) then
   begin
     if wallcycle = span_p.shadow - 5 then
@@ -324,6 +324,7 @@ end;
 
 var
   stubpic: array[0..4095] of integer;
+
 procedure DrawSprite;
 var
   leftx, scale, xfrac, fracstep: fixed_t;
@@ -335,7 +336,7 @@ var
   sp: Pscaleobj_t;
 begin
   (********* floor shadows ***********)
-  specialtype := special_t(span_p.shadow shr 8);
+  specialtype := special_t(span_p.shadow div 256);
   shadow := span_p.shadow and 255;
 
   if specialtype = st_maxlight then sp_colormap := colormaps
@@ -348,13 +349,13 @@ begin
     sp_colormap := zcolormap[light];
   end
   else if span_p.shadow = 1 then
-    sp_colormap := @colormaps[wallglow shl 8]
+    sp_colormap := @colormaps[wallglow * 256]
   else if span_p.shadow = 2 then
-    sp_colormap := @colormaps[wallflicker1 shl 8]
+    sp_colormap := @colormaps[wallflicker1 * 256]
   else if span_p.shadow = 3 then
-    sp_colormap := @colormaps[wallflicker2 shl 8]
+    sp_colormap := @colormaps[wallflicker2 * 256]
   else if span_p.shadow = 4 then
-    sp_colormap := @colormaps[wallflicker3 shl 8]
+    sp_colormap := @colormaps[wallflicker3 * 256]
   else if (span_p.shadow >= 5) and (span_p.shadow <= 8) then
   begin
     if wallcycle = span_p.shadow - 5 then sp_colormap := colormaps

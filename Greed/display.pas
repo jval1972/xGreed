@@ -1347,7 +1347,7 @@ begin
   end;
   if specialeffecttime <> $7FFFFFFF then
   begin
-    d1 := (specialeffecttime - timecount) shr 2;
+    d1 := (specialeffecttime - timecount) div 4;
     if d1 > 97 then
       d := 97
     else if d1 < 0 then
@@ -2009,8 +2009,8 @@ begin
   begin
     if (sp.active) and (sp.hitpoints <> 0) then
     begin
-      x := (((sp.x div FRACTILEUNIT) - px) shl 2) + ofsx;
-      y := (((sp.y div FRACTILEUNIT) - py) shl 2) + ofsy;
+      x := (((sp.x div FRACTILEUNIT) - px) * 4) + ofsx;
+      y := (((sp.y div FRACTILEUNIT) - py) * 4) + ofsy;
       for a := 0 to 3 do
         if (y + a < windowHeight) and (y + a >= 0) then
           for b := 0 to 3 do

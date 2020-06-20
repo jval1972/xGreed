@@ -114,11 +114,11 @@ begin
 
   for i := 0 to 255 do
   begin
-    entries[i].peRed := apal[j] shl 2;
+    entries[i].peRed := apal[j] * 4;
     inc(j);
-    entries[i].peGreen := apal[j] shl 2;
+    entries[i].peGreen := apal[j] * 4;
     inc(j);
-    entries[i].peBlue := apal[j] shl 2;
+    entries[i].peBlue := apal[j] * 4;
     inc(j);
     entries[i].peFlags := PC_NOCOLLAPSE;
   end;
@@ -363,13 +363,13 @@ begin
       colormap := zcolormap[maplight];
   end
   else if wallshadow = 1 then
-    colormap := @colormaps[wallglow shl 8]
+    colormap := @colormaps[wallglow * 256]
   else if wallshadow = 2 then
-    colormap := @colormaps[wallflicker1 shl 8]
+    colormap := @colormaps[wallflicker1 * 256]
   else if wallshadow = 3 then
-    colormap := @colormaps[wallflicker2 shl 8]
+    colormap := @colormaps[wallflicker2 * 256]
   else if wallshadow = 4 then
-    colormap := @colormaps[wallflicker3 shl 8]
+    colormap := @colormaps[wallflicker3 * 256]
   else if (wallshadow >= 5) and (wallshadow <= 8) then
   begin
     if (wallcycle = wallshadow - 5) then

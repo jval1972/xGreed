@@ -355,13 +355,13 @@ begin
   mr_shadow := mapeffects[mapspot];
 
   if mr_shadow = 1 then
-    mr_shadow := integer(@colormaps[wallglow shl 8])
+    mr_shadow := integer(@colormaps[wallglow * 256])
   else if mr_shadow = 2 then
-    mr_shadow := integer(@colormaps[wallflicker1 shl 8])
+    mr_shadow := integer(@colormaps[wallflicker1 * 256])
   else if mr_shadow = 3 then
-    mr_shadow := integer(@colormaps[wallflicker2 shl 8])
+    mr_shadow := integer(@colormaps[wallflicker2 * 256])
   else if mr_shadow = 4 then
-    mr_shadow := integer(@colormaps[wallflicker3 shl 8])
+    mr_shadow := integer(@colormaps[wallflicker3 * 256])
   else if (mr_shadow >= 5) and (mr_shadow <= 8) then
   begin
     if (wallcycle = mr_shadow - 5) then

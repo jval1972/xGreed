@@ -274,7 +274,7 @@ begin
   wall := lumpmain[walllump + walltype];
   ceilingheight := vertex[0].ceilingheight;
   floorh := -vertex[0].floorheight;
-  postindex := @wallposts[walltype shl 6];      // 64 pointers to texture starts
+  postindex := @wallposts[walltype * 64];      // 64 pointers to texture starts
   baseangle := baseangle + viewfineangle;
   absdistance := absI(distance);
   // step through the individual posts
@@ -403,7 +403,7 @@ part2:
   wall := lumpmain[walllump + walltype];
   ceilingheight := vertex[0].ceilingheight;
   floorh := -vertex[0].floorheight;
-  postindex := @wallposts[walltype shl 6];      // 64 pointers to texture starts
+  postindex := @wallposts[walltype * 64];      // 64 pointers to texture starts
   baseangle := baseangle + viewfineangle;
   absdistance := absI(distance);
   // step through the individual posts
@@ -518,7 +518,7 @@ part3:
   // set up for loop
   walltype := 2;
   wall := lumpmain[walllump + walltype];
-  postindex := @wallposts[walltype shl 6];      // 64 pointers to texture starts
+  postindex := @wallposts[walltype * 64];      // 64 pointers to texture starts
   baseangle := baseangle + viewfineangle;
   absdistance := absI(distance);
   // step through the individual posts
@@ -583,15 +583,15 @@ begin
   if sprite.rotate <> rt_one then
   begin    // this is only aproximate, but ok for 8
     if sprite.rotate = rt_eight then
-      picnum := picnum + ((viewangle - sprite.angle + WEST + DEGREE45_2) shr 7) and 7
+      picnum := picnum + ((viewangle - sprite.angle + WEST + DEGREE45_2) div 128) and 7
     else
-      picnum := picnum + ((viewangle - sprite.angle + WEST + DEGREE45) shr 8) and 3;
+      picnum := picnum + ((viewangle - sprite.angle + WEST + DEGREE45) div 256) and 3;
   end;
 
   if (sprite.animation <> 0) and (rtimecount >= sprite.animationTime) then
   begin
     animationGraphic := (sprite.animation and ANIM_CG_MASK) div 2;
-    animationMax := (sprite.animation and ANIM_MG_MASK) shr 5;
+    animationMax := (sprite.animation and ANIM_MG_MASK) div 32;
     animationDelay := (sprite.animation and ANIM_DELAY_MASK) shr 9;
     if animationGraphic < animationMax - 1 then
       inc(animationGraphic)
@@ -605,7 +605,7 @@ begin
     end;
     picnum := picnum + animationGraphic;
     sprite.animation := (sprite.animation and ANIM_LOOP_MASK) +
-                        (animationGraphic * 2) + (animationMax shl 5) + (animationDelay shl 9) +
+                        (animationGraphic * 2) + (animationMax * 32) + (animationDelay shl 9) +
                         (sprite.animation and ANIM_SELFDEST);
     sprite.animationTime := timecount + animationDelay;
   end
@@ -645,13 +645,13 @@ begin
   mapx := sprite.x div FRACTILEUNIT;
   mapspot := mapy * MAPCOLS + mapx;
   if sprite.specialtype = st_noclip then
-    span_p.shadow := Ord(st_noclip) shl 8
+    span_p.shadow := Ord(st_noclip) * 256
   else
-    span_p.shadow := Ord(sprite.specialtype) shl 8 + mapeffects[mapspot];
+    span_p.shadow := Ord(sprite.specialtype) * 256 + mapeffects[mapspot];
   if sprite.specialtype = st_noclip then
     span_p.light := -1000
   else
-    span_p.light := (maplights[mapspot] shl 2) + reallight[mapspot];
+    span_p.light := (maplights[mapspot] * 4) + reallight[mapspot];
   inc(numspans);
 {$IFDEF VALIDATE}
   if numspans >= MAXSPANS then

@@ -195,7 +195,7 @@ begin
     begin
       if (elev_p.elevUp) and (CAddI(elev_p.position, elev_p.speed) >= elev_p.ceiling) then
       begin
-        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         elev_p.position := elev_p.ceiling;
         if elev_p.typ = E_NORMAL then
           elev_p.elevDown := true
@@ -215,7 +215,7 @@ begin
       end
       else if (elev_p.elevDown) and (CSubI(elev_p.position, elev_p.speed) <= elev_p.floor) then
       begin
-        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) * FRACTILEUNIT,(elev_p.mapspot shr 6) * FRACTILEUNIT);
+        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) * FRACTILEUNIT,(elev_p.mapspot div 64) * FRACTILEUNIT);
         elev_p.position := elev_p.floor;
         if (elev_p.typ = E_NORMAL) or (elev_p.typ = E_SECRET) then
           elev_p.elevUp := true
@@ -1117,7 +1117,7 @@ begin
           elev_p.elevDown := true;
           elev_p.elevTimer := timecount;
           sound := true;
-          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         end;
         if useit and netmode then
           NetItemPickup(centerx, centery);
@@ -1147,7 +1147,7 @@ begin
         begin
           elev_p.elevDown := true;
           elev_p.elevTimer := timecount;
-          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
           sound := true;
         end;
         if useit and netmode then
@@ -1172,7 +1172,7 @@ begin
           elev_p.elevUp := true;
           elev_p.elevTimer := timecount;
           sound := true;
-          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot shr 6) * FRACTILEUNIT);
+          SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         end;
         if useit and netmode then
           NetItemPickup(centerx, centery);
@@ -2714,7 +2714,7 @@ begin
   begin
     if fallrate >= 12 * FRACUNIT then
       falldamage := (fallrate div FRACUNIT) div 7;
-    player.z := player.z + FRACUNIT shl 2;
+    player.z := player.z + 4 * FRACUNIT;
     if player.z > floorz then
       player.z := floorz;
     fallrate := 0;
@@ -3935,7 +3935,7 @@ begin
     x := windowWidth - 66;
     for i := 1 to 63 do
     begin
-      memcpy(@viewylookup[i+1][x], @rearbuf[i shl 6], 64);
+      memcpy(@viewylookup[i + 1][x], @rearbuf[i * 64], 64);
       viewylookup[i + 1][x - 1] := 30;
       viewylookup[i + 1][x + 64] := 30;
     end;
