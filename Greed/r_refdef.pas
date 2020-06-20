@@ -40,6 +40,7 @@ function rint(const x: double): integer;
 const
   TANANGLES = 8192; // one quadrant
   FINESHIFT = 5;
+  FINEUNIT = 1 shl FINESHIFT;
   MAXVISVERTEXES = 1536;  // max tile corners visible at once
 // for spans
   MAXSPANS = 4096;

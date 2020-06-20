@@ -90,6 +90,7 @@ uses
   event,
   intro,
   i_windows,
+  i_video,
   menu,
   modplay,
   net,
@@ -1180,7 +1181,7 @@ begin
   // map triggers
   for i := 0 to MAPCOLS * MAPROWS - 1 do  // remember warps
   begin
-    case mapsprites[i]  of
+    case mapsprites[i] of
     SM_WARP1,
     SM_WARP2,
     SM_WARP3:
@@ -2744,7 +2745,7 @@ finale:
   memcpy(@viewbuffer, scr, 64000);
   memfree(pointer(scr));
   memset(screen, 0, 64000);
-  VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   timecount := oldtimecount;
 end;
 

@@ -74,6 +74,7 @@ uses
   d_ints,
   d_misc,
   d_video,
+  i_video,
   r_render;
 
 var
@@ -123,7 +124,7 @@ begin
      k^ := getbyte; inc(k); // b
     end;
   end;
-  VI_SetPalette(@flipal);
+  I_SetPalette(@flipal);
 end;
 
 // read beginning runlength compressed frame
@@ -229,7 +230,7 @@ begin
     if not fread(chunkbuf, chunk.size - 6, 1, f) then
       MS_Error('FLI_ReadFrame(): Error with Chunk Read!');
     bufptr := 0;
-    case chunk.typ  of
+    case chunk.typ of
     12:  // fli line compression
       fli_linecompression;
     15:  // fli line compression first time (only once at beginning)

@@ -167,6 +167,7 @@ uses
   display,
   event,
   i_windows,
+  i_video,
   menu,
   modplay,
   net,
@@ -2668,7 +2669,7 @@ begin
   yh := (player.y + FRACUNIT * 8) div FRACTILEUNIT;
   floorz := player.z - player.height;
   maxz := 0;
-  while xl <= xh do // JVAL: SOS -> does not reset y1 ?
+  while xl <= xh do
   begin
     while yl <= yh do
     begin
@@ -3695,7 +3696,7 @@ procedure EndLevel;
 begin
   VI_FadeOut(0, 256, 0, 0, 0,64);
   memset(screen, 0, 64000);
-  VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   inc(player.map);
   startover(1);
 end;
@@ -4112,7 +4113,7 @@ begin
       begin
         memset(screen, 0, 64000);
 
-        VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+        I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
 
         startover(2);
       end;
@@ -4331,7 +4332,7 @@ begin
 
     if togglemapmode then
     begin
-      case mapmode  of
+      case mapmode of
       0:
         begin
           mapmode := 1;
@@ -4521,7 +4522,7 @@ end;
 
 procedure maingame;
 begin
-  VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   InitData;
   INT_TimerHook(PlayerCommand);   // the players actions are sampled by an interrupt
   newlights;

@@ -70,7 +70,8 @@ begin
     for i := 0 to pic.width - 1 do
       if pic.collumnofs[i] <> 0 then
       begin
-        collumn := @PByteArray(pic)[pic.collumnofs[i]];
+        collumn := PByteArray(pic);
+        collumn := @collumn[pic.collumnofs[i]];
         top := collumn[1];
         bottom := collumn[0];
         count := bottom - top + 1;
@@ -1770,7 +1771,7 @@ begin
       sprite_p.height := 48 * FRACUNIT;
       mapsprites[mapspot] := 2;
     end;
-  
+
   S_WEAPON0,
   S_WEAPON1,
   S_WEAPON2,
@@ -2129,9 +2130,9 @@ begin
   S_NETPLAYER6,
   S_NETPLAYER7,
   S_NETPLAYER8:
-      begin
-        if (floorpic[mapspot] = 0) or (ceilingpic[mapspot] = 0) then
-          MS_Error('Invalid start %d at %d,%d', [value, x1, y1]);
+    begin
+      if (floorpic[mapspot] = 0) or (ceilingpic[mapspot] = 0) then
+        MS_Error('Invalid start %d at %d,%d', [value, x1, y1]);
       startlocations[value - 1][0] := x1;
       startlocations[value - 1][1] := y1;
       if netmode and (greedcom.consoleplayer = value - 1) and (player.x = -1) then
@@ -2197,7 +2198,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - 1] and FL_DOOR <> 0 then
         door_p.orientation := dr_horizontal2
-      else 
+      else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2258,7 +2259,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - 1] and FL_DOOR <> 0 then
         door_p.orientation := dr_horizontal2
-      else 
+      else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;

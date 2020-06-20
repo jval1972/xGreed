@@ -409,9 +409,9 @@ begin
     fxtimecount := timecount + 5;
   end;
 
-  viewtilex := viewx shr TILEFRACSHIFT;
-  viewtiley := viewy shr TILEFRACSHIFT;
-  viewfineangle := viewangle shl FINESHIFT;
+  viewtilex := viewx div TILEFRACUNIT;
+  viewtiley := viewy div TILEFRACUNIT;
+  viewfineangle := viewangle * FINEUNIT;
   viewcos := costable[viewangle];
   viewsin := sintable[viewangle];
   xscale := FIXEDDIV(viewsin, FSCALE);

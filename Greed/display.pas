@@ -248,7 +248,7 @@ begin
   if (inventorycursor = -1) or (player.inventory[inventorycursor] = 0) then
     exit;
 
-  case inventorycursor  of
+  case inventorycursor of
   0: // medtube
     begin
       if player.angst < player.maxangst then
@@ -559,7 +559,8 @@ begin
     begin
       if pic.collumnofs[i] <> 0 then
       begin
-        collumn := @PByteArray(pic)[pic.collumnofs[i]];
+        collumn := PByteArray(pic);
+        collumn := @collumn[pic.collumnofs[i]];
         top := collumn[1];
         bottom := collumn[0];
         count := bottom - top + 1;
@@ -629,7 +630,8 @@ begin
     begin
       if pic.collumnofs[i] <> 0 then
       begin
-        collumn := @PByteArray(pic)[pic.collumnofs[i]];
+        collumn := PByteArray(pic);
+        collumn := @collumn[pic.collumnofs[i]];
         top := collumn[1];
         bottom := collumn[0];
         count := bottom - top + 1;
@@ -735,7 +737,8 @@ begin
   begin
     if pic.collumnofs[i] <> 0 then
     begin
-      collumn := @PbyteArray(pic)[pic.collumnofs[i]];
+      collumn := PbyteArray(pic);
+      collumn := @collumn[pic.collumnofs[i]];
       top := collumn[1];
       bottom := collumn[0];
       count := bottom - top + 1;
@@ -990,7 +993,8 @@ begin
       begin
         if pic.collumnofs[i] <> 0 then
         begin
-          collumn := @PByteArray(pic)[pic.collumnofs[i]];
+          collumn := PByteArray(pic);
+          collumn := @collumn[pic.collumnofs[i]];
           top := collumn[1];
           bottom := collumn[0];
           count := bottom - top + 1;
@@ -1089,7 +1093,8 @@ begin
     begin
       if pic.collumnofs[i] <> 0 then
       begin
-        collumn := @PByteArray(pic)[pic.collumnofs[i]];
+        collumn := PByteArray(pic);
+        collumn := @collumn[pic.collumnofs[i]];
         top := collumn[1];
         bottom := collumn[0];
         count := bottom - top + 1;
@@ -1242,7 +1247,8 @@ begin
   begin
     if pic.collumnofs[i] <> 0 then
     begin
-      collumn := @PByteArray(pic)[pic.collumnofs[i]];
+      collumn := PByteArray(pic);
+      collumn := @collumn[pic.collumnofs[i]];
       top := collumn[1];
       bottom := collumn[0];
       count := bottom - top + 1;
@@ -1390,7 +1396,8 @@ begin
   begin
     if pic.collumnofs[i] <> 0 then
     begin
-      collumn := @PByteArray(pic)[pic.collumnofs[i]];
+      collumn := PByteArray(pic);
+      collumn := @collumn[pic.collumnofs[i]];
       top := collumn[1];
       bottom := collumn[0];
       count := bottom - top + 1;
@@ -1416,7 +1423,7 @@ end;
 
 procedure updatedisplay;
 begin
-  case currentViewSize  of
+  case currentViewSize of
   0:
     begin
       if timecount < inventorytime then
@@ -1690,10 +1697,10 @@ begin
   px := (player.x div FRACTILEUNIT) * MapZoom - ofsx;  // compute player position
   py := (player.y div FRACTILEUNIT) * MapZoom - ofsy;
   // compute incremental values for both diagonal axis
-  xfracstep := cosines[((player.angle + SOUTH) and ANGLES) shl FINESHIFT];
-  yfracstep := sines[((player.angle + SOUTH) and ANGLES) shl FINESHIFT];
-  xfracstep2 := cosines[player.angle shl FINESHIFT];
-  yfracstep2 := sines[player.angle shl FINESHIFT];
+  xfracstep := cosines[((player.angle + SOUTH) and ANGLES) * FINEUNIT];
+  yfracstep := sines[((player.angle + SOUTH) and ANGLES) * FINEUNIT];
+  xfracstep2 := cosines[player.angle * FINEUNIT];
+  yfracstep2 := sines[player.angle * FINEUNIT];
   xfrac2 := ((windowWidth div 2) * FRACUNIT) - (py * xfracstep2 + px * xfracstep);
   yfrac2 := ((windowHeight div 2) * FRACUNIT) - (py * yfracstep2 + px * yfracstep);
   y := yfrac2 div FRACUNIT;

@@ -197,6 +197,7 @@ uses
   d_ints,
   d_ints_h,
   d_misc,
+  i_video,
   intro,
   modplay,
   net,
@@ -865,7 +866,7 @@ begin
   end
   else
     loadscreen('INFO1');
-  VI_SetPalette(@colors);
+  I_SetPalette(@colors);
   newascii := false;
   while true do
   begin
@@ -881,7 +882,7 @@ begin
   if DEMO then
   begin
     loadscreen('INFO2');
-    VI_SetPalette(@colors);
+    I_SetPalette(@colors);
     newascii := false;
     while true do
     begin
@@ -895,7 +896,7 @@ begin
     memset(screen, 0, 64000);
 
     loadscreen('INFO3');
-    VI_SetPalette(@colors);
+    I_SetPalette(@colors);
     newascii := false;
     while true do
     begin
@@ -909,7 +910,7 @@ begin
     VI_FillPalette(0, 0, 0);
   end;
 
-  VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   memcpy(screen, s, 64000);
   memfree(pointer(s));
 end;

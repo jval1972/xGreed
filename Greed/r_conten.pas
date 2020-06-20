@@ -599,7 +599,7 @@ begin
       animationGraphic := 0
     else if sprite.animation and ANIM_SELFDEST <> 0 then
     begin
-      sprite := sprite.prev; (* some sprites exist only to animate and die (like some people ;p) *)
+      sprite := sprite.prev; // some sprites exist only to animate and die (like some people ;p)
       RF_RemoveSprite(sprite.next);
       exit;
     end;

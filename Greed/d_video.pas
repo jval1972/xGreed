@@ -50,13 +50,8 @@ var
   ylookup: array[0..SCREENHEIGHT - 1] of PByteArray;
   transparency: PByteArray;
   translookup: array[0..255] of PByteArray;
-  Bitmap: HBITMAP;
-  Memory_DC: HDC;
-  Palette: HPALETTE;
 
 procedure VI_FillPalette(const red, green, blue: integer);
-
-procedure VI_SetPalette(const apal: PByteArray);
 
 procedure VI_ResetPalette;
 
@@ -76,7 +71,7 @@ procedure VI_DrawTransPicToBuffer(x, y: integer; const pic: Ppic_t);
 
 procedure VI_DrawMaskedPicToBuffer2(x, y: integer; const pic: Ppic_t);
 
-procedure VI_Init(const specialbuffer: integer);
+procedure VI_Init;
 
 procedure RF_BlitView;
 
@@ -100,44 +95,6 @@ uses
 procedure VI_FillPalette(const red, green, blue: integer);
 begin
 end;
-
-procedure VI_SetPalette(const apal: PByteArray);
-var
-  dc: HDC;
-  i: integer;
-  j: integer;
-  entries: array[0..255] of PALETTEENTRY;
-begin
-  I_SetPalette(apal);
-  
-  j := 0;
-
-  for i := 0 to 255 do
-  begin
-    entries[i].peRed := apal[j] * 4;
-    inc(j);
-    entries[i].peGreen := apal[j] * 4;
-    inc(j);
-    entries[i].peBlue := apal[j] * 4;
-    inc(j);
-    entries[i].peFlags := PC_NOCOLLAPSE;
-  end;
-
-  dc := GetDC(hMainWnd);
-
-  SetPaletteEntries(Palette, 0, 256, entries);
-
-  VI_BlitView;
-
-  SelectPalette(Memory_DC, Palette, true);
-  SelectPalette(dc,Palette, true);
-
-  RealizePalette(Memory_DC);
-  RealizePalette(dc);
-
-  ReleaseDC(hMainWnd, dc);
-end;
-
 
 procedure VI_ResetPalette;
 var
@@ -195,7 +152,7 @@ begin
       end;
     end;
     Wait(1);
-    VI_SetPalette(@basep);
+    I_SetPalette(@basep);
   end;
   VI_FillPalette(red, green, blue);
 end;
@@ -236,9 +193,9 @@ begin
       end;
     end;
     Wait(1);
-    VI_SetPalette(@work);
+    I_SetPalette(@work);
   end;
-  VI_SetPalette(apal);
+  I_SetPalette(apal);
 end;
 
 
@@ -415,75 +372,11 @@ begin
 end;
 
 
-procedure VI_Init(const specialbuffer: integer);
+procedure VI_Init;
 var
-  dc: HDC;
   y: integer;
-  i: integer;
-  j: integer;
-  bmi: ^BITMAPINFO;
-  pal: ^LOGPALETTE;
-  pal_data: PByteArray;
 begin
-  dc :=  GetDC(hMainWnd);
-  Memory_DC :=  CreateCompatibleDC(dc);
-
-  bmi := malloc(SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
-  memset(bmi, 0, SizeOf(BITMAPINFO) + SizeOf(RGBQUAD) * 256);
-
-  bmi.bmiHeader.biSize := SizeOf(BITMAPINFOHEADER);
-  bmi.bmiHeader.biWidth := SCREENWIDTH;
-  bmi.bmiHeader.biHeight := SCREENHEIGHT;
-  bmi.bmiHeader.biPlanes := 1;
-  bmi.bmiHeader.biBitCount := 8;
-  bmi.bmiHeader.biCompression := BI_RGB;
-
-  for i := 0 to 255 do
-  begin
-    bmi.bmiColors[i].rgbRed := i;
-    bmi.bmiColors[i].rgbGreen := i;
-    bmi.bmiColors[i].rgbBlue := i;
-    bmi.bmiColors[i].rgbReserved := 0;
-  end;
-
-  pal :=  malloc(SizeOf(LOGPALETTE) + 256 * SizeOf(PALETTEENTRY));
-  memset(pal,0,SizeOf(LOGPALETTE) + 256 * SizeOf(PALETTEENTRY));
-
-  pal.palVersion := $300;
-  pal.palNumEntries := 256;
-
-  pal_data := CA_CacheLump(CA_GetNamedNum('palette'));
-
-  j := 0;
-  for i := 0 to 255 do
-  begin
-    pal.palPalEntry[i].peRed := pal_data[j] * 4;
-    inc(j);
-    pal.palPalEntry[i].peGreen := pal_data[j] * 4;
-    inc(j);
-    pal.palPalEntry[i].peBlue := pal_data[j] * 4;
-    inc(j);
-    pal.palPalEntry[i].peFlags := PC_NOCOLLAPSE;
-  end;
-
-  Palette := CreatePalette(pal^);
-  SelectPalette(dc,Palette, true);
-  SelectPalette(Memory_DC, Palette, true);
-  RealizePalette(dc);
-  RealizePalette(Memory_DC);
-
-  memfree(pointer(pal));
-
-  Bitmap := CreateDIBSection(Memory_DC, bmi^, DIB_PAL_COLORS, pointer(screen), 0, 0);
-
-  memfree(pointer(bmi));
-
-  SelectObject(Memory_DC, Bitmap);
-
-  ReleaseDC(hMainWnd, dc);
-
-  if screen = nil then
-    MS_Error('VI_Init(): Out of memory for screen');
+  screen := @viewbuffer;
 
   for y := 0 to SCREENHEIGHT - 1 do
     ylookup[y] := @screen[y * SCREENWIDTH];
@@ -544,16 +437,8 @@ begin
 end;
 
 procedure VI_BlitView;
-var
-  dc: HDC;
 begin
   I_FinishUpdate;
-  exit;
-  dc :=  GetDC(hMainWnd);
-//  BitBlt(dc, 0, 0, SCREENWIDTH, SCREENHEIGHT, Memory_DC, 0, 0, SRCCOPY);
-  StretchBlt(dc, 0, 0, 2 * SCREENWIDTH, 2 * SCREENHEIGHT, Memory_DC, 0, 0, SCREENWIDTH, SCREENHEIGHT, SRCCOPY);
-  ReleaseDC(hMainWnd, dc);
-//  doit;
 end;
 
 

@@ -470,7 +470,7 @@ begin
    NETINT;
    if (greedcom.remotenode = -1) exit;
    if (pevent.playerid = playernum) continue;
-   case pevent.id  of
+   case pevent.id of
    begin
      PLAYEREVENTID:
       sprite_p := playersprites[pevent.playerid];

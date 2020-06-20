@@ -66,6 +66,9 @@ procedure DrawSpans;
 implementation
 
 uses
+  {$IFDEF VALIDATE}
+  d_misc,
+  {$ENDIF}
   d_video,
   raven,
   r_public,
@@ -86,7 +89,6 @@ end;
 
 procedure MedianOfThree(const data: PLongWordArray; const count: integer);
 var
-  temp: LongWord;
   beg, mid, stop: PLongWord;
 begin
   if count >= 3 then
@@ -114,7 +116,7 @@ end;
 
 function Partition(const data: PLongWordArray; const count: LongWord): integer;
 var
-  part, temp: LongWord;
+  part: LongWord;
   i, j: integer;
 begin
   part := data[0];
@@ -174,6 +176,8 @@ begin
   end;
 end;
 
+var
+  numspanexceptions: integer = 0;
 
 procedure ScaleMaskedPost;
 var
@@ -182,13 +186,22 @@ begin
   sp_dest := @sp_dest[-windowWidth * (sp_count - 1)];     // go to the top
   while sp_count > 0 do
   begin
+  {$IFDEF VALIDATE}
+    try
+  {$ENDIF}
     color := sp_source[sp_frac div FRACUNIT];
     if color <> 0 then
-      sp_dest[0] :=  color;
+      sp_dest[0] := color;
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
     sp_frac := sp_frac and sp_loopvalue;  // JVAL: SOS
     dec(sp_count);
+  {$IFDEF VALIDATE}
+    except
+      inc(numspanexceptions);
+      exit;
+    end;
+  {$ENDIF}
   end;
 end;
 
@@ -198,11 +211,20 @@ begin
   sp_dest := @sp_dest[-windowWidth * (sp_count - 1)];     // go to the top
   while sp_count > 0 do
   begin
+  {$IFDEF VALIDATE}
+    try
+  {$ENDIF}
     sp_dest[0] := sp_source[sp_frac div FRACUNIT];
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
     sp_frac := sp_frac and sp_loopvalue;  // JVAL: SOS
     dec(sp_count);
+  {$IFDEF VALIDATE}
+    except
+      inc(numspanexceptions);
+      exit;
+    end;
+  {$ENDIF}
   end;
 end;
 
@@ -294,6 +316,9 @@ begin
   sp_dest := @sp_dest[-windowWidth * (sp_count - 1)]; // go to the top
   while sp_count > 0 do
   begin
+    {$IFDEF VALIDATE}
+    try
+    {$ENDIF}
     dec(sp_count);
     if sp_count = 0 then
       break;
@@ -303,6 +328,12 @@ begin
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
     sp_frac := sp_frac and sp_loopvalue;  // JVAL: SOS
+    {$IFDEF VALIDATE}
+    except
+      inc(numspanexceptions);
+      exit;
+    end;
+    {$ENDIF}
   end;
 end;
 
@@ -313,12 +344,21 @@ var
 begin
   while mr_count > 0 do
   begin
+    {$IFDEF VALIDATE}
+    try
+    {$ENDIF}
     spot := (mr_yfrac shr (FRACBITS - 6)) and (63 * 64) + ((mr_xfrac div FRACUNIT) and 63);
     mr_dest[0] := mr_colormap[mr_picture[spot]];
     mr_dest := @mr_dest[1];
     mr_xfrac := mr_xfrac + mr_xstep;
     mr_yfrac := mr_yfrac + mr_ystep;
     dec(mr_count);
+    {$IFDEF VALIDATE}
+    except
+      inc(numspanexceptions);
+      exit;
+    end;
+    {$ENDIF}
   end;
 end;
 
@@ -346,8 +386,10 @@ begin
   else if shadow = 0 then
   begin
     light := (pointz div FRACUNIT) + span_p.light;
-    if light > MAXZLIGHT then exit;
-    if light < 0 then light := 0;
+    if light > MAXZLIGHT then
+      exit;
+    if light < 0 then
+      light := 0;
     sp_colormap := zcolormap[light];
   end
   else if span_p.shadow = 1 then
@@ -374,14 +416,18 @@ begin
   else if shadow = 9 then
   begin
     light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
-    if light > MAXZLIGHT then light := MAXZLIGHT
-    else if light < 0 then light := 0;
+    if light > MAXZLIGHT then
+      light := MAXZLIGHT
+    else if light < 0 then
+      light := 0;
     sp_colormap := zcolormap[light];
   end;
 
   pic := Pscalepic_t(span_p.picture);
   if pic = nil then
-    pic := @stubpic;
+    exit;  // JVAL: SOS
+//  if pic = nil then
+//    pic := @stubpic;
 //  if pic = nil then
 //    exit; // JVAL: SOS
   sp := Pscaleobj_t(span_p.structure);
@@ -465,9 +511,6 @@ begin
   end;
 end;
 
-var
-xxxx: integer = 0;
-
 // Spans farther than MAXZ away should NOT have been entered into the list
 procedure DrawSpans;
 var
@@ -494,10 +537,15 @@ begin
 
   // set up for drawing
   starttaglist_p := @spantags[0];
-  if numspans > 0 then
+  if numspans > 1 then
   begin
     QuickSortHelper(starttaglist_p, numspans);
     InsertionSort(starttaglist_p, numspans);
+    {$IFDEF VALIDATE}
+    for x1 := 0 to numspans - 2 do
+      if starttaglist_p[x1] < starttaglist_p[x1 + 1] then
+        MS_Error('DrawSpans(): Sorting failed');
+    {$ENDIF}
   end;
   endtaglist_p := @starttaglist_p[numspans];
   spantag_p := @starttaglist_p[0];
@@ -509,6 +557,7 @@ begin
   // draw from back to front
   x2 := -1;
   lastz := -1;
+  zeroxfrac := 0; // JVAL: avoid compiler warning
   // draw everything else
   while spantag_p <> endtaglist_p do
   begin
@@ -546,15 +595,19 @@ begin
         if span_p.shadow = 0 then
         begin
           light := (pointz div FRACUNIT) + span_p.light;
-          if light > MAXZLIGHT then goto abort1;
-          if light < 0 then light := 0;
+          if light > MAXZLIGHT then
+            goto abort1;
+          if light < 0 then
+            light := 0;
           mr_colormap := zcolormap[light];
         end
         else if span_p.shadow = 9 then
         begin
           light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
-          if light > MAXZLIGHT then goto abort1;
-          if light < 0 then light := 0;
+          if light > MAXZLIGHT then
+            goto abort1;
+          if light < 0 then
+            light := 0;
           mr_colormap := zcolormap[light];
         end
         else
@@ -562,13 +615,15 @@ begin
 
           y1 := span_p.y - scrollmin;
 
-          if (y1 >= 200) or (y1 < 0) then goto abort1; // JVAL SOS
+          if (y1 >= 200) or (y1 < 0) then
+            goto abort1; // JVAL SOS
 
           mr_dest := @viewylookup[y1][spanx];
           mr_picture := span_p.picture;
           x2 := span_p.x2;
 
-          if (x2 > 320) or (x2 < 0) then goto abort1; // JVAL SOS
+          if (x2 > 320) or (x2 < 0) then
+            goto abort1; // JVAL SOS
 
           mr_count := x2 - spanx;
           MapRow;
@@ -677,13 +732,9 @@ begin
       end;
 
     sp_shape:
-    begin
-      inc(xxxx);
-      if xxxx = 16 then
-        DrawSprite
-      else
+      begin
         DrawSprite;
-    end;
+      end;
 
     sp_slope,
     sp_slopesky:
@@ -694,15 +745,19 @@ begin
         if span_p.shadow = 0 then
         begin
           light := (pointz div FRACUNIT) + span_p.light;
-          if light > MAXZLIGHT then goto abort1;
-          if light < 0 then light := 0;
+          if light > MAXZLIGHT then
+            goto abort1;
+          if light < 0 then
+            light := 0;
           mr_colormap := zcolormap[light];
         end
         else if span_p.shadow = 9 then
         begin
           light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
-          if light > MAXZLIGHT then goto abort1;
-          if light < 0 then light := 0;
+          if light > MAXZLIGHT then
+            goto abort1;
+          if light < 0 then
+            light := 0;
           mr_colormap := zcolormap[light];
         end
         else
@@ -711,8 +766,10 @@ begin
         x2 := span_p.x2;
         y1 := span_p.y - scrollmin;
 
-        if (y1 >= 200) or (y1 < 0) then goto abort1;  // JVAL: SOS
-        if (x2 > 320) or (x2 < 0) then goto abort1;  // JVAL: SOS
+        if (y1 >= 200) or (y1 < 0) then
+          goto abort1;  // JVAL: SOS
+        if (x2 > 320) or (x2 < 0) then
+          goto abort1;  // JVAL: SOS
 
         mr_dest := @viewylookup[y1][spanx];
         mr_picture := span_p.picture;

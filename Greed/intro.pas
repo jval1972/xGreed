@@ -200,6 +200,7 @@ implementation
 uses
   g_delphi,
   i_windows,
+  i_video,
   constant,
   d_font,
   d_ints_h,
@@ -302,12 +303,12 @@ begin
   if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay) then
   begin
     activatemenu := true;
-    keyboardDelay := timecount + 20;
+    keyboardDelay := timecount + KBDELAY;
   end;
   if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay) then
   begin
     nextchar := true;
-    keyboardDelay := timecount + 20;
+    keyboardDelay := timecount + KBDELAY;
   end;
 end;
 
@@ -320,16 +321,16 @@ begin
   temp := malloc(64000);
   if temp = nil then
     MS_Error('DoIntroMenu(): No memory for temp screen');
-  memcpy(temp, @screen, 64000);
+  memcpy(temp, screen, 64000);
   memset(screen, 0, 64000);
-  VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
   player.timecount := timecount;
   ShowMenu(0);
   if not quitgame and not gameloaded then
   begin
     memset(screen, 0, 64000);
     memcpy(@colors, @oldcolors, 768);
-    VI_SetPalette(@colors);
+    I_SetPalette(@colors);
     memcpy(screen, temp, 64000);
   end;
   memfree(pointer(temp));
@@ -601,7 +602,7 @@ begin
 
 
   loadscreen('INTRO04');
-  VI_SetPalette(@colors);
+  I_SetPalette(@colors);
   for i := 0 to 20 do
   begin
     Wait(10);
@@ -803,7 +804,7 @@ begin
   checkexit;
   LoadMiscData;
   checkexit;
-  VI_Init(0);
+  VI_Init;
 end;
 
 
@@ -811,14 +812,14 @@ procedure startup;
 label
   restart;
 begin
-  nointro :=  true;
+  nointro := true;
   LoadData;
 
 restart:
   if nointro then
   begin
     redo :=  false;
-    VI_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+    I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
     newplayer(0, 0, 2);
     maingame;
   end

@@ -314,7 +314,7 @@ begin
     if index = MAXPROCESS then
       MS_Error('Processes(): can''t find next process!');
     z := @zones[processes[index] - 1000];
-    case z.layer  of
+    case z.layer of
     C_NORTHWALL: layer := @northwall;
     C_WESTWALL: layer := @westwall;
     C_LIGHTS: layer := @maplights;
