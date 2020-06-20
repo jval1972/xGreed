@@ -618,10 +618,12 @@ begin
     sp_sky:
       begin
         py := span_p.y - scrollmin;
-        if (py >= 200) or (py < 0) then goto abort1;  // JVAL: SOS
+        if (py >= 200) or (py < 0) then
+          goto abort1;  // JVAL: SOS
         px := spanx;
 
-        if (span_p.x2 > 320) or (span_p.x2 < 0) then goto abort1;  // JVAL: SOS
+        if (span_p.x2 > 320) or (span_p.x2 < 0) then
+          goto abort1;  // JVAL: SOS
 
         mr_count := span_p.x2 - spanx;
         mr_dest := @viewylookup[py][px];

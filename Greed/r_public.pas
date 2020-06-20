@@ -160,8 +160,8 @@ begin
   end
   else
   begin
-    CA_CacheLump(walllump+1);
-    CA_CacheLump(flatlump+1);
+    CA_CacheLump(walllump + 1);
+    CA_CacheLump(flatlump + 1);
   end;
   printf('.');
 end;
