@@ -142,7 +142,8 @@ procedure INT_Setup;
 implementation
 
 uses
-  i_windows, timer;
+  i_windows,
+  timer;
 
 // keyboard interrupt
 //    processes make/break codes

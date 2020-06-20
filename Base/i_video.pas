@@ -193,24 +193,18 @@ var
   pixel: LongWord;
   r, g, b: LongWord;
   src: PByte;
-  src2: PByte;
   srcstop: PByte;
 begin
   src := @(viewbuffer[parms.start]);
-  src2 := @(screen[parms.start]);
   srcstop := @(viewbuffer[parms.stop]);
   if bpp = 32 then
   begin
     destl := @screen32[parms.start];
     while PCAST(src) < PCAST(srcstop) do
     begin
-      if src2^ <> 0 then
-        destl^ := curpal[src2^]
-      else
-        destl^ := curpal[src^];
+      destl^ := curpal[src^];
       inc(destl);
       inc(src);
-      inc(src2);
     end;
   end
   else if bpp = 16 then
@@ -218,17 +212,13 @@ begin
     destw := @screen16[parms.start];
     while PCAST(src) < PCAST(srcstop) do
     begin
-      if src2^ <> 0 then
-        pixel := curpal[src2^]
-      else
-        pixel := curpal[src^];
+      pixel := curpal[src^];
       r := (pixel shr 19) and 31;
       g := (pixel shr 11) and 31;
       b := (pixel shr 3) and 31;
       destw^ := (r shl 11) or (g shl 6) or b;
       inc(destw);
       inc(src);
-      inc(src2);
     end;
   end;
 end;
@@ -272,6 +262,9 @@ var
   parms1: finishupdateparms_t;
   hpan, vpan: integer;
 begin
+  if (screen16 = nil) and (screen32 = nil) then
+    exit;
+
   parms1.start := 0;
   parms1.stop := SCREENWIDTH * SCREENHEIGHT - 1;
   I_FinishUpdate8(@parms1);
