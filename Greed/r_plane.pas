@@ -27,6 +27,7 @@ unit r_plane;
 interface
 
 uses
+  g_delphi,
   r_refdef,
   r_public_h;
 
@@ -49,15 +50,15 @@ var
   // vertexes in need of Z clipping
   vertexpt: array[0..4] of clippoint_t;
 
+var  
   // coefficients of the plane equation for sloping polygons
-  planeA, planeB, planeC, planeD: fixed_t;
+  planeA, planeB, planeC, planeD: float;
 
 procedure RenderTileEnds;
   
 implementation
 
 uses
-  g_delphi,
   d_disk,
   {$IFDEF VALIDATE}
   d_misc,
@@ -123,22 +124,22 @@ end;
 procedure SlopeSpan;
 var
   pointz, pointz2: fixed_t; // row's distance to view plane
-  partial, denom: fixed_t;
+  partial, denom: float;
   span_p: Pspan_t;
   span: LongWord;
 begin
   // calculate the Z values for each end of the span
-  partial := FIXEDMUL(planeB, yslope[mr_y + MAXSCROLL]) + planeC;
-  denom := FIXEDMUL(planeA, xslope[mr_x1]) + partial;
+  partial := (planeB / FRACUNIT) * yslope[mr_y + MAXSCROLL] + planeC;
+  denom := (planeA / FRACUNIT) * xslope[mr_x1] + partial;
   if denom < 8000 then
     exit;
-  pointz := FIXEDDIV(planeD, denom);
+  pointz := trunc(planeD / denom * FRACUNIT);
   if pointz > MAXZ then
     exit;
-  denom := FIXEDMUL(planeA, xslope[mr_x2]) + partial;
+  denom := (planeA / FRACUNIT) * xslope[mr_x2] + partial;
   if denom < 8000 then
     exit;
-  pointz2 := FIXEDDIV(planeD, denom);
+  pointz2 := trunc(planeD / denom * FRACUNIT);
   if pointz2 > MAXZ then
     exit;
   // post the span in the draw list
@@ -283,13 +284,13 @@ begin
   z2 := vertexpt[2].tz - vertexpt[1].tz;
   // the A, B, C coefficients are the cross product of v1 and v2
   // shift over to save some precision bits
-  planeA := (FIXEDMUL(y1, z2) - FIXEDMUL(z1, y2)) shr 8;
-  planeB := (FIXEDMUL(z1, x2) - FIXEDMUL(x1, z2)) shr 8;
-  planeC := (FIXEDMUL(x1, y2) - FIXEDMUL(y1, x2)) shr 8;
+  planeA := (((y1 / FRACUNIT * z2) - (z1 / FRACUNIT * y2)) / 256);
+  planeB := (((z1 / FRACUNIT * x2) - (x1 / FRACUNIT * z2)) / 256);
+  planeC := (((x1 / FRACUNIT * y2) - (y1 / FRACUNIT * x2)) / 256);
   // calculate D based on A,B,C and one of the vertex points
-  planeD := FIXEDMUL(planeA, vertexpt[0].tx) +
-            FIXEDMUL(planeB, vertexpt[0].ty) +
-            FIXEDMUL(planeC,vertexpt[0].tz);
+  planeD := (planeA * vertexpt[0].tx / FRACUNIT) +
+            (planeB * vertexpt[0].ty / FRACUNIT) +
+            (planeC * vertexpt[0].tz / FRACUNIT);
 end;
 
 
