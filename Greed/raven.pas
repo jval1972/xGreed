@@ -3954,8 +3954,8 @@ begin
     if update <> 0 then
       wpic := weaponpic[weapmode];
 
-    weaponx := ((windowWidth - wpic.width) shr 1) + (weapmove[weapbob1] shr 1);
-    weapony := windowHeight - wpic.height + (weapmove[weapbob1 div 2] shr 3);
+    weaponx := ((windowWidth - wpic.width) div 2) + (weapmove[weapbob1] div 2);
+    weapony := windowHeight - wpic.height + (weapmove[weapbob1 div 2] div 8);
 
     if currentViewSize >= 6 then
       weapony := weapony + 25
@@ -3974,7 +3974,7 @@ begin
         wpic := weaponpic[weapmode];
         weaponychange := weaponpic[weapmode].height - 20;
         weapony := windowHeight - 21;
-        weaponx := ((windowWidth - wpic.width) shr 1) + (weapmove[weapbob1] shr 1);
+        weaponx := ((windowWidth - wpic.width) div 2) + (weapmove[weapbob1] div 2);
       end
     end
     else if changingweapons then
