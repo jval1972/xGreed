@@ -189,7 +189,7 @@ begin
   // the floor and ceiling height is the max of the points
   ceiling := (ceiling * FRACUNIT) - viewz;
   floor := -((floor * FRACUNIT) - viewz);   // distance below vi
-  sp_loopvalue := (wall^ * 4) * FRACUNIT;
+  sp_loopvalue := (wall^ * 4) * FRACUNIT - 1;
 
   (* special effects *)
   if wallshadow = 1 then
@@ -289,8 +289,8 @@ begin
     if topy < scrollmin then
     begin
       sp_frac := sp_frac + (scrollmin - topy) * scale;
-      while sp_frac >= sp_loopvalue do
-        sp_frac := sp_frac - sp_loopvalue;
+      while sp_frac > sp_loopvalue do
+        sp_frac := sp_frac - sp_loopvalue - 1;
       topy := scrollmin;
     end;
     bottom := FIXEDDIV(floor, scale) + FRACUNIT * 2;
@@ -571,9 +571,9 @@ skipceilingcalc:
       if topy < scrollmin then
       begin
         sp_frac := sp_frac + (scrollmin - topy) * scale;
-        sp_loopvalue := (wall1^ * 4) * FRACUNIT;
-        while sp_frac >= sp_loopvalue do
-          sp_frac := sp_frac - sp_loopvalue;
+        sp_loopvalue := (wall1^ * 4) * FRACUNIT - 1;
+        while sp_frac > sp_loopvalue do
+          sp_frac := sp_frac - sp_loopvalue - 1;
         topy := scrollmin;
       end;
       if rotatedown1 <> 0 then
@@ -634,9 +634,9 @@ contceiling:
       if topy < scrollmin then
       begin
         sp_frac := sp_frac + (scrollmin - topy) * scale;
-        sp_loopvalue := (wall2^ * 4) * FRACUNIT;
-        while sp_frac >= sp_loopvalue do
-          sp_frac := sp_frac - sp_loopvalue;
+        sp_loopvalue := (wall2^ * 4) * FRACUNIT - 1;
+        while sp_frac > sp_loopvalue do
+          sp_frac := sp_frac - sp_loopvalue - 1;
         topy := scrollmin;
       end;
       if rotatedown2 <> 0 then

@@ -59,6 +59,9 @@ implementation
 uses
   g_delphi,
   d_disk,
+  {$IFDEF VALIDATE}
+  d_misc,
+  {$ENDIF}
   r_public,
   r_render,
   r_spans;

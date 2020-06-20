@@ -180,15 +180,14 @@ var
   color: pixel_t;
 begin
   sp_dest := @sp_dest[-windowWidth * (sp_count - 1)];     // go to the top
-  dec(sp_loopvalue);
   while sp_count > 0 do
   begin
-    color :=  sp_source[sp_frac div FRACUNIT];
+    color := sp_source[sp_frac div FRACUNIT];
     if color <> 0 then
       sp_dest[0] :=  color;
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
-    sp_frac := sp_frac and sp_loopvalue;
+    sp_frac := sp_frac and sp_loopvalue;  // JVAL: SOS
     dec(sp_count);
   end;
 end;
@@ -197,13 +196,12 @@ end;
 procedure ScalePost;
 begin
   sp_dest := @sp_dest[-windowWidth * (sp_count - 1)];     // go to the top
-  dec(sp_loopvalue);
   while sp_count > 0 do
   begin
     sp_dest[0] := sp_source[sp_frac div FRACUNIT];
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
-    sp_frac := sp_frac and sp_loopvalue;
+    sp_frac := sp_frac and sp_loopvalue;  // JVAL: SOS
     dec(sp_count);
   end;
 end;
@@ -265,12 +263,12 @@ begin
   fracadjust := top and (FRACUNIT - 1);
   sp_frac := FIXEDMUL(fracadjust, sp_fracstep);
   topy := CENTERY - topy;
-  sp_loopvalue := 256 * FRACUNIT;
+  sp_loopvalue := 256 * FRACUNIT - 1;
   if topy < scrollmin then
   begin
     sp_frac := sp_frac + (scrollmin - topy) * scale;
     while sp_frac > sp_loopvalue do
-      sp_frac := sp_frac - sp_loopvalue;
+      sp_frac := sp_frac - sp_loopvalue - 1;
     topy := scrollmin;
   end;
   bottom := FIXEDDIV(span_p.yh, scale);
@@ -294,7 +292,6 @@ var
   color: pixel_t;
 begin
   sp_dest := @sp_dest[-windowWidth * (sp_count - 1)]; // go to the top
-  dec(sp_loopvalue);
   while sp_count > 0 do
   begin
     dec(sp_count);
@@ -305,7 +302,7 @@ begin
       sp_dest[0] := translookup[sp_colormap[color] - 1][sp_dest[0]];
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
-    sp_frac := sp_frac and sp_loopvalue;
+    sp_frac := sp_frac and sp_loopvalue;  // JVAL: SOS
   end;
 end;
 
@@ -401,7 +398,7 @@ begin
     xfrac := xfrac - fracstep * x;
     x := 0;
   end;
-  sp_loopvalue := 256 * FRACUNIT;
+  sp_loopvalue := 256 * FRACUNIT - 1;
   height := pic.collumnofs[1] - pic.collumnofs[0];
 
   while x < windowWidth do
@@ -670,7 +667,7 @@ begin
         sp_frac := span_p.y;
         sp_fracstep := span_p.yh;
         sp_count := tpwalls_count[x];
-        sp_loopvalue := span_p.light * FRACUNIT;
+        sp_loopvalue := span_p.light * FRACUNIT - 1;
         ScalePost;
       end;
 
@@ -788,7 +785,7 @@ begin
         sp_frac := span_p.y;
         sp_fracstep := span_p.yh;
         sp_count := tpwalls_count[x];
-        sp_loopvalue := span_p.light * FRACUNIT;
+        sp_loopvalue := span_p.light * FRACUNIT - 1;
         ScaleMaskedPost;
       end;
 
@@ -801,9 +798,8 @@ begin
         sp_frac := span_p.y;
         sp_fracstep := span_p.yh;
         sp_count := tpwalls_count[x];
-        sp_loopvalue := span_p.light * FRACUNIT;
+        sp_loopvalue := span_p.light * FRACUNIT - 1;
         sp_dest := @sp_dest[-windowWidth * (sp_count - 1)]; // go to the top
-        dec(sp_loopvalue);
         while sp_count > 0 do
         begin
           dec(sp_count);
@@ -812,7 +808,7 @@ begin
             sp_dest[0] := translookup[sp_colormap[color] - 1][sp_dest[0]];
           sp_dest := @sp_dest[windowWidth];
           sp_frac := sp_frac + sp_fracstep;
-          sp_frac := sp_frac and sp_loopvalue;
+          sp_frac := sp_frac and sp_loopvalue; // JVAL: SOS
         end;
       end;
     end;

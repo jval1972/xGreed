@@ -118,7 +118,7 @@ procedure ZeroMemory(const dest: pointer; const count: integer);
 
 function memset(const dest: pointer; const val: integer; const count: integer): pointer;
 
-function memcpy(const dest0: pointer; const src0: pointer; count0: integer): pointer;
+procedure memcpy(const dest0: pointer; const src0: pointer; count0: integer);
 
 // File handling
 const
@@ -270,7 +270,7 @@ begin
   result := dest;
 end;
 
-function memcpy(const dest0: pointer; const src0: pointer; count0: integer): pointer;
+procedure memcpy(const dest0: pointer; const src0: pointer; count0: integer);
 begin
   Move(src0^, dest0^, count0);
 end;
