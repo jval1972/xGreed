@@ -23,18 +23,20 @@ uses
 
 function WndProc(hWnd: HWND; Msg: UINT; wParam: WPARAM;
   lParam: LPARAM): LRESULT; stdcall; export;
-var
-  hdc: THANDLE;
-  ps: PAINTSTRUCT;
 begin
   case Msg of
-  WM_PAINT:
-    begin
-      hdc := BeginPaint(hWnd, ps);
-      VI_ResetPalette;
-      VI_BlitView;
-      EndPaint(hWnd, ps);
-    end;
+    WM_SETCURSOR:
+      begin
+        SetCursor(0);
+      end;
+    WM_SYSCOMMAND:
+      begin
+        if (wParam = SC_SCREENSAVE) or (wParam = SC_MINIMIZE) then
+        begin
+          result := 0;
+          exit;
+        end;
+      end;
   WM_CLOSE:
     quitgame := true;
   WM_DESTROY:
@@ -74,7 +76,7 @@ var
   rc: TRect;  // Called in GetClientRect
 begin
   I_SetDPIAwareness;
-  
+
   rc.left := 0;
   rc.right := 640;
   rc.top := 0;
@@ -91,7 +93,7 @@ begin
   hMainWnd := CreateWindow(
     APPNAME,
     APPNAME,
-    0, //{WS_VISIBLE or }WS_OVERLAPPED,
+    0,
     rc.left,
     rc.top,
     rc.right,
@@ -110,8 +112,8 @@ begin
     exit;
   end;
 
-//  ShowWindow(hMainWnd, SW_SHOW);
-//  UpdateWindow(hMainWnd);
+  ShowWindow(hMainWnd, SW_SHOW);
+  UpdateWindow(hMainWnd);
 
   result := true; // Window handle hWnd is valid.
 end;
