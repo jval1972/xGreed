@@ -281,7 +281,7 @@ begin
   // Allocates a page aligned buffer and load in the light tables
   lightlump := CA_GetNamedNum('lights');
   numcolormaps := infotable[lightlump].size div 256;
-  colormaps := malloc(256 * (numcolormaps + 1));
+  colormaps := malloc(256 * (numcolormaps));
   //colormaps := (byte *)(((int)colormaps+255)) and (~0xff);// JVAL: Removed align
   CA_ReadLump(lightlump, colormaps);
   RF_SetLights(MAXZ);
