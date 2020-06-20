@@ -339,8 +339,10 @@ begin
   specialtype := special_t(span_p.shadow div 256);
   shadow := span_p.shadow and 255;
 
-  if specialtype = st_maxlight then sp_colormap := colormaps
-  else if specialtype = st_transparent then sp_colormap := colormaps
+  if specialtype = st_maxlight then
+    sp_colormap := colormaps
+  else if specialtype = st_transparent then
+    sp_colormap := colormaps
   else if shadow = 0 then
   begin
     light := (pointz div FRACUNIT) + span_p.light;
@@ -362,8 +364,10 @@ begin
     else
     begin
       light := (pointz div FRACUNIT) + span_p.light;
-      if light > MAXZLIGHT then light := MAXZLIGHT
-      else if light < 0 then light := 0;
+      if light > MAXZLIGHT then
+        light := MAXZLIGHT
+      else if light < 0 then
+        light := 0;
       sp_colormap := zcolormap[light];
     end;
   end
@@ -387,10 +391,10 @@ begin
   shapebottom := span_p.y;
   // project the x and height
   scale := FIXEDDIV(FSCALE, pointz);
-  fracstep := FIXEDMUL(pointz, ISCALE) shl sp.scale;
+  fracstep := _SHL(FIXEDMUL(pointz, ISCALE), sp.scale);
   sp_fracstep := fracstep;
   leftx := span_p.x2;
-  leftx := leftx - pic.leftoffset shl bitshift;
+  leftx := leftx - _SHL(pic.leftoffset, bitshift);
   x := CENTERX + (FIXEDMUL(leftx, scale) div FRACUNIT);
   // step through the shape, drawing posts where visible
   xfrac := 0;
@@ -420,8 +424,8 @@ begin
       continue;
     end;
     collumn := @PByteArray(pic)[pic.collumnofs[post]];
-    topheight := shapebottom + collumn[0] shl bitshift;
-    bottomheight := shapebottom + collumn[1] shl bitshift;
+    topheight := shapebottom + _SHL(collumn[0], bitshift);
+    bottomheight := shapebottom + _SHL(collumn[1], bitshift);
     collumn := @collumn[2];
 
     // scale a post

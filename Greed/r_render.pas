@@ -90,7 +90,7 @@ var
   wallposts: PBytePArray;
   colormaps: PByteArray;
   numcolormaps: integer;
-  zcolormap: array[0..(MAXZ div FRACUNIT){ + 1}] of PByteArray;
+  zcolormap: array[0..(MAXZ div FRACUNIT)] of PByteArray;
   viewx, viewy, viewz: fixed_t;
   viewcos, viewsin: fixed_t;
   xscale, yscale: fixed_t;         // FSCALE/viewcos , FSCALE/viewsin
@@ -172,8 +172,8 @@ begin
 {$ENDIF}
   point.floorheight := fl;
   point.ceilingheight := ch;
-  ttrx := (tilex shl (FRACBITS + TILESHIFT)) - viewx;
-  ttry := (tiley shl (FRACBITS + TILESHIFT)) - viewy;
+  ttrx := (_SHL(tilex, (FRACBITS + TILESHIFT))) - viewx;
+  ttry := (_SHL(tiley, (FRACBITS + TILESHIFT))) - viewy;
   point.tx := FIXEDMUL(ttrx, viewsin) + FIXEDMUL(ttry, viewcos);
   point.tz := FIXEDMUL(ttrx, viewcos) - FIXEDMUL(ttry, viewsin);
   if point.tz >= MINZ then

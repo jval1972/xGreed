@@ -1494,7 +1494,7 @@ begin
 
   floorz := RF_GetFloorZ(msprite.x, msprite.y);
   if floorz + msprite.zadj<msprite.z then
-    msprite.z := msprite.z - FRACUNIT shl 4;
+    msprite.z := msprite.z - 16 * FRACUNIT;
   if floorz + msprite.zadj > msprite.z then
     msprite.z := floorz + msprite.zadj;
   msprite.moveSpeed := oldspeed;
@@ -1824,7 +1824,7 @@ begin
 
   floorz := RF_GetFloorZ(msprite.x, msprite.y);
   if floorz + msprite.zadj < msprite.z then
-    msprite.z := msprite.z - FRACUNIT shl 4;
+    msprite.z := msprite.z - 16 * FRACUNIT;
   if floorz + msprite.zadj > msprite.z then
     msprite.z := floorz + msprite.zadj;
 end;
@@ -2057,7 +2057,7 @@ endscan2:
   end;
   floorz := RF_GetFloorZ(msprite.x, msprite.y);
   if floorz + msprite.zadj < msprite.z then
-    msprite.z := msprite.z - FRACUNIT shl 4;
+    msprite.z := msprite.z - 16 * FRACUNIT;
   if floorz + msprite.zadj > msprite.z then
     msprite.z := floorz + msprite.zadj;
   msprite.moveSpeed := oldspeed;
@@ -2329,7 +2329,7 @@ begin
   end;
   floorz := RF_GetFloorZ(msprite.x, msprite.y);
   if floorz + msprite.zadj < msprite.z then
-    msprite.z := msprite.z - FRACUNIT shl 4;
+    msprite.z := msprite.z - 16 * FRACUNIT;
   if floorz + msprite.zadj > msprite.z then
     msprite.z := floorz + msprite.zadj;
   msprite.moveSpeed := oldspeed;
@@ -2553,7 +2553,7 @@ endscan:
   end;
   floorz := RF_GetFloorZ(msprite.x, msprite.y) + msprite.zadj;
   if floorz < msprite.z then
-    msprite.z := msprite.z - FRACUNIT shl 4;
+    msprite.z := msprite.z - 16 * FRACUNIT;
   if floorz > msprite.z then
     msprite.z := floorz;
   msprite.moveSpeed := oldspeed;
@@ -2698,7 +2698,7 @@ begin
 
       floor := RF_GetFloorZ(msprite.x, msprite.y) + msprite.zadj;
       if msprite.z > floor then
-        msprite.z := msprite.z - FRACUNIT shl 4;
+        msprite.z := msprite.z - 16 * FRACUNIT;
       if msprite.z < floor then
         msprite.z := floor;
       if msprite.heat <> 0 then
