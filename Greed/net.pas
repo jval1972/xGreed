@@ -387,7 +387,7 @@ begin
   ready := 0;
   timeout := timecount+42000; // 10 minute wait
   newascii := false;
-  waittime := timecount+70;
+  waittime := timecount+TICRATE;
   while 1 do
   begin
    UpdateWait;

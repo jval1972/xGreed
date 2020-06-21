@@ -59,8 +59,6 @@ function I_timeSetEvent(const uDelay, uResolution: UINT;
 
 procedure I_PeekAndDisplatch;
 
-function clock: LongWord;
-
 procedure I_ClearInterface(var Dest: IInterface);
 
 function I_SetDPIAwareness: boolean;
@@ -71,6 +69,10 @@ procedure I_ShutDown;
 
 function I_VersionBuilt(fname: string = ''): string;
 
+function I_GetTime: integer;
+
+function clock: LongWord;
+
 var
   basedefault: string;
   stdoutfile: string;
@@ -79,7 +81,8 @@ var
 implementation
 
 uses
-  SysUtils;
+  SysUtils,
+  d_ints;
 
 function I_MapVirtualKey(const uCode, uMapType: UINT): UINT;
 begin
@@ -118,11 +121,6 @@ var
 begin
   if PeekMessage(msg, 0, 0, 0, PM_REMOVE) then
     DispatchMessage(msg);
-end;
-
-function clock: LongWord;
-begin
-  result := GetTickCount;
 end;
 
 procedure I_ClearInterface(var Dest: IInterface);
@@ -176,7 +174,6 @@ var
 procedure I_OutProc(const s: string);
 var
   i: integer;
-  c: char;
 begin
   for i := 1 to Length(s) do
     BlockWrite(fout, s[i], 1);
@@ -247,5 +244,52 @@ begin
   end;
   memfree(pointer(buffer));
 end;
+
+//
+// I_GetTime
+// returns time in 1/70th second tics
+//
+var
+  basetime: int64 = 0;
+  Freq: int64;
+
+function I_GetSysTime: extended;
+var
+  _time: int64;
+begin
+  if Freq = 1000 then
+    _time := GetTickCount
+  else
+  begin
+    if not QueryPerformanceCounter(_time) then
+    begin
+      Freq := 1000;
+      _time := GetTickCount;
+      basetime := _time;
+      printf('I_GetSysTime(): QueryPerformanceCounter() failed, basetime reset.'#13#10);
+    end;
+  end;
+  if basetime = 0 then
+    basetime := _time;
+  result := (_time - basetime) / Freq;
+end;
+
+function I_GetTime: integer;
+begin
+  result := trunc(I_GetSysTime * TICRATE);
+end;
+
+const
+  CLOCKS_PER_SEC = 1000000;
+
+function clock: LongWord;
+begin
+  result := trunc(I_GetSysTime * CLOCKS_PER_SEC);
+end;
+
+initialization
+
+  if not QueryPerformanceFrequency(Freq) then
+    Freq := 1000;
 
 end.

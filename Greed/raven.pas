@@ -194,7 +194,7 @@ begin
   begin
     while time >= elev_p.elevTimer do
     begin
-      if (elev_p.elevUp) and (CAddI(elev_p.position, elev_p.speed) >= elev_p.ceiling) then
+      if elev_p.elevUp and (CAddI(elev_p.position, elev_p.speed) >= elev_p.ceiling) then
       begin
         SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         elev_p.position := elev_p.ceiling;
@@ -216,7 +216,7 @@ begin
       end
       else if (elev_p.elevDown) and (CSubI(elev_p.position, elev_p.speed) <= elev_p.floor) then
       begin
-        SoundEffect(SN_ELEVATORSTART,15,(elev_p.mapspot) and (63) * FRACTILEUNIT,(elev_p.mapspot div 64) * FRACTILEUNIT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot) and (63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         elev_p.position := elev_p.floor;
         if (elev_p.typ = E_NORMAL) or (elev_p.typ = E_SECRET) then
           elev_p.elevUp := true
@@ -249,7 +249,7 @@ begin
   newfloorz := RF_GetFloorZ(player.x, player.y) + player.height;
   if newfloorz <> floorz then
   begin
-    if player.z>newfloorz then
+    if player.z > newfloorz then
     begin
       fallrate := fallrate + FALLUNIT;
       player.z := player.z - fallrate;
@@ -2011,7 +2011,7 @@ skipit:
         begin
           x1 := elev_p.mapspot mod MAPCOLS;
           y1 := elev_p.mapspot div MAPCOLS;
-          if (abs(x1 - x) < 2) and (abs(y1 - y) < 2) then
+          if (absI(x1 - x) < 2) and (absI(y1 - y) < 2) then
           begin
             switchit := true;
             elev_p.elevDown := true;
@@ -2365,14 +2365,14 @@ begin
   begin
     goiright := true;
     keyboardDelay := timecount + KBDELAY;
-    inventorytime := timecount + (3 * 70);
+    inventorytime := timecount + (3 * TICRATE);
   end;
 
   if (in_button[bt_invleft] <> 0) and (timecount > keyboardDelay) then
   begin
     goileft := true;
     keyboardDelay := timecount + KBDELAY;
-    inventorytime := timecount + (3 * 70);
+    inventorytime := timecount + (3 * TICRATE);
   end;
 
   // he's dead jim!
@@ -2401,7 +2401,7 @@ begin
   begin
     useitem := true;
     keyboardDelay := timecount + KBDELAY;
-    inventorytime := timecount + (3 * 70);
+    inventorytime := timecount + (3 * TICRATE);
   end;
 
   // change weapon
@@ -3864,8 +3864,8 @@ begin
   if specialeffect <> SE_WARPJAMMER then
   begin
     specialeffect := SE_WARPJAMMER;
-    specialeffecttime := timecount + 70 * 60;
-    totaleffecttime := 70 * 60;
+    specialeffecttime := timecount + TICRATE * 60;
+    totaleffecttime := TICRATE * 60;
     dec(player.inventory[11]);
 
     sp := firstscaleobj.next;
@@ -4066,7 +4066,7 @@ begin
   if ticker then
   begin
     sprintf(dbg, 'sp:%4d tp:%4d ver:%4d e:%4d mu:%2d t:%3d:%2d',
-      [numspans, transparentposts, pDiff(vertexlist_p, @vertexlist, SizeOf(vertex_t)), pDiff(entry_p, @entries, SizeOf(entry_t)), greedcom.maxusage, timecount div 4200, (timecount div 70) mod 60]);
+      [numspans, transparentposts, pDiff(vertexlist_p, @vertexlist, SizeOf(vertex_t)), pDiff(entry_p, @entries, SizeOf(entry_t)), greedcom.maxusage, timecount div (60 * TICRATE), (timecount div TICRATE) mod 60]);
     // sprintf(dbg, 'x: %d  y: %d', [(player.x div FRACUNIT) and 63, (player.y div FRACUNIT) and 63]);
     fontbasecolor := 73;
     font := font1;
@@ -4373,7 +4373,7 @@ begin
       RearViewTime := timecount + 140;
       RearView;
       RearViewDelay := timecount + SC.camdelay;
-      if SC.camdelay = 70 then
+      if SC.camdelay = TICRATE then
         RearViewOn := false;
     end;
 

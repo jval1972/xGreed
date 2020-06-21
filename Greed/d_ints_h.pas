@@ -26,10 +26,6 @@ unit d_ints_h;
 
 interface
 
-{$IFDEF FPC}
-{$PACKRECORDS C}
-{$ENDIF}
-
 const
   NUMCODES = 128;
   SC_NONE = 0;

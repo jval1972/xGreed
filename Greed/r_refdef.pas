@@ -30,10 +30,6 @@ uses
   g_delphi,
   r_public_h;
   
-{$IFDEF FPC}
-{$PACKRECORDS C}
-{$ENDIF}
-
 function rint(const x: double): integer;
 
 {*** CONSTANTS *** }

@@ -1032,7 +1032,7 @@ begin
       sprite_p.intelligence := 6;
       sprite_p.typ := S_TIMEMINE;
       sprite_p.spawnid := spawnid;
-      sprite_p.actiontime := timecount + (2 * 70);
+      sprite_p.actiontime := timecount + (2 * TICRATE);
       if netmode and not gameloading then
         NetSendSpawn(value, x, y, z, zadj, angle, angle2, active, spawnid);
     end;
@@ -1050,7 +1050,7 @@ begin
       sprite_p.intelligence := 6;
       sprite_p.typ := value;
       sprite_p.spawnid := spawnid;
-      sprite_p.actiontime := timecount + (45 * 70);
+      sprite_p.actiontime := timecount + (45 * TICRATE);
       sprite_p.specialtype := st_transparent;
       if netmode and not gameloading then
         NetSendSpawn(value, x, y, z, zadj, angle, angle2, active, spawnid);
@@ -1071,7 +1071,7 @@ begin
       sprite_p.intelligence := 6;
       sprite_p.typ := S_PROXMINE;
       sprite_p.spawnid := spawnid;
-      sprite_p.actiontime := timecount + (2 * 70);
+      sprite_p.actiontime := timecount + (2 * TICRATE);
       if netmode and not gameloading then
         NetSendSpawn(value, x, y, z, zadj, angle, angle2, active, spawnid);
     end;

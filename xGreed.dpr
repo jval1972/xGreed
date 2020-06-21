@@ -29,6 +29,11 @@ program xGreed;
 uses
   Windows,
   DirectX in 'Base\DirectX.pas',
+  g_delphi in 'base\g_delphi.pas',
+  i_windows in 'base\i_windows.pas',
+  scriptengine in 'base\scriptengine.pas',
+  i_main in 'Base\i_main.pas',
+  i_video in 'Base\i_video.pas',
   constant in 'Greed\constant.pas',
   d_disk in 'Greed\d_disk.pas',
   d_font in 'Greed\d_font.pas',
@@ -56,12 +61,7 @@ uses
   spawn in 'Greed\spawn.pas',
   sprites in 'Greed\sprites.pas',
   timer in 'Greed\timer.pas',
-  utils in 'Greed\utils.pas',
-  g_delphi in 'base\g_delphi.pas',
-  i_windows in 'base\i_windows.pas',
-  scriptengine in 'base\scriptengine.pas',
-  i_main in 'Base\i_main.pas',
-  i_video in 'Base\i_video.pas';
+  utils in 'Greed\utils.pas';
 
 var
   hGreedWnd: HWND = 0;

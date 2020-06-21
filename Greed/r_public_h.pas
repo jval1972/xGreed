@@ -26,11 +26,6 @@ unit r_public_h;
 
 interface
 
-{$IFDEF FPC}
-{$PACKRECORDS C}
-{$ENDIF}
-
-
 {*** CONSTANTS *** }
 type
   bool = boolean;

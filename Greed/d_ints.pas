@@ -117,6 +117,9 @@ const
     SC_DELETE         // bt_invright
   );
 
+const
+  TICRATE = 70;
+
 procedure INT_KeyboardISR;
 
 procedure INT_ReadControls;
@@ -164,11 +167,11 @@ begin
     keyboard[i] := I_GetKeyState(I_MapVirtualKey(i, 1));
     if keyboard[i] and $80 <> 0 then
     begin
-      if isalnum(Chr(i)) or (Chr(i) in [' ', '.', '-', '!', ',', '?', '''', #27]) then
-      begin
+      lastascii := toupper(ASCIINames[i]);
+//      if isalnum(Chr(i)) or (Chr(i) in [' ', '.', '-', '!', ',', '?', '''', #27]) then
+//      begin
         newascii := true;
-        lastascii := toupper(Chr(i));
-      end;
+//      end;
     end;
   end;
 
@@ -186,9 +189,10 @@ end;
 procedure INT_TimerISR;
 begin
   INT_ReadControls;
-  timecount := timecount + 2;
+  timecount := timecount + 1;
   if Assigned(timerhook) then
-    timerhook;
+    if timecount and 1 <> 0 then
+      timerhook;
 end;
 
 
@@ -225,7 +229,7 @@ procedure INT_Setup;
 begin
   memset(@keyboard, 0, SizeOf(keyboard));
   M_Init;
-  dStartTimer(INT_TimerISR, 1000 div 35);
+  dStartTimer(INT_TimerISR, TICRATE);//1000 div 35);
   timeractive := true;
 end;
 

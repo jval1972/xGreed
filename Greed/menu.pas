@@ -830,7 +830,7 @@ begin
   if Length(savedir[menucursor]) > 0 then
     if savedir[menucursor][Length(savedir[menucursor])] = '_' then
       dec(savedir[menucursor][0]);
-  if Ord(lastascii) = 27 then
+  if lastascii = #27 then
     ShowSaveDir
   else
   begin

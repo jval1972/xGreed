@@ -807,17 +807,17 @@ begin
   begin
     if currentViewSize < MAXVIEWSIZE - 1 then
       inc(currentViewSize)
-    else 
+    else
       exit;
   end
   else
   begin
     if currentViewSize > 0 then
       dec(currentViewSize)
-    else 
+    else
       exit;
   end;
-  if (viewSizes[currentViewSize * 2] <> viewSizes[lastviewsize * 2]) or 
+  if (viewSizes[currentViewSize * 2] <> viewSizes[lastviewsize * 2]) or
      (viewSizes[currentViewSize * 2 + 1] <> viewSizes[lastviewsize * 2 + 1]) then
   begin
     windowWidth := viewSizes[currentViewSize * 2];
@@ -2312,7 +2312,7 @@ begin
     loadscreen('BRIEF3');
     VI_BlitView;
     VI_FadeIn(0, 256, @colors, 64);
-    Wait(70);
+    Wait(TICRATE);
     newascii := false;
     fontbasecolor := 0;
     while fontbasecolor < 9 do
@@ -2369,7 +2369,7 @@ begin
 
     loadscreen('BRIEF1');
     VI_FadeIn(0, 256, @colors, 64);
-    Wait(70);
+    Wait(TICRATE);
     newascii := false;
     fontbasecolor := 0;
     while fontbasecolor < 9 do
@@ -2399,7 +2399,7 @@ begin
 
     loadscreen('BRIEF2');
     VI_FadeIn(0, 256, @colors, 64);
-    Wait(70);
+    Wait(TICRATE);
     newascii := false;
     fontbasecolor := 0;
     while fontbasecolor < 9 do
@@ -2522,7 +2522,7 @@ begin
       VI_FillPalette(0, 0, 0);
       loadscreen('BRIEF4');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(70);
+      Wait(TICRATE);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
@@ -2547,7 +2547,7 @@ begin
 
       loadscreen('BRIEF5');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(70);
+      Wait(TICRATE);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
@@ -2626,7 +2626,7 @@ begin
 
       loadscreen('BRIEF6');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(70);
+      Wait(TICRATE);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
@@ -2656,7 +2656,7 @@ begin
 
       loadscreen('BRIEF7');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(70);
+      Wait(TICRATE);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do

@@ -29,10 +29,6 @@ interface
 uses
   r_public_h;
   
-{$IFDEF FPC}
-{$PACKRECORDS C}
-{$ENDIF}
-
 { Raven  }
 { generated sprites }
 

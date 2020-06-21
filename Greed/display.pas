@@ -279,8 +279,8 @@ begin
       if specialeffect <> SE_REVERSOPILL then
       begin
         specialeffect := SE_REVERSOPILL;
-        specialeffecttime := timecount + 70 * 15;
-        totaleffecttime := 70 * 15;
+        specialeffecttime := timecount + TICRATE * 15;
+        totaleffecttime := TICRATE * 15;
         dec(player.inventory[inventorycursor]);
         writemsg('Used Reverso Pill');
       end;
@@ -366,8 +366,8 @@ begin
       if specialeffect <> SE_INVISIBILITY then
       begin
         specialeffect := SE_INVISIBILITY;
-        specialeffecttime := timecount+70*30;
-        totaleffecttime := 70*30;
+        specialeffecttime := timecount + TICRATE * 30;
+        totaleffecttime := TICRATE * 30;
         dec(player.inventory[inventorycursor]);
         writemsg('Activated Invisibility Shield');
       end;
@@ -619,7 +619,7 @@ begin
     lump := BonusItem.sprite.basepic;
     score := BonusItem.score;
     typ := 'Bonus  ';
-    time := (BonusItem.time - timecount) div 70;
+    time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
     sprintf(str1,'%3d s ', [time]);
@@ -704,7 +704,7 @@ begin
     lump := BonusItem.sprite.basepic;
     score := BonusItem.score;
     typ := 'Bonus  ';
-    time := (BonusItem.time - timecount) div 70;
+    time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
     sprintf(str1,'%3d s', [time]);
@@ -1080,7 +1080,7 @@ begin
     lump := BonusItem.sprite.basepic;
     score := BonusItem.score;
     typ := 'Bonus  ';
-    time := (BonusItem.time - timecount) div 70;
+    time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
     sprintf(str1,'%3d s', [time]);
@@ -1203,7 +1203,7 @@ begin
     lump := BonusItem.sprite.basepic;
     score := BonusItem.score;
     typ := 'Bonus  ';
-    time := (BonusItem.time - timecount) div 70;
+    time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
     sprintf(str1,'%3d s', [time]);

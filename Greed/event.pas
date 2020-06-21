@@ -568,7 +568,7 @@ begin
     else if stmp = 'BONUSTIME' then
     begin
       sce.MustGetInteger;
-      bonustime := sce._Integer * 70;
+      bonustime := sce._Integer * TICRATE;
     end
     else if stmp = 'PRIMARY' then
     begin
