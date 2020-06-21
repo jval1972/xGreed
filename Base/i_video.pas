@@ -261,7 +261,7 @@ var
   parms1: finishupdateparms_t;
   hpan, vpan: integer;
 begin
-  if (screen16 = nil) and (screen32 = nil) then
+  if (screen16 = nil) and (screen32 = nil) or (g_pDDScreen = nil) then
     exit;
 
   parms1.start := 0;
