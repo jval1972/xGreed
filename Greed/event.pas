@@ -85,7 +85,7 @@ uses
   d_ints,
   d_misc,
   d_video,
-  intro,
+  i_windows,
   menu,
   modplay,
   playfli,

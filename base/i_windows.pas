@@ -74,6 +74,7 @@ function I_VersionBuilt(fname: string = ''): string;
 var
   basedefault: string;
   stdoutfile: string;
+  cdr_drivenum: integer;
 
 implementation
 
@@ -175,12 +176,16 @@ var
 procedure I_OutProc(const s: string);
 var
   i: integer;
+  c: char;
 begin
   for i := 1 to Length(s) do
     BlockWrite(fout, s[i], 1);
 end;
 
 procedure I_Init;
+var
+  c: char;
+  drv: array[0..3] of char;
 begin
   basedefault := ExtractFilePath(ExpandFileName(ParamStr(0)));
   if basedefault <> '' then
@@ -190,6 +195,20 @@ begin
   assignfile(fout, stdoutfile);
   rewrite(fout, 1);
   outproc := I_OutProc;
+
+  cdr_drivenum := 0;
+  drv[1] := ':';
+  drv[2] := '\';
+  drv[3] := #0;
+  for c := 'A' to 'Z' do
+  begin
+    drv[0] := c;
+    if GetDriveType(drv) = DRIVE_CDROM then
+    begin
+      cdr_drivenum := Ord(c) - Ord('A');
+      break;
+    end;
+  end;
 end;
 
 procedure I_ShutDown;

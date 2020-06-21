@@ -182,7 +182,6 @@ const
 var
   colors: array[0..767] of byte;
   nointro, nextchar: boolean;
-  cdr_drivenum: integer;
 
 
 (**** FUNCTIONS ****)
