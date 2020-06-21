@@ -121,9 +121,9 @@ begin
     k := @flipal[skip];
     for j := 0 to total - 1 do
     begin
-     k^ := getbyte; inc(k); // r
-     k^ := getbyte; inc(k); // g
-     k^ := getbyte; inc(k); // b
+     k^ := getbyte * 4; inc(k); // r
+     k^ := getbyte * 4; inc(k); // g
+     k^ := getbyte * 4; inc(k); // b
     end;
   end;
   I_SetPalette(@flipal);

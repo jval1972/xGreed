@@ -3606,7 +3606,7 @@ begin
    if f = NULL then
     MS_Error('Error opening the screen grab file!');
    fwrite((char *)0xa0000,64000,1,f);
-   VI_GetPalette(palette);
+   I_GetPalette(palette);
    fwrite(palette,768,1,f);
    fclose(f);
     end;
@@ -3695,7 +3695,7 @@ procedure EndLevel;
 begin
   VI_FadeOut(0, 256, 0, 0, 0,64);
   memset(screen, 0, 64000);
-  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
   inc(player.map);
   startover(1);
 end;
@@ -4112,7 +4112,7 @@ begin
       begin
         memset(screen, 0, 64000);
 
-        I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+        I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
 
         startover(2);
       end;
@@ -4521,7 +4521,7 @@ end;
 
 procedure maingame;
 begin
-  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
   InitData;
   INT_TimerHook(PlayerCommand);   // the players actions are sampled by an interrupt
   newlights;

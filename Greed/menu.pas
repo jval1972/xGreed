@@ -348,7 +348,7 @@ begin
         memcpy(ylookup[y], @viewbuffer[320 * y], 640);
       y := y + 2;
       droptime := timecount + 1;
-      VI_DrawMaskedPic2(111,y,pics[anim]);
+      VI_DrawMaskedPic2(111, y, pics[anim]);
     end;
     if timecount >= animtime then
     begin
@@ -710,7 +710,7 @@ begin
   if (keyboard[SC_ENTER] <> 0) and (timecount > timedelay) then
   begin
     menuexecute := true;
-    timedelay := timecount+KBDELAY2;
+    timedelay := timecountc + KBDELAY2;
   end;
 end;
 
@@ -910,7 +910,7 @@ begin
     VI_FillPalette(0, 0, 0);
   end;
 
-  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
   memcpy(screen, s, 64000);
   memfree(pointer(s));
 end;

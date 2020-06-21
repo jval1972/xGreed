@@ -1610,6 +1610,8 @@ procedure EndGame1;
 var
   name: string;
   c: char;
+label
+  endgame1exit;
 begin
   selectsong(22);
 
@@ -1713,6 +1715,7 @@ begin
     memset(screen, 0, 64000);
   end;
 
+endgame1exit:
   redo := true;
 end;
 
@@ -2745,7 +2748,7 @@ finale:
   memcpy(@viewbuffer, scr, 64000);
   memfree(pointer(scr));
   memset(screen, 0, 64000);
-  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
   timecount := oldtimecount;
 end;
 

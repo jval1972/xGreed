@@ -53,10 +53,6 @@ var
 
 procedure VI_FillPalette(const red, green, blue: integer);
 
-procedure VI_ResetPalette;
-
-procedure VI_GetPalette(const apal: PByteArray);
-
 procedure VI_FadeOut(start, stop: integer; const red, green, blue: integer;
   const steps: integer);
 
@@ -93,40 +89,32 @@ uses
   r_render;
 
 procedure VI_FillPalette(const red, green, blue: integer);
-begin
-end;
-
-procedure VI_ResetPalette;
 var
-  dc: HDC;
+  apal: packed array[0..767] of byte;
+  i: integer;
 begin
-  dc := GetDC(hMainWnd);
-
-  RealizePalette(dc);
-
-  ReleaseDC(hMainWnd, dc);
+  for i := 0 to 255 do
+  begin
+    apal[i * 3] := red;
+    apal[i * 3 + 1] := green;
+    apal[i * 3 + 2] := blue;
+  end;
+  I_SetPalette(@apal);
 end;
-
-
-procedure VI_GetPalette(const apal: PByteArray);
-begin
-//  memset(apal, 0, 768);
-end;
-
 
 procedure VI_FadeOut(start, stop: integer; const red, green, blue: integer;
   const steps: integer);
 var
   basep: array[0..767] of byte;
-  px, pdx, dx: array[0..767] of shortint;
+  px, pdx, dx: array[0..767] of smallint;
   i, j: integer;
 begin
-  VI_GetPalette(@basep);
-  memset(@dx, 0, 768);
+  I_GetPalette(@basep);
+  memset(@dx, 0, 768 * 2);
   for j := start to stop - 1 do
   begin
     pdx[j * 3] := (basep[j * 3] - red) mod steps;
-    px[j * 3] := (basep[j*3] - red) div steps;
+    px[j * 3] := (basep[j * 3] - red) div steps;
     pdx[j * 3 + 1] := (basep[j * 3 + 1] - green) mod steps;
     px[j * 3 + 1] := (basep[j * 3 + 1] - green) div steps;
     pdx[j * 3 + 2] := (basep[j * 3 + 2] - blue) mod steps;
@@ -165,7 +153,7 @@ var
   px, pdx, dx: packed array[0..767] of shortint;
   i, j: integer;
 begin
-  VI_GetPalette(@basep);
+  I_GetPalette(@basep);
   memset(@dx, 0, 768);
   memset(@work, 0, 768);
   start := start * 3;

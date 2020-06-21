@@ -67,6 +67,8 @@ function CA_GetNamedNum(const name: string): integer;
 
 function CA_CacheLump(const lump: integer): pointer;
 
+function CA_CachePalette(const lump: integer): pointer;
+
 procedure CA_ReadLump(const lump: integer; const dest: pointer);
 
 procedure CA_FreeLump(const lump: integer);
@@ -211,6 +213,19 @@ begin
   result := lumpmain[lump];
 end;
 
+var
+  DISKPAL: packed array[0..767] of byte;
+
+function CA_CachePalette(const lump: integer): pointer;
+var
+  p: PByteArray;
+  i: integer;
+begin
+  p := CA_CacheLump(lump);
+  for i := 0 to 767 do
+    DISKPAL[i] := p[i] * 4;
+  result := @DISKPAL;
+end;
 
 procedure CA_ReadLump(const lump: integer; const dest: pointer);
 (* reads a lump into a buffer *)

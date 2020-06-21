@@ -230,6 +230,8 @@ begin
   pal := CA_CacheLump(i + 1);
   memcpy(@colors, pal, 768);
   CA_FreeLump(i + 1);
+  for i := 0 to 767 do
+    colors[i] := colors[i] * 4;
 end;
 
 
@@ -322,7 +324,7 @@ begin
     MS_Error('DoIntroMenu(): No memory for temp screen');
   memcpy(temp, screen, 64000);
   memset(screen, 0, 64000);
-  I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+  I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
   player.timecount := timecount;
   ShowMenu(0);
   if not quitgame and not gameloaded then
@@ -500,7 +502,7 @@ begin
   loadscreen('LOGO');
   VI_FadeIn(0, 256, @colors, 48);
   Wait(210);
-  VI_FillPalette(63, 63, 63);
+  VI_FillPalette(255, 255, 255);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
@@ -606,7 +608,7 @@ begin
     if CheckDemoExit then exit;
   end;
   if CheckDemoExit then exit;
-  VI_FadeOut(0, 256, 64, 64, 64, 48);
+  VI_FadeOut(0, 256, 255, 255, 255, 48);
   if CheckDemoExit then exit;
 
 
@@ -814,7 +816,7 @@ restart:
   if nointro then
   begin
     redo :=  false;
-    I_SetPalette(CA_CacheLump(CA_GetNamedNum('palette')));
+    I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
     newplayer(0, 0, 2);
     maingame;
   end
