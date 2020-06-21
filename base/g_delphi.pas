@@ -281,6 +281,8 @@ end;
 
 procedure memcpy(const dest0: pointer; const src0: pointer; count0: integer);
 begin
+  if src0 = dest0 then
+    exit;
   Move(src0^, dest0^, count0);
 end;
 
