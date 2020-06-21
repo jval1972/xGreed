@@ -158,8 +158,19 @@ procedure INT_ReadControls;
 var
   i: integer;
 begin
+  newascii := false;
   for i := 0 to 127 do
-   keyboard[i] := I_GetKeyState(I_MapVirtualKey(i, 1));
+  begin
+    keyboard[i] := I_GetKeyState(I_MapVirtualKey(i, 1));
+    if keyboard[i] and $80 <> 0 then
+    begin
+      if isalnum(Chr(i)) or (Chr(i) in [' ', '.', '-', '!', ',', '?', '''', #27]) then
+      begin
+        newascii := true;
+        lastascii := toupper(Chr(i));
+      end;
+    end;
+  end;
 
   memset(@in_button, 0, SizeOf(in_button));
   for i := 0 to NUMBUTTONS - 1 do
