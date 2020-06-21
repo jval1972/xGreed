@@ -79,7 +79,7 @@ const
   PILLARLETTER_MAX = 50;
 
 var
-  fullscreen: boolean = true;
+  fullscreen: boolean = {$IFDEF VALIDATE}false{$ELSE}true{$ENDIF};
   fullscreenexclusive: boolean = false;
 
 var
@@ -657,8 +657,8 @@ begin
 
   if not dofull then
   begin
-    XWINDOWWIDTH := SCREENWIDTH;
-    XWINDOWHEIGHT := SCREENHEIGHT;
+    XWINDOWWIDTH := {$IFDEF VALIDATE}NATIVEWIDTH{$ELSE}SCREENWIDTH{$ENDIF};
+    XWINDOWHEIGHT := {$IFDEF VALIDATE}NATIVEHEIGHT{$ELSE}SCREENHEIGHT{$ENDIF};
     exit;
   end;
 
@@ -711,8 +711,13 @@ end;
 
 procedure I_DetectNativeScreenResolution;
 begin
+{$IFDEF VALIDATE}
+  NATIVEWIDTH := 640;
+  NATIVEHEIGHT := 400;
+{$ELSE}
   NATIVEWIDTH := GetSystemMetrics(SM_CXSCREEN);
   NATIVEHEIGHT := GetSystemMetrics(SM_CYSCREEN);
+{$ENDIF}
 end;
 
 var
