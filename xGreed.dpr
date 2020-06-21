@@ -28,6 +28,7 @@ program xGreed;
 
 uses
   Windows,
+  DirectX in 'Base\DirectX.pas',
   constant in 'Greed\constant.pas',
   d_disk in 'Greed\d_disk.pas',
   d_font in 'Greed\d_font.pas',
@@ -60,34 +61,33 @@ uses
   i_windows in 'base\i_windows.pas',
   scriptengine in 'base\scriptengine.pas',
   i_main in 'Base\i_main.pas',
-  i_video in 'Base\i_video.pas',
-  DirectX in 'Base\DirectX.pas';
+  i_video in 'Base\i_video.pas';
 
 var
-  hGenWnd: HWND = 0;
+  hGreedWnd: HWND = 0;
 
 begin
   //Check if Generic.exe is running. If it's running then focus on the window
-  hGenWnd := FindWindow('Greed', 'Greed');
-  if hGenWnd <> 0 then
+  hGreedWnd := FindWindow(APPNAME, APPNAME);
+  if hGreedWnd <> 0 then
   begin
-    SetForegroundWindow(hGenWnd);
+    SetForegroundWindow(hGreedWnd);
     Halt(0);
   end;
 
-//  if hPrevInstance = 0  then
-    if not InitApplication(hInstance) then
-      Halt(1);
+  if not InitApplication(hInstance) then
+    Halt(1);
 
   if not InitInstance(hInstance, 0) then
     Halt(1);
 
+  I_Init;
+  printf('Starting %s version %s'#13#10, [APPNAME, I_VersionBuilt]);
   I_InitGraphics;
   startup;
   I_ShutDownGraphics;
-
   DestroyWindow(hMainWnd);
-
+  I_ShutDown;
   Halt(0);
 end.
 

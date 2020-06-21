@@ -358,7 +358,7 @@ begin
       VI_DrawMaskedPic2(111, y, pics[anim]);
     end;
   end;
-  memcpy(screen,@viewbuffer, 64000);
+  memcpy(screen, @viewbuffer, 64000);
   memcpy(@viewbuffer, scr, 64000);
   for i := 0 to 2 do
     CA_FreeLump(lump + i);

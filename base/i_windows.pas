@@ -31,7 +31,9 @@ unit i_windows;
 interface
 
 uses
-  Windows, MMSystem;
+  g_delphi,
+  Windows,
+  MMSystem;
 
 var
   hMainWnd: HWND;
@@ -63,7 +65,20 @@ procedure I_ClearInterface(var Dest: IInterface);
 
 function I_SetDPIAwareness: boolean;
 
+procedure I_Init;
+
+procedure I_ShutDown;
+
+function I_VersionBuilt(fname: string = ''): string;
+
+var
+  basedefault: string;
+  stdoutfile: string;
+
 implementation
+
+uses
+  SysUtils;
 
 function I_MapVirtualKey(const uCode, uMapType: UINT): UINT;
 begin
@@ -152,6 +167,66 @@ begin
   if assigned(dpifunc) then
     result := dpifunc;
   FreeLibrary(dllinst);
+end;
+
+var
+  fout: file;
+
+procedure I_OutProc(const s: string);
+var
+  i: integer;
+begin
+  for i := 1 to Length(s) do
+    BlockWrite(fout, s[i], 1);
+end;
+
+procedure I_Init;
+begin
+  basedefault := ExtractFilePath(ExpandFileName(ParamStr(0)));
+  if basedefault <> '' then
+    if basedefault[Length(basedefault)] <> '\' then
+      basedefault := basedefault + '\';
+  stdoutfile := basedefault + '_stdout.txt';
+  assignfile(fout, stdoutfile);
+  rewrite(fout, 1);
+  outproc := I_OutProc;
+end;
+
+procedure I_ShutDown;
+begin
+  close(fout);
+end;
+
+function I_VersionBuilt(fname: string = ''): string;
+var
+  vsize: LongWord;
+  zero: LongWord;
+  buffer: PByteArray;
+  res: pointer;
+  len: LongWord;
+  i: integer;
+begin
+  if fname = '' then
+    fname := ParamStr(0);
+  vsize := GetFileVersionInfoSize(PChar(fname), zero);
+  if vsize = 0 then
+  begin
+    result := '';
+    exit;
+  end;
+
+  buffer := PByteArray(malloc(vsize + 1));
+  GetFileVersionInfo(PChar(fname), 0, vsize, buffer);
+  VerQueryValue(buffer, '\StringFileInfo\040904E4\FileVersion', res, len);
+  result := '';
+  for i := 0 to len - 1 do
+  begin
+    if PChar(res)^ = #0 then
+      break;
+    result := result + PChar(res)^;
+    res := pointer(integer(res) + 1);
+  end;
+  memfree(pointer(buffer));
 end;
 
 end.

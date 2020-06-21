@@ -699,9 +699,14 @@ begin
 end;
 
 procedure I_FindWindowSize(const dofull, doexclusive: boolean);
+var
+  oldw, oldh: integer;
 begin
+  oldw := XWINDOWWIDTH;
+  oldh := XWINDOWHEIGHT;
   I_DoFindWindowSize(dofull, doexclusive);
-  printf('I_FindWindowSize: Set window size at (%d, %d)'#13#10, [XWINDOWWIDTH, XWINDOWHEIGHT]);
+  if (oldw <> XWINDOWWIDTH) or (oldh <> XWINDOWHEIGHT) then
+    printf('I_FindWindowSize: Set window size at (%d, %d)'#13#10, [XWINDOWWIDTH, XWINDOWHEIGHT]);
 end;
 
 procedure I_DetectNativeScreenResolution;

@@ -394,7 +394,7 @@ var
 begin
   i := 0;
   j := SCREENHEIGHT - 1;
-
+          exit;
   while i < SCREENHEIGHT do
   begin
     memcpy(@ylookup[i], @viewylookup[j], SCREENWIDTH);
