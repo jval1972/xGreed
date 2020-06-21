@@ -710,7 +710,7 @@ begin
   if (keyboard[SC_ENTER] <> 0) and (timecount > timedelay) then
   begin
     menuexecute := true;
-    timedelay := timecountc + KBDELAY2;
+    timedelay := timecount + KBDELAY2;
   end;
 end;
 

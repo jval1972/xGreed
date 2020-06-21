@@ -162,6 +162,8 @@ begin
 
   sprintf(s, 'MS_Error: ' + error + #13#10, Args);
 
+  printf(s);
+  
   I_MessageBox(I_GetFocus, PChar(s), APPNAME, IMB_ERROR);
   Halt(1);
 end;
