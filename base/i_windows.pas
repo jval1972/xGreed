@@ -196,7 +196,7 @@ begin
   rewrite(fout, 1);
   outproc := I_OutProc;
 
-  cdr_drivenum := 0;
+  cdr_drivenum := -1;
   drv[1] := ':';
   drv[2] := '\';
   drv[3] := #0;

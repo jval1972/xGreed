@@ -684,7 +684,7 @@ begin
   if (keyboard[SC_ESCAPE] <> 0) and (timecount > timedelay) then
   begin
     downlevel := true;
-    timedelay := timecount+KBDELAY2;
+    timedelay := timecount + KBDELAY2;
   end;
 
   if (keyboard[SC_UPARROW] <> 0) and (timecount > timedelay) then
@@ -699,7 +699,7 @@ begin
     inc(menucursor);
     if menucursor = menumax[menulevel] then
       menucursor := 0;
-    timedelay := timecount+KBDELAY2;
+    timedelay := timecount + KBDELAY2;
   end;
 
   if (keyboard[SC_RIGHTARROW] <> 0) and (timecount > timedelay) then

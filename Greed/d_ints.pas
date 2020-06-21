@@ -158,8 +158,6 @@ procedure INT_ReadControls;
 var
   i: integer;
 begin
-  i := I_MapVirtualKey(SC_A, 1);
-
   for i := 0 to 127 do
    keyboard[i] := I_GetKeyState(I_MapVirtualKey(i, 1));
 
@@ -176,6 +174,7 @@ end;
 // process each timer tick
 procedure INT_TimerISR;
 begin
+  INT_ReadControls;
   timecount := timecount + 2;
   if Assigned(timerhook) then
     timerhook;

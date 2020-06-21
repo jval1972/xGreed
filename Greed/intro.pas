@@ -346,8 +346,6 @@ begin
   begin
     activatemenu := false;
     nextchar := false;
-//   unlock_region((void near *)IntroCommand,(char *)IntroStub - (char near *)IntroCommand);
-//   INT_TimerHook(NULL);
     result := true;
     exit;
   end;
@@ -705,8 +703,6 @@ begin
 
   redo := false;
 
-// lock_region((void near *)IntroCommand,(char *)IntroStub - (char near *)IntroCommand);
-// INT_TimerHook(IntroCommand);
   VI_FillPalette(0, 0, 0);
   activatemenu := false;
   while true do
@@ -811,7 +807,7 @@ procedure startup;
 label
   restart;
 begin
-  nointro := true;
+//  nointro := true;
   LoadData;
 
 restart:

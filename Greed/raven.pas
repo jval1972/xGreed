@@ -2732,7 +2732,6 @@ end;
 // called by an interrupt
 procedure PlayerCommand;
 begin
-  INT_ReadControls;
   ControlMovement;
 end;
 

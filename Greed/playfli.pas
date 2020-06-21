@@ -65,16 +65,18 @@ type
 
 function CheckTime(const n1, n2: integer): boolean;
 
-function DoPlayFLI(const fname: string; const offset: integer): boolean;
+function DoPlayFLI(const afname: string; const offset: integer): boolean;
 
 implementation
 
 uses
+  SysUtils,
   g_delphi,
   d_ints,
   d_misc,
   d_video,
   i_video,
+  i_windows,
   r_render;
 
 var
@@ -253,6 +255,57 @@ begin
   result := n1 >= n2;
 end;
 
+procedure FindFLIFile(var fname: string);
+var
+  stmp: string;
+  test: string;
+begin
+  stmp := ExtractFileName(fname);
+  test := basedefault + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := basedefault + 'MOVIES\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MOVIES\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  if cdr_drivenum >= 0 then
+  begin
+    test := Chr(cdr_drivenum + Ord('A')) + ':\GREED2\MOVIES\' + stmp;
+    if fexists(test) then
+    begin
+      fname := test;
+      exit;
+    end;
+
+    test := Chr(cdr_drivenum + Ord('A')) + ':\GREED3\MOVIES\' + stmp;
+    if fexists(test) then
+    begin
+      fname := test;
+      exit;
+    end;
+
+    test := Chr(cdr_drivenum + Ord('A')) + ':\MOVIES\' + stmp;
+    if fexists(test) then
+    begin
+      fname := test;
+      exit;
+    end;
+  end;
+end;
 
 // play FLI out of BLO file
 //  load FLI header
@@ -261,11 +314,21 @@ end;
 //   copy frame to screen
 //      reset timer
 //      dump out if keypressed or mousereleased
-function DoPlayFLI(const fname: string; const offset: integer): boolean;
+function DoPlayFLI(const afname: string; const offset: integer): boolean;
 var
   f: file;
   delay: integer;
+  fname: string;
 begin
+  fname := afname;
+  if not fexists(fname) then
+    FindFLIFile(fname);
+  if not fexists(fname) then
+  begin
+    printf('FLI file "%s" not found'#13#10, [afname]);
+    exit;
+  end;
+
   newascii := false;
   chunkbuf := malloc(64000);
   if chunkbuf = nil then
