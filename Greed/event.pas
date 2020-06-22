@@ -57,8 +57,8 @@ type
   Pzone_t = ^zone_t;
 
 var
-  triggers: array[0..MAPROWS - 1, 0..MAPCOLS - 1] of byte;
-  switches: array[0..MAPROWS - 1, 0..MAPCOLS - 1] of byte;
+  triggers: packed array[0..MAPROWS - 1, 0..MAPCOLS - 1] of byte;
+  switches: packed array[0..MAPROWS - 1, 0..MAPCOLS - 1] of byte;
   processes: array[0..MAXPROCESS -1] of integer;
   numprocesses, numzones, fliplayed: integer;
   zones: array[0..MAXZONES - 1] of zone_t;

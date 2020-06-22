@@ -802,7 +802,7 @@ begin
       exit;
   end;
   lastviewsize := currentViewSize;
-  resizeScreen := 0;
+  resizeScreen := false;
   if MakeLarger then
   begin
     if currentViewSize < MAXVIEWSIZE - 1 then
@@ -2248,6 +2248,7 @@ begin
   player.inventory[2] := 4;
   newmap(player.map, 1);
   timecount := 0;
+  keyboardDelay := 0;
   loadweapon(player.weapons[0]);
 end;
 

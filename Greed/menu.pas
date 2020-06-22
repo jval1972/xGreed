@@ -419,7 +419,7 @@ var
   dd: string;
 begin
   dd := _SAVEDIR;
-  if not fopen(f, dd, fOpenReadWrite) then
+  if not fopen(f, dd, fCreate) then
     MS_Error('SaveDirectory(): Error creating ' + dd);
   if not fwrite(@savedir, SizeOf(savedir), 1, f) then
     MS_Error('SaveDirectory(): Error saving ' + dd);

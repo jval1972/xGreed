@@ -726,7 +726,7 @@ procedure LoadMiscData;
 var
   i: integer;
 begin
-  printf('.');
+  printf('LoadMiscData().');
   font1 := CA_CacheLump(CA_GetNamedNum('FONT1'));
   printf('.');
   font2 := CA_CacheLump(CA_GetNamedNum('FONT2'));
@@ -746,7 +746,7 @@ begin
   printf('.');
   for i := 0 to 255 do
     backdroplookup[i] := @backdrop[256 * i];
-  printf('.');
+  printf('.Done!'#13#10);
 end;
 
 
@@ -828,7 +828,7 @@ restart:
     maingame;
     if redo then
       goto restart;
-   end
+  end
   else
     StopMusic;
 

@@ -37,6 +37,7 @@ var
   timerhook: PProcedure;  // called every other frame (player);
   timeractive: boolean;
   timecount: integer; // current time index
+  gametic: integer = 0;
   keyboard: array[0..NUMCODES - 1] of smallint;  // keyboard flags
   pause, capslock, newascii: boolean;
   mouseinstalled, joyinstalled: boolean;
@@ -155,6 +156,8 @@ procedure INT_KeyboardISR;
 begin
 end;
 
+var
+  oldkeyboard: array[0..NUMCODES - 1] of smallint;  // keyboard flags
 
 // read in input controls
 procedure INT_ReadControls;
@@ -162,17 +165,17 @@ var
   i: integer;
 begin
   newascii := false;
+  lastascii := #0;
   for i := 0 to 127 do
   begin
+    oldkeyboard[i] := keyboard[i];
     keyboard[i] := I_GetKeyState(I_MapVirtualKey(i, 1));
     if keyboard[i] and $80 <> 0 then
-    begin
-      lastascii := toupper(ASCIINames[i]);
-//      if isalnum(Chr(i)) or (Chr(i) in [' ', '.', '-', '!', ',', '?', '''', #27]) then
-//      begin
+      if oldkeyboard[i] and $80 = 0 then
+      begin
+        lastascii := toupper(ASCIINames[i]);
         newascii := true;
-//      end;
-    end;
+      end;
   end;
 
   memset(@in_button, 0, SizeOf(in_button));
@@ -189,7 +192,8 @@ end;
 procedure INT_TimerISR;
 begin
   INT_ReadControls;
-  timecount := timecount + 1;
+  inc(timecount);
+  inc(gametic);
   if Assigned(timerhook) then
     if timecount and 1 <> 0 then
       timerhook;
@@ -229,7 +233,7 @@ procedure INT_Setup;
 begin
   memset(@keyboard, 0, SizeOf(keyboard));
   M_Init;
-  dStartTimer(INT_TimerISR, TICRATE);//1000 div 35);
+  dStartTimer(INT_TimerISR, TICRATE);
   timeractive := true;
 end;
 

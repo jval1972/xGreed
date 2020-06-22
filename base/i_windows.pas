@@ -82,7 +82,8 @@ implementation
 
 uses
   SysUtils,
-  d_ints;
+  d_ints,
+  d_misc;
 
 function I_MapVirtualKey(const uCode, uMapType: UINT): UINT;
 begin
@@ -188,7 +189,7 @@ begin
   if basedefault <> '' then
     if basedefault[Length(basedefault)] <> '\' then
       basedefault := basedefault + '\';
-  stdoutfile := basedefault + '_stdout.txt';
+  stdoutfile := basedefault + APPNAME + '_stdout.txt';
   assignfile(fout, stdoutfile);
   rewrite(fout, 1);
   outproc := I_OutProc;
@@ -284,7 +285,8 @@ const
 
 function clock: LongWord;
 begin
-  result := trunc(I_GetSysTime * CLOCKS_PER_SEC);
+//  result := trunc(I_GetSysTime * CLOCKS_PER_SEC);
+  result := gametic;
 end;
 
 initialization

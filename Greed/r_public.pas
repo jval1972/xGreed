@@ -138,7 +138,7 @@ begin
   flatlump := CA_GetNamedNum('startflats');
   numflats := CA_GetNamedNum('endflats') - flatlump;
   doorlump := CA_GetNamedNum('door_1');
-  printf('.');
+  printf('RF_PreloadGraphics().');
   // load the lumps
   for i := 1 to numsprites - 1 do
   begin
@@ -148,7 +148,10 @@ begin
     begin
       printf('.');
       if newascii and (lastascii = #27) then
+      begin
+        printf('.Aborted!'#13#10);
         exit;
+      end;
     end;
 
   end;
@@ -163,7 +166,7 @@ begin
     CA_CacheLump(walllump + 1);
     CA_CacheLump(flatlump + 1);
   end;
-  printf('.');
+  printf('.Done!'#13#10);
 end;
 
 
@@ -266,7 +269,7 @@ var
   lightlump: integer;
 begin
   memset(@framevalid, 0, SizeOf(framevalid));
-  printf('.');
+  printf('RF_Startup().');
   frameon := 0;
   // trig tables
   for i := 0 to ANGLES do
@@ -297,10 +300,10 @@ begin
   end
   else
   begin
-    for i := 1 to numflats do flattranslation[i] := 1;
-    for i := 1 to numwalls do walltranslation[i] := 1;
     flattranslation[0] := 0;
     walltranslation[0] := 0;
+    for i := 1 to numflats do flattranslation[i] := 1;
+    for i := 1 to numwalls do walltranslation[i] := 1;
   end;
   actionhook := nil;
   actionflag := 0;
@@ -309,7 +312,7 @@ begin
   printf('.');
   InitReverseCam;
   InitWalls;
-  printf('.');
+  printf('.Done!'#13#10);
 end;
 
 

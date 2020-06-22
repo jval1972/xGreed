@@ -43,7 +43,8 @@ const
 
 var
   player: player_t;
-  resizeScreen, warpActive, currentViewSize: byte;
+  warpActive, currentViewSize: byte;
+  resizeScreen: boolean = false;
   biggerScreen: boolean;
   keyboardDelay, frames, weapdelay, spritemovetime, secretdelay: integer;
   RearViewTime, RearViewDelay, inventorytime: integer;
@@ -1416,7 +1417,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot + 1] = 128) and (doubleswitch) then
+    else if (westwall[mapspot + 1] = 128) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1426,7 +1427,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot + 1] = 173) and (doubleswitch) then
+    else if (westwall[mapspot + 1] = 173) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1436,7 +1437,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot + 1] = 76) and (doubleswitch) then
+    else if (westwall[mapspot + 1] = 76) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1446,7 +1447,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot + 1] = 141) and (doubleswitch) then
+    else if (westwall[mapspot + 1] = 141) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1456,7 +1457,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot + 1] = 235) and (doubleswitch) then
+    else if (westwall[mapspot + 1] = 235) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1469,7 +1470,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot] = 128) and (doubleswitch) then
+    else if (northwall[mapspot] = 128) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1479,7 +1480,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot] = 173) and (doubleswitch) then
+    else if (northwall[mapspot] = 173) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1489,7 +1490,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot] = 76) and (doubleswitch) then
+    else if (northwall[mapspot] = 76) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1499,7 +1500,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot] = 141) and (doubleswitch) then
+    else if (northwall[mapspot] = 141) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1509,7 +1510,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot] = 235) and (doubleswitch) then
+    else if (northwall[mapspot] = 235) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1522,7 +1523,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot] = 128) and (doubleswitch) then
+    else if (westwall[mapspot] = 128) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1532,7 +1533,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot] = 173) and (doubleswitch) then
+    else if (westwall[mapspot] = 173) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1542,7 +1543,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot] = 76) and (doubleswitch) then
+    else if (westwall[mapspot] = 76) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1552,7 +1553,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot] = 141) and (doubleswitch) then
+    else if (westwall[mapspot] = 141) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1562,7 +1563,7 @@ begin
       result := true;
       exit;
     end
-    else if (westwall[mapspot] = 235) and (doubleswitch) then
+    else if (westwall[mapspot] = 235) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1575,7 +1576,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot + MAPCOLS] = 128) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 128) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1585,7 +1586,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot + MAPCOLS] = 173) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 173) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1595,7 +1596,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot + MAPCOLS] = 76) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 76) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1605,7 +1606,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot + MAPCOLS] = 141) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 141) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1615,7 +1616,7 @@ begin
       result := true;
       exit;
     end
-    else if (northwall[mapspot + MAPCOLS] = 235) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 235) and doubleswitch then
     begin
       result := true;
       exit;
@@ -1681,46 +1682,46 @@ begin
   begin
     if (westwall[mapspot] = 127) then
       westwall[mapspot] := 128
-    else if (westwall[mapspot] = 128) and (doubleswitch) then
+    else if (westwall[mapspot] = 128) and doubleswitch then
       westwall[mapspot] := 127
     else if (westwall[mapspot] = 172) then
       westwall[mapspot] := 173
-    else if (westwall[mapspot] = 173) and (doubleswitch) then
+    else if (westwall[mapspot] = 173) and doubleswitch then
       westwall[mapspot] := 172
     else if (westwall[mapspot] = 75) then
       westwall[mapspot] := 76
-    else if (westwall[mapspot] = 76) and (doubleswitch) then
+    else if (westwall[mapspot] = 76) and doubleswitch then
       westwall[mapspot] := 75
     else if (westwall[mapspot] = 140) then
       westwall[mapspot] := 141
-    else if (westwall[mapspot] = 141) and (doubleswitch) then
+    else if (westwall[mapspot] = 141) and doubleswitch then
       westwall[mapspot] := 140
     else if (westwall[mapspot] = 234) then
       westwall[mapspot] := 235
-    else if (westwall[mapspot] = 235) and (doubleswitch) then
+    else if (westwall[mapspot] = 235) and doubleswitch then
       westwall[mapspot] := 234;
   end
   else if angle >= WEST + DEGREE45 then
   begin
     if northwall[mapspot + MAPCOLS] = 127 then
       northwall[mapspot + MAPCOLS] := 128
-    else if (northwall[mapspot + MAPCOLS] = 128) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 128) and doubleswitch then
       northwall[mapspot + MAPCOLS] := 127
     else if (northwall[mapspot + MAPCOLS] = 172) then
       northwall[mapspot + MAPCOLS] := 173
-    else if (northwall[mapspot + MAPCOLS] = 173) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 173) and doubleswitch then
       northwall[mapspot + MAPCOLS] := 172
     else if (northwall[mapspot + MAPCOLS] = 75) then
       northwall[mapspot + MAPCOLS] := 76
-    else if (northwall[mapspot + MAPCOLS] = 76) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 76) and doubleswitch then
       northwall[mapspot + MAPCOLS] := 75
     else if (northwall[mapspot + MAPCOLS] = 140) then
       northwall[mapspot + MAPCOLS] := 141
-    else if (northwall[mapspot + MAPCOLS] = 141) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 141) and doubleswitch then
       northwall[mapspot + MAPCOLS] := 140
     else if (northwall[mapspot + MAPCOLS] = 234) then
       northwall[mapspot + MAPCOLS] := 235
-    else if (northwall[mapspot + MAPCOLS] = 235) and (doubleswitch) then
+    else if (northwall[mapspot + MAPCOLS] = 235) and doubleswitch then
       northwall[mapspot + MAPCOLS] := 234;
   end;
 end;
@@ -1732,10 +1733,10 @@ var
   door_p, last_p: Pdoorobj_t;
 begin
   // check for doors on the north wall
-  xl := ((xcenter - PLAYERSIZE) div FRACTILEUNIT);
-  yl := ((ycenter - PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT);
-  xh := ((xcenter + PLAYERSIZE) div FRACTILEUNIT);
-  yh := ((ycenter + PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT);
+  xl := (xcenter - PLAYERSIZE) div FRACTILEUNIT;
+  yl := (ycenter - PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT;
+  xh := (xcenter + PLAYERSIZE) div FRACTILEUNIT;
+  yh := (ycenter + PLAYERSIZE - (TILEUNIT div 2)) div FRACTILEUNIT;
   for y := yl + 1 to yh do
     for x := xl to xh do
     begin
@@ -2048,12 +2049,6 @@ begin
 end;
 
 
-// timer access! ********************************************
-procedure ControlStub1;
-begin
-end;
-
-
 function ClipMove(const angle: integer; const xmove, ymove: fixed_t): boolean;
 var
   dx, dy: fixed_t;
@@ -2208,19 +2203,19 @@ begin
     paused := true;
 
   // change screen size
-  if (keyboard[SC_F9] <> 0) and (resizeScreen = 0) and (timecount > keyboardDelay) then
+  if (keyboard[SC_F9] <> 0) and not resizeScreen and (timecount > keyboardDelay) then
   begin
-    resizeScreen := 1;
+    resizeScreen := true;
     biggerScreen := true;
     keyboardDelay := timecount + KBDELAY;
-    if SC.screensize < 9 then
+    if SC.screensize < MAXVIEWSIZE - 1 then
       inc(SC.screensize);
     exit;
   end;
 
-  if (keyboard[SC_F10] <> 0) and (resizeScreen = 0) and (timecount > keyboardDelay) then
+  if (keyboard[SC_F10] <> 0) and not resizeScreen and (timecount > keyboardDelay) then
   begin
-    resizeScreen := 1;
+    resizeScreen := true;
     biggerScreen := false;
     keyboardDelay := timecount + KBDELAY;
     if SC.screensize > 0 then
@@ -3661,7 +3656,7 @@ begin
 
   if not netmode then
   begin
-    newmap(player.map,restartvalue);
+    newmap(player.map, restartvalue);
     INT_TimerHook(PlayerCommand);
   end
   else
@@ -4292,7 +4287,7 @@ begin
       NetGetData;
     if deadrestart then
       startover(2);
-    if resizeScreen <> 0 then
+    if resizeScreen then
       ChangeViewSize(biggerScreen);
     if netmode then
       NetGetData;
@@ -4456,12 +4451,6 @@ begin
     if netmode then
       NetGetData;
   end;
-end;
-
-
-procedure ActionHook;
-begin
-  actionflag :=  0;
 end;
 
 
