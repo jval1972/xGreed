@@ -174,7 +174,8 @@ begin
       if oldkeyboard[i] and $80 = 0 then
       begin
         lastascii := toupper(ASCIINames[i]);
-        newascii := true;
+        if lastascii <> #0 then
+          newascii := true;
       end;
   end;
 
@@ -192,7 +193,7 @@ end;
 procedure INT_TimerISR;
 begin
 //  if timecount and 1 <> 0 then
-    INT_ReadControls;
+  INT_ReadControls;
   inc(timecount);
   inc(gametic);
   if Assigned(timerhook) then

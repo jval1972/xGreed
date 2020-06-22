@@ -97,7 +97,7 @@ function SaveSetup(const SC: PSoundCard; const Filename: string): integer;
 var
   f: file;
 begin
-  if not fopen(f, FileName, fOpenReadWrite) then
+  if not fopen(f, FileName, fCreate) then
   begin
     result := 1;
     exit;
