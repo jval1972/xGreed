@@ -295,7 +295,7 @@ begin
   height := pic.height;
   source := @pic.data;
 
-  colormap := zcolormap[0]; // JVAL: Avoid compiler waring
+  colormap := colormaps; // JVAL: Avoid compiler waring
   wallshadow := mapeffects[player.mapspot];
   if wallshadow = 0 then
   begin

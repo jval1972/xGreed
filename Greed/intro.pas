@@ -301,15 +301,15 @@ end;
 
 procedure IntroCommand;
 begin
-  if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay) then
+  if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay[SC_ENTER]) then
   begin
     activatemenu := true;
-    keyboardDelay := timecount + KBDELAY;
+    keyboardDelay[SC_ENTER] := timecount + KBDELAY;
   end;
-  if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay) then
+  if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay[SC_SPACE]) then
   begin
     nextchar := true;
-    keyboardDelay := timecount + KBDELAY;
+    keyboardDelay[SC_SPACE] := timecount + KBDELAY;
   end;
 end;
 
@@ -338,7 +338,7 @@ begin
   timecount := player.timecount;
   activatemenu := false;
   INT_TimerHook(IntroCommand);
-  keyboardDelay := timecount + KBDELAY;
+//  keyboardDelay := timecount + KBDELAY;
 end;
 
 

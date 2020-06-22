@@ -191,7 +191,8 @@ end;
 // process each timer tick
 procedure INT_TimerISR;
 begin
-  INT_ReadControls;
+//  if timecount and 1 <> 0 then
+    INT_ReadControls;
   inc(timecount);
   inc(gametic);
   if Assigned(timerhook) then

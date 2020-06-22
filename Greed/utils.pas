@@ -1389,7 +1389,7 @@ begin
   weapdelay := 0;
   secretdelay := 0;
   frames := 0;
-  keyboardDelay := 0;
+  ZeroMemory(@keyboardDelay, SizeOf(keyboardDelay));
   spritemovetime := 0;
   wallanimationtime := 0;
   timemsg := 0;
@@ -2086,7 +2086,7 @@ begin
   gameloaded := true;
   player.scrollmax := windowHeight + player.scrollmin;
   timecount := player.timecount;
-  keyboardDelay := 0;
+  ZeroMemory(@keyboardDelay, SizeOf(keyboardDelay));
   BonusItem.time := timecount + 2100;
   wallanimationtime := player.timecount;
   spritemovetime := player.timecount;
@@ -2248,7 +2248,7 @@ begin
   player.inventory[2] := 4;
   newmap(player.map, 1);
   timecount := 0;
-  keyboardDelay := 0;
+  ZeroMemory(@keyboardDelay, SizeOf(keyboardDelay));
   loadweapon(player.weapons[0]);
 end;
 
