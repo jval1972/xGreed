@@ -462,14 +462,14 @@ begin
     sz := hsprite.z + (hsprite.height div 2);
     if sz > pz then
     begin
-      z := (sz - pz) shr (FRACBITS + 2);
+      z := _SHR((sz - pz), (FRACBITS + 2));
       if z >= MAXAUTO then
       begin
         result := (-player.scrollmin) and ANGLES;
         exit;
       end;
-      x := (hsprite.x - player.x) shr (FRACBITS + 2);
-      y := (hsprite.y - player.y) shr (FRACBITS + 2);
+      x := _SHR((hsprite.x - player.x), (FRACBITS + 2));
+      y := _SHR((hsprite.y - player.y), (FRACBITS + 2));
       d := trunc(sqrt(x * x + y * y));
       if (d >= MAXAUTO) or (autoangle2[d][z] = -1) then
       begin
@@ -481,14 +481,14 @@ begin
     end
     else if sz<pz then
     begin
-      z := (pz - sz) shr (FRACBITS + 2);
+      z := _SHR((pz - sz), (FRACBITS + 2));
       if z >= MAXAUTO then
       begin
         result := (-player.scrollmin) and ANGLES;
         exit;
       end;
-      x := (hsprite.x - player.x) shr (FRACBITS + 2);
-      y := (hsprite.y - player.y) shr (FRACBITS + 2);
+      x := _SHR((hsprite.x - player.x), (FRACBITS + 2));
+      y := _SHR((hsprite.y - player.y), (FRACBITS + 2));
       d := trunc(sqrt(x * x + y * y));
       if (d >= MAXAUTO) or (autoangle2[d][z] = -1) then
       begin
@@ -703,7 +703,7 @@ begin
       if (mapsprites[search] = warpValue) and (search <> nosearch) then
       begin
         x := search and (MAPSIZE - 1);
-        y := search shr TILESHIFT;
+        y := search div TILESIZE;
         turnrate := 0;
         moverate := 0;
         fallrate := 0;
@@ -4491,14 +4491,14 @@ begin
   probe.moveSpeed := MAXPROBE;
   probe.movesize := 16 * FRACUNIT; // half a tile
   probe.spawnid := playernum;
-  ChangeViewSize(true);
+{  ChangeViewSize(true);
   ChangeViewSize(true);
   ChangeViewSize(true);
   ChangeViewSize(true);
   ChangeViewSize(false);
   ChangeViewSize(false);
   ChangeViewSize(false);
-  ChangeViewSize(false);
+  ChangeViewSize(false);}
   for i := 0 to currentViewSize - 1 do
     ChangeViewSize(true);
   resetdisplay;

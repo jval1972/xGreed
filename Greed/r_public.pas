@@ -424,8 +424,8 @@ var
   fx, fy: fixed_t;
   top, bottom, water: fixed_t;
 begin
-  tilex := x shr (FRACBITS + TILESHIFT);
-  tiley := y shr (FRACBITS + TILESHIFT);
+  tilex := _SHR(x, (FRACBITS + TILESHIFT));
+  tiley := _SHR(y, (FRACBITS + TILESHIFT));
   mapspot := tiley * MAPSIZE + tilex;
   polytype := (mapflags[mapspot] and FL_FLOOR) shr FLS_FLOOR;
   if (floorpic[mapspot] >= 57) and (floorpic[mapspot] <= 59) then
@@ -483,8 +483,8 @@ var
   fx, fy: fixed_t;
   top, bottom: fixed_t;
 begin
-  tilex := x shr (FRACBITS + TILESHIFT);
-  tiley := y shr (FRACBITS + TILESHIFT);
+  tilex := _SHR(x, (FRACBITS + TILESHIFT));
+  tiley := _SHR(y, (FRACBITS + TILESHIFT));
   mapspot := tiley * MAPSIZE + tilex;
   polytype := (mapflags[mapspot] and FL_CEILING) shr FLS_CEILING;
   // flat

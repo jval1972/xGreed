@@ -1551,8 +1551,8 @@ begin
   x := windowWidth div 4;
   minx := -(x div 2);
   maxx := x div 2;
-  ofsx := 1 - ((player.x shr (FRACBITS + 4)) and 3);
-  ofsy := 1 - ((player.y shr (FRACBITS + 4)) and 3);
+  ofsx := 1 - (_SHR(player.x, (FRACBITS + 4)) and 3);
+  ofsy := 1 - (_SHR(player.y, (FRACBITS + 4)) and 3);
   px := player.x div FRACTILEUNIT;
   py := player.y div FRACTILEUNIT;
 
@@ -1678,20 +1678,20 @@ begin
   case MapZoom of
   8:
     begin
-      ofsx := 1 - ((player.x shr (FRACBITS + 3)) and 7);  // compute player tile offset
-      ofsy := 1 - ((player.y shr (FRACBITS + 3)) and 7);
+      ofsx := 1 - (_SHR(player.x, (FRACBITS + 3)) and 7);  // compute player tile offset
+      ofsy := 1 - (_SHR(player.y, (FRACBITS + 3)) and 7);
     end;
 
   4:
     begin
-      ofsx := 1 - ((player.x shr (FRACBITS + 4)) and 3);  // compute player tile offset
-      ofsy := 1 - ((player.y shr (FRACBITS + 4)) and 3);
+      ofsx := 1 - (_SHR(player.x, (FRACBITS + 4)) and 3);  // compute player tile offset
+      ofsy := 1 - (_SHR(player.y, (FRACBITS + 4)) and 3);
     end;
 
   16:
     begin
-      ofsx := 1 - ((player.x shr (FRACBITS + 2)) and 15); // compute player tile offset
-      ofsy := 1 - ((player.y shr (FRACBITS + 2)) and 15);
+      ofsx := 1 - (_SHR(player.x, (FRACBITS + 2)) and 15); // compute player tile offset
+      ofsy := 1 - (_SHR(player.y, (FRACBITS + 2)) and 15);
     end;
   end;
 
@@ -1931,8 +1931,8 @@ begin
   x := windowWidth div 4;
   minx := -(x div 2);
   maxx := x div 2;
-  ofsx := 1 - ((player.x shr (FRACBITS + 4)) and 3);
-  ofsy := 1 - ((player.y shr (FRACBITS + 4)) and 3);
+  ofsx := 1 - (_SHR(player.x, (FRACBITS + 4)) and 3);
+  ofsy := 1 - (_SHR(player.y, (FRACBITS + 4)) and 3);
   px := player.x div FRACTILEUNIT;
   py := player.y div FRACTILEUNIT;
   y := ofsy - 4;
@@ -2008,8 +2008,8 @@ var
   ofsx, ofsy, x, y, a, b, px, py: integer;
   sp: Pscaleobj_t;
 begin
-  ofsx := 1 - ((player.x shr (FRACBITS + 4)) and 3) + windowWidth div 2;
-  ofsy := 1 - ((player.y shr (FRACBITS + 4)) and 3) + windowHeight div 2;
+  ofsx := 1 - (_SHR(player.x, (FRACBITS + 4)) and 3) + windowWidth div 2;
+  ofsy := 1 - (_SHR(player.y, (FRACBITS + 4)) and 3) + windowHeight div 2;
   px := player.x div FRACTILEUNIT;
   py := player.y div FRACTILEUNIT;
   sp := firstscaleobj.next;

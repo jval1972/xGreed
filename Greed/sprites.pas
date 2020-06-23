@@ -1243,14 +1243,14 @@ begin
 
   if sz > pz then
   begin
-    z := (sz - pz) shr (FRACBITS + 2);
+    z := _SHR((sz - pz), (FRACBITS + 2));
     if z >= MAXAUTO then
     begin
       result := 0;
       exit;
     end;
-    x := (msprite.x - px) shr (FRACBITS + 2);
-    y := (msprite.y - py) shr (FRACBITS + 2);
+    x := _SHR((msprite.x - px), (FRACBITS + 2));
+    y := _SHR((msprite.y - py), (FRACBITS + 2));
     d := trunc(sqrt(x * x + y * y));
     if (d >= MAXAUTO) or (autoangle2[d][z] = -1) then
     begin
@@ -1263,15 +1263,15 @@ begin
   end
   else if sz < pz then
   begin
-    z := (pz - sz) shr (FRACBITS + 2);
+    z := _SHR((pz - sz), (FRACBITS + 2));
     if z >= MAXAUTO then
     begin
       result := 0;
       exit;
     end;
 
-    x := (msprite.x - px) shr (FRACBITS + 2);
-    y := (msprite.y - py) shr (FRACBITS + 2);
+    x := _SHR((msprite.x - px), (FRACBITS + 2));
+    y := _SHR((msprite.y - py), (FRACBITS + 2));
     d := trunc(sqrt(x * x + y * y));
     if (d >= MAXAUTO) or (autoangle2[d][z] = -1) then
     begin
