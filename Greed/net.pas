@@ -811,7 +811,7 @@ begin
    oldgoalitem := -1;
    fragcount[bulletid]++;
    goalitem := bulletid+1;
-   sprintf(str1,'You were fragged by %s!',netnames[fevent.bulletid]);
+   sprintf(str1, 'You were fragged by %s!',netnames[fevent.bulletid]);
    writemsg(str1);
     end;
   NETINT;

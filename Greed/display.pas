@@ -622,7 +622,7 @@ begin
     time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
-    sprintf(str1,'%3d s ', [time]);
+    sprintf(str1, '%3d s ', [time]);
     name := BonusItem.name;
     pic := lumpmain[lump];
     x := 34 - (pic.width div 2);
@@ -707,7 +707,7 @@ begin
     time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
-    sprintf(str1,'%3d s', [time]);
+    sprintf(str1, '%3d s', [time]);
     name := BonusItem.name;
   end
   else if (goalitem >= 1) and (goalitem <= 2) then
@@ -1083,7 +1083,7 @@ begin
     time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
-    sprintf(str1,'%3d s', [time]);
+    sprintf(str1, '%3d s', [time]);
     name := BonusItem.name;
     pic := lumpmain[lump];
     x := 34 - (pic.width div 2);
@@ -1206,7 +1206,7 @@ begin
     time := (BonusItem.time - timecount) div TICRATE;
     if time > 10000 then
       time := 0;
-    sprintf(str1,'%3d s', [time]);
+    sprintf(str1, '%3d s', [time]);
     name := BonusItem.name;
     if oldgoalitem = goalitem then
     begin
@@ -1233,7 +1233,7 @@ begin
     typ := 'Second ';
     found := player.secondaries[goalitem - 3];
     total := scount[goalitem - 3];
-    sprintf(str1,'%2d/%2d', [found, total]);
+    sprintf(str1, '%2d/%2d', [found, total]);
     name := secnames[secondaries[(goalitem - 3) * 2]];
   end;
 
@@ -1347,7 +1347,7 @@ begin
     printx := 104;
     printy := 3;
     fontbasecolor := 0;
-    sprintf(str1,'%9d', [player.levelscore]);
+    sprintf(str1, '%9d', [player.levelscore]);
     FN_RawPrint(str1);
     oldlevelscore := player.levelscore;
   end;

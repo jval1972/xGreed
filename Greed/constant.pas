@@ -257,7 +257,7 @@ const
 
     'pulsebullet', 'fireball', 'probebullet', 'missile', 'spreadshot',  // kaal
 
-    'missile', 'pulsebullet', // 6) and (7
+    'missile', 'pulsebullet', // 6 & 7
     'fireball', 'pulsebullet', 'pulsebullet', 'spreadshot',  // prison
 
     'bigredball', 'greenball', 'greenarrow', 'pulsebullet' // 12, 13, 14, 15
@@ -279,13 +279,7 @@ const
     220, 149,
     4, 149,
     4, 149,
-    4, 149{,
-    4, 149{138}{,
-    4, 149,
-    4, 149,
-    4, 149,
-    4, 149,
-    4, 149 }
+    4, 149
   );
 
 const

@@ -182,7 +182,7 @@ begin
       keyboard[i] := 1
     else
       keyboard[i] := 0;
-      
+
   if mouseinstalled then
   begin
   end;
