@@ -1363,7 +1363,7 @@ begin
   UpdateWait;
 
   sprintf(fname, SAVENAME, [n]);
-  if not fopen(f, fname, fOpenReadOnly) then
+  if not fopen(f, fname, fCreate) then
     MS_Error('SaveGame(): File Open Error: %s', [fname]);
   UpdateWait;
   if not fwrite(@player, SizeOf(player_t), 1, f) then
@@ -2077,7 +2077,7 @@ begin
   sprintf(fname, SAVENAME, [n]);
   if not fopen(handle, fname, fOpenReadOnly) then
     exit;
-  if fread(@player, SizeOf(player), 1, handle) then
+  if not fread(@player, SizeOf(player_t), 1, handle) then
   begin
     close(handle);
     MS_Error('LoadGame(): Error loading %s!', [fname]);
@@ -2259,7 +2259,7 @@ end;
 procedure addscore(const n: integer);
 begin
   player.score := player.score + n;
-  if player.score > 4000000000 then
+  if player.score > 2000000000 then
     player.score := 0;
   player.levelscore := player.levelscore - n;
   if player.levelscore < 0 then
