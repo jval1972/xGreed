@@ -75,6 +75,7 @@ uses
   d_ints,
   d_misc,
   d_video,
+  intro,
   i_video,
   i_windows,
   r_render;
@@ -326,6 +327,7 @@ begin
   if not fexists(fname) then
   begin
     printf('FLI file "%s" not found'#13#10, [afname]);
+    result := false;
     exit;
   end;
 
@@ -346,7 +348,7 @@ begin
   begin
     delay := delay + header.speed;  // set timer
     fli_readframe(f);
-    while not CheckTime(timecount, delay) do begin end; // wait
+    while not CheckTime(timecount, delay) do begin Wait(1); end; // wait
     memcpy(screen, @viewbuffer, 64000);       // copy
     inc(currentfliframe);
   end;

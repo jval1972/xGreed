@@ -794,6 +794,7 @@ procedure ChangeViewSize(const MakeLarger: boolean);
 var
   lastviewsize: integer;
 begin
+  resizeScreen := false;
   if SC.vrhelmet = 1 then
   begin
     if MakeLarger and (viewSizes[(currentViewSize + 1) * 2] <> 320) then
@@ -802,7 +803,6 @@ begin
       exit;
   end;
   lastviewsize := currentViewSize;
-  resizeScreen := false;
   if MakeLarger then
   begin
     if currentViewSize < MAXVIEWSIZE - 1 then

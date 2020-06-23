@@ -2145,16 +2145,11 @@ begin
    exit;
  end;
 
-//#ifndef DEMO
-// if (keyboard[SC_G]) and (timecount > keyboardDelay) and ( not netmsgstatus)
-//   begin
-//   SaveTheScreen := true;
-//   keyboardDelay := timecount + KBDELAY;
-//    end;
-//{$ENDIF}
-
   if (keyboard[SC_ESCAPE] <> 0) and (timecount > keyboardDelay[SC_ESCAPE]) and (netmsgstatus = 0) then
+  begin
     activatemenu := true;
+    keyboardDelay[SC_ESCAPE] := timecount + KBDELAY;
+  end;
 
   if (keyboard[SC_F5] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay[SC_F5]) then
   begin
@@ -2193,15 +2188,23 @@ begin
     keyboardDelay[SC_F1] := timecount + KBDELAY;
   end;
 
-  if ((keyboard[SC_F4] <> 0) or ((keyboard[SC_ALT] <> 0) and (keyboard[SC_Q] <> 0))) {and
-     (timecount > keyboardDelay)]} then
+  if ((keyboard[SC_F4] <> 0) or ((keyboard[SC_ALT] <> 0) and (keyboard[SC_Q] <> 0))) and (timecount > keyboardDelay[SC_F4]) then
+  begin
     QuickExit := true;
+    keyboardDelay[SC_F4] := timecount + KBDELAY;
+  end;
 
   if (keyboard[SC_F5] <> 0) and (timecount > keyboardDelay[SC_F5]) and not netmode then
+  begin
     activatebrief := true;
+    keyboardDelay[SC_F5] := timecount + KBDELAY;
+  end;
 
   if (keyboard[SC_P] <> 0) and (timecount > keyboardDelay[SC_P]) and (netmsgstatus = 0) then
+  begin
     paused := true;
+    keyboardDelay[SC_P] := timecount + KBDELAY;
+  end;
 
   // change screen size
   if (keyboard[SC_F9] <> 0) and not resizeScreen and (timecount > keyboardDelay[SC_F9]) then
@@ -2354,8 +2357,11 @@ begin
     keyboardDelay[SC_F6] := timecount + KBDELAY;
   end;
 
-  if keyboard[SC_F7] <> 0 then
+  if (keyboard[SC_F7] <> 0) and (timecount > keyboardDelay[SC_F7]) then
+  begin
     newsong := true;
+    keyboardDelay[SC_F7] := timecount + KBDELAY;
+  end;
 
   if (in_button[bt_invright] <> 0) and (timecount > inventorydelay) then
   begin
@@ -3669,10 +3675,10 @@ begin
   exitexists := false;
   specialeffecttime := 0;
   ExitLevel := false;
-  if currentViewSize >= 5 then
-    VI_DrawPic(4, 149, statusbar[2]);
-  if currentViewSize >= 4 then
-    VI_DrawMaskedPic(0, 0, statusbar[3]);
+{  if currentViewSize = 2 then
+    VI_DrawPic(4, 149, statusbar[2])
+  else if currentViewSize > 3 then
+    VI_DrawMaskedPic(0, 0, statusbar[3]);}
   if netmode then
     NetGetData;
   turnrate := 0;
@@ -4034,7 +4040,7 @@ begin
   if netmode then
     NetGetData;
 
-  if (currentViewSize > 0) and (currentViewSize <= 4) then
+  if (currentViewSize > 0) and (currentViewSize < MAXVIEWSIZE) then
   begin
     if currentViewSize = 4 then
       pic := statusbar[2]

@@ -391,39 +391,6 @@ begin
   end;
 end;
 
-var
-  yyy: integer;
-
-procedure doit;
-var
-  f: file;
-  i, j: integer;
-  c: byte;
-  b: byte;
-  pal: PByteArray;//array[0..767] of byte;
-  lump: integer;
-begin
-  lump := CA_CheckNamedNum('palette');
-  if lump < 0 then
-    exit;
-  assign(f, 'screenshot' + itoa(yyy) + '.raw');
-  pal := CA_CacheLump(lump);
-  rewrite(f,1);
-  for i := 0 to 199 do
-    for j := 0 to 319 do
-    begin
-      b := viewylookup[i][j];
-      c := pal[3 * b] * 4;
-      blockwrite(f, c, 1);
-      c := pal[3 * b + 1] * 4;
-      blockwrite(f, c, 1);
-      c := pal[3 * b + 2] * 4;
-      blockwrite(f, c, 1);
-    end;
-  close(f);
-  inc(yyy);
-end;
-
 procedure VI_BlitView;
 begin
   I_FinishUpdate;

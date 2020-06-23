@@ -758,7 +758,7 @@ begin
   printx := 53;
   printy := 162 + ofs;
   FN_RawPrint2(str1);
-  sprintf(str1,'%5d', [score]);
+  sprintf(str1, '%5d', [score]);
   printx := 53;
   printy := 172 + ofs;
   FN_RawPrint2(str1);

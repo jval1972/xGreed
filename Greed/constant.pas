@@ -224,11 +224,13 @@ const
     320, 200,
     320, 200,
     320, 200,
+    320, 200,
     320, 200
   );
 
 const
   viewLoc: array[0..MAXVIEWSIZE * 2 - 1] of integer = (
+    0, 0,
     0, 0,
     0, 0,
     0, 0,
@@ -275,6 +277,7 @@ const
   statusbarloc: array[0..MAXVIEWSIZE * 2 - 1] of integer = (
     0, 0,
     220, 149,
+    4, 149,
     4, 149,
     4, 149{,
     4, 149{138}{,
@@ -338,8 +341,8 @@ const
 var
   DEMO: boolean = false;
   GAME1: boolean = true;
-  GAME2: boolean = true;
-  GAME3: boolean = true;
+  GAME2: boolean = false;
+  GAME3: boolean = false;
   CDROMGREEDDIR: boolean = false;
   ASSASSINATOR: boolean = false;
 

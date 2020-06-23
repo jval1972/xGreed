@@ -121,8 +121,6 @@ const
 const
   TICRATE = 70;
 
-procedure INT_KeyboardISR;
-
 procedure INT_ReadControls;
 
 procedure INT_TimerISR;
@@ -147,40 +145,31 @@ implementation
 
 uses
   i_windows,
+  windows,
   timer;
-
-// keyboard interrupt
-//    processes make/break codes
-//    sets key flags accordingly
-procedure INT_KeyboardISR;
-begin
-end;
-
-var
-  oldkeyboard: array[0..NUMCODES - 1] of smallint;  // keyboard flags
 
 // read in input controls
 procedure INT_ReadControls;
 var
   i: integer;
   c: char;
+  key: integer;
 begin
-  newascii := false;
   lastascii := #0;
-  for i := 0 to 127 do
+  ZeroMemory(@keyboard, SizeOf(keyboard));
+  for i := 0 to NUMCODES - 1 do
   begin
-    oldkeyboard[i] := keyboard[i];
-    keyboard[i] := I_GetKeyState(I_MapVirtualKey(i, 1));
+    key := I_MapVirtualKey(i, 1);
+    keyboard[i] := I_GetKeyState(key);
     if keyboard[i] and $80 <> 0 then
-      if oldkeyboard[i] and $80 = 0 then
+    begin
+      c := toupper(ASCIINames[i]);
+      if c <> #0 then
       begin
-        c := toupper(ASCIINames[i]);
-        if c <> #0 then
-        begin
-          lastascii := c;
-          newascii := true;
-        end;
+        lastascii := c;
+        newascii := true;
       end;
+    end;
   end;
 
   memset(@in_button, 0, SizeOf(in_button));
@@ -188,6 +177,12 @@ begin
     if keyboard[scanbuttons[i]] and $80 <> 0 then
       in_button[i] := 1;
 
+  for i := 0 to NUMCODES - 1 do
+    if keyboard[i] and $80 <> 0 then
+      keyboard[i] := 1
+    else
+      keyboard[i] := 0;
+      
   if mouseinstalled then
   begin
   end;
@@ -197,12 +192,14 @@ end;
 procedure INT_TimerISR;
 begin
 //  if timecount and 1 <> 0 then
-  INT_ReadControls;
   inc(timecount);
   inc(gametic);
-  if Assigned(timerhook) then
-    if timecount and 1 <> 0 then
+  if timecount and 1 <> 0 then
+  begin
+    INT_ReadControls;
+    if Assigned(timerhook) then
       timerhook;
+  end;
 end;
 
 

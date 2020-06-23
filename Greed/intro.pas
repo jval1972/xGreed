@@ -338,7 +338,6 @@ begin
   timecount := player.timecount;
   activatemenu := false;
   INT_TimerHook(IntroCommand);
-//  keyboardDelay := timecount + KBDELAY;
 end;
 
 
