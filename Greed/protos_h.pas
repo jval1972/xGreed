@@ -465,7 +465,7 @@ const
   HEALTIME = 300;
   MAXSTARTLOCATIONS = 8;
   MAXCHARTYPES = 6;
-  MAXVIEWSIZE = 10;
+  MAXVIEWSIZE = 4;
 
 type
   SoundCard_s = packed record

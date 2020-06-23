@@ -197,6 +197,7 @@ uses
   d_ints,
   d_ints_h,
   d_misc,
+  protos_h,
   i_video,
   intro,
   modplay,
@@ -1216,8 +1217,8 @@ begin
         if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
         begin
           SC.screensize := 9 - (((x - 40) * 10) div 49);
-          if SC.screensize > 9 then
-            SC.screensize := 9
+          if SC.screensize > MAXVIEWSIZE - 1 then
+            SC.screensize := MAXVIEWSIZE - 1
           else if SC.screensize < 0 then
             SC.screensize := 0;
           ShowMenuSliders(10 - SC.screensize, 10);
@@ -1291,6 +1292,10 @@ begin
   begin
     if SC.vrhelmet = 0 then
     begin
+      if SC.screensize > MAXVIEWSIZE - 1 then
+        SC.screensize := MAXVIEWSIZE - 1
+      else if SC.screensize < 0 then
+        SC.screensize := 0;
       while currentViewSize < SC.screensize do
         ChangeViewSize(true);
       while currentViewSize > SC.screensize do
