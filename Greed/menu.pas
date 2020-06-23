@@ -169,7 +169,7 @@ var
   identity: integer;
   waitanim: integer;
   saveposition: integer;
-  timedelay: integer;
+  menutimedelay: integer;
   quitmenu, menuexecute, downlevel, goright, goleft, waiting: boolean;
   savedir: array[0..MAXSAVEGAMES - 1] of string[22];
   waitpics: array[0..3] of Ppic_t;
@@ -272,7 +272,7 @@ begin
   lump := CA_GetNamedNum('quit');
   for i := 0 to 2 do
     pics[i] := CA_CacheLump(lump + i);
-  timedelay := timecount + KBDELAY2;
+  menutimedelay := timecount + KBDELAY2;
   Wait(KBDELAY2);
   if netmode then
     TimeUpdate;
@@ -364,7 +364,7 @@ begin
     CA_FreeLump(lump + i);
   MouseShow;
   memfree(pointer(scr));
-  timedelay := timecount + KBDELAY2;
+  menutimedelay := timecount + KBDELAY2;
   turnrate := 0;
   moverate := 0;
   fallrate := 0;
@@ -580,7 +580,7 @@ begin
         begin
           inc(SC.screensize);
           ShowMenuSliders(10 - SC.screensize, 10);
-          timedelay := timecount + KBDELAY2;
+          menutimedelay := timecount + KBDELAY2;
           goleft := false;
         end;
       end;
@@ -660,7 +660,7 @@ begin
         begin
           dec(SC.screensize);
           ShowMenuSliders(10 - SC.screensize, 10);
-          timedelay := timecount + KBDELAY2;
+          menutimedelay := timecount + KBDELAY2;
           goright := false;
         end;
       end;
@@ -681,36 +681,36 @@ end;
 
 procedure MenuCommand;
 begin
-  if (keyboard[SC_ESCAPE] <> 0) and (timecount > timedelay) then
+  if (keyboard[SC_ESCAPE] <> 0) and (timecount > menutimedelay) then
   begin
     downlevel := true;
-    timedelay := timecount + KBDELAY2;
+    menutimedelay := timecount + KBDELAY2;
   end;
 
-  if (keyboard[SC_UPARROW] <> 0) and (timecount > timedelay) then
+  if (keyboard[SC_UPARROW] <> 0) and (timecount > menutimedelay) then
   begin
     dec(menucursor);
     if menucursor < 0 then
       menucursor := menumax[menulevel] - 1;
-    timedelay := timecount + KBDELAY2;
+    menutimedelay := timecount + KBDELAY2;
   end
-  else if (keyboard[SC_DOWNARROW] <> 0) and (timecount > timedelay) then
+  else if (keyboard[SC_DOWNARROW] <> 0) and (timecount > menutimedelay) then
   begin
     inc(menucursor);
     if menucursor = menumax[menulevel] then
       menucursor := 0;
-    timedelay := timecount + KBDELAY2;
+    menutimedelay := timecount + KBDELAY2;
   end;
 
-  if (keyboard[SC_RIGHTARROW] <> 0) and (timecount > timedelay) then
+  if (keyboard[SC_RIGHTARROW] <> 0) and (timecount > menutimedelay) then
     goright := true
-  else if (keyboard[SC_LEFTARROW] <> 0) and (timecount > timedelay) then
+  else if (keyboard[SC_LEFTARROW] <> 0) and (timecount > menutimedelay) then
     goleft := true;
 
-  if (keyboard[SC_ENTER] <> 0) and (timecount > timedelay) then
+  if (keyboard[SC_ENTER] <> 0) and (timecount > menutimedelay) then
   begin
     menuexecute := true;
-    timedelay := timecount + KBDELAY2;
+    menutimedelay := timecount + KBDELAY2;
   end;
 end;
 
@@ -838,7 +838,7 @@ begin
     SaveDirectory;
     SaveGame(menucursor);
   end;
-  timedelay := timecount + KBDELAY2;
+  menutimedelay := timecount + KBDELAY2;
   INT_TimerHook(MenuCommand);
   MouseShow;
 end;
@@ -1243,7 +1243,7 @@ procedure ShowMenu(const n: integer);
 var
   scr: PByteArray;
 begin
-  timedelay := timecount + KBDELAY2;
+  menutimedelay := timecount + KBDELAY2;
   INT_TimerHook(MenuCommand);
 
   scr := malloc(64000);
@@ -1337,7 +1337,7 @@ begin
   lump := CA_GetNamedNum('pause');
   for i := 0 to 3 do
     pics[i] := CA_CacheLump(lump + i);
-  timedelay := timecount + KBDELAY2;
+  menutimedelay := timecount + KBDELAY2;
   Wait(KBDELAY2);
   anim := 0;
   if not SC.animation then
@@ -1402,19 +1402,19 @@ begin
     waitpics[i] := CA_CacheLump(lump + i);
   waitanim := 0;
   VI_DrawMaskedPic2(106, 72, waitpics[0]);
-  timedelay := timecount + 10;
+  menutimedelay := timecount + 10;
   waiting := true;
 end;
 
 
 procedure UpdateWait;
 begin
-  if timecount > timedelay then
+  if timecount > menutimedelay then
   begin
     inc(waitanim);
     waitanim := waitanim and 3;
     VI_DrawMaskedPic2(106, 72, waitpics[waitanim]);
-    timedelay := timecount + 10;
+    menutimedelay := timecount + 10;
   end;
 end;
 

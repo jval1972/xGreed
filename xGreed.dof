@@ -100,7 +100,7 @@ Conditionals=VALIDATE
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=
+RunParams=nointro
 HostApplication=
 Launcher=
 UseLauncher=0

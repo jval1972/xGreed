@@ -46,7 +46,7 @@ var
   warpActive, currentViewSize: byte;
   resizeScreen: boolean = false;
   biggerScreen: boolean;
-  frames, weapdelay, spritemovetime, secretdelay: integer;
+  frames, weapdelay, spritemovetime, secretdelay, inventorydelay, usedelay, jumpdelay: integer;
   keyboardDelay: array[0..NUMCODES - 1] of integer;
   RearViewTime, RearViewDelay, inventorytime: integer;
   weaponpic: array[0..6] of Ppic_t;
@@ -2357,17 +2357,17 @@ begin
   if keyboard[SC_F7] <> 0 then
     newsong := true;
 
-  if (in_button[bt_invright] <> 0) {and (timecount > keyboardDelay)}then
+  if (in_button[bt_invright] <> 0) and (timecount > inventorydelay) then
   begin
     goiright := true;
-   // keyboardDelay := timecount + KBDELAY;
+    inventorydelay := timecount + KBDELAY;
     inventorytime := timecount + (3 * TICRATE);
   end;
 
-  if (in_button[bt_invleft] <> 0){ and (timecount > keyboardDelay) }then
+  if (in_button[bt_invleft] <> 0) and (timecount > inventorydelay) then
   begin
     goileft := true;
-    //keyboardDelay := timecount + KBDELAY;
+    inventorydelay := timecount + KBDELAY;
     inventorytime := timecount + (3 * TICRATE);
   end;
 
@@ -2393,10 +2393,10 @@ begin
     exit;
   end;
 
-  if (in_button[bt_useitem] <> 0) {and (timecount > keyboardDelay)} then
+  if (in_button[bt_useitem] <> 0) and (timecount > usedelay) then
   begin
     useitem := true;
-//    keyboardDelay := timecount + KBDELAY;
+    usedelay := timecount + KBDELAY;
     inventorytime := timecount + (3 * TICRATE);
   end;
 
@@ -2432,10 +2432,10 @@ begin
     newweapon := 4;
   end;
 
-  if (in_button[bt_jump] <> 0) {and (timecount > keyboardDelay)} and (fallrate = 0) and (netmsgstatus = 0) then
+  if (in_button[bt_jump] <> 0) and (timecount > jumpdelay) and (fallrate = 0) and (netmsgstatus = 0) then
   begin
     fallrate := fallrate - (FALLUNIT * 9 + player.jumpmod);
-//    keyboardDelay := timecount + KBDELAY;
+    jumpdelay := timecount + KBDELAY;
   end;
 
   // check run/slow keys

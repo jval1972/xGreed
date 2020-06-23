@@ -163,6 +163,7 @@ var
 procedure INT_ReadControls;
 var
   i: integer;
+  c: char;
 begin
   newascii := false;
   lastascii := #0;
@@ -173,9 +174,12 @@ begin
     if keyboard[i] and $80 <> 0 then
       if oldkeyboard[i] and $80 = 0 then
       begin
-        lastascii := toupper(ASCIINames[i]);
-        if lastascii <> #0 then
+        c := toupper(ASCIINames[i]);
+        if c <> #0 then
+        begin
+          lastascii := c;
           newascii := true;
+        end;
       end;
   end;
 

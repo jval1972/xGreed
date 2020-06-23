@@ -1388,6 +1388,9 @@ begin
   player.timecount := 0;
   weapdelay := 0;
   secretdelay := 0;
+  inventorydelay := 0;
+  usedelay := 0;
+  jumpdelay := 0;
   frames := 0;
   ZeroMemory(@keyboardDelay, SizeOf(keyboardDelay));
   spritemovetime := 0;
