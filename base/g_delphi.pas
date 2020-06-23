@@ -483,11 +483,14 @@ var
 begin
   s1 := '';
   a := p1;
-  for i := 1 to Length(s2) do
-    if a[i - 1] = 0 then
-      break
-    else
-      s1 := s1 + Chr(a[i - 1]);
+  i := 0;
+  while a[i] <> 0 do
+  begin
+    s1 := s1 + Chr(a[i]);
+    if i > Length(s2) then
+      break;
+    inc(i);
+  end;
   result := stricmp(s1, s2);
 end;
 
