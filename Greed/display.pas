@@ -1430,24 +1430,25 @@ begin
         displayinventoryitem;
     end;
 
+  1,
+  2,
   3:
     begin
-      displayinventory1(0);   // level 3 to view
-    end;
-
-  2:  // no break not
-    begin
-      if not netmode then
-        displaybonusitem1(0)   // level 2 to view
-      else
-        displaynetbonusitem1(0);
-    end;
-
-  1:  // no break not
-    begin
-      displayrightstats1(0);  // level 1 to view
-      if (currentViewSize < 3) and (timecount < inventorytime) then
-        displayinventoryitem;
+      if currentViewSize >= 3 then
+        displayinventory1(0);   // level 3 to view
+      if currentViewSize >= 2 then
+      begin
+        if not netmode then
+          displaybonusitem1(0)   // level 2 to view
+        else
+          displaynetbonusitem1(0);
+      end;
+      if currentViewSize >= 1 then
+      begin
+        displayrightstats1(0);  // level 1 to view
+        if (currentViewSize < 3) and (timecount < inventorytime) then
+          displayinventoryitem;
+      end;
     end;
 
   4:  // level 4 to view + top to screen
