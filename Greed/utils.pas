@@ -2333,11 +2333,6 @@ begin
       Wait(3);
       inc(fontbasecolor);
     end;
-
-    for i :=  0 to 199 do
-      memset(ylookup[i], i, 320);
-    VI_BlitView;
-
     while true do
     begin
       Wait(10);
@@ -2346,6 +2341,8 @@ begin
     end;
     if lastascii = #27 then
       goto finale;
+
+    VI_FadeOut(0, 256, 0, 0, 0, 64);
 
     loadscreen('BRIEF3');
     newascii := false;
