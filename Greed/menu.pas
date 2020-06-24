@@ -209,12 +209,17 @@ uses
 (**** FUNCTIONS ****)
 
 // Draws a formatted image to the screen, masked with zero
-procedure VI_DrawMaskedPic2(x, y: integer; const pic: Ppic_t);
+procedure VI_DrawMaskedPic2(x, y: integer; const pic: Ppic_t; const backbuffer: PByteArray = nil);
 var
   dest: PByte;
   source, source2: PByteArray;
   width, height, xcor: integer;
+  backb: PByteArray;
 begin
+  if backbuffer = nil then
+    backb := @viewbuffer
+  else
+    backb := backbuffer;
   x := x - pic.orgx;
   y := y - pic.orgy;
   height := pic.height;
@@ -230,7 +235,7 @@ begin
     if y < 200 then
     begin
       dest := @ylookup[y][x];
-      source2 := @viewbuffer[y * 320 + x];
+      source2 := @backb[y * 320 + x];
       xcor := x;
       width := pic.width;
       while width > 0 do
@@ -1170,7 +1175,7 @@ begin
           SC.musicvol := ((x - 40) * 256) div 49;
           if SC.musicvol > 255 then
             SC.musicvol := 255;
-          SetVolumes(SC.musicvol,SC.sfxvol);
+          SetVolumes(SC.musicvol, SC.sfxvol);
           ShowMenuSliders(SC.musicvol, 255);
         end;
       end;
@@ -1336,9 +1341,11 @@ var
   anim, y, i: integer;
   lump: integer;
   pics: array[0..3] of Ppic_t;
+  pscreen: PByteArray;
 begin
   INT_TimerHook(nil);
-  memcpy(@viewbuffer, screen, 64000);
+  pscreen := malloc(64000);
+  memcpy(pscreen, @viewbuffer, 64000);
   lump := CA_GetNamedNum('pause');
   for i := 0 to 3 do
     pics[i] := CA_CacheLump(lump + i);
@@ -1357,7 +1364,7 @@ begin
     if (timecount >= droptime) and (y < 72) then
     begin
       if y >= 0 then
-        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+        memcpy(@viewbuffer[320 * y], @pscreen[320 * y], 640);
       y := y + 2;
       droptime := timecount + 1;
     end;
@@ -1367,7 +1374,7 @@ begin
       anim := anim and 3;
       animtime := animtime + 10;
     end;
-    VI_DrawMaskedPic2(106, y, pics[anim]);
+    VI_DrawMaskedPic2(106, y, pics[anim], pscreen);
   end;
   if not SC.animation then
     y := 200;
@@ -1378,7 +1385,7 @@ begin
     if timecount >= droptime then
     begin
       if y >= 0 then
-        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+        memcpy(@viewbuffer[320 * y], @pscreen[320 * y], 640);
       y := y + 2;
       droptime := timecount + 1;
     end;
@@ -1388,9 +1395,10 @@ begin
       anim := anim and 3;
       animtime := animtime + 10;
     end;
-    VI_DrawMaskedPic2(106, y, pics[anim]);
+    VI_DrawMaskedPic2(106, y, pics[anim], pscreen);
   end;
-  memcpy(screen, @viewbuffer, 64000);
+  memcpy(@viewbuffer, pscreen, 64000);
+  memfree(pointer(pscreen));
   for i := 0 to 3 do
     CA_FreeLump(lump + i);
 end;
