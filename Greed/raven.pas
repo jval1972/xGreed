@@ -47,7 +47,7 @@ var
   resizeScreen: boolean = false;
   biggerScreen: boolean;
   frames, weapdelay, spritemovetime, secretdelay, inventorydelay, usedelay, jumpdelay: integer;
-  keyboardDelay: array[0..NUMCODES - 1] of integer;
+  keyboardDelay: integer;
   RearViewTime, RearViewDelay, inventorytime: integer;
   weaponpic: array[0..6] of Ppic_t;
   statusbar: array[0..3] of Ppic_t;
@@ -2148,104 +2148,104 @@ begin
    exit;
  end;
 
-  if (keyboard[SC_ESCAPE] <> 0) and (timecount > keyboardDelay[SC_ESCAPE]) and (netmsgstatus = 0) then
+  if (keyboard[SC_ESCAPE] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     activatemenu := true;
-    keyboardDelay[SC_ESCAPE] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F5] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay[SC_F5]) then
+  if (keyboard[SC_F5] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
     adjustvrangle := -SC.vrangle + DEFAULTVRANGLE;
     adjustvrdist := -1;
-    keyboardDelay[SC_F5] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F4] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay[SC_F4]) then
+  if (keyboard[SC_F4] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
     adjustvrdist := 72090;
-    keyboardDelay[SC_F4] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F3] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay[SC_F3]) then
+  if (keyboard[SC_F3] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
     adjustvrdist := 59578;
-    keyboardDelay[SC_F3] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F2] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay[SC_F2]) then
+  if (keyboard[SC_F2] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
     adjustvrangle := 1;
-    keyboardDelay[SC_F2] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F1] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay[SC_F1]) then
+  if (keyboard[SC_F1] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
   begin
     adjustvrangle := -1;
-    keyboardDelay[SC_F1] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F1] <> 0) and (timecount > keyboardDelay[SC_F1]) then
+  if (keyboard[SC_F1] <> 0) and (timecount > keyboardDelay) then
   begin
     activatehelp := true;
-    keyboardDelay[SC_F1] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if ((keyboard[SC_F4] <> 0) or ((keyboard[SC_ALT] <> 0) and (keyboard[SC_Q] <> 0))) and (timecount > keyboardDelay[SC_F4]) then
+  if ((keyboard[SC_F4] <> 0) or ((keyboard[SC_ALT] <> 0) and (keyboard[SC_Q] <> 0))) and (timecount > keyboardDelay) then
   begin
     QuickExit := true;
-    keyboardDelay[SC_F4] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F5] <> 0) and (timecount > keyboardDelay[SC_F5]) and not netmode then
+  if (keyboard[SC_F5] <> 0) and (timecount > keyboardDelay) and not netmode then
   begin
     activatebrief := true;
-    keyboardDelay[SC_F5] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_P] <> 0) and (timecount > keyboardDelay[SC_P]) and (netmsgstatus = 0) then
+  if (keyboard[SC_P] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     paused := true;
-    keyboardDelay[SC_P] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
   // change screen size
-  if (keyboard[SC_F9] <> 0) and not resizeScreen and (timecount > keyboardDelay[SC_F9]) then
+  if (keyboard[SC_F9] <> 0) and not resizeScreen and (timecount > keyboardDelay) then
   begin
     resizeScreen := true;
     biggerScreen := true;
-    keyboardDelay[SC_F9] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
     if SC.screensize < MAXVIEWSIZE - 1 then
       inc(SC.screensize);
     exit;
   end;
 
-  if (keyboard[SC_F10] <> 0) and not resizeScreen and (timecount > keyboardDelay[SC_F10]) then
+  if (keyboard[SC_F10] <> 0) and not resizeScreen and (timecount > keyboardDelay) then
   begin
     resizeScreen := true;
     biggerScreen := false;
-    keyboardDelay[SC_F10] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
     if SC.screensize > 0 then
       dec(SC.screensize);
     exit;
   end;
 
-  if (keyboard[SC_MINUS] <> 0) and (timecount > keyboardDelay[SC_MINUS]) and (netmsgstatus = 0) then
+  if (keyboard[SC_MINUS] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     case MapZoom of
     8: MapZoom := 4;
     16: MapZoom := 8;
     end;
-    keyboardDelay[SC_MINUS] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_PLUS] <> 0) and (timecount > keyboardDelay[SC_PLUS]) and (netmsgstatus = 0) then
+  if (keyboard[SC_PLUS] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     case MapZoom of
     4: MapZoom := 8;
     8: MapZoom := 16;
     end;
-    keyboardDelay[SC_PLUS] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
   if (in_button[bt_lookup] <> 0) and (netmsgstatus = 0) then
@@ -2272,42 +2272,42 @@ begin
   end;
 
   // display mode toggles
-  if (keyboard[SC_M] <> 0) and (timecount > keyboardDelay[SC_M]) and (netmsgstatus = 0) then
+  if (keyboard[SC_M] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     togglemapmode := true;
-    keyboardDelay[SC_M] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
-  if (keyboard[SC_H] <> 0) and (timecount > keyboardDelay[SC_H]) and (netmsgstatus = 0) then
+  if (keyboard[SC_H] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     toggleheatmode := true;
-    keyboardDelay[SC_H] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
-  if (keyboard[SC_S] <> 0) and (timecount > keyboardDelay[SC_S]) and (netmsgstatus = 0) then
+  if (keyboard[SC_S] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     togglemotionmode := true;
-    keyboardDelay[SC_S] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
-  if (in_button[bt_asscam] <> 0) {and (timecount > keyboardDelay)} and (netmsgstatus = 0) then
+  if (in_button[bt_asscam] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     ToggleRearView := true;
-    {keyboardDelay := timecount + KBDELAY;}
+    keyboardDelay := timecount + KBDELAY;
   end;
-  if (keyboard[SC_TAB] <> 0) and (timecount > keyboardDelay[SC_TAB]) and (netmsgstatus = 0) then
+  if (keyboard[SC_TAB] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     togglegoalitem := true;
-    keyboardDelay[SC_TAB] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
 
-  if (keyboard[SC_CAPSLOCK] <> 0) and (timecount > keyboardDelay[SC_CAPSLOCK]) then
+  if (keyboard[SC_CAPSLOCK] <> 0) and (timecount > keyboardDelay) then
   begin
     toggleautorun := true;
-    keyboardDelay[SC_CAPSLOCK] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
-  if (keyboard[SC_NUMLOCK] <> 0) and (timecount > keyboardDelay[SC_NUMLOCK]) then
+  if (keyboard[SC_NUMLOCK] <> 0) and (timecount > keyboardDelay) then
   begin
    toggleautotarget := true;
-   keyboardDelay[SC_NUMLOCK] := timecount + KBDELAY;
+   keyboardDelay := timecount + KBDELAY;
   end;
 
   // secrets
@@ -2351,19 +2351,19 @@ begin
     secretdelay := timecount + KBDELAY * 5;
   end;
 
-  if (keyboard[SC_F6] <> 0) and netmode and (netmsgstatus = 0) and (timecount > keyboardDelay[SC_F6]) then
+  if (keyboard[SC_F6] <> 0) and netmode and (netmsgstatus = 0) and (timecount > keyboardDelay) then
   begin
     memset(@netmsg, 0, SizeOf(netmsg));
     netmsgstatus := 1;
     netmsgindex := 0;
     netmsg[0] := '_';
-    keyboardDelay[SC_F6] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_F7] <> 0) and (timecount > keyboardDelay[SC_F7]) then
+  if (keyboard[SC_F7] <> 0) and (timecount > keyboardDelay) then
   begin
     newsong := true;
-    keyboardDelay[SC_F7] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 
   if (in_button[bt_invright] <> 0) and (timecount > inventorydelay) then
@@ -2648,10 +2648,10 @@ begin
   end;
 
   // try to open a door in front of player
-  if (in_button[bt_use] <> 0) {and (timecount > keyboardDelay)} and (netmsgstatus = 0) then
+  if (in_button[bt_use] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     checktrigger := true;
- //   keyboardDelay := timecount + KBDELAY * 2;
+    keyboardDelay := timecount + KBDELAY * 2;
   end;
 
   // fire a weapon
@@ -3776,7 +3776,7 @@ begin
     timecount := player.timecount;
   activatemenu := false;
   INT_TimerHook(PlayerCommand);
-//  keyboardDelay := timecount + KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
 end;
 
 
@@ -3788,7 +3788,7 @@ begin
   INT_TimerHook(PlayerCommand);
   activatehelp := false;
   timecount := player.timecount;
-//  keyboardDelay := timecount + KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
 end;
 
 
@@ -3799,7 +3799,7 @@ begin
   if ShowQuit(PlayerCommand) then
     quitgame := true;
   MouseHide;
-//  keyboardDelay := timecount + KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
 end;
 
 
@@ -3819,7 +3819,7 @@ begin
   paused := false;
   gamepause := false;
   INT_TimerHook(PlayerCommand);
-//  keyboardDelay := timecount + KBDELAY;
+  keyboardDelay := timecount + KBDELAY;
 end;
 
 
@@ -4388,13 +4388,8 @@ begin
     scrollmin := player.scrollmin;
     scrollmax := player.scrollmax;
 
-   (*for (i :=  0 ; i < 200 ; i++)
-     memset(ylookup[i],i,320);
-   VI_BlitView;*)
-
     UpdateView(player.x, player.y, player.z, player.angle, 1);
 
-    RF_BlitView;
     VI_BlitView;
 
     if newsong then

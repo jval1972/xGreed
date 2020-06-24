@@ -69,8 +69,6 @@ procedure VI_DrawMaskedPicToBuffer2(x, y: integer; const pic: Ppic_t);
 
 procedure VI_Init;
 
-procedure RF_BlitView;
-
 procedure VI_BlitView;
 
 procedure VI_DrawMaskedPicToBuffer(x, y: integer; const pic: Ppic_t);
@@ -375,21 +373,6 @@ begin
     translookup[y] := @transparency[256 * y];
 end;
 
-
-procedure RF_BlitView;
-var
-  i, j: integer;
-begin
-  i := 0;
-  j := SCREENHEIGHT - 1;
-          exit;
-  while i < SCREENHEIGHT do
-  begin
-    memcpy(@ylookup[i], @viewylookup[j], SCREENWIDTH);
-    inc(i);
-    dec(j);
-  end;
-end;
 
 procedure VI_BlitView;
 begin

@@ -301,15 +301,15 @@ end;
 
 procedure IntroCommand;
 begin
-  if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay[SC_ENTER]) then
+  if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay) then
   begin
     activatemenu := true;
-    keyboardDelay[SC_ENTER] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
-  if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay[SC_SPACE]) then
+  if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay) then
   begin
     nextchar := true;
-    keyboardDelay[SC_SPACE] := timecount + KBDELAY;
+    keyboardDelay := timecount + KBDELAY;
   end;
 end;
 
