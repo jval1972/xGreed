@@ -67,12 +67,16 @@ implementation
 
 uses
   g_delphi,
+  d_disk,
   d_ints_h,
   d_ints,
+  d_misc,
   bass,
   intro,
   i_windows,
-  raven;
+  raven,
+  r_public,
+  r_render;
 
 function LoadSetup(const SC: PSoundCard; const Filename: string): integer;
 var
@@ -220,6 +224,10 @@ begin
   else
     printf('Success'#13#10);
 
+  FXLump := CA_GetNamedNum('SOUNDEFFECTS') + 1;
+  if FXLump <= 0 then
+    MS_Error('InitSound: SOUNDEFFECTS lump not found in BLO file.');
+
   MusicSwapChannels := SC.inversepan;
 
   scanbuttons[bt_run] := SC.ckeys[0];
@@ -255,17 +263,116 @@ begin
   end;
 end;
 
+const
+  MAXSFXCHANNELS = 64;
+
+type
+  channel_t = record
+    channel: DWORD;
+    sample: DWORD;
+    samplerate: integer;
+    lump: integer;
+    x, y: fixed_t;
+  end;
+  Pchannel_t = ^channel_t;
+
+var
+  channels: array[0..MAXSFXCHANNELS - 1] of channel_t;
+
+procedure CheckChannels;
+var
+  i: integer;
+  active: DWORD;
+begin
+  for i := 0 to MAXSFXCHANNELS - 1 do
+    if channels[i].channel <> 0 then
+    begin
+      active := BASS_ChannelIsActive(channels[i].channel);
+      if active = BASS_ACTIVE_STOPPED then
+      begin
+        BASS_SampleFree(channels[i].channel);
+        BASS_MusicFree(channels[i].channel);
+        channels[i].channel := 0;
+      end;
+    end;
+end;
+
+function GetSoundChannel: integer;
+var
+  i: integer;
+begin
+  for i := 0 to MAXSFXCHANNELS - 1 do
+    if channels[i].channel = 0 then
+    begin
+      result := i;
+      exit;
+    end;
+  result := -1;
+end;
+
+procedure UpdateChannelParams(const ch: integer);
+var
+  d, asin, acos: integer;
+begin
+  acos := costable[player.angle];
+  asin := sintable[player.angle]; // compute left,right pan value
+  d := FIXEDMUL((channels[ch].x - player.x), acos) + FIXEDMUL((channels[ch].y - player.y), asin);
+  d := FIXEDDIV(d, MSD) * $40;
+  d := d div FRACUNIT;
+  if d < -64 then
+    d := -64
+  else if d > 64 then
+    d := 64;
+ BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_PAN, d / 64);
+end;
+
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
+var
+  x1, y1, z: integer;
+  ch: integer;
+  data: pointer;
+  datalen: integer;
+  lump: integer;
 begin
-end;
+  x1 := (x - player.x) div FRACTILEUNIT;  // don't play if too far
+  y1 := (y - player.y) div FRACTILEUNIT;
+  z := x1 * x1 + y1 * y1;
+  if z >= MAXSOUNDDIST then
+    exit;
 
-procedure StaticSoundEffect(const n: integer; const x, y: fixed_t);
-begin
-end;
+  ch := GetSoundChannel;
+  if ch <= 0 then
+  begin
+    CheckChannels;
+    ch := GetSoundChannel;
+  end;
+  if ch = -1 then
+    exit;
 
+  lump := FXLump + n;
+  data := CA_CacheLump(lump);
+  if data = nil then
+    exit;
+
+  datalen := CA_LumpLen(lump);
+  if datalen <= 0 then
+    exit;
+
+  channels[ch].sample := BASS_SampleLoad(true, data, 0, datalen, 1,  {BASS_SAMPLE_3D or} 
+      BASS_SAMPLE_MONO {$IFDEF UNICODE} or BASS_UNICODE {$ENDIF});
+  channels[ch].channel := BASS_SampleGetChannel(channels[ch].sample, false); // initialize sample channel
+  channels[ch].x := x;
+  channels[ch].y := y;
+  channels[ch].lump := lump;
+  BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.sfxvol / 255);
+  BASS_ChannelPlay(channels[ch].channel, false);
+  UpdateChannelParams(ch);
+//  channels[ch].samplerate :=
+end;
 
 procedure UpdateSound;
 begin
+  CheckChannels;
 end;
 
 
