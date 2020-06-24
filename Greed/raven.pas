@@ -1630,31 +1630,33 @@ end;
 procedure SwitchWall(const x, y: integer; const angle: integer; const doubleswitch: boolean);
 var
   mapspot: integer;
+  spot: integer;
 begin
   SoundEffect(SN_WALLSWITCH, 0, x * FRACTILEUNIT, y * FRACTILEUNIT);
   mapspot := y * MAPCOLS + x;
   if (angle >= SOUTH+DEGREE45) or (angle < DEGREE45) then
   begin
-    if westwall[mapspot + 1] = 127 then
-      westwall[mapspot + 1] := 128
-    else if (westwall[mapspot + 1] = 128) and doubleswitch then
-      westwall[mapspot + 1] := 127
-    else if (westwall[mapspot + 1] = 172) then
-      westwall[mapspot + 1] := 173
-    else if (westwall[mapspot + 1] = 173) and doubleswitch then
-      westwall[mapspot + 1] := 172
-    else if (westwall[mapspot + 1] = 75) then
-      westwall[mapspot + 1] := 76
-    else if (westwall[mapspot + 1] = 76) and doubleswitch then
-      westwall[mapspot + 1] := 75
-    else if (westwall[mapspot + 1] = 140) then
-      westwall[mapspot + 1] := 141
-    else if (westwall[mapspot + 1] = 141) and doubleswitch then
-      westwall[mapspot + 1] := 140
-    else if (westwall[mapspot + 1] = 234) then
-      westwall[mapspot + 1] := 235
-    else if (westwall[mapspot + 1] = 235) and doubleswitch then
-      westwall[mapspot + 1] := 234;
+    spot := mapspot + 1;
+    if westwall[spot] = 127 then
+      westwall[spot] := 128
+    else if (westwall[spot] = 128) and doubleswitch then
+      westwall[spot] := 127
+    else if (westwall[spot] = 172) then
+      westwall[spot] := 173
+    else if (westwall[spot] = 173) and doubleswitch then
+      westwall[spot] := 172
+    else if (westwall[spot] = 75) then
+      westwall[spot] := 76
+    else if (westwall[spot] = 76) and doubleswitch then
+      westwall[spot] := 75
+    else if (westwall[spot] = 140) then
+      westwall[spot] := 141
+    else if (westwall[spot] = 141) and doubleswitch then
+      westwall[spot] := 140
+    else if (westwall[spot] = 234) then
+      westwall[spot] := 235
+    else if (westwall[spot] = 235) and doubleswitch then
+      westwall[spot] := 234;
   end
   else if (angle >= DEGREE45) and (angle < NORTH + DEGREE45) then
   begin
@@ -1704,26 +1706,27 @@ begin
   end
   else if angle >= WEST + DEGREE45 then
   begin
-    if northwall[mapspot + MAPCOLS] = 127 then
-      northwall[mapspot + MAPCOLS] := 128
-    else if (northwall[mapspot + MAPCOLS] = 128) and doubleswitch then
-      northwall[mapspot + MAPCOLS] := 127
-    else if (northwall[mapspot + MAPCOLS] = 172) then
-      northwall[mapspot + MAPCOLS] := 173
-    else if (northwall[mapspot + MAPCOLS] = 173) and doubleswitch then
-      northwall[mapspot + MAPCOLS] := 172
-    else if (northwall[mapspot + MAPCOLS] = 75) then
-      northwall[mapspot + MAPCOLS] := 76
-    else if (northwall[mapspot + MAPCOLS] = 76) and doubleswitch then
-      northwall[mapspot + MAPCOLS] := 75
-    else if (northwall[mapspot + MAPCOLS] = 140) then
-      northwall[mapspot + MAPCOLS] := 141
-    else if (northwall[mapspot + MAPCOLS] = 141) and doubleswitch then
-      northwall[mapspot + MAPCOLS] := 140
-    else if (northwall[mapspot + MAPCOLS] = 234) then
-      northwall[mapspot + MAPCOLS] := 235
-    else if (northwall[mapspot + MAPCOLS] = 235) and doubleswitch then
-      northwall[mapspot + MAPCOLS] := 234;
+    spot := mapspot + MAPCOLS;
+    if northwall[spot] = 127 then
+      northwall[spot] := 128
+    else if (northwall[spot] = 128) and doubleswitch then
+      northwall[spot] := 127
+    else if (northwall[spot] = 172) then
+      northwall[spot] := 173
+    else if (northwall[spot] = 173) and doubleswitch then
+      northwall[spot] := 172
+    else if (northwall[spot] = 75) then
+      northwall[spot] := 76
+    else if (northwall[spot] = 76) and doubleswitch then
+      northwall[spot] := 75
+    else if (northwall[spot] = 140) then
+      northwall[spot] := 141
+    else if (northwall[spot] = 141) and doubleswitch then
+      northwall[spot] := 140
+    else if (northwall[spot] = 234) then
+      northwall[spot] := 235
+    else if (northwall[spot] = 235) and doubleswitch then
+      northwall[spot] := 234;
   end;
 end;
 
