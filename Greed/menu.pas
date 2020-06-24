@@ -263,15 +263,14 @@ var
   mx, my: smallint;
   pics: array[0..2] of Ppic_t;
   c: char;
-  scr: PByteArray;
+  pscreen: PByteArray;
 begin
   INT_TimerHook(nil);
-  scr := malloc(64000);
-  if scr = nil then
+  pscreen := malloc(64000);
+  if pscreen = nil then
     MS_Error('Error allocating ShowQuit buffer');
   MouseHide;
-  memcpy(scr, @viewbuffer, 64000);
-  memcpy(@viewbuffer, screen, 64000);
+  memcpy(pscreen, @viewbuffer, 64000);
   MouseShow;
   if netmode then
     TimeUpdate;
@@ -322,10 +321,10 @@ begin
     if (timecount >= droptime) and (y < 67) then
     begin
       if y >= 0 then
-        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+        memcpy(@viewbuffer[320 * y], @pscreen[320 * y], 640);
       y := y + 2;
       droptime := timecount + 1;
-      VI_DrawMaskedPic2(111, y, pics[anim]);
+      VI_DrawMaskedPic2(111, y, pics[anim], pscreen);
       if y >= 67 then
         MouseShow;
     end;
@@ -335,7 +334,7 @@ begin
       anim := anim mod 3;
       animtime := animtime + 10;
       MouseHide;
-      VI_DrawMaskedPic2(111,y,pics[anim]);
+      VI_DrawMaskedPic2(111, y, pics[anim], pscreen);
       MouseShow;
     end;
   end;
@@ -351,25 +350,25 @@ begin
     if timecount >= droptime then
     begin
       if y >= 0 then
-        memcpy(ylookup[y], @viewbuffer[320 * y], 640);
+        memcpy(@viewbuffer[320 * y], @pscreen[320 * y], 640);
       y := y + 2;
       droptime := timecount + 1;
-      VI_DrawMaskedPic2(111, y, pics[anim]);
+      VI_DrawMaskedPic2(111, y, pics[anim], pscreen);
     end;
     if timecount >= animtime then
     begin
       inc(anim);
       anim := anim mod 3;
       animtime := animtime + 10;
-      VI_DrawMaskedPic2(111, y, pics[anim]);
+      VI_DrawMaskedPic2(111, y, pics[anim], pscreen);
     end;
   end;
   memcpy(screen, @viewbuffer, 64000);
-  memcpy(@viewbuffer, scr, 64000);
+  memcpy(@viewbuffer, pscreen, 64000);
   for i := 0 to 2 do
     CA_FreeLump(lump + i);
   MouseShow;
-  memfree(pointer(scr));
+  memfree(pointer(pscreen));
   menutimedelay := timecount + KBDELAY2;
   turnrate := 0;
   moverate := 0;
@@ -1317,9 +1316,6 @@ end;
 
 //**************************************************************************
 
-
-(**************************************************************************)
-
 function CheckPause: boolean;
 begin
   if netmode then
@@ -1346,6 +1342,8 @@ begin
   INT_TimerHook(nil);
   pscreen := malloc(64000);
   memcpy(pscreen, @viewbuffer, 64000);
+  if pscreen = nil then
+    MS_Error('Error allocating ShowPause buffer');
   lump := CA_GetNamedNum('pause');
   for i := 0 to 3 do
     pics[i] := CA_CacheLump(lump + i);
