@@ -29,9 +29,10 @@ program xGreed;
 uses
   Windows,
   DirectX in 'Base\DirectX.pas',
-  g_delphi in 'base\g_delphi.pas',
-  i_windows in 'base\i_windows.pas',
-  scriptengine in 'base\scriptengine.pas',
+  g_delphi in 'Base\g_delphi.pas',
+  i_windows in 'Base\i_windows.pas',
+  BASS in 'Base\bass.pas',
+  scriptengine in 'Base\scriptengine.pas',
   i_main in 'Base\i_main.pas',
   i_video in 'Base\i_video.pas',
   constant in 'Greed\constant.pas',

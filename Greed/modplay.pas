@@ -45,10 +45,10 @@ const
   DEFAULTVRANGLE = 4;
 
 var
-  MusicPresent, MusicPlaying, MusicSwapChannels: boolean;
+  MusicPresent, MusicSwapChannels: boolean;
   SC: SoundCard;
   MusicError, EffectChan, CurrentChan, FXLump: integer;
-  MusicVol, effecttracks: integer;
+  effecttracks: integer;
 
 function SaveSetup(const SC: PSoundCard; const Filename: string): integer;
 
@@ -70,6 +70,9 @@ uses
   g_delphi,
   d_ints_h,
   d_ints,
+  bass,
+  intro,
+  i_windows,
   raven;
 
 function LoadSetup(const SC: PSoundCard; const Filename: string): integer;
@@ -114,45 +117,44 @@ begin
   result := 0;
 end;
 
+var
+  MUSIC_HANDLE: DWORD;
+
 procedure StopMusic;
 var
   i: integer;
+  oldvol: integer;
 begin
   if MusicError <> 0 then
     exit;
-  if MusicPlaying then
+  if MUSIC_HANDLE <> 0 then
   begin
-{    if not netmode then
-      for i := MusicVol i>0;i-:= 3)              (* fade out *)
+    oldvol := SC.MusicVol;
+    if not netmode then
     begin
-      if (i<0) i := 0;
-      //dSetMusicVolume(i);
-      Wait(1);
-       end;
-   //dStopMusic;
-   MusicPlaying := false;
-   //dFreeModule(M);}
+      i := oldvol;
+      while i > 0 do  // fade out
+      begin
+        SetVolumes(i, SC.sfxvol);
+        Wait(1);
+        dec(i, 3);
+      end;
+    end;
+    StopMusic;
+    SetVolumes(oldvol, SC.sfxvol);
   end;
-//  if netmode then
-//    NetGetData;
 end;
 
 
 procedure InitSound;
-var
-  autodetect, noconfig: boolean;
 begin
   MusicPresent := false;
-  autodetect := false;
-  noconfig := false;
 
   // load config file
   if LoadSetup(@SC, 'SETUP.CFG') <> 0 then
   begin
-    noconfig := true;
     printf('Sound: SETUP.CFG not found'#13#10);
-    printf('       Auto-Detection = ');
-    autodetect := false;
+    printf('       Setting default values'#13#10);
 
     SC.ambientlight := 2048;      // load all defaults
     SC.violence := true;
@@ -204,15 +206,21 @@ begin
     lighting := 1;
     changelight := SC.ambientlight;
 
-    if autodetect then
-    begin
-      printf('Failed'#13#10);
-      MusicError := 1;
-      exit;
-    end
-    else
-      printf('Success'#13#10);
   end;
+
+  MusicError := 0;
+  if not BASS_Init(-1, 44100, 0, hMainWnd, nil) then
+  begin
+    printf('Can''t initialize music device'#13#19);
+    MusicError := 1;
+  end;
+  if BASS_GetVersion shr 16 <> BASSVERSION then
+  begin
+    printf('An incorrect version of BASS.DLL was loaded, needs version %d'#13#10, [BASSVERSION]);
+    MusicError := BASS_ERROR_VERSION;
+  end
+  else
+    printf('Success'#13#10);
 
   MusicSwapChannels := SC.inversepan;
 
@@ -237,14 +245,17 @@ begin
   turnunit := SC.turnaccel;
 
   effecttracks := SC.effecttracks;
-
-  MusicError := 2;
 end;
 
 procedure PlaySong(const sname: string; const pattern: integer);
 begin
+  MUSIC_HANDLE := BASS_MusicLoad(False, PChar(sname), 0, 0, BASS_MUSIC_POSRESET, 1);
+  if MUSIC_HANDLE <> 0 then
+  begin
+    BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.MusicVol / 255);
+    BASS_ChannelPlay(MUSIC_HANDLE, true);
+  end;
 end;
-
 
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 begin
@@ -269,12 +280,12 @@ begin
   music := amusic;
   if music > 255 then
     music := 255;
-  //dSetMusicVolume(music);
-  MusicVol := music;
   fx := afx;
   if fx > 255 then
     fx := 255;
-  //dSetSoundVolume(fx);
+  BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.MusicVol / 255);
+//  BASS_ChannelSetAttribute(BASS_ATTRIB_VOL, BASS_ATTRIB_VOL, SC.MusicVol / 255);
+//  BASS_SetVolume(music / 255);
   SC.musicvol := music;
   SC.sfxvol := fx;
 end;
