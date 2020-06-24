@@ -1413,7 +1413,7 @@ begin
     waitpics[i] := CA_CacheLump(lump + i);
   waitanim := 0;
   VI_DrawMaskedPic2(106, 72, waitpics[0]);
-  menutimedelay := timecount + 10;
+  menutimedelay := timecount + KBDELAY2;
   waiting := true;
 end;
 
@@ -1425,7 +1425,7 @@ begin
     inc(waitanim);
     waitanim := waitanim and 3;
     VI_DrawMaskedPic2(106, 72, waitpics[waitanim]);
-    menutimedelay := timecount + 10;
+    menutimedelay := timecount + KBDELAY2;
   end;
 end;
 
