@@ -36,7 +36,6 @@ uses
 
 const
   MAXEFFECTS = 8;
-//  NUMTRACKS = effecttracks;
   MAXCACHESIZE = MAXEFFECTS * 2 + 4;
   MAXSOUNDS = 90;
   MAXSOUNDDIST = 384;
@@ -140,7 +139,6 @@ begin
         dec(i, 3);
       end;
     end;
-    StopMusic;
     SetVolumes(oldvol, SC.sfxvol);
   end;
 end;
@@ -284,8 +282,6 @@ begin
   if fx > 255 then
     fx := 255;
   BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.MusicVol / 255);
-//  BASS_ChannelSetAttribute(BASS_ATTRIB_VOL, BASS_ATTRIB_VOL, SC.MusicVol / 255);
-//  BASS_SetVolume(music / 255);
   SC.musicvol := music;
   SC.sfxvol := fx;
 end;
