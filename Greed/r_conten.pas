@@ -38,8 +38,6 @@ var
   firstelevobj, lastelevobj: elevobj_t;
   elevlist: array[0..MAXELEVATORS - 1] of elevobj_t;
   freeelevobj_p: Pelevobj_t;
-  numelev: integer;
-  doorxl, doorxh: integer;
   spawnareas: array[0..MAXSPAWNAREAS - 1] of spawnarea_t;
   numspawnareas, rtimecount: integer;
 
