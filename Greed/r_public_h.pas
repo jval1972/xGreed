@@ -50,7 +50,7 @@ const
   FRACUNIT = 1 shl FRACBITS;
   TILEUNIT = 64 * FRACUNIT;
   HALFTILEUNIT = 32 * FRACUNIT;
-  PI = 3.14159265;
+  g_PI = 3.14159265;
   MAPSIZE = 64;    { there must not be any 65th vertexes }
   MAPROWS = 64;
   MAPCOLS = 64;

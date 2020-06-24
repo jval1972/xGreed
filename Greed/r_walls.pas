@@ -74,7 +74,7 @@ var
 begin
   for i := 0 to windowWidth do
   begin
-    intval := rint(ArcTan((CENTERX - (i + 1.0)) / CENTERX) / PI * TANANGLES * 2);
+    intval := rint(ArcTan((CENTERX - (i + 1.0)) / CENTERX) / g_PI * TANANGLES * 2);
     pixelangle[i] := intval;
     pixelcosine[i] := cosines[intval and (TANANGLES * 4 - 1)];
   end;

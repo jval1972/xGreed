@@ -182,7 +182,7 @@ begin
   i := 0;
   repeat
     at := ArcTan(i / MAXAUTO);
-    atf := at * ANGLES / (2 * PI);
+    atf := at * ANGLES / (2 * g_PI);
     angle := rint(atf);
     for j := 0 to MAXAUTO * 2 - 1 do
     begin
@@ -218,7 +218,7 @@ begin
   // tangent values for wall tracing
   for i := 0 to TANANGLES div 2 - 1 do
   begin
-    tang := (i + 0.5) * PI / (TANANGLES * 2);
+    tang := (i + 0.5) * g_PI / (TANANGLES * 2);
     value := tan(tang);
     ivalue := 1 / value;
     value := rint(value * FRACUNIT);
@@ -231,8 +231,8 @@ begin
   // high precision sin / cos for distance calculations
   for i := 0 to TANANGLES - 1 do
   begin
-    tang := (i + 0.5) * PI / (TANANGLES * 2);
-//   tang := i*PI/(TANANGLES*2);
+    tang := (i + 0.5) * g_PI / (TANANGLES * 2);
+//   tang := i*g_PI/(TANANGLES*2);
     value := sin(tang);
     intval := rint(value * FRACUNIT);
     sines[i] := intval;
@@ -253,7 +253,7 @@ var
 begin
   for i := 0 to 64 do
   begin
-    intval := rint(arctan((32.0 - (i + 1.0)) / 32.0) / PI * TANANGLES * 2.0);
+    intval := rint(arctan((32.0 - (i + 1.0)) / 32.0) / g_PI * TANANGLES * 2.0);
     pixelangle[i] := intval;
     pixelcosine[i] := cosines[intval and (TANANGLES * 4 - 1)];
   end;
@@ -274,7 +274,7 @@ begin
   // trig tables
   for i := 0 to ANGLES do
   begin
-    angle := (i * PI * 2) / (ANGLES + 1);
+    angle := (i * g_PI * 2) / (ANGLES + 1);
     sintable[i] := rint(sin(angle) * FRACUNIT);
     costable[i] := rint(cos(angle) * FRACUNIT);
   end;
@@ -546,11 +546,6 @@ begin
   actionhook := hook;
   actionflag := 1;
 end;
-
-procedure r_publicstub2;
-begin
-end;
-
 
 // resets the color maps to new lighting values
 procedure RF_SetLights(const ablackz: fixed_t);
