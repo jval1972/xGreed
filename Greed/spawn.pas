@@ -1444,7 +1444,7 @@ begin
   
   S_MONSTER12_NS, // pss
   S_MONSTER12:
-  begin
+    begin
       sprite_p := RF_GetSprite;
       if value = S_MONSTER12_NS then
         sprite_p.nofalling := true;
@@ -1552,7 +1552,7 @@ begin
       sprite_p.bullet := S_MONSTERBULLET15;
       mapsprites[mapspot] := 1;
     end;
-  
+
   
   (* bonus item *********************************************************)
   S_BONUSITEM:

@@ -1258,7 +1258,7 @@ begin
       else
         player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR7;
     end;
-	inc(door_p);
+	  inc(door_p);
   end;
 
   UpdateWait;
@@ -1306,8 +1306,8 @@ begin
       player.savesprites[sa.mapspot] := S_SPAWN8_NS;
     101:
       player.savesprites[sa.mapspot] := S_SPAWN9_NS;
-	end;
-	inc(sa);
+	  end;
+	  inc(sa);
   end;
 
   UpdateWait;
