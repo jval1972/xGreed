@@ -84,11 +84,21 @@ begin
 
   I_Init;
   printf('Starting %s version %s'#13#10, [APPNAME, I_VersionBuilt]);
+
+  printf('I_InitGraphics: Initialize directdraw.' + #13#10);
   I_InitGraphics;
+
   startup;
+
+  printf('I_ShutDownGraphics: Shut down graphics.'#13#10);
   I_ShutDownGraphics;
+
+  printf('DestroyWindow: Closing application window.'#13#10);
   DestroyWindow(hMainWnd);
+
+  printf('I_ShutDown: Shut down I/O.'#13#10);
   I_ShutDown;
+
   Halt(0);
 end.
 

@@ -675,8 +675,6 @@ begin
   if g_pDD <> nil then
     exit;
 
-  printf('I_InitGraphics: Initialize directdraw.' + #13#10);
-
   I_DetectNativeScreenResolution;
   I_FindWindowSize(fullscreen, fullscreenexclusive);
   I_RestoreWindowPos;
