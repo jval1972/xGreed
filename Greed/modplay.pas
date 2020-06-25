@@ -313,17 +313,26 @@ end;
 procedure UpdateChannelParams(const ch: integer);
 var
   d, asin, acos: integer;
+  dx, dy: integer;
 begin
   acos := costable[player.angle];
   asin := sintable[player.angle]; // compute left,right pan value
-  d := FIXEDMUL((channels[ch].x - player.x), acos) + FIXEDMUL((channels[ch].y - player.y), asin);
+  dx := channels[ch].x - player.x;
+  dy := channels[ch].y - player.y;
+  d := FIXEDMUL(dx, acos) + FIXEDMUL(dy, asin);
   d := FIXEDDIV(d, MSD) * $40;
   d := d div FRACUNIT;
   if d < -64 then
     d := -64
   else if d > 64 then
     d := 64;
- BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_PAN, d / 64);
+  BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_PAN, d / 64);
+  dx := dx div FRACTILEUNIT;  // don't play if too far
+  dy := dy div FRACTILEUNIT;
+  d := dx * dx + dy * dy;
+  if d > MAXSOUNDDIST then
+    d := MAXSOUNDDIST;
+  BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_VOL, (MAXSOUNDDIST - d) / MAXSOUNDDIST);
 end;
 
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
@@ -358,7 +367,7 @@ begin
   if datalen <= 0 then
     exit;
 
-  channels[ch].sample := BASS_SampleLoad(true, data, 0, datalen, 1,  {BASS_SAMPLE_3D or} 
+  channels[ch].sample := BASS_SampleLoad(true, data, 0, datalen, 1,  {BASS_SAMPLE_3D or}
       BASS_SAMPLE_MONO {$IFDEF UNICODE} or BASS_UNICODE {$ENDIF});
   channels[ch].channel := BASS_SampleGetChannel(channels[ch].sample, false); // initialize sample channel
   channels[ch].x := x;
@@ -367,12 +376,16 @@ begin
   BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.sfxvol / 255);
   BASS_ChannelPlay(channels[ch].channel, false);
   UpdateChannelParams(ch);
-//  channels[ch].samplerate :=
 end;
 
 procedure UpdateSound;
+var
+  i: integer;
 begin
   CheckChannels;
+  for i := 0 to MAXSFXCHANNELS - 1 do
+    if channels[i].channel <> 0 then
+      UpdateChannelParams(i);
 end;
 
 
@@ -394,3 +407,4 @@ begin
 end;
 
 end.
+
