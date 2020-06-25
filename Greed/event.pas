@@ -184,7 +184,7 @@ begin
         sp := firstscaleobj.next;
         while sp <> @lastscaleobj do
         begin
-          if (sp.active = false) and (sp.moveSpeed <> 0) then
+          if (not sp.active) and (sp.moveSpeed <> 0) then
           begin
             x := sp.x div FRACTILEUNIT;
             y := sp.y div FRACTILEUNIT;
@@ -544,6 +544,7 @@ begin
       inc(numzones);
       if numzones = MAXZONES then
         MS_Error('Out of mapzones');
+      sce.MustGetInteger;
       z.x1 := sce._Integer;
       sce.MustGetInteger;
       z.y1 := sce._Integer;
