@@ -199,6 +199,7 @@ uses
   d_misc,
   protos_h,
   i_video,
+  i_windows,
   intro,
   modplay,
   net,
@@ -1261,6 +1262,8 @@ begin
   ShowMenuLevel(n);
   quitmenu := false;
   repeat
+    I_PeekAndDisplatch;
+    I_Sleep(0);
     MenuShowCursor(menucursor);
     CheckMouse;
     if menuexecute then
