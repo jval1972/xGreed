@@ -59,6 +59,8 @@ function I_timeSetEvent(const uDelay, uResolution: UINT;
 
 procedure I_PeekAndDisplatch;
 
+procedure I_Sleep(const msecs: integer);
+
 procedure I_ClearInterface(var Dest: IInterface);
 
 function I_SetDPIAwareness: boolean;
@@ -122,6 +124,11 @@ var
 begin
   if PeekMessage(msg, 0, 0, 0, PM_REMOVE) then
     DispatchMessage(msg);
+end;
+
+procedure I_Sleep(const msecs: integer);
+begin
+  sleep(msecs);
 end;
 
 procedure I_ClearInterface(var Dest: IInterface);

@@ -241,7 +241,10 @@ var
 begin
   t := timecount + time;
   while not CheckTime(timecount, t) do
+  begin
     I_PeekAndDisplatch;
+    I_Sleep(0);
+  end;
 end;
 
 

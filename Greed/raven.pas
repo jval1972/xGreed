@@ -3450,6 +3450,7 @@ var
   time: integer;
 begin
   I_PeekAndDisplatch;
+  I_Sleep(0);
 
   chargeweapons;
   UpdateMouse;
