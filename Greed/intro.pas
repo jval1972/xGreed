@@ -307,7 +307,7 @@ begin
   if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay) then
   begin
     activatemenu := true;
-    keyboardDelay := timecount + KBDELAY;
+    keyboardDelay := timecount + ACTIVATEMENUDELAY;
   end;
   if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay) then
   begin
@@ -834,6 +834,7 @@ restart:
   else
     StopMusic;
 
+  I_ShutDownSound;
   INT_Shutdown;
 end;
 
