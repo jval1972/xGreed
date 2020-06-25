@@ -386,6 +386,7 @@ begin
   for i := 0 to MAXSFXCHANNELS - 1 do
     if channels[i].channel <> 0 then
       UpdateChannelParams(i);
+  BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.MusicVol / 255);
 end;
 
 
@@ -401,9 +402,9 @@ begin
   fx := afx;
   if fx > 255 then
     fx := 255;
-  BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.MusicVol / 255);
   SC.musicvol := music;
   SC.sfxvol := fx;
+  BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.MusicVol / 255);
 end;
 
 end.
