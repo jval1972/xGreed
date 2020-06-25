@@ -2151,7 +2151,7 @@ begin
   if (keyboard[SC_ESCAPE] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     activatemenu := true;
-    keyboardDelay := timecount + KBDELAY;
+    keyboardDelay := timecount + ACTIVATEMENUDELAY;
   end;
 
   if (keyboard[SC_F5] <> 0) and (keyboard[SC_LSHIFT] <> 0) and (timecount > keyboardDelay) then
@@ -3679,10 +3679,6 @@ begin
   exitexists := false;
   specialeffecttime := 0;
   ExitLevel := false;
-{  if currentViewSize = 2 then
-    VI_DrawPic(4, 149, statusbar[2])
-  else if currentViewSize > 3 then
-    VI_DrawMaskedPic(0, 0, statusbar[3]);}
   if netmode then
     NetGetData;
   turnrate := 0;
@@ -3963,10 +3959,6 @@ begin
     weaponx := ((windowWidth - wpic.width) div 2) + (weapmove[weapbob1] div 2);
     weapony := windowHeight - wpic.height + (weapmove[weapbob1 div 2] div 8);
 
-    if currentViewSize >= 6 then
-      weapony := weapony + 25
-    else if currentViewSize = 5 then
-      weapony := weapony + 15;
     if changingweapons and weaponlowering then
     begin
       weaponychange := weaponychange + 15;
@@ -4051,6 +4043,8 @@ begin
     else
       pic := statusbar[currentViewSize - 1];
     VI_DrawMaskedPicToBuffer(statusbarloc[currentViewSize * 2], statusbarloc[currentViewSize * 2 + 1], pic);
+    if currentViewSize = 4 then
+      VI_DrawMaskedPic(0, 0, statusbar[3]);
   end;
 
   if netmode then
@@ -4490,14 +4484,6 @@ begin
   probe.moveSpeed := MAXPROBE;
   probe.movesize := 16 * FRACUNIT; // half a tile
   probe.spawnid := playernum;
-{  ChangeViewSize(true);
-  ChangeViewSize(true);
-  ChangeViewSize(true);
-  ChangeViewSize(true);
-  ChangeViewSize(false);
-  ChangeViewSize(false);
-  ChangeViewSize(false);
-  ChangeViewSize(false);}
   for i := 0 to currentViewSize - 1 do
     ChangeViewSize(true);
   resetdisplay;

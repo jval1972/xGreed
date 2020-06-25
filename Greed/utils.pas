@@ -831,13 +831,6 @@ begin
     InitWalls;
   end;
   resetdisplay;
-  if currentViewSize >= 5 then
-  begin
-    memset(screen, 0, 64000);
-    VI_DrawPic(4, 149, statusbar[2]);
-  end;
-  if currentViewSize >= 4 then
-    VI_DrawMaskedPic(0, 0, statusbar[3]);
   player.scrollmin := scrollmin;
   player.scrollmax := scrollmax;
 end;

@@ -324,6 +324,7 @@ begin
   9: // holosuit
     begin
       mindist := $7FFFFFFF;
+      pic := 0; // JVAL: Avoid compiler warning
       sp := firstscaleobj.next;
       while sp <> @lastscaleobj do
       begin
@@ -1453,12 +1454,12 @@ begin
 
   4:  // level 4 to view + top to screen
     begin
-      displayinventory1(-11);
+      displayinventory1(0);
       if not netmode then
-        displaybonusitem1(-11)
+        displaybonusitem1(0)
       else
-        displaynetbonusitem1(-11);
-      displayrightstats1(-11);
+        displaynetbonusitem1(0);
+      displayrightstats1(0);
       displaybodycount2;
     end;
 
