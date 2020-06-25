@@ -148,6 +148,9 @@ uses
   windows,
   timer;
 
+var
+  oldkeyboard: array[0..NUMCODES - 1] of smallint;  // keyboard flags
+
 // read in input controls
 procedure INT_ReadControls;
 var
@@ -156,20 +159,20 @@ var
   key: integer;
 begin
   lastascii := #0;
-  ZeroMemory(@keyboard, SizeOf(keyboard));
   for i := 0 to NUMCODES - 1 do
   begin
     key := I_MapVirtualKey(i, 1);
     keyboard[i] := I_GetKeyState(key);
     if keyboard[i] and $80 <> 0 then
-    begin
-      c := toupper(ASCIINames[i]);
-      if c <> #0 then
+      if oldkeyboard[i] and $80 = 0 then
       begin
-        lastascii := c;
-        newascii := true;
+        c := toupper(ASCIINames[i]);
+        if c <> #0 then
+        begin
+          lastascii := c;
+          newascii := true;
+        end;
       end;
-    end;
   end;
 
   memset(@in_button, 0, SizeOf(in_button));
@@ -178,10 +181,13 @@ begin
       in_button[i] := 1;
 
   for i := 0 to NUMCODES - 1 do
+  begin
+    oldkeyboard[i] := keyboard[i];
     if keyboard[i] and $80 <> 0 then
       keyboard[i] := 1
     else
       keyboard[i] := 0;
+  end;
 
   if mouseinstalled then
   begin
