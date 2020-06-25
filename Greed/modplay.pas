@@ -57,6 +57,8 @@ procedure StopMusic;
 
 procedure InitSound;
 
+procedure I_ShutDownSound;
+
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 
 procedure SetVolumes(const amusic: integer; const afx: integer);
@@ -207,7 +209,6 @@ begin
 
     lighting := 1;
     changelight := SC.ambientlight;
-
   end;
 
   MusicError := 0;
@@ -251,6 +252,12 @@ begin
   turnunit := SC.turnaccel;
 
   effecttracks := SC.effecttracks;
+end;
+
+procedure I_ShutDownSound;
+begin
+  BASS_Stop;
+  BASS_Free;
 end;
 
 procedure PlaySong(const sname: string; const pattern: integer);
