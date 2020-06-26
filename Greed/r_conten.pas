@@ -270,6 +270,8 @@ begin
   walltype := walltranslation[walltype];     // global animation
   dec(walltype);                             // make 0 based
   wall := lumpmain[walllump + walltype];
+  if wall = nil then
+    wall := CA_CacheLump(walllump + walltype);
   ceilingheight := vertex[0].ceilingheight;
   floorh := -vertex[0].floorheight;
   postindex := @wallposts[walltype * 64];      // 64 pointers to texture starts
@@ -397,8 +399,10 @@ part2:
     spantype := sp_door;
   walltype := door_p.pic;
   walltype := walltranslation[walltype];     // global animation
-  inc(walltype);                             // make 0 based
+  dec(walltype);                             // make 0 based
   wall := lumpmain[walllump + walltype];
+  if wall = nil then
+    wall := CA_CacheLump(walllump + walltype);
   ceilingheight := vertex[0].ceilingheight;
   floorh := -vertex[0].floorheight;
   postindex := @wallposts[walltype * 64];      // 64 pointers to texture starts
@@ -516,6 +520,8 @@ part3:
   // set up for loop
   walltype := 2;
   wall := lumpmain[walllump + walltype];
+  if wall = nil then
+    wall := CA_CacheLump(walllump + walltype);
   postindex := @wallposts[walltype * 64];      // 64 pointers to texture starts
   baseangle := baseangle + viewfineangle;
   absdistance := absI(distance);
