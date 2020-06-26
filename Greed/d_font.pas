@@ -389,7 +389,7 @@ begin
       msgstr[i - 1] := msgstr[i];
   msgstr[MSGQUESIZE - 1] := s;
   timemsg := timecount + MSGTIME; // 10 secs
-  printf(s);
+  printf(s + #13#10);
 end;
 
 end.
