@@ -27,6 +27,7 @@ unit d_disk;
 interface
 
 uses
+  SysUtils,
   g_delphi,
   protos_h;
 
@@ -59,7 +60,7 @@ procedure CA_ReadFile(const fname: string; const buffer: pointer; const len: Lon
 
 function CA_LoadFile(const fname: string): pointer;
 
-procedure CA_InitFile(const filename: string);
+procedure CA_InitFile(const afilename: string);
 
 function CA_CheckNamedNum(const name: string): integer;
 
@@ -84,6 +85,7 @@ function CA_FileAsText(const fname: string): string;
 implementation
 
 uses
+  i_windows,
   d_misc,
   menu;
 
@@ -126,10 +128,46 @@ end;
 var
   ca_initialized: boolean = false;
 
-procedure CA_InitFile(const filename: string);
+procedure FindBLOFile(var fname: string);
+var
+  stmp: string;
+  test: string;
+begin
+  stmp := ExtractFileName(fname);
+  test := basedefault + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED2\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED3\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+end;
+
+procedure CA_InitFile(const afilename: string);
 var
   size: integer;
   i: integer;
+  filename: string;
 begin
   if ca_initialized then // already open, must shut down
   begin
@@ -140,6 +178,9 @@ begin
         memfree(lumpmain[i]);
     memfree(pointer(lumpmain));
   end;
+  filename := afilename;
+  if not fexists(filename) then
+    FindBLOFile(filename);
   // load the header
   if not fopen(cachehandle, filename, fOpenReadOnly) then
     MS_Error('CA_InitFile(): Can''t open %s!', [filename]);
