@@ -51,7 +51,7 @@ var
 
 function SaveSetup(const SC: PSoundCard; const Filename: string): integer;
 
-procedure PlaySong(const sname: string; const pattern: integer);
+procedure PlaySong(const aname: string; const pattern: integer);
 
 procedure StopMusic;
 
@@ -68,6 +68,7 @@ procedure UpdateSound;
 implementation
 
 uses
+  SysUtils,
   g_delphi,
   d_disk,
   d_ints_h,
@@ -260,8 +261,77 @@ begin
   BASS_Free;
 end;
 
-procedure PlaySong(const sname: string; const pattern: integer);
+procedure FindMusicFile(var fname: string);
+var
+  stmp: string;
+  test: string;
 begin
+  stmp := ExtractFileName(fname);
+  test := basedefault + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := basedefault + 'MUSIC\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MUSIC\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED2\MUSIC\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED2\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED3\MUSIC\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := Chr(cdr_drivenum + Ord('A')) + ':\GREED3\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+end;
+
+procedure PlaySong(const aname: string; const pattern: integer);
+var
+  sname: string;
+begin
+  sname := aname;
+  if not fexists(sname) then
+    FindMusicFile(sname);
   MUSIC_HANDLE := BASS_MusicLoad(False, PChar(sname), 0, 0, BASS_MUSIC_POSRESET, 1);
   if MUSIC_HANDLE <> 0 then
   begin
