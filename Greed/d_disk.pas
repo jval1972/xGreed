@@ -219,8 +219,6 @@ end;
 // searches for lump with name
 // returns -1 if not found
 function CA_GetNamedNum(const name: string): integer;
-var
-  i: integer;
 begin
   result := CA_CheckNamedNum(name);
   if result >= 0 then
@@ -316,8 +314,6 @@ end;
 function CA_LumpAsText(const lump: integer): string;
 var
   len: integer;
-  i: integer;
-  c: char;
 begin
   len := infotable[lump].size;
   SetLength(result, len);
