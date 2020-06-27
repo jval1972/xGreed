@@ -4385,8 +4385,6 @@ begin
 
     UpdateView(player.x, player.y, player.z, player.angle, 1);
 
-    VI_BlitView;
-
     if newsong then
       SelectNewSong;
 
@@ -4450,6 +4448,8 @@ begin
 
     if netmode then
       NetGetData;
+
+    VI_BlitView;
   end;
 end;
 
