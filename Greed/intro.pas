@@ -190,7 +190,7 @@ procedure loadscreen(const s: string);
 
 procedure DoIntroMenu;
 
-procedure Wait(time: integer);
+procedure Wait(time: integer; sleeptime: integer = 0);
 
 procedure startup;
 
@@ -235,7 +235,7 @@ begin
 end;
 
 
-procedure Wait(time: integer);
+procedure Wait(time: integer; sleeptime: integer = 0);
 var
   t: integer;
 begin
@@ -243,7 +243,7 @@ begin
   while not CheckTime(timecount, t) do
   begin
     I_PeekAndDisplatch;
-    I_Sleep(0);
+    I_Sleep(sleeptime);
   end;
 end;
 
@@ -270,7 +270,7 @@ begin
         printy := 19 + 6 * i;
         str1 := charinfo[n - 1][i];
         FN_RawPrint3(str1);
-        Wait(2);
+        Wait(2, 1);
       end;
       inc(fontbasecolor);
     end;
@@ -285,7 +285,7 @@ begin
   for i := 0 to 49 do
   begin
     UpdateSound;
-    Wait(35);
+    Wait(35, 1);
     if activatemenu then
     begin
       DoIntroMenu;
@@ -387,7 +387,7 @@ begin
   name := path + 'INSHIP02.FLI';
   DoPlayFLI(name, 0);
   if CheckDemoExit then exit;
-  Wait(140);
+  Wait(2 * TICRATE);
 
   name := path + 'CHAR1.FLI';
   DoPlayFLI(name, 0);
@@ -460,7 +460,7 @@ begin
     if CheckDemoExit then exit;
   end;
 
-  Wait(210);
+  Wait(3 * TICRATE);
 end;
 
 procedure MainIntro;
@@ -491,19 +491,19 @@ begin
   VI_FillPalette(0, 0, 0);
   loadscreen('SOFTLOGO');
   VI_FadeIn(0, 256, @colors, 48);
-  Wait(210);
+  Wait(3 * TICRATE, 1);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
   loadscreen('C7LOGO');
   VI_FadeIn(0, 256, @colors, 48);
-  Wait(210);
+  Wait(3 * TICRATE, 1);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
   loadscreen('LOGO');
   VI_FadeIn(0, 256, @colors, 48);
-  Wait(210);
+  Wait(3 * TICRATE, 1);
   VI_FillPalette(255, 255, 255);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
@@ -521,12 +521,12 @@ begin
       'OF THE A.V.C. YOU ARE A MEMBER OF THE RED HUNTER'#13#10 +
       'ELITE ACQUISITION SQUAD.'
     );
-    Wait(5);
+    Wait(5, 1);
     inc(fontbasecolor);
   end;
   for i := 0 to 69 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
@@ -543,12 +543,12 @@ begin
       'USING YOUR NEEDLING SHIP, THE RED HUNTER, IT IS YOUR'#13#10 +
       'JOB TO WARP THROUGH TO UNSUSPECTING FRINGE WORLDS...'
     );
-    Wait(5);
+    Wait(5, 1);
     inc(fontbasecolor);
   end;
   for i := 0 to 41 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   VI_FadeOut(0, 256, 0, 0, 0, 48);
@@ -566,12 +566,12 @@ begin
       'NONCOOPERATIVE ENTITIES (NOPS) AS BEST YOU CAN IN'#13#10 +
       'ORDER TO ACQUIRE YOUR PRIMARY TARGET ITEMS.'
     );
-    Wait(5);
+    Wait(5, 1);
     inc(fontbasecolor);
   end;
   for i := 0 to 41 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   if CheckDemoExit then exit;
@@ -589,7 +589,7 @@ begin
       'THE SIZE AND SPEED OF THE DROP SHIP SHOULD BE SUFFICIENT'#13#10 +
       'TO DRIVE NONCOOPERATIVES FROM THE DROP ZONE UPON IMPACT.'
     );
-    Wait(5);
+    Wait(5, 1);
     inc(fontbasecolor);
   end;
   for i := 0 to 41 do
@@ -606,7 +606,7 @@ begin
   I_SetPalette(@colors);
   for i := 0 to 20 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   if CheckDemoExit then exit;
@@ -618,7 +618,7 @@ begin
   VI_FadeIn(0, 256, @colors, 48);
   for i := 0 to 20 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   if CheckDemoExit then exit;
@@ -633,12 +633,12 @@ begin
   begin
     printy := 160;
     FN_PrintCentered('IN SHORT, IF IT''S MOVING AROUND, KILL IT...');
-    Wait(5);
+    Wait(5, 1);
     inc(fontbasecolor);
   end;
   for i := 0 to 27 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   if CheckDemoExit then exit;
@@ -653,12 +653,12 @@ begin
   begin
     printy := 160;
     FN_PrintCentered('...AND IF IT''S NOT NAILED DOWN, STEAL IT.');
-    Wait(5);
+    Wait(5, 1);
     inc(fontbasecolor);
   end;
   for i := 0 to 27 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   if CheckDemoExit then exit;
@@ -675,12 +675,12 @@ begin
       'YOU''RE A SCAVENGER.  YOU''VE GOT A GUN.'#13#10 +
       'LET''S GET SOME.'
     );
-    Wait(5);
+    Wait(5, 1);
     inc(fontbasecolor);
   end;
   for i := 0 to 27 do
   begin
-    Wait(10);
+    Wait(10, 1);
     if CheckDemoExit then exit;
   end;
   if CheckDemoExit then exit;

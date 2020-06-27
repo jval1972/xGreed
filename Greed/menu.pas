@@ -279,7 +279,7 @@ begin
   for i := 0 to 2 do
     pics[i] := CA_CacheLump(lump + i);
   menutimedelay := timecount + KBDELAY2;
-  Wait(KBDELAY2);
+  Wait(KBDELAY2, 1);
   if netmode then
     TimeUpdate;
   newascii := false;
@@ -801,7 +801,10 @@ begin
       memset(@ylookup[printy + i][printx], 0, 100);
     FN_Print(savedir[menucursor]);
     while not newascii do   // wait for a new key
+    begin
+      Wait(1, 1);
       MenuShowCursor(menucursor + 1);
+    end;
 
     case Ord(lastascii) of
     13,
@@ -876,7 +879,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if netmode then
       TimeUpdate;
     if newascii then
@@ -892,7 +895,7 @@ begin
     newascii := false;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if netmode then
         TimeUpdate;
       if newascii then
@@ -906,7 +909,7 @@ begin
     newascii := false;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if netmode then
         TimeUpdate;
       if newascii then
@@ -1351,7 +1354,7 @@ begin
   for i := 0 to 3 do
     pics[i] := CA_CacheLump(lump + i);
   menutimedelay := timecount + KBDELAY2;
-  Wait(KBDELAY2);
+  Wait(KBDELAY2, 1);
   anim := 0;
   if not SC.animation then
     y := 72

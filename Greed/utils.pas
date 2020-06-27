@@ -1631,7 +1631,7 @@ begin
 
   loadscreen('REDCHARS');
   VI_FadeIn(0, 256, @colors, 48);
-  Wait(140);
+  Wait(140, 1);
   fontbasecolor := 64;
   while fontbasecolor < 73 do
   begin
@@ -1653,7 +1653,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1665,7 +1665,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1677,7 +1677,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1689,7 +1689,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1703,7 +1703,7 @@ begin
     newascii := false;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;
@@ -1748,7 +1748,7 @@ begin
 
   loadscreen('REDCHARS');
   VI_FadeIn(0, 256, @colors, 48);
-  Wait(140);
+  Wait(2 * TICRATE, 1);
   fontbasecolor := 64;
   while fontbasecolor < 73 do
   begin
@@ -1771,7 +1771,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1783,7 +1783,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1795,7 +1795,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1807,7 +1807,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1819,7 +1819,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1879,7 +1879,7 @@ begin
 
   loadscreen('REDCHARS');
   VI_FadeIn(0, 256, @colors, 48);
-  Wait(140);
+  Wait(2 * TICRATE, 1);
   fontbasecolor := 64;
   while fontbasecolor < 73 do
   begin
@@ -1916,7 +1916,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1928,7 +1928,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1940,7 +1940,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1952,7 +1952,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -1964,7 +1964,7 @@ begin
   newascii := false;
   while true do
   begin
-    Wait(10);
+    Wait(10, 1);
     if newascii then
       break;
   end;
@@ -2323,12 +2323,12 @@ begin
         'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
         'REAR VIEW.');
       VI_BlitView;
-      Wait(3);
+      Wait(3, 1);
       inc(fontbasecolor);
     end;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;
@@ -2348,12 +2348,12 @@ begin
         'FINE TUNE YOUR HARDWARE SETTINGS.  STAY ALERT THOUGH, YOUR MENU'#13#10 +
         'OVERLAY CANCELS INPUT FROM YOUR VISUAL ARRAY SO DON''T EXPECT TO'#13#10 +
         'SEE THINGS COMING WHILE YOU''RE ADJUSTING YOUR SETTINGS.');
-      Wait(3);
+      Wait(3, 1);
       inc(fontbasecolor);
     end;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;
@@ -2378,12 +2378,12 @@ begin
         'SUCH AN ENIGMATIC ENERGY SOURCE IS OF OBVIOUS INTEREST TO A.V.C.'#13#10 +
         'RESEARCH, SO ACQUIRING IT UNDAMAGED IS ESSENTIAL.'#13#10 +
         'YOUR ENTRY POINT WILL BE AT THE BASE OF THE COMPLEX.'#13#10);
-      Wait(3);
+      Wait(3, 1);
       inc(fontbasecolor);
     end;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;
@@ -2407,12 +2407,12 @@ begin
         'PLACED OBJECTS TAKEN FROM THE SHIP''S INVENTORY. EXPECT'#13#10 +
         'NON-COOPERATIVES (NOPS) FROM OTHER PARTS OF THE COLONY TO BE'#13#10 +
         'BROUGHT IN AT REGULAR INTERVALS TO REPLACE CASUALTIES OF THE HUNT.'#13#10);
-      Wait(3);
+      Wait(3, 1);
       inc(fontbasecolor);
     end;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;
@@ -2430,12 +2430,12 @@ begin
         'YOU ARE TO SEARCH FOR AN EXPERIMENTAL EXPLOSIVE HIDDEN'#13#10 +
         'IN THE SUBLEVEL.'#13#10 +
         'SECONDARY GOALS ARE PHOSPHER PELLETS AND DELOUSING KITS.'#13#10);
-      Wait(3);
+      Wait(3, 1);
       inc(fontbasecolor);
     end;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;
@@ -2455,12 +2455,12 @@ begin
         'MEETS OR EXCEEDS 50000 WE''LL OPEN A TRANSLATION NEXUS.  WATCH'#13#10 +
         'FOR THE FLASHING EXIT SIGN.  ENTER THE NEXUS AND WE''LL'#13#10 +
         'TRANSLATE YOU TO THE NEXT AREA OF THE BASE.\n \nGOOD LUCK.');
-      Wait(3);
+      Wait(3, 1);
       inc(fontbasecolor);
     end;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;
@@ -2526,12 +2526,12 @@ begin
          'THIS IS THE CITY-TEMPLE OF RISTANAK, ANCIENT HOME TO THE'#13#10 +
          'PRIESTHOOD OF YRKTAREL.  THE PRIESTHOOD HAS WORSHIPPED THEIR'#13#10 +
          'PAGAN DEITY FOR CENTURIES IN PEACE... UNTIL NOW.'#13#10);
-        Wait(3);
+        Wait(3, 1);
         inc(fontbasecolor);
       end;
       while true do
       begin
-        Wait(10);
+        Wait(10, 1);
         if newascii then
           break;
       end;
@@ -2556,12 +2556,12 @@ begin
          'THE A.V.C. BELIEVES THE ENCODE TO CONTAIN FORGOTTEN'#13#10 +
          'TECHNOLOGIES WHICH WOULD BE PRICELESS ON THE BLACK MARKET.'#13#10 +
          'IT IS YOUR MISSION TO ACQUIRE IT.'#13#10);
-        Wait(3);
+        Wait(3, 1);
         inc(fontbasecolor);
       end;
       while true do
       begin
-        Wait(10);
+        Wait(10, 1);
         if newascii then
           break;
       end;
@@ -2635,12 +2635,12 @@ begin
          'THEN MOUNTED TO A TROJAN GATE JUMP POINT AND TO THIS DAY IT'#13#10 +
          'REMAINS AS A WAY POINT BETWEEN THE RIM WORLDS AND THE CORE'#13#10 +
          'QUARTER, AS WELL AS HOUSING MILITARY MIGHT IN THIS SECTOR.'#13#10);
-        Wait(3);
+        Wait(3, 1);
         inc(fontbasecolor);
       end;
       while true do
       begin
-        Wait(10);
+        Wait(10, 1);
         if newascii then
           break;
       end;
@@ -2666,12 +2666,12 @@ begin
          'AND SUBSEQUENT ETERNAL RULE OF THE CORPS.  OVER 30 ATTEMPTS'#13#10 +
          'HAVE BEEN MADE TO WREST THE SIGIL FROM THE CHANCELLOR''S GRASP.'#13#10 +
          'THEY ALL FAILED.'#13#10);
-        Wait(3);
+        Wait(3, 1);
         inc(fontbasecolor);
       end;
       while true do
       begin
-        Wait(10);
+        Wait(10, 1);
         if newascii then
           break;
       end;
@@ -2726,12 +2726,12 @@ begin
       FN_PrintCentered(missioninfo(map, 0));
       FN_PrintCentered(missioninfo(map, 1));
       FN_PrintCentered(missioninfo(map, 2));
-      Wait(3);
+      Wait(3, 1);
       inc(fontbasecolor);
     end;
     while true do
     begin
-      Wait(10);
+      Wait(10, 1);
       if newascii then
         break;
     end;

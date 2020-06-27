@@ -348,7 +348,10 @@ begin
   begin
     delay := delay + header.speed;  // set timer
     fli_readframe(f);
-    while not CheckTime(timecount, delay) do begin Wait(1); end; // wait
+    while not CheckTime(timecount, delay) do
+    begin
+      Wait(1, 1); // wait;
+    end;
     memcpy(screen, @viewbuffer, 64000);       // copy
     inc(currentfliframe);
   end;

@@ -137,7 +137,7 @@ begin
         inc(basep[j]);
       end;
     end;
-    Wait(1);
+    Wait(1, 1);
     I_SetPalette(@basep);
   end;
   VI_FillPalette(red, green, blue);
@@ -178,7 +178,7 @@ begin
         dec(work[j]);
       end;
     end;
-    Wait(1);
+    Wait(1, 1);
     I_SetPalette(@work);
   end;
   I_SetPalette(apal);
