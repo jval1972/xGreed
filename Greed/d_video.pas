@@ -79,6 +79,7 @@ uses
   d_disk,
   d_misc,
   intro,
+  m_screenshot,
   i_windows,
   i_video,
   raven,
@@ -377,6 +378,11 @@ end;
 procedure VI_BlitView;
 begin
   I_FinishUpdate;
+  if doscreenshot then
+  begin
+    SaveScreenShot;
+    doscreenshot := false;
+  end;
 end;
 
 

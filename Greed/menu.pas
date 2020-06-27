@@ -1376,6 +1376,7 @@ begin
       animtime := animtime + 10;
     end;
     VI_DrawMaskedPic2(106, y, pics[anim], pscreen);
+    VI_BlitView;
   end;
   if not SC.animation then
     y := 200;
@@ -1397,6 +1398,7 @@ begin
       animtime := animtime + 10;
     end;
     VI_DrawMaskedPic2(106, y, pics[anim], pscreen);
+    VI_BlitView;
   end;
   memcpy(@viewbuffer, pscreen, 64000);
   memfree(pointer(pscreen));

@@ -144,6 +144,7 @@ procedure INT_Setup;
 implementation
 
 uses
+  m_screenshot,
   i_windows,
   windows,
   timer;
@@ -161,11 +162,16 @@ begin
   lastascii := #0;
   for i := 0 to NUMCODES - 1 do
   begin
-    key := I_MapVirtualKey(i, 1);
+    if i = 44 then
+      key := I_MapVirtualKey(44, 1)
+    else
+      key := I_MapVirtualKey(i, 1);
     keyboard[i] := I_GetKeyState(key);
     if keyboard[i] and $80 <> 0 then
       if oldkeyboard[i] and $80 = 0 then
       begin
+        if i = 84 then
+          doscreenshot := true;
         c := toupper(ASCIINames[i]);
         if c <> #0 then
         begin
