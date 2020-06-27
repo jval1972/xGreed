@@ -222,28 +222,6 @@ begin
   end;
 end;
 
-procedure I_FinishUpdate16;
-var
-  i: integer;
-  destw: PWord;
-  pixel: LongWord;
-  r, g, b: LongWord;
-  srcl: PLongWord;
-begin
-  destw := @screen16[0];
-  srcl := @screen[0];
-  for i := 0 to SCREENWIDTH * SCREENHEIGHT - 1 do
-  begin
-    pixel := srcl^;
-    r := (pixel shr 19) and 31;
-    g := (pixel shr 11) and 31;
-    b := (pixel shr 3) and 31;
-    destw^ := (r shl 11) or (g shl 6) or b;
-    inc(destw);
-    inc(srcl);
-  end;
-end;
-
 var
   old_pillarbox_pct: integer = -1;
   old_letterbox_pct: integer = -1;
