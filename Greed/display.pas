@@ -1322,36 +1322,33 @@ var
   str1: string;
   i, j, d, d1, c: integer;
 begin
-  if player.bodycount <> oldbodycount then
-  begin
-    font := font2;
-    printx := 178;
-    printy := 3;
-    fontbasecolor := 0;
-    sprintf(str1, '%8d', [player.bodycount]);
-    FN_RawPrint(str1);
-    oldbodycount := player.bodycount;
-  end;
-  if player.score <> oldscore then
-  begin
-    font := font2;
-    printx := 28;
-    printy := 3;
-    fontbasecolor := 0;
-    sprintf(str1, '%9d', [player.score]);
-    FN_RawPrint(str1);
-    oldscore := player.score;
-  end;
-  if player.levelscore <> oldlevelscore then
-  begin
-    font := font2;
-    printx := 104;
-    printy := 3;
-    fontbasecolor := 0;
-    sprintf(str1, '%9d', [player.levelscore]);
-    FN_RawPrint(str1);
-    oldlevelscore := player.levelscore;
-  end;
+  // Bodycount
+  font := font2;
+  printx := 178;
+  printy := 3;
+  fontbasecolor := 0;
+  sprintf(str1, '%8d', [player.bodycount]);
+  FN_RawPrint(str1);
+  oldbodycount := player.bodycount;
+
+  // Score
+  font := font2;
+  printx := 28;
+  printy := 3;
+  fontbasecolor := 0;
+  sprintf(str1, '%9d', [player.score]);
+  FN_RawPrint(str1);
+  oldscore := player.score;
+
+  // Levelscore
+  font := font2;
+  printx := 104;
+  printy := 3;
+  fontbasecolor := 0;
+  sprintf(str1, '%9d', [player.levelscore]);
+  FN_RawPrint(str1);
+  oldlevelscore := player.levelscore;
+
   if specialeffecttime <> $7FFFFFFF then
   begin
     d1 := (specialeffecttime - timecount) div 4;
