@@ -4469,7 +4469,6 @@ begin
   MapZoom := 8;
   secretbuf := '';
   secretindex := 0;
-//   demobuffer := CA_CacheLump(CA_GetNamedNum('demo'));
   if playback then
   begin
     demobuffer := CA_LoadFile('demo1');
