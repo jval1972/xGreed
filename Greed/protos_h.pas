@@ -592,7 +592,7 @@ type
 
 { Net  }
 const
-  DATALENGTH = 128;
+  GCMAXDATALENGTH = 128;
   { greed executes an int to send commands }
   { communication between greed and the driver }
   { CMD_SEND or CMD_GET }
@@ -617,7 +617,7 @@ type
     numnodes: smallint;
     consoleplayer: smallint;
     numplayers: smallint;
-    data: packed array[0..DATALENGTH - 1] of char;
+    data: packed array[0..GCMAXDATALENGTH - 1] of char;
   end;
 
   Ppevent_t = ^pevent_t;
