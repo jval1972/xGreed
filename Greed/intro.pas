@@ -258,6 +258,7 @@ begin
   VI_FadeIn(0, 256, @colors, 48);
   font := font1;
 
+  nextchar := false;
   for i := 0 to 26 do
   begin
     UpdateSound;
@@ -270,7 +271,8 @@ begin
         printy := 19 + 6 * i;
         str1 := charinfo[n - 1][i];
         FN_RawPrint3(str1);
-        Wait(2, 1);
+        if not nextchar then
+          Wait(2, 1);
       end;
       inc(fontbasecolor);
     end;
@@ -282,6 +284,8 @@ begin
     end;
   end;
 
+  nextchar := false;
+  
   for i := 0 to 49 do
   begin
     UpdateSound;
