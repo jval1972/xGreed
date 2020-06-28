@@ -362,9 +362,6 @@ begin
   end;
 end;
 
-var
-  stubpic: array[0..4095] of integer;
-
 procedure DrawSprite;
 var
   leftx, scale, xfrac, fracstep: fixed_t;
@@ -426,10 +423,6 @@ begin
   pic := Pscalepic_t(span_p.picture);
   if pic = nil then
     exit;  // JVAL: SOS
-//  if pic = nil then
-//    pic := @stubpic;
-//  if pic = nil then
-//    exit; // JVAL: SOS
   sp := Pscaleobj_t(span_p.structure);
 
   bitshift := FRACBITS - sp.scale;
