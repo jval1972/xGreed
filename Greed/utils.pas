@@ -2306,60 +2306,63 @@ begin
   begin
     VI_FillPalette(0, 0, 0);
 
-    loadscreen('BRIEF3');
-    VI_BlitView;
-    VI_FadeIn(0, 256, @colors, 64);
-    Wait(TICRATE);
-    newascii := false;
-    fontbasecolor := 0;
-    while fontbasecolor < 9 do
+    if not DEMO then
     begin
-      printy := 149;
-      FN_PrintCentered(
-        'WELCOME ABOARD HUNTER.'#13#10 +
-        'DUE TO INCREASED FUNDING FROM THE AVC YOU''LL BE EQUIPPED WITH THE'#13#10 +
-        'LATEST IN HUNTER HARDWARE.  ALONG WITH YOUR EXISTING AUTO MAPPER,'#13#10 +
-        'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS'#13#10 +
-        'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
-        'REAR VIEW.');
+      loadscreen('BRIEF3');
       VI_BlitView;
-      Wait(3, 1);
-      inc(fontbasecolor);
-    end;
-    while true do
-    begin
-      Wait(10, 1);
-      if newascii then
-        break;
-    end;
-    if lastascii = #27 then
-      goto finale;
+      VI_FadeIn(0, 256, @colors, 64);
+      Wait(TICRATE);
+      newascii := false;
+      fontbasecolor := 0;
+      while fontbasecolor < 9 do
+      begin
+        printy := 149;
+        FN_PrintCentered(
+          'WELCOME ABOARD HUNTER.'#13#10 +
+          'DUE TO INCREASED FUNDING FROM THE AVC YOU''LL BE EQUIPPED WITH THE'#13#10 +
+          'LATEST IN HUNTER HARDWARE.  ALONG WITH YOUR EXISTING AUTO MAPPER,'#13#10 +
+          'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS'#13#10 +
+          'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
+          'REAR VIEW.');
+        VI_BlitView;
+        Wait(3, 1);
+        inc(fontbasecolor);
+      end;
+      while true do
+      begin
+        Wait(10, 1);
+        if newascii then
+          break;
+      end;
+      if lastascii = #27 then
+        goto finale;
 
-    VI_FadeOut(0, 256, 0, 0, 0, 64);
+      VI_FadeOut(0, 256, 0, 0, 0, 64);
 
-    loadscreen('BRIEF3');
-    newascii := false;
-    fontbasecolor := 0;
-    while fontbasecolor < 9 do
-    begin
-      printy := 149;
-      FN_PrintCentered(
-        'A MENUING SYSTEM HAS ALSO BEEN INSTALLED ALLOWING YOU TO'#13#10 +
-        'FINE TUNE YOUR HARDWARE SETTINGS.  STAY ALERT THOUGH, YOUR MENU'#13#10 +
-        'OVERLAY CANCELS INPUT FROM YOUR VISUAL ARRAY SO DON''T EXPECT TO'#13#10 +
-        'SEE THINGS COMING WHILE YOU''RE ADJUSTING YOUR SETTINGS.');
-      Wait(3, 1);
-      inc(fontbasecolor);
+      loadscreen('BRIEF3');
+      newascii := false;
+      fontbasecolor := 0;
+      while fontbasecolor < 9 do
+      begin
+        printy := 149;
+        FN_PrintCentered(
+          'A MENUING SYSTEM HAS ALSO BEEN INSTALLED ALLOWING YOU TO'#13#10 +
+          'FINE TUNE YOUR HARDWARE SETTINGS.  STAY ALERT THOUGH, YOUR MENU'#13#10 +
+          'OVERLAY CANCELS INPUT FROM YOUR VISUAL ARRAY SO DON''T EXPECT TO'#13#10 +
+          'SEE THINGS COMING WHILE YOU''RE ADJUSTING YOUR SETTINGS.');
+        Wait(3, 1);
+        inc(fontbasecolor);
+      end;
+      while true do
+      begin
+        Wait(10, 1);
+        if newascii then
+          break;
+      end;
+      if lastascii = #27 then
+        goto finale;
+      VI_FadeOut(0, 256, 0, 0, 0, 64);
     end;
-    while true do
-    begin
-      Wait(10, 1);
-      if newascii then
-        break;
-    end;
-    if lastascii = #27 then
-      goto finale;
-    VI_FadeOut(0, 256, 0, 0, 0, 64);
 
     loadscreen('BRIEF1');
     VI_FadeIn(0, 256, @colors, 64);
