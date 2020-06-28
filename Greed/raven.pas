@@ -4484,8 +4484,7 @@ begin
   probe.moveSpeed := MAXPROBE;
   probe.movesize := 16 * FRACUNIT; // half a tile
   probe.spawnid := playernum;
-  for i := 0 to currentViewSize - 1 do
-    ChangeViewSize(true);
+  currentViewSize := sc.screensize;
   resetdisplay;
 end;
 

@@ -512,7 +512,7 @@ begin
   7: // screen size
     begin
       VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuscrsli')));
-      ShowMenuSliders(10 - SC.screensize, 10);
+      ShowMenuSliders(MAXVIEWSIZE - SC.screensize - 1, MAXVIEWSIZE - 1);
     end;
 
   8: // asscam
@@ -582,10 +582,10 @@ begin
 
     7: // screensize
       begin
-        if SC.screensize < 9 then
+        if SC.screensize < MAXVIEWSIZE - 1 then
         begin
           inc(SC.screensize);
-          ShowMenuSliders(10 - SC.screensize, 10);
+          ShowMenuSliders(MAXVIEWSIZE - SC.screensize - 1, MAXVIEWSIZE - 1);
           menutimedelay := timecount + KBDELAY2;
           goleft := false;
         end;
@@ -665,7 +665,7 @@ begin
         if SC.screensize <> 0 then
         begin
           dec(SC.screensize);
-          ShowMenuSliders(10 - SC.screensize, 10);
+          ShowMenuSliders(MAXVIEWSIZE - SC.screensize - 1, MAXVIEWSIZE - 1);
           menutimedelay := timecount + KBDELAY2;
           goright := false;
         end;
@@ -1224,12 +1224,12 @@ begin
       begin
         if (y >= 49) and (y <= 64) and (x >= 42) and (x <= 90) then
         begin
-          SC.screensize := 9 - (((x - 40) * 10) div 49);
+          SC.screensize := MAXVIEWSIZE - 1 - (((x - 40) * MAXVIEWSIZE) div 49);
           if SC.screensize > MAXVIEWSIZE - 1 then
             SC.screensize := MAXVIEWSIZE - 1
           else if SC.screensize < 0 then
             SC.screensize := 0;
-          ShowMenuSliders(10 - SC.screensize, 10);
+          ShowMenuSliders(MAXVIEWSIZE - SC.screensize, MAXVIEWSIZE);
         end;
       end;
 
