@@ -289,8 +289,8 @@ begin
         if SC.vrhelmet = 1 then
         begin
           screen := vrscr;
-          for j := 0 to SCREENHEIGHT - 1 do
-            ylookup[j] := @screen[j * SCREENWIDTH];
+          for j := 0 to MAX_VIEW_HEIGHT - 1 do
+            ylookup[j] := @screen[j * MAX_VIEW_WIDTH];
         end;
       end;
     end;

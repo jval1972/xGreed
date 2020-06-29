@@ -608,14 +608,14 @@ begin
 
           y1 := span_p.y - scrollmin;
 
-          if (y1 >= 200) or (y1 < 0) then
+          if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
             goto abort1; // JVAL SOS
 
           mr_dest := @viewylookup[y1][spanx];
           mr_picture := span_p.picture;
           x2 := span_p.x2;
 
-          if (x2 > 320) or (x2 < 0) then
+          if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
             goto abort1; // JVAL SOS
 
           mr_count := x2 - spanx;
@@ -668,11 +668,11 @@ begin
     sp_sky:
       begin
         py := span_p.y - scrollmin;
-        if (py >= 200) or (py < 0) then
+        if (py >= RENDER_VIEW_HEIGHT) or (py < 0) then
           goto abort1;  // JVAL: SOS
         px := spanx;
 
-        if (span_p.x2 > 320) or (span_p.x2 < 0) then
+        if (span_p.x2 > RENDER_VIEW_WIDTH) or (span_p.x2 < 0) then
           goto abort1;  // JVAL: SOS
 
         mr_count := span_p.x2 - spanx;
@@ -759,9 +759,9 @@ begin
         x2 := span_p.x2;
         y1 := span_p.y - scrollmin;
 
-        if (y1 >= 200) or (y1 < 0) then
+        if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
           goto abort1;  // JVAL: SOS
-        if (x2 > 320) or (x2 < 0) then
+        if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
           goto abort1;  // JVAL: SOS
 
         mr_dest := @viewylookup[y1][spanx];

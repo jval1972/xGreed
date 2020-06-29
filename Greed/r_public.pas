@@ -577,6 +577,8 @@ end;
 
 
 procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
+var
+  i: integer;
 begin
 {$IFDEF VALIDATE}
   if (x <= 0) or (x >= ((MAPSIZE - 1) shl (FRACBITS + TILESHIFT))) or (y <= 0) or (
@@ -587,6 +589,9 @@ begin
 // viewx := (x) and (~0xfff) + $800;
 // viewy := (y) and (~0xfff) + $800;
 // viewz := (z) and (~0xfff) + $800;
+
+  for i := 0 to RENDER_VIEW_HEIGHT - 1 do
+    viewylookup[i] := @renderbuffer[i * RENDER_VIEW_WIDTH];
 
   viewx := x;
   viewy := y;
@@ -600,6 +605,10 @@ begin
   RenderSprites;
   DrawSpans;
   RF_CheckActionFlag;
+
+  for i := 0 to MAX_VIEW_HEIGHT - 1 do
+    viewylookup[i] := @viewbuffer[i * MAX_VIEW_WIDTH];
+
 end;
 
 
@@ -608,12 +617,12 @@ var
   i: integer;
   width, height: integer;
 begin
-  if awidth > MAX_VIEW_WIDTH then
-    width := MAX_VIEW_WIDTH
+  if awidth > RENDER_VIEW_WIDTH then
+    width := RENDER_VIEW_WIDTH
   else
     width := awidth;
-  if aheight > MAX_VIEW_HEIGHT then
-    height := MAX_VIEW_HEIGHT
+  if aheight > RENDER_VIEW_HEIGHT then
+    height := RENDER_VIEW_HEIGHT
   else
     height := aheight;
   windowHeight := height;

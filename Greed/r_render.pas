@@ -84,9 +84,10 @@ var
   costable: array[0..ANGLES] of fixed_t;
   sintable: array[0..ANGLES] of fixed_t;
   viewbuffer: packed array[0..MAX_VIEW_WIDTH * MAX_VIEW_HEIGHT - 1] of pixel_t;
-  viewylookup: array[0..MAX_VIEW_HEIGHT - 1] of Ppixel_tArray;
-  yslope: array[0..MAX_VIEW_HEIGHT + MAXSCROLL2 - 1] of fixed_t;
-  xslope: array[0..MAX_VIEW_WIDTH] of fixed_t;
+  renderbuffer: packed array[0..RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT - 1] of pixel_t;
+  viewylookup: array[0..RENDER_VIEW_HEIGHT - 1] of Ppixel_tArray;
+  yslope: array[0..RENDER_VIEW_HEIGHT + MAXSCROLL2 - 1] of fixed_t;
+  xslope: array[0..RENDER_VIEW_WIDTH] of fixed_t;
   wallposts: PBytePArray;
   colormaps: PByteArray;
   numcolormaps: integer;

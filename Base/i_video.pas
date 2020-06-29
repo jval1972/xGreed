@@ -91,6 +91,7 @@ uses
   d_misc,
   i_windows,
   i_main,
+  r_public_h,
   r_render;
 
 var
@@ -194,8 +195,8 @@ var
   src: PByte;
   srcstop: PByte;
 begin
-  src := @(viewbuffer[parms.start]);
-  srcstop := @(viewbuffer[parms.stop]);
+  src := @(renderbuffer[parms.start]);
+  srcstop := @(renderbuffer[parms.stop]);
   if bpp = 32 then
   begin
     destl := @screen32[parms.start];
@@ -243,7 +244,7 @@ begin
     exit;
 
   parms1.start := 0;
-  parms1.stop := SCREENWIDTH * SCREENHEIGHT - 1;
+  parms1.stop := RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT - 1;
   I_FinishUpdate8(@parms1);
 
   vid_pillarbox_pct := ibetween(vid_pillarbox_pct, PILLARLETTER_MIN, PILLARLETTER_MAX);
@@ -251,8 +252,8 @@ begin
 
   srcrect.Left := 0;
   srcrect.Top := 0;
-  srcrect.Right := SCREENWIDTH;
-  srcrect.Bottom := SCREENHEIGHT;
+  srcrect.Right := RENDER_VIEW_WIDTH;
+  srcrect.Bottom := RENDER_VIEW_HEIGHT;
 
   hpan := Trunc(vid_pillarbox_pct * XWINDOWWIDTH / 100 / 2);
   vpan := Trunc(vid_letterbox_pct * XWINDOWHEIGHT / 100 / 2);
@@ -472,10 +473,10 @@ begin
   mindist := 1000000000000.0;
   for i := 0 to numdisplaymodes - 1 do
   begin
-    dist := sqrt(sqr(displaymodes[i].width - SCREENWIDTH) + sqr(displaymodes[i].height - SCREENHEIGHT));
-    if SCREENWIDTH < displaymodes[i].width then
+    dist := sqrt(sqr(displaymodes[i].width - RENDER_VIEW_WIDTH) + sqr(displaymodes[i].height - RENDER_VIEW_HEIGHT));
+    if RENDER_VIEW_WIDTH < displaymodes[i].width then
       dist := dist + 50.0;
-    if SCREENHEIGHT < displaymodes[i].height then
+    if RENDER_VIEW_HEIGHT < displaymodes[i].height then
       dist := dist + 50.0;
     if dist < mindist then
     begin
@@ -558,17 +559,17 @@ begin
 
   if not dofull then
   begin
-    XWINDOWWIDTH := {$IFDEF VALIDATE}NATIVEWIDTH{$ELSE}SCREENWIDTH{$ENDIF};
-    XWINDOWHEIGHT := {$IFDEF VALIDATE}NATIVEHEIGHT{$ELSE}SCREENHEIGHT{$ENDIF};
+    XWINDOWWIDTH := {$IFDEF VALIDATE}NATIVEWIDTH{$ELSE}RENDER_VIEW_WIDTH{$ENDIF};
+    XWINDOWHEIGHT := {$IFDEF VALIDATE}NATIVEHEIGHT{$ELSE}RENDER_VIEW_HEIGHT{$ENDIF};
     exit;
   end;
 
   for i := 0 to numdisplaymodes - 1 do
-    if displaymodes[i].width = SCREENWIDTH then
-      if displaymodes[i].height = SCREENHEIGHT then
+    if displaymodes[i].width = RENDER_VIEW_WIDTH then
+      if displaymodes[i].height = RENDER_VIEW_HEIGHT then
       begin
-        XWINDOWWIDTH := SCREENWIDTH;
-        XWINDOWHEIGHT := SCREENHEIGHT;
+        XWINDOWWIDTH := RENDER_VIEW_WIDTH;
+        XWINDOWHEIGHT := RENDER_VIEW_HEIGHT;
         exit;
       end;
 
@@ -576,10 +577,10 @@ begin
   idx := -1;
   for i := 0 to numdisplaymodes - 1 do
   begin
-    dist := sqrt(sqr(displaymodes[i].width - SCREENWIDTH) + sqr(displaymodes[i].height - SCREENHEIGHT));
-    if SCREENWIDTH < displaymodes[i].width then
+    dist := sqrt(sqr(displaymodes[i].width - RENDER_VIEW_WIDTH) + sqr(displaymodes[i].height - RENDER_VIEW_HEIGHT));
+    if RENDER_VIEW_WIDTH < displaymodes[i].width then
       dist := dist + 50.0;
-    if SCREENHEIGHT < displaymodes[i].height then
+    if RENDER_VIEW_HEIGHT < displaymodes[i].height then
       dist := dist + 50.0;
     if dist < mindist then
     begin
@@ -746,24 +747,24 @@ begin
 
   bpp := ddsd.ddpfPixelFormat.dwRGBBitCount;
 
-  ddsd.dwWidth := SCREENWIDTH;
-  ddsd.dwHeight := SCREENHEIGHT;
+  ddsd.dwWidth := RENDER_VIEW_WIDTH;
+  ddsd.dwHeight := RENDER_VIEW_HEIGHT;
 
   if bpp = 32 then
   begin
-    ddsd.lPitch := 4 * SCREENWIDTH; // Display is true color
+    ddsd.lPitch := 4 * RENDER_VIEW_WIDTH; // Display is true color
     screen16 := nil;
   end
   else if bpp = 16 then
   begin
-    ddsd.lPitch := 2 * SCREENWIDTH;
-    screen16 := malloc(SCREENWIDTH * SCREENHEIGHT * 2);
+    ddsd.lPitch := 2 * RENDER_VIEW_WIDTH;
+    screen16 := malloc(RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT * 2);
     printf('I_InitGraphics(): using 16 bit color depth desktop in non fullscreen mode reduces performance'#13#10);
   end
   else
     MS_Error('I_InitGraphics(): invalid colordepth = %d, only 16 and 32 bit color depth allowed', [bpp]);
 
-  allocscreensize := SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord);
+  allocscreensize := RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT * SizeOf(LongWord);
   screen32 := malloc(allocscreensize); // JVAL: Memory padding may increase performance until 4%
 
   if bpp = 16 then
@@ -810,20 +811,20 @@ begin
 
   bpp := ddsd.ddpfPixelFormat.dwRGBBitCount;
 
-  ddsd.dwWidth := SCREENWIDTH;
-  ddsd.dwHeight := SCREENHEIGHT;
+  ddsd.dwWidth := RENDER_VIEW_WIDTH;
+  ddsd.dwHeight := RENDER_VIEW_HEIGHT;
 
   if bpp = 32 then
   begin
-    ddsd.lPitch := 4 * SCREENWIDTH; // Display is true color
+    ddsd.lPitch := 4 * RENDER_VIEW_WIDTH; // Display is true color
     if screen16 <> nil then
       memfree(pointer(screen16));
   end
   else if bpp = 16 then
   begin
-    ddsd.lPitch := 2 * SCREENWIDTH;
+    ddsd.lPitch := 2 * RENDER_VIEW_WIDTH;
     if screen16 <> nil then
-      screen16 := malloc(SCREENWIDTH * SCREENHEIGHT * 2);
+      screen16 := malloc(RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT * 2);
     printf('I_RecreateSurfaces(): using 16 bit color depth desktop in non fullscreen mode reduces performance'#13#10);
   end
   else
@@ -933,7 +934,7 @@ end;
 
 procedure I_ReadScreen32(dest: pointer);
 begin
-  memcpy(dest, screen32, SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord));
+  memcpy(dest, screen32, RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT * SizeOf(LongWord));
 end;
 
 end.

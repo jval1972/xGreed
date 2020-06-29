@@ -756,6 +756,7 @@ end;
 // *note: runtime change of code !!
 procedure ResetScalePostWidth(const NewWindowWidth: integer);
 begin
+  // JVAL: SOS - Remove
 end;
 
 

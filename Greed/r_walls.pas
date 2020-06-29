@@ -35,17 +35,17 @@ var
   tangents: array[0..TANANGLES * 2 - 1] of fixed_t;
   sines: array[0..TANANGLES * 5 - 1] of fixed_t;
   cosines: Pfixed_tArray; // point 1/4 phase into sines
-  pixelangle: array[0..MAX_VIEW_WIDTH] of integer;
-  pixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
-  wallz: array[0..MAX_VIEW_WIDTH - 1] of fixed_t;  // pointx
+  pixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
+  pixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
+  wallz: array[0..RENDER_VIEW_WIDTH - 1] of fixed_t;  // pointx
   tpwalls_dest: array[0..MAXPEND - 1] of PByteArray;
   tpwalls_colormap: array[0..MAXPEND - 1] of PByteArray;
   tpwalls_count: array[0..MAXPEND - 1] of integer;
   transparentposts: integer;
-  wallpixelangle: array[0..MAX_VIEW_WIDTH] of integer;
-  wallpixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
-  campixelangle: array[0..MAX_VIEW_WIDTH] of integer;
-  campixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
+  wallpixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
+  wallpixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
+  campixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
+  campixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
 
 procedure InitWalls;
 
@@ -653,8 +653,8 @@ contceiling:
         continue;
       sp_count := bottomy - topy + 1;
   {$IFDEF VALIDATE}
-      if (bottomy - scrollmin < 0) or (bottomy - scrollmin >= MAX_VIEW_HEIGHT) then
-        MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, MAX_VIEW_HEIGHT - 1]);
+      if (bottomy - scrollmin < 0) or (bottomy - scrollmin >= RENDER_VIEW_HEIGHT) then
+        MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, RENDER_VIEW_HEIGHT - 1]);
   {$ENDIF}
       sp_dest := @viewylookup[bottomy - scrollmin][x];
       span := (pointz * ZTOFRACUNIT) and ZMASK;
