@@ -297,6 +297,7 @@ begin
   c := #0;
   while true do
   begin
+    Wait(1, 1);
     if (y >= 67) and MouseGetClick(mx, my) and (my >= 110) and (my <= 117) then
     begin
       if (mx >= 130) and (mx <= 153) then
@@ -348,6 +349,7 @@ begin
   MouseHide;
   while y < 199 do
   begin
+    Wait(1, 1);
     if timecount >= droptime then
     begin
       if y >= 0 then
@@ -1365,6 +1367,7 @@ begin
   newascii := false;
   while not CheckPause do
   begin
+    Wait(1, 1);
     if (timecount >= droptime) and (y < 72) then
     begin
       if y >= 0 then
@@ -1386,6 +1389,7 @@ begin
   animtime := timecount;
   while y < 199 do
   begin
+    Wait(1, 1);
     if timecount >= droptime then
     begin
       if y >= 0 then
