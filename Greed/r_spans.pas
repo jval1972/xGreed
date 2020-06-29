@@ -449,7 +449,8 @@ begin
   sp_fracstep := fracstep;
   leftx := span_p.x2;
   leftx := leftx - _SHL(pic.leftoffset, bitshift);
-  x := CENTERX + (FIXEDMUL(leftx, scale) div FRACUNIT);
+//  x := CENTERX + (FIXEDMUL(leftx, scale) div FRACUNIT);
+  x := CENTERX + rint((leftx / FRACUNIT) * (scale / FRACUNIT));
   // step through the shape, drawing posts where visible
   xfrac := 0;
   if x < 0 then

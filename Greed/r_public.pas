@@ -48,7 +48,8 @@ var
   scrollmin, scrollmax, bloodcount, metalcount: integer;
   actionhook: PProcedure;
 
-function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+//function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+function FIXEDMUL(const a, b: fixed_t): fixed_t; 
 
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
@@ -97,10 +98,20 @@ uses
   r_walls,
   spawn;
 
-function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+{function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
+end;}
+function FIXEDMUL(const a, b: fixed_t): fixed_t;
+var
+  d: double;
+begin
+  d := a / FRACUNIT * b;
+  if abs(d) > 32767 * FRACUNIT then
+    result := round(d)
+  else
+    result := round(d);
 end;
 
 function FIXEDDIV2(const a, b: fixed_t): fixed_t; assembler;

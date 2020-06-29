@@ -318,8 +318,10 @@ begin
       frac := FIXEDDIV((p1.tz - zmin), (p1.tz - p2.tz));
       cliptx := p1.tx + FIXEDMUL((p2.tx - p1.tx), frac);
       clipty := p1.ty + FIXEDMUL((p2.ty - p1.ty), frac);
-      vertexx[numvertex] := CENTERX + (FIXEDMUL(cliptx, scale) div FRACUNIT);
-      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) div FRACUNIT);
+//      vertexx[numvertex] := CENTERX + (FIXEDMUL(cliptx, scale) div FRACUNIT);
+//      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) div FRACUNIT);
+      vertexx[numvertex] := CENTERX + rint((cliptx / FRACUNIT) * (scale / FRACUNIT));
+      vertexy[numvertex] := CENTERY - rint((clipty / FRACUNIT) * (scale / FRACUNIT));
       if ceilingbit and (vertexy[numvertex] > RENDER_VIEW_WIDTH) then
       begin
         result := false;

@@ -180,9 +180,12 @@ begin
   if point.tz >= MINZ then
   begin
     scale := FIXEDDIV(FSCALE, point.tz);
-    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
-    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) div FRACUNIT);
-    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight,scale) div FRACUNIT);
+//    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
+//    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) div FRACUNIT);
+//    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight, scale) div FRACUNIT);
+    point.px := CENTERX + rint((point.tx / FRACUNIT) * (scale / FRACUNIT));
+    point.floory := CENTERY - rint((point.floorheight / FRACUNIT) * (scale / FRACUNIT));
+    point.ceilingy := CENTERY - rint((point.ceilingheight / FRACUNIT) * (scale / FRACUNIT));
   end;
   framevalid[mapspot2] := frameon;
   cornervertex[mapspot2] := point;
