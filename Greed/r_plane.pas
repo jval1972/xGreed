@@ -322,7 +322,7 @@ begin
 //      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) div FRACUNIT);
       vertexx[numvertex] := CENTERX + rint((cliptx / FRACUNIT) * (scale / FRACUNIT));
       vertexy[numvertex] := CENTERY - rint((clipty / FRACUNIT) * (scale / FRACUNIT));
-      if ceilingbit and (vertexy[numvertex] > RENDER_VIEW_WIDTH) then
+      if ceilingbit and (vertexy[numvertex] > 2 * RENDER_VIEW_WIDTH) then
       begin
         result := false;
         exit;
@@ -333,7 +333,7 @@ begin
     begin
       vertexx[numvertex] := p1.px;
       vertexy[numvertex] := p1.py;
-      if ceilingbit and (vertexy[numvertex] > RENDER_VIEW_WIDTH) then
+      if ceilingbit and (vertexy[numvertex] > 2 * RENDER_VIEW_WIDTH) then
       begin
         result := false;
         exit;

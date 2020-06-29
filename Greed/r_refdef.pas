@@ -40,7 +40,7 @@ const
   MAXVISVERTEXES = 1536;  // max tile corners visible at once
 // for spans
   MAXSPANS = 16384;
-  MAXPEND = 3072;
+  MAXPEND = 16384;
   MAXAUTO = 16 * 16;
 // flags
   F_RIGHT = 1 shl 0;
