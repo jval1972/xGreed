@@ -1600,7 +1600,7 @@ begin
 
   loadscreen('REDCHARS');
   VI_FadeIn(0, 256, @colors, 48);
-  Wait(140, 1);
+  Wait(2 * TICRATE, 1);
   fontbasecolor := 64;
   while fontbasecolor < 73 do
   begin
@@ -2280,7 +2280,7 @@ begin
       loadscreen('BRIEF3');
       VI_BlitView;
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(TICRATE);
+      Wait(TICRATE, 1);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
@@ -2335,7 +2335,7 @@ begin
 
     loadscreen('BRIEF1');
     VI_FadeIn(0, 256, @colors, 64);
-    Wait(TICRATE);
+    Wait(TICRATE, 1);
     newascii := false;
     fontbasecolor := 0;
     while fontbasecolor < 9 do
@@ -2365,7 +2365,7 @@ begin
 
     loadscreen('BRIEF2');
     VI_FadeIn(0, 256, @colors, 64);
-    Wait(TICRATE);
+    Wait(TICRATE, 1);
     newascii := false;
     fontbasecolor := 0;
     while fontbasecolor < 9 do
@@ -2488,7 +2488,7 @@ begin
       VI_FillPalette(0, 0, 0);
       loadscreen('BRIEF4');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(TICRATE);
+      Wait(TICRATE, 1);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
@@ -2513,7 +2513,7 @@ begin
 
       loadscreen('BRIEF5');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(TICRATE);
+      Wait(TICRATE, 1);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
@@ -2592,7 +2592,7 @@ begin
 
       loadscreen('BRIEF6');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(TICRATE);
+      Wait(TICRATE, 1);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
@@ -2622,7 +2622,7 @@ begin
 
       loadscreen('BRIEF7');
       VI_FadeIn(0, 256, @colors, 64);
-      Wait(TICRATE);
+      Wait(TICRATE, 1);
       newascii := false;
       fontbasecolor := 0;
       while fontbasecolor < 9 do
