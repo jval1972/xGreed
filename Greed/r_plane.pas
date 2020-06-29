@@ -91,9 +91,9 @@ end;
 // mr_picture and mr_deltaheight are set once per polygon
 procedure FlatSpan;
 var
-  pointz: fixed_t;  // row's distance to view plane
+  pointz: int64; //fixed_t;  // row's distance to view plane
   span_p: Pspan_t;
-  span: LongWord;
+  span: int64;
 begin
   pointz := FIXEDDIV(mr_deltaheight, yslope[mr_y + MAXSCROLL]);
   if pointz > MAXZ then
@@ -123,10 +123,10 @@ end;
 // mr_picture is set once per polygon
 procedure SlopeSpan;
 var
-  pointz, pointz2: fixed_t; // row's distance to view plane
+  pointz, pointz2: int64; // row's distance to view plane
   partial, denom: float;
   span_p: Pspan_t;
-  span: LongWord;
+  span: int64;
 begin
   // calculate the Z values for each end of the span
   partial := (planeB / FRACUNIT) * yslope[mr_y + MAXSCROLL] + planeC;

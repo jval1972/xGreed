@@ -33,9 +33,9 @@ uses
 
 var
 (*a scaled object is just encoded like a span                                                   *)
-  spantags: array[0..MAXSPANS - 1] of LongWord;
-  starttaglist_p: PLongWordArray;        // set by SortSpans
-  endtaglist_p: PLongWord;
+  spantags: array[0..MAXSPANS - 1] of int64; //LongWord;
+  starttaglist_p: PInt64Array;        // set by SortSpans
+  endtaglist_p: PInt64;
   spans: array[0..MAXSPANS - 1] of span_t;
   spansx: array[0..MAXSPANS - 1] of integer;
   spanx: integer;
@@ -135,7 +135,7 @@ begin
 end;
 
 
-procedure QuickSortHelper(const data: PLongWordArray; count: LongWord);
+procedure QuickSortHelper(const data: PInt64Array; count: LongWord);
 var
   left, part: integer;
 begin
@@ -155,7 +155,7 @@ begin
 end;
 
 
-procedure InsertionSort(const data: PLongWordArray; const count: LongWord);
+procedure InsertionSort(const data: PInt64Array; const count: LongWord);
 var
   i, j: integer;
   t: LongWord;
@@ -507,8 +507,8 @@ end;
 // Spans farther than MAXZ away should NOT have been entered into the list
 procedure DrawSpans;
 var
-  spantag_p: PLongWord;
-  tag: LongWord;
+  spantag_p: PInt64;
+  tag: int64;
   spannum: integer;
   x2: integer;
   lastz: fixed_t; // the pointz for which xystep is valid
@@ -556,7 +556,7 @@ begin
   begin
     tag := spantag_p^;
     inc(spantag_p);
-    pointz := tag shr ZTOFRAC;
+    pointz := tag div ZTOFRACUNIT;
     spannum := tag and SPANMASK;
     span_p := @spans[spannum];
     spanx := spansx[spannum];

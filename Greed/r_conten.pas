@@ -149,7 +149,7 @@ var
   door_p, last_p: Pdoorobj_t;
   tx, ty: fixed_t;
   postindex: PBytePArray;   // start of the 64 entry texture table for t
-  pointz: fixed_t;          // transformed distance to wall post
+  pointz: int64; //fixed_t;          // transformed distance to wall post
   anglecos: fixed_t;
   ceilingheight: fixed_t;   // top of the wall
   floorh: fixed_t;          // bottom of the wall
@@ -157,7 +157,7 @@ var
   texture: integer;         // 0-63 post number
   x, x1, x2: integer;       // collumn and ranges
   span_p: Pspan_t;
-  span: LongWord;
+  span: int64; //LongWord;
   distance, absdistance, position: fixed_t;
   baseangle: integer;
   textureadjust: fixed_t;   // the amount the texture p1ane is shifted
@@ -575,9 +575,10 @@ end;
 // a span into the span list
 procedure RenderSprite(var sprite: Pscaleobj_t);
 var
-  deltax, deltay, pointx, pointz, gxt, gyt: fixed_t;
+  deltax, deltay, pointx, gxt, gyt: fixed_t;
+  pointz: int64;
   picnum: integer;
-  span: LongWord;
+  span: int64;
   span_p: Pspan_t;
   animationGraphic, animationMax, animationDelay: byte;
   mapx, mapy, mapspot: integer;

@@ -90,7 +90,7 @@ var
   baseangle: integer;
   postindex: PBytePArray;   // start of the 64 entry texture table for t
   distance: fixed_t;        // horizontal / vertical dist to wall segmen
-  pointz: fixed_t;          // transformed distance to wall post
+  pointz: int64;          // transformed distance to wall post
   anglecos: fixed_t;
   textureadjust: fixed_t;   // the amount the texture p1ane is shifted
   ceiling: fixed_t;         // top of the wall
@@ -104,7 +104,7 @@ var
   x: integer;               // collumn and ranges
   light: integer;
   wall: PSmallInt;
-  span: LongWord;
+  span: int64;
   span_p: Pspan_t;
   rotateright, rotateleft, transparent, rotateup, rotatedown, invisible: integer;
 begin
@@ -343,7 +343,7 @@ var
   baseangle: integer;
   postindex1, postindex2: PBytePArray; // start of the 64 entry texture table for t
   distance: fixed_t;       // horizontal / vertical dist to wall segmen
-  pointz: fixed_t;         // transformed distance to wall post
+  pointz: int64;         // transformed distance to wall post
   anglecos: fixed_t;
   textureadjust: fixed_t;  // the amount the texture p1ane is shifted
   ceiling1, ceiling2: fixed_t; // top of the wall
@@ -358,7 +358,7 @@ var
   x: integer;      // collumn and ranges
   light: integer;
   wall1, wall2: PSmallInt;
-  span: LongWord;
+  span: int64;
   span_p: Pspan_t;
   walltype1, walltype2, c, rotateright1, rotateright2: integer;
   rotateleft1, rotateleft2, tm: integer;

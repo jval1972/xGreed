@@ -45,6 +45,8 @@ type
   
   PLongWord = ^LongWord;
 
+  PInt64 = ^Int64;
+
   PShortInt = ^ShortInt;
 
   TWordArray = packed array[0..$7FFF] of word;
@@ -55,6 +57,9 @@ type
 
   TLongWordArray = packed array[0..$7FFF] of LongWord;
   PLongWordArray = ^TLongWordArray;
+
+  TInt64Array = packed array[0..$7FFF] of int64;
+  PInt64Array = ^TInt64Array;
 
   TSmallintArray = packed array[0..$7FFF] of Smallint;
   PSmallintArray = ^TSmallintArray;
