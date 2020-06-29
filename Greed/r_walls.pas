@@ -104,7 +104,7 @@ var
   x: integer;               // collumn and ranges
   light: integer;
   wall: PSmallInt;
-  span: LongWord;
+  span: tag_t;
   span_p: Pspan_t;
   rotateright, rotateleft, transparent, rotateup, rotatedown, invisible: integer;
 begin
@@ -162,7 +162,7 @@ begin
       if mapflags[mapspot] and (FL_CEILING + FL_FLOOR) <> 0 then
       begin
         if floorheight[mapspot + MAPCOLS + 1] < floor then
-          floor := floorheight[mapspot + MAPCOLS+  1];
+          floor := floorheight[mapspot + MAPCOLS + 1];
         if ceilingheight[mapspot + MAPCOLS + 1] > ceiling then
           ceiling := ceilingheight[mapspot + MAPCOLS + 1];
       end;
@@ -306,9 +306,9 @@ begin
     sp_dest := @viewylookup[bottomy - scrollmin][x];
     if transparent <> 0 then
     begin
-      span := (pointz * ZTOFRACUNIT) and ZMASK;
+      span.point := pointz;
       spansx[numspans] := x;
-      span := span or numspans;
+      span.span := numspans;
       spantags[numspans] := span;
       span_p := @spans[numspans];
       if invisible <> 0 then
@@ -358,7 +358,7 @@ var
   x: integer;      // collumn and ranges
   light: integer;
   wall1, wall2: PSmallInt;
-  span: LongWord;
+  span: tag_t;
   span_p: Pspan_t;
   walltype1, walltype2, c, rotateright1, rotateright2: integer;
   rotateleft1, rotateleft2, tm: integer;
@@ -590,9 +590,9 @@ skipceilingcalc:
         goto contceiling;
       sp_count := bottomy - topy + 1;
       sp_dest := @viewylookup[bottomy - scrollmin][x];
-      span := (pointz * ZTOFRACUNIT) and ZMASK;
+      span.point := pointz;
       spansx[numspans] := x;
-      span := span or numspans;
+      span.span := numspans;
       spantags[numspans] := span;
       span_p := @spans[numspans];
       span_p.spantype := sp_step;
@@ -657,9 +657,9 @@ contceiling:
         MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, RENDER_VIEW_HEIGHT - 1]);
   {$ENDIF}
       sp_dest := @viewylookup[bottomy - scrollmin][x];
-      span := (pointz * ZTOFRACUNIT) and ZMASK;
+      span.point := pointz;
       spansx[numspans] := x;
-      span := span or numspans;
+      span.span := numspans;
       spantags[numspans] := span;
       span_p := @spans[numspans];
       span_p.spantype := sp_step;

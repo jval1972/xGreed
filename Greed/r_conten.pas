@@ -157,7 +157,7 @@ var
   texture: integer;         // 0-63 post number
   x, x1, x2: integer;       // collumn and ranges
   span_p: Pspan_t;
-  span: LongWord;
+  span: tag_t;
   distance, absdistance, position: fixed_t;
   baseangle: integer;
   textureadjust: fixed_t;   // the amount the texture p1ane is shifted
@@ -297,9 +297,9 @@ begin
     sp_source := postindex[texture];
 
     // post the span in the draw list
-    span := (pointz * ZTOFRACUNIT) and ZMASK;
+    span.point := pointz;
     spansx[numspans] := x;
-    span := span or numspans;
+    span.span := numspans;
     spantags[numspans] := span;
     span_p := @spans[numspans];
     span_p.spantype := spantype;
@@ -430,9 +430,9 @@ part2:
     sp_source := postindex[texture];
 
     // post the span in the draw list
-    span := (pointz * ZTOFRACUNIT) and ZMASK;
+    span.point := pointz;
     spansx[numspans] := x;
-    span := span or numspans;
+    span.span := numspans;
     spantags[numspans] := span;
     span_p := @spans[numspans];
     span_p.spantype := spantype;
@@ -547,9 +547,9 @@ part3:
     sp_source := postindex[texture];
 
     // post the span in the draw list
-    span := (pointz * ZTOFRACUNIT) and ZMASK;
+    span.point := pointz;
     spansx[numspans] := x;
-    span := span or numspans;
+    span.span := numspans;
     spantags[numspans] := span;
     span_p := @spans[numspans];
     span_p.spantype := spantype;
@@ -577,7 +577,7 @@ procedure RenderSprite(var sprite: Pscaleobj_t);
 var
   deltax, deltay, pointx, pointz, gxt, gyt: fixed_t;
   picnum: integer;
-  span: LongWord;
+  span: tag_t;
   span_p: Pspan_t;
   animationGraphic, animationMax, animationDelay: byte;
   mapx, mapy, mapspot: integer;
@@ -636,8 +636,8 @@ begin
   // transform the point
   pointx := FIXEDMUL(deltax, viewsin) + FIXEDMUL(deltay, viewcos);
   // post the span event
-  span := (pointz * ZTOFRACUNIT) and ZMASK;
-  span := span or numspans;
+  span.point := pointz;
+  span.span := numspans;
   spantags[numspans] := span;
   span_p := @spans[numspans];
   span_p.spantype := sp_shape;

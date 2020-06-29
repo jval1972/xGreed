@@ -29,7 +29,7 @@ interface
 uses
   g_delphi,
   r_public_h;
-  
+
 function rint(const x: double): integer;
 
 {*** CONSTANTS *** }
@@ -39,12 +39,7 @@ const
   FINEUNIT = 1 shl FINESHIFT;
   MAXVISVERTEXES = 1536;  // max tile corners visible at once
 // for spans
-  MAXSPANS = 4096;
-  ZSHIFT = 12;
-  ZTOFRAC = 4;    { shift the Z into frac position }
-  ZTOFRACUNIT = 1 shl ZTOFRAC;
-  ZMASK = $fffff shl ZSHIFT;  // 20 bits
-  SPANMASK = $000000fff;      // 12 bits
+  MAXSPANS = 16384;
   MAXPEND = 3072;
   MAXAUTO = 16 * 16;
 // flags
@@ -58,6 +53,16 @@ const
   F_DAMAGE = 1 shl 7;
 
 {*** TYPES *** }
+// JVAL: 20200629 - Use structure to hold point/span info
+type
+  tag_t = record
+    point: LongWord;
+    span: LongWord;
+  end;
+  Ptag_t = ^tag_t;
+  tag_tArray = array[0..$7FFF] of tag_t;
+  Ptag_tArray = ^tag_tArray;
+
 // transformed x / distance
 // projected x if tz > 0
 type
