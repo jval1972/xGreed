@@ -1134,6 +1134,7 @@ begin
   waittime := timecount;
   while true do
   begin
+    Wait(1, 1);
     if timecount >= waittime then
     begin
       inc(frame);
@@ -1267,8 +1268,7 @@ begin
   ShowMenuLevel(n);
   quitmenu := false;
   repeat
-    I_PeekAndDisplatch;
-    I_Sleep(0);
+    Wait(1, 1);
     MenuShowCursor(menucursor);
     CheckMouse;
     if menuexecute then
