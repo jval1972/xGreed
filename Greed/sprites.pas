@@ -1345,7 +1345,7 @@ begin
     end;
     angle := angle - DEGREE45 + MS_RndT;
     msprite.angle := angle and ANGLES;
-    msprite.movetime := timecount + 140; // 350
+    msprite.movetime := timecount + 2 * TICRATE; // 350
   end;
 
   if (timecount > msprite.firetime) and (timecount > msprite.scantime) then

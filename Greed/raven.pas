@@ -1634,7 +1634,7 @@ var
 begin
   SoundEffect(SN_WALLSWITCH, 0, x * FRACTILEUNIT, y * FRACTILEUNIT);
   mapspot := y * MAPCOLS + x;
-  if (angle >= SOUTH+DEGREE45) or (angle < DEGREE45) then
+  if (angle >= SOUTH + DEGREE45) or (angle < DEGREE45) then
   begin
     spot := mapspot + 1;
     if westwall[spot] = 127 then
@@ -2001,7 +2001,7 @@ skipit:
         if switchit then
         begin
           SwitchWall(x, y, angle, true);
-          SwitchTime := timecount + 210;
+          SwitchTime := timecount + 3 * TICRATE;
         end;
         elev_p := elev_p.next;
       end;
@@ -4370,7 +4370,7 @@ begin
     // render the view
     if RearViewOn and (timecount >= RearViewDelay) then
     begin
-      RearViewTime := timecount + 140;
+      RearViewTime := timecount + 2 * TICRATE;
       RearView;
       RearViewDelay := timecount + SC.camdelay;
       if SC.camdelay = TICRATE then
