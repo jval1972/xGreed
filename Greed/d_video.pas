@@ -69,8 +69,6 @@ procedure VI_DrawMaskedPicToBuffer2(x, y: integer; const pic: Ppic_t);
 
 procedure VI_Init;
 
-procedure VI_BlitView;
-
 procedure VI_DrawMaskedPicToBuffer(x, y: integer; const pic: Ppic_t);
 
 implementation
@@ -371,12 +369,6 @@ begin
 
   for y := 0 to 255 do
     translookup[y] := @transparency[256 * y];
-end;
-
-
-procedure VI_BlitView;
-begin
-  I_FinishUpdate;
 end;
 
 

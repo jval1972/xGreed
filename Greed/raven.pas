@@ -4449,7 +4449,7 @@ begin
     if netmode then
       NetGetData;
 
-    VI_BlitView;
+    I_FinishUpdate;
   end;
 end;
 

@@ -2278,7 +2278,7 @@ begin
     if not DEMO then
     begin
       loadscreen('BRIEF3');
-      VI_BlitView;
+      I_FinishUpdate;
       VI_FadeIn(0, 256, @colors, 64);
       Wait(TICRATE, 1);
       newascii := false;
@@ -2293,7 +2293,7 @@ begin
           'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS'#13#10 +
           'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
           'REAR VIEW.');
-        VI_BlitView;
+        I_FinishUpdate;
         Wait(3, 1);
         inc(fontbasecolor);
       end;
