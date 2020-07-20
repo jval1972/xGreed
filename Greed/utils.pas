@@ -2278,7 +2278,6 @@ begin
     if not DEMO then
     begin
       loadscreen('BRIEF3');
-      I_FinishUpdate;
       VI_FadeIn(0, 256, @colors, 64);
       Wait(TICRATE, 1);
       newascii := false;

@@ -181,6 +181,7 @@ uses
   r_walls,
   spawn,
   sprites,
+  timer,
   utils;
 
 procedure CheckElevators;
@@ -4388,6 +4389,8 @@ begin
     if newsong then
       SelectNewSong;
 
+    needsblit := true;
+    
     if activatemenu then
       RunMenu;
 
@@ -4450,6 +4453,7 @@ begin
       NetGetData;
 
     I_FinishUpdate;
+    needsblit := false;
   end;
 end;
 
