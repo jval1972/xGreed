@@ -2,7 +2,7 @@
 xGreed - Source Port of the game "In Pursuit of Greed"
 
 ## Features
-Sortware rendering
+Software rendering
 
 DirectDraw blit buffer
 
