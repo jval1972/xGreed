@@ -443,7 +443,6 @@ begin
   end;
 end;
 
-
 procedure DoLoadMapData(var f: file);
 begin
   UpdateWait;
@@ -484,6 +483,7 @@ begin
   fread(@mapslopes, MAPROWS * MAPCOLS, 1, f);
   UpdateWait;
 end;
+
 procedure LoadNewMap(const lump: integer);
 var
   i, j: integer;
@@ -530,7 +530,7 @@ end;
 var
   weaponlump: integer = 0;
   numweaponlumps: integer = 0;
- 
+
 procedure loadweapon(const n: integer);
 var
   i: integer;
@@ -2292,7 +2292,7 @@ begin
           'HEAT AND MOTION SENSORS HAVE BEEN ADDED TO YOUR VISUAL ARRAY AS'#13#10 +
           'WELL AS AN AFT SENSORY SYSTEM, OR A.S.S. CAM, FOR CONTINUOUS'#13#10 +
           'REAR VIEW.');
-        I_FinishUpdate;
+//        I_FinishUpdate;
         Wait(3, 1);
         inc(fontbasecolor);
       end;
