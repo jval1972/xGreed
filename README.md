@@ -8,6 +8,12 @@ DirectDraw blit buffer
 
 BASS.DLL for audio
 
+## Requirements
+XGreed needs data that the DOS installer produces:
+* GREED.BLO file (data)
+* All *.mod & *.s3m files (music)
+* You can optionally copy the MOVIES folder of the original CD with the *.fli files (animations). 
+
 ## Downloads
 [version 1.0.1.20 (20200626 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.0/xGreed_1.0.1.20_bin.zip/download)
 
