@@ -297,7 +297,6 @@ begin
 end;
 
 initialization
-
   if not QueryPerformanceFrequency(Freq) then
     Freq := 1000;
 
