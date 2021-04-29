@@ -35,8 +35,6 @@ uses
   Classes;
 
 //
-// JVAL
-//
 // Script Engine
 //
 
@@ -820,4 +818,3 @@ begin
 end;
 
 end.
-
