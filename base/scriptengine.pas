@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (* License applies to this source file                                     *)
