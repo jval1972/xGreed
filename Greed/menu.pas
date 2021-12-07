@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -1252,10 +1252,14 @@ end;
 
 
 procedure ShowMenu(const n: integer);
+const
+  MENUDELAYTICS = 30;
 var
   scr: PByteArray;
+  entertime: integer;
 begin
   menutimedelay := timecount + KBDELAY2;
+  entertime := timecount;
   INT_TimerHook(MenuCommand);
 
   scr := malloc(64000);
@@ -1279,7 +1283,10 @@ begin
     if downlevel then
     begin
       if menulevel = 0 then
-        quitmenu := true
+      begin
+        if timecount > entertime + MENUDELAYTICS then
+          quitmenu := true;
+      end
       else
         ShowMenuLevel(0);
       downlevel := false;
