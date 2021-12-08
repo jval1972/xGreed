@@ -763,7 +763,7 @@ begin
   MouseHide;
   VI_DrawMaskedPic(20, 15, CA_CacheLump(CA_GetNamedNum('menumain') + level));
   MouseShow;
-  
+
   if menulevel = 0 then
     menucursor := menumaincursor
   else if menulevel = 1 then

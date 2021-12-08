@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -29,7 +29,7 @@ interface
 uses
   protos_h,
   r_public_h;
-  
+
 const
   CMD_SEND = 1;
   CMD_GET = 2;
@@ -422,7 +422,7 @@ begin
    if greedcom.remotenode = -1 then
     continue; // no broadcasts
     if ievent.id <> INITEVENTID then
-    continue; // wrong packet id not 
+    continue; // wrong packet id not
    if (greedcom.nettype <> NETIPX) and (ievent.start = greedcom.numplayers) then
     break; // we can start now
 
@@ -529,13 +529,13 @@ begin
       if pevent.holopic then
       begin
 //  if (MS_RndT>253)
-//    begin 
+//    begin
 //    sprite_p.basepic := sprite_p.startpic;
 //    sprite_p.scale := 1;
 //    sprite_p.rotate := rt_eight;
 //     end;
 //  else
-//    begin 
+//    begin
     sprite_p.basepic := pevent.holopic;
     sprite_p.scale := pevent.holoscale;
     sprite_p.rotate := rt_one;

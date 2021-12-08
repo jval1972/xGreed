@@ -3230,7 +3230,7 @@ begin
               sa.time := timecount + (clock and 255) + (9 - greedcom.numplayers) * 437;
             end;
           end;
-          
+
         10:
           begin
             stype := S_MONSTER1;
@@ -3302,7 +3302,7 @@ begin
             stype := S_MONSTER12;
             sa.time := timecount + (clock and 255) + (4200 * (player.difficulty + 1));
           end;
-          
+
         22:
           begin
             stype := S_MONSTER13;
@@ -4390,7 +4390,7 @@ begin
       SelectNewSong;
 
     needsblit := true;
-    
+
     if activatemenu then
       RunMenu;
 

@@ -50,12 +50,12 @@ var
   // vertexes in need of Z clipping
   vertexpt: array[0..4] of clippoint_t;
 
-var  
+var
   // coefficients of the plane equation for sloping polygons
   planeA, planeB, planeC, planeD: float;
 
 procedure RenderTileEnds;
-  
+
 implementation
 
 uses

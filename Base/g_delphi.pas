@@ -42,7 +42,7 @@ type
   PBoolean = ^Boolean;
 
   PInteger = ^Integer;
-  
+
   PLongWord = ^LongWord;
 
   PShortInt = ^ShortInt;
@@ -84,7 +84,7 @@ type
   PWordPArray = ^TWordPArray;
 
   TShortIntArray = packed array[0..$7FFF] of ShortInt;
-  PShortIntArray = ^TShortIntArray; 
+  PShortIntArray = ^TShortIntArray;
 
   TLongWordPArray = packed array[0..$7FFF] of PLongWordArray;
   PLongWordPArray = ^TLongWordPArray;
@@ -723,7 +723,7 @@ begin
   printf(s);
 end;
 
-function pOp(const p: pointer; const offs: integer): pointer; 
+function pOp(const p: pointer; const offs: integer): pointer;
 begin
   result := pointer(PCAST(p) + offs);
 end;
@@ -796,7 +796,7 @@ begin
   result := x shr bits;
 end;
 
-function ibetween(const x: integer; const x1, x2: integer): integer; 
+function ibetween(const x: integer; const x1, x2: integer): integer;
 begin
   if x <= x1 then
     result := x1

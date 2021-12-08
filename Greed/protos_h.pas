@@ -28,7 +28,7 @@ interface
 
 uses
   r_public_h;
-  
+
 { Raven  }
 { generated sprites }
 

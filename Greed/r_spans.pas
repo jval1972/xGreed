@@ -710,7 +710,7 @@ begin
           end;
         end;
       end;
-      
+
     sp_step:
       begin
         x := span_p.x2;

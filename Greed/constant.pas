@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -591,7 +591,7 @@ begin
             'ONCE THIS IS DONE, IF YOUR POINT TOTAL MEETS OR EXCEEDS 70,000'#13#10 +
             'POINTS WE''LL MOVE YOU TO THE NEXT SUBLEVEL.'#13#10; //
         end;
-        
+
       13:
         case stringno of
         0: result :=
@@ -740,7 +740,7 @@ begin
             'AND QUOTA AND WE''LL TRANSLATE YOU TO THE FINAL AREA FOR THE'#13#10 +
             'GRAND TEST OF YOUR HUNTER''S SKILLS!'#13#10; //
         end;
-        
+
       21:
         case stringno of
         0: result :=

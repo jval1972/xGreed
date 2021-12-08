@@ -29,7 +29,7 @@ interface
 uses
   g_delphi,
   r_public_h;
-  
+
 function rint(const x: double): integer;
 
 {*** CONSTANTS *** }

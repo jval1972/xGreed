@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -198,7 +198,7 @@ begin
     end;
 
   S_BULLET2: // vulcan cannon
-    begin 
+    begin
       sprite_p := RF_GetSprite;
       sprite_p.moveSpeed := 500;
       sprite_p.angle := angle;
@@ -468,7 +468,7 @@ begin
       sprite_p.spawnid := spawnid;
       sprite_p.angle2 := angle2;
     end;
-  
+
   S_EXPLODE,
   S_SMALLEXPLODE:
     begin
@@ -479,14 +479,14 @@ begin
       sprite_p.z := z;
       if MS_RndT and 1 <> 0 then
          sprite_p.basepic := slumps[S_EXPLODE - S_START]
-      else 
+      else
          sprite_p.basepic := slumps[S_EXPLODE2 - S_START];
       sprite_p.active := true;
       sprite_p.heat := 512;
       sprite_p.typ := S_EXPLODE;
       sprite_p.specialtype := st_noclip;
     end;
-  
+
   S_WALLPUFF:
     begin
       sprite_p := RF_GetSprite;
@@ -501,7 +501,7 @@ begin
       sprite_p.typ := S_WALLPUFF;
       sprite_p.specialtype := st_transparent;
     end;
-  
+
   S_GREENPUFF:
     begin
       sprite_p := RF_GetSprite;
@@ -516,7 +516,7 @@ begin
       sprite_p.typ := S_WALLPUFF;
       sprite_p.specialtype := st_transparent;
     end;
-  
+
   S_PLASMAWALLPUFF:
     begin
       sprite_p := RF_GetSprite;
@@ -524,7 +524,7 @@ begin
       sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
       sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);
       sprite_p.z := z + ((-3 + MS_RndT and 7) * FRACUNIT);
-      sprite_p.basepic := slumps[value - S_START]; 
+      sprite_p.basepic := slumps[value - S_START];
       sprite_p.heat := 600;
       sprite_p.active := true;
       sprite_p.typ := S_PLASMAWALLPUFF;
@@ -588,7 +588,7 @@ begin
       sprite_p.angle2 := angle2;
       SoundEffect(SN_MON2_FIRE, 7, x, y);
     end;
-  
+
   S_MONSTERBULLET3:
     begin
       sprite_p := RF_GetSprite;
@@ -722,7 +722,7 @@ begin
       sprite_p.specialtype := st_noclip;
       SoundEffect(SN_MON8_FIRE, 7, x, y);
     end;
-   
+
   S_MONSTERBULLET9:
     begin
       sprite_p := RF_GetSprite;
@@ -868,7 +868,7 @@ begin
       sprite_p.angle2 := angle2;
       SoundEffect(SN_MON15_FIRE, 7, x, y);
     end;
-   
+
   S_GRENADEBULLET:
     begin
       sprite_p := RF_GetSprite;
@@ -885,13 +885,13 @@ begin
       sprite_p.startspot := -1;
       sprite_p.damage := 50;
       sprite_p.typ := value;
-      if spawnid = playernum then 
+      if spawnid = playernum then
         sprite_p.spawnid := 200 + spawnid
-      else 
+      else
         sprite_p.spawnid := spawnid;
       sprite_p.angle2 := angle2;
     end;
-  
+
   S_MINEBULLET:
     begin
       sprite_p := RF_GetSprite;
@@ -911,7 +911,7 @@ begin
       sprite_p.typ := value;
       if spawnid = playernum then
         sprite_p.spawnid := 200 + spawnid
-      else 
+      else
         sprite_p.spawnid := spawnid;
       sprite_p.angle2 := angle2;
     end;
@@ -1121,7 +1121,7 @@ begin
       if netmode and not gameloading then
        NetSendSpawn(value, x, y, z, zadj, angle, angle2, active, spawnid);
     end;
-  
+
   S_MINEPUFF:
     begin
       sprite_p := RF_GetSprite;
@@ -1135,7 +1135,7 @@ begin
       sprite_p.typ := S_MINEPUFF;
       sprite_p.specialtype := st_noclip;
     end;
-  
+
   (* monsters ********************************************************)
   S_MONSTER1_NS, // kman
   S_MONSTER1:
@@ -1329,7 +1329,7 @@ begin
       sprite_p.scale := 1;
       mapsprites[mapspot] := 1;
     end;
-  
+
   S_MONSTER8_NS, // guard
   S_MONSTER8:
     begin
@@ -1441,7 +1441,7 @@ begin
       sprite_p.deathevent := 255;
       mapsprites[mapspot] := 1;
     end;
-  
+
   S_MONSTER12_NS, // pss
   S_MONSTER12:
     begin
@@ -1553,7 +1553,7 @@ begin
       mapsprites[mapspot] := 1;
     end;
 
-  
+
   (* bonus item *********************************************************)
   S_BONUSITEM:
     begin
@@ -1567,8 +1567,8 @@ begin
       sprite_p.typ := S_BONUSITEM;
       mapsprites[mapspot] := SM_BONUSITEM;
     end;
-  
-  
+
+
   (* items **************************************************************)
   S_ITEM2,
   S_ITEM3:
@@ -1800,7 +1800,7 @@ begin
       sprite_p.typ := value;
       mapsprites[mapspot] := value - S_WEAPON0 + SM_WEAPON0;
     end;
-  
+
   S_MEDPAK1,
   S_MEDPAK2,
   S_MEDPAK3,
@@ -1835,7 +1835,7 @@ begin
       if netmode and not gameloading then
         NetSendSpawn(value, x, y, z, zadj, angle, angle2, active, spawnid);
     end;
-  
+
   S_AMMOBOX:
     begin
       sprite_p := RF_GetSprite;
@@ -1879,7 +1879,7 @@ begin
       sprite_p.typ := value;
       sprite_p.animation := 1 + (0 shl 1) + (4 shl 5) + (10 shl 9);
     end;
-  
+
   S_DEADMONSTER1:
     begin
       sprite_p := RF_GetSprite;
@@ -1944,7 +1944,7 @@ begin
       sprite_p.scale := 1;
       mapsprites[mapspot] := 0;
     end;
-  
+
   S_DEADMONSTER6:
     begin
       sprite_p := RF_GetSprite;
@@ -1970,7 +1970,7 @@ begin
       sprite_p.scale := 1;
       mapsprites[mapspot] := 0;
     end;
-  
+
   S_DEADMONSTER8:
     begin
       sprite_p := RF_GetSprite;
@@ -2074,7 +2074,7 @@ begin
       sprite_p.scale := 1;
       mapsprites[mapspot] := 0;
     end;
-  
+
   (* primary/secondary ****************************************************)
   S_PRIMARY1,
   S_PRIMARY2:
@@ -2152,7 +2152,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - MAPCOLS] and FL_DOOR <> 0 then
          door_p.orientation := dr_vertical2
-      else 
+      else
          door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2167,7 +2167,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - 1] and FL_DOOR <> 0 then
         door_p.orientation := dr_horizontal2
-      else 
+      else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2182,7 +2182,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - MAPCOLS] and FL_DOOR <> 0 then
         door_p.orientation := dr_vertical2
-      else 
+      else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2214,7 +2214,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - MAPCOLS] and FL_DOOR <> 0 then
         door_p.orientation := dr_vertical2
-      else 
+      else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2229,7 +2229,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - 1] and FL_DOOR <> 0 then
         door_p.orientation := dr_horizontal2
-      else 
+      else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2244,7 +2244,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - MAPCOLS] and FL_DOOR <> 0 then
         door_p.orientation := dr_vertical2
-      else 
+      else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2274,7 +2274,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - MAPCOLS] and FL_DOOR <> 0 then
         door_p.orientation := dr_vertical2
-      else 
+      else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2304,7 +2304,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - MAPCOLS] and FL_DOOR <> 0 then
         door_p.orientation := dr_vertical2
-      else 
+      else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2319,7 +2319,7 @@ begin
       door_p := RF_GetDoor(x1, y1);
       if mapflags[mapspot - 1] and FL_DOOR <> 0 then
         door_p.orientation := dr_horizontal2
-      else 
+      else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
       door_p.doorSize := 64;
@@ -2358,7 +2358,7 @@ begin
       door_p.pic := CA_GetNamedNum('door_7') - walllump;
       mapsprites[mapspot] := 0;
     end;
-   
+
   (* elevators ***********************************************************)
   S_ELEVATOR: // normal elevator
     begin
@@ -2481,7 +2481,7 @@ begin
       elevator_p.speed := 8;
       mapsprites[mapspot] := SM_ELEVATOR;
     end;
-  
+
   S_TRIGGER1: // trigger 1
     begin
       mapsprites[mapspot] := SM_SWITCHDOWN;
@@ -2538,7 +2538,7 @@ begin
       mapsprites[mapspot] := 0;
       floorheight[mapspot] := ceilingheight[mapspot];
     end;
-  
+
   (* warps ***************************************************************)
   S_WARP1: // warp 1
     begin
@@ -2554,9 +2554,9 @@ begin
     begin
       mapsprites[mapspot] := SM_WARP3;
     end;
-  
+
   (* misc ****************************************************************)
-  
+
   S_SOLID:
     begin
     end;
@@ -2575,7 +2575,7 @@ begin
       SpawnSprite(S_GENERATOR, (x1 * MAPSIZE + 32) * FRACUNIT, (y1 * MAPCOLS + 32) * FRACUNIT, 0, 0, MS_RndT * 4, 0, false, 0);
       mapsprites[mapspot] := 0;
     end;
-  
+
   S_SPAWN1,
   S_SPAWN2,
   S_SPAWN3,
@@ -2633,9 +2633,9 @@ begin
       exitx := x1;
       exity := y1;
     end;
-  
+
   end;
-  
+
   if (midgetmode) and (sprite_p <> nil) then
     inc(sprite_p.scale);
   result := sprite_p;

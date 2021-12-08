@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -163,7 +163,7 @@ begin
   sprintf(s, 'MS_Error: ' + error + #13#10, Args);
 
   printf(s);
-  
+
   I_MessageBox(I_GetFocus, PChar(s), APPNAME, IMB_ERROR);
   Halt(1);
 end;

@@ -13,7 +13,7 @@ interface
 
 uses
   r_public_h;
-  
+
 const
   MAXZONES = 255;
   ACTIVATIONTYPE = 0;
