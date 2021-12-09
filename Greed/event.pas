@@ -222,7 +222,8 @@ begin
           y1 := (zones[i].y1 * MAPSIZE + 32) * FRACUNIT;
           SpawnSprite(S_WARP, x1, y1, RF_GetFloorZ(x1, y1) + 10 * FRACUNIT, 0, 0, 0, true, 0);
           sp := SpawnSprite(zones[i].stype, x1, y1, RF_GetFloorZ(x1, y1) + 10 * FRACUNIT, 0, 0, 0, true, 0);
-          sp.deathevent := zones[i].endeval;
+          if sp <> nil then // JVAL: 20211209 - Check null
+            sp.deathevent := zones[i].endeval;
         end;
         gameloading := false;
         if zones[i].removeable <> 0 then
