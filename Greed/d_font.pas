@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -80,6 +80,7 @@ uses
   g_delphi,
   d_video,
   d_ints,
+  raven,
   r_render,
   r_public;
 
@@ -359,15 +360,19 @@ var
 // write the current msg to the view buffer
 procedure rewritemsg;
 var
-  i: integer;
+  i, ln: integer;
 begin
   fontbasecolor := 73;
   font := font1;
+  ln := 0;
   for i := 0 to MSGQUESIZE - 1 do
     if msgstr[i] <> '' then
     begin
       printx := 2;
-      printy := 1 + i * 6;
+      printy := 1 + ln * 6;
+      inc(ln);
+      if currentViewSize >= 4 then
+        printy := printy + 10;
       FN_RawPrint2(msgstr[i]);
     end;
   if timecount > timemsg then
