@@ -2918,80 +2918,80 @@ begin
     writemsg('Enemy view toggled');
   end;
 
-  if not DEMO and not GAME1 and not GAME2 and GAME3 then
-  begin
-    if (s[1] = 'g') and (s[2] = 'o') then
-    begin
-      if stricmp(s, 'go1') = 0 then
-        newmap(0, 2)
-      else if (stricmp(s, 'go2') = 0) then
-        newmap(1, 2)
-      else if (stricmp(s, 'go3') = 0) then
-        newmap(2, 2)
-      else if (stricmp(s, 'go4') = 0) then
-        newmap(3, 2)
-      else if (stricmp(s, 'go5') = 0) then
-        newmap(4, 2)
-      else if (stricmp(s, 'go6') = 0) then
-        newmap(5, 2)
-      else if (stricmp(s, 'go7') = 0) then
-        newmap(6, 2)
-      else if (stricmp(s, 'go8') = 0) then
-        newmap(7, 2)
-      else if (stricmp(s, 'go9') = 0) then
-        newmap(8, 2)
-      else if (stricmp(s, 'go10') = 0) then
-        newmap(9, 2)
-      else if (stricmp(s, 'go11') = 0) then
-        newmap(10, 2)
-      else if (stricmp(s, 'go12') = 0) then
-        newmap(11, 2)
-      else if (stricmp(s, 'go13') = 0) then
-        newmap(12, 2)
-      else if (stricmp(s, 'go14') = 0) then
-        newmap(13, 2)
-      else if (stricmp(s, 'go15') = 0) then
-        newmap(14, 2)
-      else if (stricmp(s, 'go16') = 0) then
-        newmap(15, 2)
-      else if (stricmp(s, 'go17') = 0) then
-        newmap(16, 2)
-      else if (stricmp(s, 'go18') = 0) then
-        newmap(17, 2)
-      else if (stricmp(s, 'go19') = 0) then
-        newmap(18, 2)
-      else if (stricmp(s, 'go20') = 0) then
-        newmap(19, 2)
-      else if (stricmp(s, 'go21') = 0) then
-        newmap(20, 2)
-      else if (stricmp(s, 'go22') = 0) then
-        newmap(21, 2)
-      else if (stricmp(s, 'go23') = 0) then
-        newmap(22, 2)
-      else if (stricmp(s, 'go24') = 0) then
-        newmap(23, 2)
-      else if (stricmp(s, 'go25') = 0) then
-        newmap(24, 2)
-      else if (stricmp(s, 'go26') = 0) then
-        newmap(25, 2)
-      else if (stricmp(s, 'go27') = 0) then
-        newmap(26, 2)
-      else if (stricmp(s, 'go28') = 0) then
-        newmap(27, 2)
-      else if (stricmp(s, 'go29') = 0) then
-        newmap(28, 2)
-      else if (stricmp(s, 'go30') = 0) then
-        newmap(29, 2)
-      else if (stricmp(s, 'go31') = 0) then
-        newmap(30, 2)
-      else if (stricmp(s, 'go32') = 0) then
-        newmap(31, 2);
-      INT_TimerHook(PlayerCommand);
-    end;
-  end;
-
   if Length(s) > 2 then
   begin
+    if not DEMO and not GAME1 and not GAME2 and not GAME3 then
+    begin
+      if (s[1] = 'g') and (s[2] = 'o') then
+      begin
+        if stricmp(s, 'go1') = 0 then
+          newmap(0, 2)
+        else if (stricmp(s, 'go2') = 0) then
+          newmap(1, 2)
+        else if (stricmp(s, 'go3') = 0) then
+          newmap(2, 2)
+        else if (stricmp(s, 'go4') = 0) then
+          newmap(3, 2)
+        else if (stricmp(s, 'go5') = 0) then
+          newmap(4, 2)
+        else if (stricmp(s, 'go6') = 0) then
+          newmap(5, 2)
+        else if (stricmp(s, 'go7') = 0) then
+          newmap(6, 2)
+        else if (stricmp(s, 'go8') = 0) then
+          newmap(7, 2)
+        else if (stricmp(s, 'go9') = 0) then
+          newmap(8, 2)
+        else if (stricmp(s, 'go10') = 0) then
+          newmap(9, 2)
+        else if (stricmp(s, 'go11') = 0) then
+          newmap(10, 2)
+        else if (stricmp(s, 'go12') = 0) then
+          newmap(11, 2)
+        else if (stricmp(s, 'go13') = 0) then
+          newmap(12, 2)
+        else if (stricmp(s, 'go14') = 0) then
+          newmap(13, 2)
+        else if (stricmp(s, 'go15') = 0) then
+          newmap(14, 2)
+        else if (stricmp(s, 'go16') = 0) then
+          newmap(15, 2)
+        else if (stricmp(s, 'go17') = 0) then
+          newmap(16, 2)
+        else if (stricmp(s, 'go18') = 0) then
+          newmap(17, 2)
+        else if (stricmp(s, 'go19') = 0) then
+          newmap(18, 2)
+        else if (stricmp(s, 'go20') = 0) then
+          newmap(19, 2)
+        else if (stricmp(s, 'go21') = 0) then
+          newmap(20, 2)
+        else if (stricmp(s, 'go22') = 0) then
+          newmap(21, 2)
+        else if (stricmp(s, 'go23') = 0) then
+          newmap(22, 2)
+        else if (stricmp(s, 'go24') = 0) then
+          newmap(23, 2)
+        else if (stricmp(s, 'go25') = 0) then
+          newmap(24, 2)
+        else if (stricmp(s, 'go26') = 0) then
+          newmap(25, 2)
+        else if (stricmp(s, 'go27') = 0) then
+          newmap(26, 2)
+        else if (stricmp(s, 'go28') = 0) then
+          newmap(27, 2)
+        else if (stricmp(s, 'go29') = 0) then
+          newmap(28, 2)
+        else if (stricmp(s, 'go30') = 0) then
+          newmap(29, 2)
+        else if (stricmp(s, 'go31') = 0) then
+          newmap(30, 2)
+        else if (stricmp(s, 'go32') = 0) then
+          newmap(31, 2);
+        INT_TimerHook(PlayerCommand);
+      end;
+    end;
+
     if (s[1] = 'b') and (s[2] = 'l') then
     begin
       if stricmp(s, 'blammo1') = 0 then
