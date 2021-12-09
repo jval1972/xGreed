@@ -779,6 +779,24 @@ var
 begin
   netplay := false;
 
+  if MS_CheckParm('game1') > 0 then
+  begin
+    GAME1 := true;
+    GAME2 := false;
+    GAME3 := false;
+  end
+  else if MS_CheckParm('game2') > 0 then
+  begin
+    GAME1 := false;
+    GAME2 := true;
+    GAME3 := false;
+  end
+  else if MS_CheckParm('game3') > 0 then
+  begin
+    GAME1 := false;
+    GAME2 := false;
+    GAME3 := true;
+  end;
   if MS_CheckParm('nointro') > 0 then
     nointro := true;
   if MS_CheckParm('record') > 0 then
@@ -822,7 +840,6 @@ procedure startup;
 label
   restart;
 begin
-//  nointro := true;
   LoadData;
 
 restart:
