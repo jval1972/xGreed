@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -64,6 +64,8 @@ type
    Pchunktype_t = ^chunktype_t;
 
 function CheckTime(const n1, n2: integer): boolean;
+
+function FindFLIFile(var fname: string): boolean;
 
 function DoPlayFLI(const afname: string; const offset: integer): boolean;
 
@@ -256,7 +258,7 @@ begin
   result := n1 >= n2;
 end;
 
-procedure FindFLIFile(var fname: string);
+function FindFLIFile(var fname: string): boolean;
 var
   stmp: string;
   test: string;
@@ -266,6 +268,7 @@ begin
   if fexists(test) then
   begin
     fname := test;
+    result := true;
     exit;
   end;
 
@@ -273,6 +276,7 @@ begin
   if fexists(test) then
   begin
     fname := test;
+    result := true;
     exit;
   end;
 
@@ -280,6 +284,7 @@ begin
   if fexists(test) then
   begin
     fname := test;
+    result := true;
     exit;
   end;
 
@@ -289,6 +294,7 @@ begin
     if fexists(test) then
     begin
       fname := test;
+      result := true;
       exit;
     end;
 
@@ -296,6 +302,7 @@ begin
     if fexists(test) then
     begin
       fname := test;
+      result := true;
       exit;
     end;
 
@@ -303,9 +310,11 @@ begin
     if fexists(test) then
     begin
       fname := test;
+      result := true;
       exit;
     end;
   end;
+  result := false;
 end;
 
 // play FLI out of BLO file
