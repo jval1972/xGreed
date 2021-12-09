@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -443,10 +443,8 @@ begin
   d := (player.angst * 10) div player.maxangst;
   if d >= 10 then
     d := 9;
-  VI_DrawMaskedPicToBuffer(269, 161 + ofs,heart[d]);
-  statcursor := statcursor + 2;
-  if statcursor >= 323 then
-    statcursor := 269;
+  VI_DrawMaskedPicToBuffer(269, 161 + ofs, heart[d]);
+  statcursor := 269 + timecount mod 54;
   for j := 269 to 305 do
   begin
     if j > statcursor then
@@ -865,9 +863,7 @@ begin
     printy := 188;
     FN_RawPrint(str1);
   end;
-  statcursor := statcursor + 2;
-  if statcursor >= 323 then
-    statcursor := 269;
+  statcursor := 269 + timecount mod 54;
   for j := 269 to 305 do
   begin
     if j > statcursor then
