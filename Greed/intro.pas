@@ -186,7 +186,7 @@ var
 
 (**** FUNCTIONS ****)
 
-procedure loadscreen(const s: string);
+function loadscreen(const s: string): boolean;
 
 procedure DoIntroMenu;
 
@@ -217,13 +217,18 @@ uses
   r_public,
   utils;
 
-procedure loadscreen(const s: string);
+function loadscreen(const s: string): boolean;
 var
   l: Ppic_t;
   pal: PByteArray;
   i: integer;
 begin
-  i := CA_GetNamedNum(s);
+  i := CA_CheckNamedNum(s);
+  if i < 0 then
+  begin
+    result := false;
+    exit;
+  end;
   l := CA_CacheLump(i);
   VI_DrawPic(0, 0, l);
   CA_FreeLump(i);
@@ -232,6 +237,7 @@ begin
   CA_FreeLump(i + 1);
   for i := 0 to 767 do
     colors[i] := colors[i] * 4;
+  result := true;
 end;
 
 
@@ -467,52 +473,43 @@ begin
   Wait(3 * TICRATE);
 end;
 
-procedure MainIntro;
-var
-  path: string;
-begin
-  if CDROMGREEDDIR then
-    path := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MOVIES\'
-  else
-    path := Chr(cdr_drivenum + Ord('A')) + ':\MOVIES\';
-  DemoIntroFlis(path);
-end;
-
-
-procedure DemoIntro;
+procedure DemoIntro(const path: string);
 var
   i: integer;
+  fliname: string;
 begin
   fontbasecolor := 0;
   font := font1;
 
-  if fexists('MOVIES\TEXT.FLI') then
+  fliname := 'TEXT.FLI';
+
+  if FindFLIFile(fliname) then
   begin
-    DemoIntroFlis('MOVIES\');
+    DemoIntroFlis(fpath(fliname));
     exit;
   end;
 
   VI_FillPalette(0, 0, 0);
-  loadscreen('SOFTLOGO');
+  if not loadscreen('SOFTLOGO') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   Wait(3 * TICRATE, 1);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
-  loadscreen('C7LOGO');
+  if not loadscreen('C7LOGO') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   Wait(3 * TICRATE, 1);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
-  loadscreen('LOGO');
+  if not loadscreen('LOGO') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   Wait(3 * TICRATE, 1);
   VI_FillPalette(255, 255, 255);
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
-  loadscreen('INTRO00');
+  if not loadscreen('INTRO00') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   fontbasecolor := 0;
   while fontbasecolor < 9 do
@@ -537,7 +534,7 @@ begin
   if CheckDemoExit then exit;
 
 
-  loadscreen('INTRO01');
+  if not loadscreen('INTRO01') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   fontbasecolor := 0;
   while fontbasecolor < 9 do
@@ -559,7 +556,7 @@ begin
   if CheckDemoExit then exit;
 
 
-  loadscreen('INTRO02');
+  if not loadscreen('INTRO02') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   fontbasecolor := 0;
   while fontbasecolor < 9 do
@@ -583,7 +580,7 @@ begin
   if CheckDemoExit then exit;
 
 
-  loadscreen('INTRO03');
+  if not loadscreen('INTRO03') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   fontbasecolor := 0;
   while fontbasecolor < 9 do
@@ -606,7 +603,7 @@ begin
   if CheckDemoExit then exit;
 
 
-  loadscreen('INTRO04');
+  if not loadscreen('INTRO04') then exit;
   I_SetPalette(@colors);
   for i := 0 to 20 do
   begin
@@ -618,7 +615,7 @@ begin
   if CheckDemoExit then exit;
 
 
-  loadscreen('INTRO05');
+  if not loadscreen('INTRO05') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   for i := 0 to 20 do
   begin
@@ -630,7 +627,7 @@ begin
   if CheckDemoExit then exit;
 
 
-  loadscreen('INTRO06');
+  if not loadscreen('INTRO06') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   fontbasecolor := 0;
   while fontbasecolor < 9 do
@@ -650,7 +647,7 @@ begin
   if CheckDemoExit then exit;
 
 
-  loadscreen('INTRO07');
+  if not loadscreen('INTRO07') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   fontbasecolor := 0;
   while fontbasecolor < 9 do
@@ -669,7 +666,7 @@ begin
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   if CheckDemoExit then exit;
 
-  loadscreen('INTRO08');
+  if not loadscreen('INTRO08') then exit;
   VI_FadeIn(0, 256, @colors, 48);
   fontbasecolor := 0;
   while fontbasecolor < 9 do
@@ -692,6 +689,16 @@ begin
   if CheckDemoExit then exit;
 end;
 
+procedure MainIntro;
+var
+  path: string;
+begin
+  if CDROMGREEDDIR then
+    path := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MOVIES\'
+  else
+    path := Chr(cdr_drivenum + Ord('A')) + ':\MOVIES\';
+  DemoIntro(path);
+end;
 
 procedure dointro;
 var
