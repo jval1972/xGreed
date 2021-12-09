@@ -231,6 +231,8 @@ function _SHRW(const x: LongWord; const bits: LongWord): LongWord;
 
 function ibetween(const x: integer; const x1, x2: integer): integer;
 
+function fpath(const filename: string): string;
+
 implementation
 
 uses
@@ -804,6 +806,11 @@ begin
     result := x2
   else
     result := x;
+end;
+
+function fpath(const filename: string): string;
+begin
+  result := ExtractFilePath(filename);
 end;
 
 end.
