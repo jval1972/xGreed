@@ -1218,8 +1218,8 @@ begin
     lump := primarylump + primaries[(goalitem - 1) * 2];
     score := primaries[(goalitem - 1) * 2 + 1];
     typ := 'Primary';
-    found := player.primaries[goalitem-1];
-    total := pcount[goalitem-1];
+    found := player.primaries[goalitem - 1];
+    total := pcount[goalitem - 1];
     sprintf(str1, '%2d/%2d', [found, total]);
     name := primnames[primaries[(goalitem - 1) * 2]];
   end

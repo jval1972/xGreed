@@ -59,7 +59,7 @@ type
 var
   triggers: packed array[0..MAPROWS - 1, 0..MAPCOLS - 1] of byte;
   switches: packed array[0..MAPROWS - 1, 0..MAPCOLS - 1] of byte;
-  processes: array[0..MAXPROCESS -1] of integer;
+  processes: array[0..MAXPROCESS - 1] of integer;
   numprocesses, numzones, fliplayed: integer;
   zones: array[0..MAXZONES - 1] of zone_t;
   fliname: array[0..2] of string[12] = (
@@ -360,7 +360,7 @@ begin
       if z.endeval <> 0 then
         RunEvent(z.endeval, false);
     end;
-  until count<= 0;
+  until count <= 0;
 end;
 
 
@@ -370,7 +370,7 @@ var
   sl: TStringList;
   sce: TScriptEngine;
   stmp: string;
-  i, j, x, y, eval, line, etype, upper, lower, speed, result, endeval: integer;
+  i, j, x, y, eval, line, etype, upper, lower, speed, endeval: integer;
   num, val, psprite, total, ceval, def1, def2, x1, y1, x2, y2, removeable: integer;
   elevator_p: Pelevobj_t;
   z: Pzone_t;
@@ -684,7 +684,7 @@ begin
       z.removeable := removeable;
     end
     else if stmp = 'SPAWNSOUND' then
-   begin
+    begin
       sce.MustGetInteger;
       x := sce._Integer;
       sce.MustGetInteger;
@@ -761,7 +761,7 @@ begin
     else if stmp = 'REM' then
     begin
       sce.GetStringEOL;
-    end
+    end;
   end;
 
   sce.Free;
