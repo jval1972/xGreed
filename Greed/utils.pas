@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -828,9 +828,9 @@ begin
     mapspot := (sprite_p.y div FRACTILEUNIT) * MAPCOLS + (sprite_p.x div FRACTILEUNIT);
     case sprite_p.typ of
     S_MONSTER1:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
-		    begin
+        begin
           if sprite_p.hitpoints <> 0 then
           begin
             if sprite_p.nofalling then
@@ -844,9 +844,9 @@ begin
       end;
 
     S_MONSTER2:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
-	      begin
+        begin
           if sprite_p.hitpoints <> 0 then
           begin
             if sprite_p.nofalling then
@@ -858,7 +858,7 @@ begin
       end;
 
     S_MONSTER3:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -874,7 +874,7 @@ begin
       end;
 
     S_MONSTER4:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -890,7 +890,7 @@ begin
       end;
 
     S_MONSTER5:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -901,7 +901,7 @@ begin
       end;
 
     S_MONSTER6:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -917,7 +917,7 @@ begin
       end;
 
     S_MONSTER7:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -933,7 +933,7 @@ begin
       end;
 
     S_MONSTER8:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -949,7 +949,7 @@ begin
       end;
 
     S_MONSTER9:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -965,7 +965,7 @@ begin
       end;
 
     S_MONSTER10:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -981,7 +981,7 @@ begin
       end;
 
     S_MONSTER11:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -997,7 +997,7 @@ begin
       end;
 
     S_MONSTER12:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -1013,7 +1013,7 @@ begin
       end;
 
     S_MONSTER13:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -1029,7 +1029,7 @@ begin
       end;
 
     S_MONSTER14:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -1045,7 +1045,7 @@ begin
       end;
 
     S_MONSTER15:
-	    begin
+      begin
         if sprite_p.deathevent = 0 then
         begin
           if sprite_p.hitpoints <> 0 then
@@ -1220,7 +1220,7 @@ begin
       else
         player.savesprites[door_p.tiley * MAPCOLS + door_p.tilex] := S_HDOOR7;
     end;
-	  inc(door_p);
+    inc(door_p);
   end;
 
   UpdateWait;
@@ -1268,8 +1268,8 @@ begin
       player.savesprites[sa.mapspot] := S_SPAWN8_NS;
     101:
       player.savesprites[sa.mapspot] := S_SPAWN9_NS;
-	  end;
-	  inc(sa);
+    end;
+    inc(sa);
   end;
 
   UpdateWait;
