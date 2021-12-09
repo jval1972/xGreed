@@ -197,7 +197,6 @@ end;
 // process each timer tick
 procedure INT_TimerISR;
 begin
-//  if timecount and 1 <> 0 then
   inc(timecount);
   inc(gametic);
   if timecount and 1 <> 0 then
