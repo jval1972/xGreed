@@ -3915,6 +3915,7 @@ var
   pic: Ppic_t;
   dbg: string;
   angle: integer;
+  rtop: integer;
 begin
   angle := aangle and ANGLES;
 
@@ -3938,14 +3939,18 @@ begin
   if timecount < RearViewTime then
   begin
     x := windowWidth - 66;
+    if currentViewSize >= 4 then
+      rtop := 10
+    else
+      rtop := 0;
     for i := 1 to 63 do
     begin
-      memcpy(@viewylookup[i + 1][x], @rearbuf[i * 64], 64);
-      viewylookup[i + 1][x - 1] := 30;
-      viewylookup[i + 1][x + 64] := 30;
+      memcpy(@viewylookup[rtop + i + 1][x], @rearbuf[i * 64], 64);
+      viewylookup[rtop + i + 1][x - 1] := 30;
+      viewylookup[rtop + i + 1][x + 64] := 30;
     end;
-    memset(@viewylookup[65][x - 1], 30, 66);
-    memset(@viewylookup[1][x - 1], 30, 66);
+    memset(@viewylookup[rtop + 65][x - 1], 30, 66);
+    memset(@viewylookup[rtop + 1][x - 1], 30, 66);
   end;
 
   // update sprite movement
