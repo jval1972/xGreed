@@ -295,8 +295,7 @@ begin
   // Allocates a page aligned buffer and load in the light tables
   lightlump := CA_GetNamedNum('lights');
   numcolormaps := infotable[lightlump].size div 256;
-  colormaps := malloc(256 * (numcolormaps));
-  //colormaps := (byte *)(((int)colormaps+255)) and (~0xff);// JVAL: Removed align
+  colormaps := malloc(256 * (numcolormaps));                          
   CA_ReadLump(lightlump, colormaps);
   RF_SetLights(MAXZ);
   RF_ClearWorld;
@@ -588,18 +587,12 @@ end;
 
 
 procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
-var
-  i: integer;
 begin
 {$IFDEF VALIDATE}
   if (x <= 0) or (x >= ((MAPSIZE - 1) shl (FRACBITS + TILESHIFT))) or (y <= 0) or (
     y >= ((MAPSIZE - 1) shl (FRACBITS + TILESHIFT))) then
     MS_Error('Invalid RF_RenderView (%d, %d, %d, %d)', [x, y, z, angle]);
 {$ENDIF}
-
-// viewx := (x) and (~0xfff) + $800;
-// viewy := (y) and (~0xfff) + $800;
-// viewz := (z) and (~0xfff) + $800;
 
   viewx := x;
   viewy := y;
