@@ -267,7 +267,8 @@ begin
   nextchar := false;
   for i := 0 to 26 do
   begin
-    UpdateSound;
+    if not nextchar then
+      UpdateSound;
     fontbasecolor := 0;
     while fontbasecolor < 9 do
     begin
@@ -277,7 +278,7 @@ begin
         printy := 19 + 6 * i;
         str1 := charinfo[n - 1][i];
         FN_RawPrint3(str1);
-        if not nextchar then
+        if not nextchar or activatemenu then
           Wait(2, 1);
       end;
       inc(fontbasecolor);
@@ -314,15 +315,16 @@ end;
 
 procedure IntroCommand;
 begin
-  if ((keyboard[SC_ESCAPE] = 1) or (keyboard[SC_ENTER] = 1)) and (timecount > keyboardDelay) then
+  if (keyboard[SC_ESCAPE] = 1) or (keyboard[SC_ENTER] = 1) then
   begin
     eat_key(SC_ESCAPE);
     eat_key(SC_ENTER);
     activatemenu := true;
     keyboardDelay := timecount + ACTIVATEMENUDELAY;
   end;
-  if (keyboard[SC_SPACE] <> 0) and (timecount > keyboardDelay) then
+  if (keyboard[SC_SPACE] = 1) then
   begin
+    eat_key(SC_SPACE);
     nextchar := true;
     keyboardDelay := timecount + KBDELAY;
   end;
