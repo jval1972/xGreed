@@ -218,7 +218,7 @@ end;
 
 procedure I_ShutDown;
 begin
-  close(fout);
+  fclose(fout);
 end;
 
 function I_VersionBuilt(fname: string = ''): string;

@@ -511,7 +511,7 @@ begin
     if not fopen(f, fname, fOpenReadOnly)then
       MS_Error('LoadNewMap(): Can''t open %s!', [fname]);
     DoLoadMapData(f);
-    close(f);
+    fclose(f);
   end;
   memset(@mapflags, 0, SizeOf(mapflags));
   UpdateWait;
@@ -1331,7 +1331,7 @@ begin
   if not fwrite(@player, SizeOf(player_t), 1, f) then
     MS_Error('SaveGame(): File Write Error: %s', [fname]);
   UpdateWait;
-  close(f);
+  fclose(f);
   EndWait;
 end;
 
@@ -2041,10 +2041,10 @@ begin
     exit;
   if not fread(@player, SizeOf(player_t), 1, handle) then
   begin
-    close(handle);
+    fclose(handle);
     MS_Error('LoadGame(): Error loading %s!', [fname]);
   end;
-  close(handle);
+  fclose(handle);
   oldscore := player.levelscore;
 
   resetengine;

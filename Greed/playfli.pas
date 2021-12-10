@@ -374,7 +374,7 @@ begin
     memcpy(screen, @viewbuffer, 64000);       // copy
     inc(currentfliframe);
   end;
-  close(f);
+  fclose(f);
   memfree(pointer(chunkbuf));
   if currentfliframe < header.nframes then  // user break
   begin

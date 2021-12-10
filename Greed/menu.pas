@@ -431,7 +431,7 @@ begin
     MS_Error('SaveDirectory(): Error creating ' + dd);
   if not fwrite(@savedir, SizeOf(savedir), 1, f) then
     MS_Error('SaveDirectory(): Error saving ' + dd);
-  close(f);
+  fclose(f);
 end;
 
 
@@ -455,9 +455,12 @@ begin
 
   if not fopen(f, dd, fOpenReadOnly) then
     InitSaveDir
-  else if not fread(@savedir, SizeOf(savedir), 1, f) then
-    MS_Error('ShowSaveDir(): Savegame directory read failure!');
-  close(f);
+  else
+  begin
+    if not fread(@savedir, SizeOf(savedir), 1, f) then
+      MS_Error('ShowSaveDir(): Savegame directory read failure!');
+    fclose(f);
+  end;
   fontbasecolor := 93;
   font := font1;
   MouseHide;

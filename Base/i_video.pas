@@ -358,7 +358,6 @@ begin
   destrect.Right := XWINDOWWIDTH - hpan;
   destrect.Bottom := XWINDOWHEIGHT - vpan;
 
-//  if g_pDDSPrimary.Blt(destrect, g_pDDScreen, srcrect, DDBLTFAST_DONOTWAIT or DDBLTFAST_NOCOLORKEY, PDDBltFX(0)^) = DDERR_SURFACELOST then
   if g_pDDSPrimary.Blt(destrect, g_pDDScreen, srcrect, DDBLTFAST_WAIT or DDBLTFAST_NOCOLORKEY, PDDBltFX(0)^) = DDERR_SURFACELOST then
     g_pDDSPrimary.Restore;
 

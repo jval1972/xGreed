@@ -4555,7 +4555,7 @@ var
 begin
   fopen(f, 'demo1', fOpenReadWrite);
   fwrite(demobuffer, RECBUFSIZE, 1, f);
-  close(f);
+  fclose(f);
 end;
 
 

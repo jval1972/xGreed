@@ -92,12 +92,12 @@ begin
   end;
   if not fread(SC, SizeOf(SoundCard), 1, f) then
   begin
-    close(f);
+    fclose(f);
     result := 1;
     exit;
   end;
 
-  close(f);
+  fclose(f);
   result := 0;
 end;
 
@@ -114,12 +114,12 @@ begin
 
   if not fwrite(SC, SizeOf(SoundCard), 1, f) then
   begin
-    close(f);
+    fclose(f);
     result := 1;
     exit;
   end;
 
-  close(f);
+  fclose(f);
   result := 0;
 end;
 

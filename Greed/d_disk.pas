@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -334,7 +334,7 @@ begin
   len := ftell(f);
   SetLength(result, len);
   fread(@result[1], len, 1, f);
-  close(f);
+  fclose(f);
 end;
 
 end.
