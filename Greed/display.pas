@@ -167,6 +167,7 @@ uses
   d_disk,
   d_font,
   d_ints,
+  i_video,
   modplay,
   net,
   protos_h,
@@ -495,15 +496,15 @@ begin
   if heatmode then
     memset(@ylookup[199 + ofs][236], 102, 6)
   else
-    memset(@ylookup[199 + ofs][236], 0, 6);
+    memset(@ylookup[199 + ofs][236], approx_zero, 6);
   if motionmode then
     memset(@ylookup[199 + ofs][246], 156, 6)
   else
-    memset(@ylookup[199 + ofs][246], 0, 6);
+    memset(@ylookup[199 + ofs][246], approx_zero, 6);
   if mapmode <> 0 then
     memset(@ylookup[199 + ofs][226], 133, 6)
   else
-    memset(@ylookup[199 + ofs][226], 0, 6);
+    memset(@ylookup[199 + ofs][226], approx_zero, 6);
 end;
 
 
@@ -929,15 +930,15 @@ begin
   if heatmode then
     memset(@ylookup[199][236], 102, 6)
   else
-    memset(@ylookup[199][236], 0, 6);
+    memset(@ylookup[199][236], approx_zero, 6);
   if motionmode then
     memset(@ylookup[199][246], 156, 6)
   else
-    memset(@ylookup[199][246], 0, 6);
+    memset(@ylookup[199][246], approx_zero, 6);
   if mapmode <> 0 then
     memset(@ylookup[199][226], 133, 6)
   else
-    memset(@ylookup[199][226], 0, 6);
+    memset(@ylookup[199][226], approx_zero, 6);
 end;
 
 
@@ -977,7 +978,7 @@ begin
   begin
     oldinventory := inventorycursor;
     for i := 162 to 184 do
-      memset(@ylookup[i][113], 0, 30);
+      memset(@ylookup[i][113], approx_zero, 30);
     if inventorycursor <> -1 then
     begin
       lump := inventorylump + inventorycursor;
@@ -1043,7 +1044,7 @@ begin
     if BonusItem.score <> 0 then
       togglegoalitem := true;
     for i := 158 to 187 do
-      memset(@ylookup[i][19], 0, 30);
+      memset(@ylookup[i][19], approx_zero, 30);
     font := font2;
     fontbasecolor := 0;
     printx := 53;
@@ -1085,7 +1086,7 @@ begin
     pic := lumpmain[lump];
     x := 34 - (pic.width div 2);
     for i := 158 to 187 do
-      memset(@ylookup[i][19], 0, 30);
+      memset(@ylookup[i][19], approx_zero, 30);
     for  i := 0 to pic.width - 1 do
     begin
       if pic.collumnofs[i] <> 0 then
@@ -1128,11 +1129,11 @@ begin
   end;
   oldgoalitem := goalitem;
   for i := 162 to 167 do
-    memset(@ylookup[i][53], 0, 23);
+    memset(@ylookup[i][53], approx_zero, 23);
   for i := 172 to 177 do
-    memset(@ylookup[i][53], 0, 30);
+    memset(@ylookup[i][53], approx_zero, 30);
   for i := 182 to 187 do
-    memset(@ylookup[i][53], 0, 39);
+    memset(@ylookup[i][53], approx_zero, 39);
   for i := 192 to 197 do
     memset(@ylookup[i][22], 0, 159);
   printx := 53;
@@ -1166,7 +1167,7 @@ begin
     if BonusItem.score <> 0 then
       togglegoalitem := true;
     for i := 158 to 187 do
-      memset(@ylookup[i][19], 0, 30);
+      memset(@ylookup[i][19], approx_zero, 30);
     font := font2;
     fontbasecolor := 0;
     printx := 53;
@@ -1237,7 +1238,7 @@ begin
   oldgoalitem := goalitem;
 
   for i := 158 to 187 do
-    memset(@ylookup[i][19], 0, 30);
+    memset(@ylookup[i][19], approx_zero, 30);
   pic := lumpmain[lump];
   x := 34 - (pic.width div 2);
   for i := 0 to pic.width - 1 do
@@ -1263,13 +1264,13 @@ begin
   end;
 
   for i := 162 to 167 do
-    memset(@ylookup[i][53], 0, 23);
+    memset(@ylookup[i][53], approx_zero, 23);
   for i := 172 to 177 do
-    memset(@ylookup[i][53], 0, 30);
+    memset(@ylookup[i][53], approx_zero, 30);
   for i := 182 to 187 do
-    memset(@ylookup[i][53], 0, 39);
+    memset(@ylookup[i][53], approx_zero, 39);
   for i := 192 to 197 do
-    memset(@ylookup[i][22], 0, 159);
+    memset(@ylookup[i][22], approx_zero, 159);
 
   printx := 53;
   printy := 162;
@@ -1364,7 +1365,7 @@ begin
     if d < 97 then
       for j := d to 97 do
         for i := 2 to 8 do
-          ylookup[i][j + 221] := 0;
+          ylookup[i][j + 221] := approx_zero;
   end;
 end;
 
@@ -1379,7 +1380,7 @@ begin
     exit;
   for i := 0 to 26 do
   begin
-    memset(@ylookup[i][windowWidth - 54], 0, 54);
+    memset(@ylookup[i][windowWidth - 54], approx_zero, 54);
     ylookup[i][windowWidth - 55] := 30;
   end;
   memset(@ylookup[27][windowWidth - 55], 30, 55);

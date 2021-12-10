@@ -80,6 +80,7 @@ uses
   g_delphi,
   d_video,
   d_ints,
+  i_video,
   raven,
   r_render,
   r_public;
@@ -113,7 +114,7 @@ begin
         if b <> 0 then
           dest[yh] := fontbasecolor + b
         else
-          dest[yh] := 0;
+          dest[yh] := approx_zero;
         inc(y);
         yh := yh + windowWidth;
       end;
@@ -196,7 +197,7 @@ begin
         if b <> 0 then
           dest[yh] := fontbasecolor + b
         else
-          dest[yh] := 0;
+          dest[yh] := approx_zero;
         inc(y);
         yh := yh + 320;
       end;
