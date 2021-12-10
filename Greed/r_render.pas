@@ -123,6 +123,8 @@ procedure SetupFrame;
 
 procedure FlowView;
 
+procedure R_ClearRenderBuffer;
+
 implementation
 
 uses
@@ -482,6 +484,11 @@ begin
     end;
     inc(process_p);
   end;
+end;
+
+procedure R_ClearRenderBuffer;
+begin
+  ZeroMemory(@renderbuffer, SizeOf(renderbuffer));
 end;
 
 end.

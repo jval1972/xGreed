@@ -354,7 +354,7 @@ begin
   chunkbuf := malloc(64000);
   if chunkbuf = nil then
     MS_Error('DoPlayFLI(): Out of Memory with ChunkBuf!');
-  memset(screen, 0, 64000);
+  memset(screen, approx_zero, 64000);
   VI_FillPalette(0, 0, 0);
   if not fopen(f, fname, fOpenReadOnly) then
     MS_Error('DoPlayFLI(): File Not Found: %s', [fname]);
@@ -391,6 +391,7 @@ var
 begin
   b := needsblit;
   needsblit := true;
+  R_ClearRenderBuffer;
   result := _PlayFLI(afname, offset);
   needsblit := b;
 end;
