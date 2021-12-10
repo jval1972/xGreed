@@ -876,7 +876,7 @@ begin
       MS_Error('Error Loading Help.Dat file');
     fread(screen, 64000, 1,f);
     fread(@colors, 768, 1,f);
-    close(f);
+    fclose(f);
   end
   else
     loadscreen('INFO1');

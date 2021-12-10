@@ -142,6 +142,8 @@ function ftell(var f: file): integer;
 
 function fexists(const filename: string): boolean;
 
+function fclose(var f: file): boolean;
+
 // String functions
 procedure sprintf(var s: string; const Fmt: string; const Args: array of const);
 
@@ -367,6 +369,14 @@ end;
 function fexists(const filename: string): boolean;
 begin
   result := FileExists(filename);
+end;
+
+function fclose(var f: file): boolean;
+begin
+  {$I-}
+  close(f);
+  {$I+}
+  result := IOResult = 0;
 end;
 
 procedure sprintf(var s: string; const Fmt: string; const Args: array of const);
