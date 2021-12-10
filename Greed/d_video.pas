@@ -251,9 +251,9 @@ begin
   source := @pic.data;
   while y < 0 do
   begin
-   source := @source[pic.width];
-   dec(height);
-   inc(y);
+    source := @source[pic.width];
+    dec(height);
+    inc(y);
   end;
   while height > 0 do
   begin
