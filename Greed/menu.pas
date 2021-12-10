@@ -689,8 +689,9 @@ end;
 
 procedure MenuCommand;
 begin
-  if (keyboard[SC_ESCAPE] <> 0) and (timecount > menutimedelay) then
+  if (keyboard[SC_ESCAPE] = 1) and (timecount > menutimedelay) then
   begin
+    eat_key(SC_ESCAPE);
     downlevel := true;
     menutimedelay := timecount + KBDELAY2;
   end;

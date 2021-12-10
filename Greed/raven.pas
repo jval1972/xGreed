@@ -2149,8 +2149,9 @@ begin
    exit;
  end;
 
-  if (keyboard[SC_ESCAPE] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
+  if (keyboard[SC_ESCAPE] = 1) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
+    eat_key(SC_ESCAPE);
     activatemenu := true;
     keyboardDelay := timecount + ACTIVATEMENUDELAY;
   end;

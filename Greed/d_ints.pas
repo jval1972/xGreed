@@ -123,6 +123,8 @@ const
 
 procedure INT_ReadControls;
 
+procedure eat_key(const k: integer);
+
 procedure INT_TimerISR;
 
 procedure INT_TimerHook(const hook: PProcedure);
@@ -157,14 +159,18 @@ var
   i: integer;
   c: char;
   key: integer;
+  kstate: integer;
 begin
   lastascii := #0;
   for i := 0 to NUMCODES - 1 do
   begin
     key := I_MapVirtualKey(i, 1);
-    keyboard[i] := I_GetKeyState(key);
-    if keyboard[i] and $80 <> 0 then
-      if oldkeyboard[i] and $80 = 0 then
+    kstate := I_GetKeyState(key);
+    if kstate and $80 <> 0 then
+    begin
+      if keyboard[i] = 0 then
+        keyboard[i] := 1;
+      if oldkeyboard[i] = 0 then
       begin
         c := toupper(ASCIINames[i]);
         if c <> #0 then
@@ -173,25 +179,28 @@ begin
           newascii := true;
         end;
       end;
-  end;
-
-  memset(@in_button, 0, SizeOf(in_button));
-  for i := 0 to NUMBUTTONS - 1 do
-    if keyboard[scanbuttons[i]] and $80 <> 0 then
-      in_button[i] := 1;
-
-  for i := 0 to NUMCODES - 1 do
-  begin
-    oldkeyboard[i] := keyboard[i];
-    if keyboard[i] and $80 <> 0 then
-      keyboard[i] := 1
+    end
     else
       keyboard[i] := 0;
   end;
 
+  memset(@in_button, 0, SizeOf(in_button));
+  for i := 0 to NUMBUTTONS - 1 do
+    if keyboard[scanbuttons[i]] <> 0 then
+      in_button[i] := 1;
+
+  for i := 0 to NUMCODES - 1 do
+    oldkeyboard[i] := keyboard[i];
+
   if mouseinstalled then
   begin
   end;
+end;
+
+procedure eat_key(const k: integer);
+begin
+  if keyboard[k] = 1 then
+    keyboard[k] := 2;
 end;
 
 // process each timer tick

@@ -314,8 +314,10 @@ end;
 
 procedure IntroCommand;
 begin
-  if ((keyboard[SC_ESCAPE] <> 0) or (keyboard[SC_ENTER] <> 0)) and (timecount > keyboardDelay) then
+  if ((keyboard[SC_ESCAPE] = 1) or (keyboard[SC_ENTER] = 1)) and (timecount > keyboardDelay) then
   begin
+    eat_key(SC_ESCAPE);
+    eat_key(SC_ENTER);
     activatemenu := true;
     keyboardDelay := timecount + ACTIVATEMENUDELAY;
   end;
