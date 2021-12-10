@@ -403,7 +403,7 @@ begin
     for a := d to 48 do
     begin
       for i := 49 to 64 do
-        ylookup[i][a + 42] := 0;
+        ylookup[i][a + 42] := approx_zero;
     end;
   MouseShow;
 end;
@@ -469,7 +469,7 @@ begin
     printx := 148;
     printy := 34 + i * 10;
     for j := 0 to 5 do
-      memset(@ylookup[printy + j][printx], 0, 110);
+      memset(@ylookup[printy + j][printx], approx_zero, 110);
     FN_Print(savedir[i]);
   end;
   MouseShow;
@@ -804,7 +804,7 @@ begin
     printx := 148;
     printy := 34 + menucursor * 10;
     for i := 0 to 5 do
-      memset(@ylookup[printy + i][printx], 0, 100);
+      memset(@ylookup[printy + i][printx], approx_zero, 100);
     FN_Print(savedir[menucursor]);
     while not newascii do   // wait for a new key
     begin
