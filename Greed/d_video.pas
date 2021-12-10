@@ -342,7 +342,11 @@ begin
     while width > 0 do
     begin
       if source[0] <> 0 then
+      begin
         dest[0] := colormap[source[0]];
+        if dest[0] = 0 then
+          dest[0] := approx_zero;
+      end;
       source := @source[1];
       dest := @dest[1];
       dec(width);
