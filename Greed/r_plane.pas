@@ -93,15 +93,15 @@ procedure FlatSpan;
 var
   pointz: fixed_t;  // row's distance to view plane
   span_p: Pspan_t;
-  span: LongWord;
+  span: tag_t;
 begin
   pointz := FIXEDDIV(mr_deltaheight, yslope[mr_y + MAXSCROLL]);
   if pointz > MAXZ then
     exit;
   // post the span in the draw list
-  span := (pointz * ZTOFRACUNIT) and ZMASK;
+  span.point := pointz;
   spansx[numspans] := mr_x1;
-  span := span or numspans;
+  span.span := numspans;
   spantags[numspans] := span;
   span_p := @spans[numspans];
   span_p.spantype := spantype;
@@ -126,7 +126,7 @@ var
   pointz, pointz2: fixed_t; // row's distance to view plane
   partial, denom: float;
   span_p: Pspan_t;
-  span: LongWord;
+  span: tag_t;
 begin
   // calculate the Z values for each end of the span
   partial := (planeB / FRACUNIT) * yslope[mr_y + MAXSCROLL] + planeC;
@@ -143,9 +143,9 @@ begin
   if pointz2 > MAXZ then
     exit;
   // post the span in the draw list
-  span := (pointz * ZTOFRACUNIT) and ZMASK;
+  span.point := pointz;
   spansx[numspans] := mr_x1;
-  span := span or numspans;
+  span.span := numspans;
   spantags[numspans] := span;
   span_p := @spans[numspans];
   span_p.spantype := spantype;
@@ -318,8 +318,10 @@ begin
       frac := FIXEDDIV((p1.tz - zmin), (p1.tz - p2.tz));
       cliptx := p1.tx + FIXEDMUL((p2.tx - p1.tx), frac);
       clipty := p1.ty + FIXEDMUL((p2.ty - p1.ty), frac);
-      vertexx[numvertex] := CENTERX + (FIXEDMUL(cliptx, scale) div FRACUNIT);
-      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) div FRACUNIT);
+//      vertexx[numvertex] := CENTERX + (FIXEDMUL(cliptx, scale) div FRACUNIT);
+//      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) div FRACUNIT);
+      vertexx[numvertex] := CENTERX + rint((cliptx / FRACUNIT) * (scale / FRACUNIT));
+      vertexy[numvertex] := CENTERY - rint((clipty / FRACUNIT) * (scale / FRACUNIT));
       if ceilingbit and (vertexy[numvertex] > 640) then
       begin
         result := false;

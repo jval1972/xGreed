@@ -416,29 +416,29 @@ begin
   begin
     c := (d * (i - (152 + ofs))) div 8 + 140;
     for j := 272 to 300 do
-      if viewylookup[i][j] = 254 then
-        viewylookup[i][j] := c;
+      if ylookup[i][j] = 254 then
+        ylookup[i][j] := c;
   end;
   for i := 193 + ofs to 199 + ofs do
   begin
     c := (d * ((199 + ofs) - i)) div 7 + 140;
     for j := 272 to 300 do
-      if viewylookup[i][j] = 254 then
-        viewylookup[i][j] := c;
+      if ylookup[i][j] = 254 then
+        ylookup[i][j] := c;
   end;
   for j := 307 to 315 do
   begin
     c := (d * (315 - j)) div 9 + 140;
     for i := 165 + ofs to 187 + ofs do
-      if viewylookup[i][j] = 254 then
-        viewylookup[i][j] := c;
+      if ylookup[i][j] = 254 then
+        ylookup[i][j] := c;
   end;
   for j := 257 to 265 do
   begin
     c := (d * (j - 257)) div 9 + 140;
     for i := 165 + ofs to 187 + ofs do
-      if viewylookup[i][j] = 254 then
-        viewylookup[i][j] := c;
+      if ylookup[i][j] = 254 then
+        ylookup[i][j] := c;
   end;
   d := (player.angst * 10) div player.maxangst;
   if d >= 10 then
@@ -456,8 +456,8 @@ begin
         c := 113;
     end;
     for i := 161 + ofs to 185 + ofs do
-      if viewylookup[i][j] = 254 then
-        viewylookup[i][j] := c;
+      if ylookup[i][j] = 254 then
+        ylookup[i][j] := c;
   end;
   font := font2;
   fontbasecolor := 0;
@@ -480,7 +480,7 @@ begin
   c := 139;
   for i := 0 to 9 do
   begin
-    viewylookup[y][x] := c;
+    ylookup[y][x] := c;
     x1 := x1 + costable[player.angle];
     y1 := y1 - FIXEDMUL(sintable[player.angle], 54394);
     x := x1 div FRACUNIT;
@@ -493,17 +493,17 @@ end;
 procedure displaysettings1(const ofs: integer);
 begin
   if heatmode then
-    memset(@viewylookup[199 + ofs][236], 102, 6)
+    memset(@ylookup[199 + ofs][236], 102, 6)
   else
-    memset(@viewylookup[199 + ofs][236], 0, 6);
+    memset(@ylookup[199 + ofs][236], 0, 6);
   if motionmode then
-    memset(@viewylookup[199 + ofs][246], 156, 6)
+    memset(@ylookup[199 + ofs][246], 156, 6)
   else
-    memset(@viewylookup[199 + ofs][246], 0, 6);
+    memset(@ylookup[199 + ofs][246], 0, 6);
   if mapmode <> 0 then
-    memset(@viewylookup[199 + ofs][226], 133, 6)
+    memset(@ylookup[199 + ofs][226], 133, 6)
   else
-    memset(@viewylookup[199 + ofs][226], 0, 6);
+    memset(@ylookup[199 + ofs][226], 0, 6);
 end;
 
 
@@ -568,7 +568,7 @@ begin
         for j := 0 to count - 1 do
         begin
           if collumn[0] <> 0 then
-            viewylookup[y][x] := collumn[0];
+            ylookup[y][x] := collumn[0];
           inc(y);
           collumn := @collumn[1];
         end;
@@ -639,7 +639,7 @@ begin
         for j := 0 to count - 1 do
         begin
           if collumn[0] <> 0 then
-            viewylookup[y][x] := collumn[0];
+            ylookup[y][x] := collumn[0];
           inc(y);
           collumn := @collumn[1];
         end;
@@ -658,7 +658,7 @@ begin
     for y := 0 to 29 do
       for x := 0 to 29 do
       begin
-        viewylookup[y + 158 + ofs][19 + x] := b^;
+        ylookup[y + 158 + ofs][19 + x] := b^;
         inc(b);
       end;
   end;
@@ -746,7 +746,7 @@ begin
       for j := 0 to count - 1 do
       begin
         if collumn[0] <> 0 then
-          viewylookup[y][x] := collumn[0];
+          ylookup[y][x] := collumn[0];
         inc(y);
         collumn := @collumn[1];
       end;
@@ -1379,10 +1379,10 @@ begin
     exit;
   for i := 0 to 26 do
   begin
-    memset(@viewylookup[i][windowWidth - 54], 0, 54);
-    viewylookup[i][windowWidth - 55] := 30;
+    memset(@ylookup[i][windowWidth - 54], 0, 54);
+    ylookup[i][windowWidth - 55] := 30;
   end;
-  memset(@viewylookup[27][windowWidth - 55], 30, 55);
+  memset(@ylookup[27][windowWidth - 55], 30, 55);
   lump := inventorylump + inventorycursor;
   pic := lumpmain[lump]; // draw the pic for it
   x := windowWidth - 31;
@@ -1400,7 +1400,7 @@ begin
       for j := 0 to count - 1 do
       begin
         if collumn[0] <> 0 then
-          viewylookup[y][x] := collumn[0];
+          ylookup[y][x] := collumn[0];
         inc(y);
         collumn := @collumn[1];
       end;
@@ -1478,55 +1478,55 @@ procedure displayarrow(const x, y: integer);
 var
   angle: integer;
 begin
-  viewylookup[y][x] := 26;
+  ylookup[y][x] := 26;
   angle := (((player.angle + DEGREE45_2) and ANGLES) * 8) div ANGLES;
   case angle of
   0:
     begin
-      viewylookup[y][x + 1] := 40;
-      viewylookup[y][x - 1] := 20;
+      ylookup[y][x + 1] := 40;
+      ylookup[y][x - 1] := 20;
     end;
 
   1:
     begin
-      viewylookup[y - 1][x + 1] := 40;
-      viewylookup[y + 1][x - 1] := 20;
+      ylookup[y - 1][x + 1] := 40;
+      ylookup[y + 1][x - 1] := 20;
     end;
 
   2:
     begin
-      viewylookup[y - 1][x] := 40;
-      viewylookup[y + 1][x] := 20;
+      ylookup[y - 1][x] := 40;
+      ylookup[y + 1][x] := 20;
     end;
 
   3:
     begin
-      viewylookup[y - 1][x - 1] := 40;
-      viewylookup[y + 1][x + 1] := 20;
+      ylookup[y - 1][x - 1] := 40;
+      ylookup[y + 1][x + 1] := 20;
     end;
 
   4:
     begin
-      viewylookup[y][x - 1] := 40;
-      viewylookup[y][x + 1] := 20;
+      ylookup[y][x - 1] := 40;
+      ylookup[y][x + 1] := 20;
     end;
 
   5:
     begin
-      viewylookup[y + 1][x - 1] := 40;
-      viewylookup[y - 1][x + 1] := 20;
+      ylookup[y + 1][x - 1] := 40;
+      ylookup[y - 1][x + 1] := 20;
     end;
 
   6:
     begin
-      viewylookup[y + 1][x] := 40;
-      viewylookup[y - 1][x] := 20;
+      ylookup[y + 1][x] := 40;
+      ylookup[y - 1][x] := 20;
     end;
 
    7:
     begin
-      viewylookup[y + 1][x + 1] := 40;
-      viewylookup[y - 1][x - 1] := 20;
+      ylookup[y + 1][x + 1] := 40;
+      ylookup[y - 1][x - 1] := 20;
     end;
   end;
 end;
@@ -1570,7 +1570,7 @@ begin
           for a := 0 to 4 do
           begin
             if (x >= 0) and (x < windowWidth) and (y + 2 < windowHeight) and (y + 2 >= 0) then
-              viewylookup[y + 2][x] := c;
+              ylookup[y + 2][x] := c;
             inc(x);
           end;
         end
@@ -1579,7 +1579,7 @@ begin
           for a := 0 to 4 do
           begin
             if (x >= 0) and (x < windowWidth) and (y < windowHeight) and (y >= 0) then
-              viewylookup[y][x] := c;
+              ylookup[y][x] := c;
             inc(x);
           end;
         end;
@@ -1612,7 +1612,7 @@ begin
           for a := 0 to 4 do
           begin
             if (y >= 0) and (y < windowHeight) and (x + 2 < windowWidth) and (x + 2 >= 0) then
-              viewylookup[y][x + 2] := c;
+              ylookup[y][x + 2] := c;
             inc(y);
           end;
         end
@@ -1621,7 +1621,7 @@ begin
           for a := 0 to 4 do
           begin
             if (y >= 0) and (y < windowHeight) and (x < windowWidth) and (x >= 0) then
-              viewylookup[y][x] := c;
+              ylookup[y][x] := c;
             inc(y);
           end;
         end;
@@ -1645,7 +1645,7 @@ begin
     for a := 0 to 3 do
       for b := 0 to 3 do
         if (x + b < windowWidth) and (x + b >= 0) and (y + a < windowHeight) and (y + a >= 0) then
-          viewylookup[y + a][b + x] := c;
+          ylookup[y + a][b + x] := c;
   end;
 
   if exitexists then
@@ -1657,7 +1657,7 @@ begin
     for a := 0 to 3 do
       for b := 0 to 3 do
         if (x + b < windowWidth) and (x + b >= 0) and (y + a < windowHeight) and (y + a >= 0) then
-          viewylookup[y + a][b + x] := 187;
+          ylookup[y + a][b + x] := 187;
   end;
 end;
 
@@ -1716,15 +1716,15 @@ begin
     y1 := yfrac div FRACUNIT;
 
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-      viewylookup[y1][x1] := 44;
+      ylookup[y1][x1] := 44;
     if (y1 + 1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 + 1 < windowHeight) then
-      viewylookup[y1 + 1][x1] := 44;
+      ylookup[y1 + 1][x1] := 44;
     inc(x1);
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-      viewylookup[y1][x1] := 44;
+      ylookup[y1][x1] := 44;
     inc(y1);
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-      viewylookup[y1][x1] := 44;
+      ylookup[y1][x1] := 44;
 
     xfrac2 := ((windowWidth div 2) * FRACUNIT) - (py * xfracstep2 + px * xfracstep);
     yfrac2 := ((windowHeight div 2) * FRACUNIT) - (py * yfracstep2 + px * yfracstep);
@@ -1743,15 +1743,15 @@ begin
     y1 := yfrac div FRACUNIT;
 
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-      viewylookup[y1][x1] := 187;
+      ylookup[y1][x1] := 187;
     if (y1 + 1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 + 1 < windowHeight) then
-      viewylookup[y1 + 1][x1] := 187;
+      ylookup[y1 + 1][x1] := 187;
     inc(x1);
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-      viewylookup[y1][x1] := 187;
+      ylookup[y1][x1] := 187;
     inc(y1);
     if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-      viewylookup[y1][x1] := 187;
+      ylookup[y1][x1] := 187;
 
     xfrac2 := ((windowWidth div 2) * FRACUNIT) - (py * xfracstep2 + px * xfracstep);
     yfrac2 := ((windowHeight div 2) * FRACUNIT) - (py * yfracstep2 + px * yfracstep);
@@ -1777,7 +1777,7 @@ begin
             y2 := y1 + (((MapZoom div 2) * yfracstep2) div FRACUNIT);
             x2 := x1 + (((MapZoom div 2) * xfracstep2) div FRACUNIT);
             if (y2 >= 0) and (x2 >= 0) and (x2 < windowWidth) and (y2 < windowHeight) then
-              viewylookup[y2][x2] := c;
+              ylookup[y2][x2] := c;
             xfrac := xfrac + xfracstep;
             x1 := xfrac div FRACUNIT;
             yfrac := yfrac + yfracstep;
@@ -1789,7 +1789,7 @@ begin
           for a := 0 to MapZoom do
           begin
             if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-              viewylookup[y1][x1] := c;
+              ylookup[y1][x1] := c;
             xfrac := xfrac + xfracstep;
             x1 := xfrac div FRACUNIT;
             yfrac := yfrac + yfracstep;
@@ -1839,7 +1839,7 @@ begin
             y2 := y1 + (((MapZoom div 2) * yfracstep) div FRACUNIT);
             x2 := x1 + (((MapZoom div 2) * xfracstep) div FRACUNIT);
             if (y2 >= 0) and (x2 >= 0) and (x2 < windowWidth) and (y2 < windowHeight) then
-              viewylookup[y2][x2] := c;
+              ylookup[y2][x2] := c;
             xfrac2 := xfrac2 + xfracstep2;
             x1 := xfrac2 div FRACUNIT;
             yfrac2 := yfrac2 + yfracstep2;
@@ -1851,7 +1851,7 @@ begin
           for a := 0 to MapZoom do
           begin
             if (y1 >= 0) and (x1 >= 0) and (x1 < windowWidth) and (y1 < windowHeight) then
-              viewylookup[y1][x1] := c;
+              ylookup[y1][x1] := c;
             xfrac2 := xfrac2 + xfracstep2;
             x1 := xfrac2 div FRACUNIT;
             yfrac2 := yfrac2 + yfracstep2;
@@ -1877,7 +1877,7 @@ begin
     xfrac := xfrac + xfracstep * MapZoom;
     x := xfrac div FRACUNIT;
   end;
-  viewylookup[windowHeight div 2 + 1][windowWidth div 2 + 1] := 40;
+  ylookup[windowHeight div 2 + 1][windowWidth div 2 + 1] := 40;
 end;
 
 
@@ -1895,21 +1895,21 @@ begin
           c := 15
         else if c < 0 then
           c := 0;
-        viewylookup[i + 21][j + 3] := 88 - c;
+        ylookup[i + 21][j + 3] := 88 - c;
       end;
 
-  memset(@viewylookup[20][2], 73, 66);
-  memset(@viewylookup[85][2], 73, 66);
+  memset(@ylookup[20][2], 73, 66);
+  memset(@ylookup[85][2], 73, 66);
   for i := 21 to 84 do
   begin
-    viewylookup[i][2] := 73;
-    viewylookup[i][67] := 73;
+    ylookup[i][2] := 73;
+    ylookup[i][67] := 73;
   end;
-  viewylookup[(player.y div FRACTILEUNIT) + 21][(player.x div FRACTILEUNIT) + 3] := 40;
+  ylookup[(player.y div FRACTILEUNIT) + 21][(player.x div FRACTILEUNIT) + 3] := 40;
   if BonusItem.score <> 0 then
-    viewylookup[BonusItem.tiley + 21][BonusItem.tilex + 3] := 44;
+    ylookup[BonusItem.tiley + 21][BonusItem.tilex + 3] := 44;
   if exitexists then
-    viewylookup[exity + 21][exitx + 3] := 187;
+    ylookup[exity + 21][exitx + 3] := 187;
 end;
 
 
@@ -1953,7 +1953,7 @@ begin
           if (y + a < windowHeight) and (y + a >= 0) then
             for b := 0 to 3 do
               if (x + b < windowWidth) and (x + b >= 0) then
-                viewylookup[y + a][b + x] := c;
+                ylookup[y + a][b + x] := c;
       end;
       x := x + 4;
       inc(mapspot);
@@ -1976,23 +1976,23 @@ begin
     begin
       sx := sp.x div FRACTILEUNIT;
       sy := sp.y div FRACTILEUNIT;
-      viewylookup[sy + 21][sx + 3] := 152;
+      ylookup[sy + 21][sx + 3] := 152;
     end;
     sp := sp.next;
   end;
 
-  memset(@viewylookup[20][2], 73, 66);
-  memset(@viewylookup[85][2], 73, 66);
+  memset(@ylookup[20][2], 73, 66);
+  memset(@ylookup[85][2], 73, 66);
   for i := 21 to 84 do
   begin
-    viewylookup[i][2] := 73;
-    viewylookup[i][67] := 73;
+    ylookup[i][2] := 73;
+    ylookup[i][67] := 73;
   end;
-  viewylookup[(player.y div FRACTILEUNIT) + 21][(player.x div FRACTILEUNIT) + 3] := 40;
+  ylookup[(player.y div FRACTILEUNIT) + 21][(player.x div FRACTILEUNIT) + 3] := 40;
   if BonusItem.score <> 0 then
-    viewylookup[BonusItem.tiley + 21][BonusItem.tilex + 3] := 44;
+    ylookup[BonusItem.tiley + 21][BonusItem.tilex + 3] := 44;
   if exitexists then
-    viewylookup[exity + 21][exitx + 3] := 187;
+    ylookup[exity + 21][exitx + 3] := 187;
 end;
 
 
@@ -2017,7 +2017,7 @@ begin
         if (y + a < windowHeight) and (y + a >= 0) then
           for b := 0 to 3 do
             if (x + b < windowWidth) and (x + b >= 0) then
-              viewylookup[y + a][b + x] := 152;
+              ylookup[y + a][b + x] := 152;
     end;
     sp := sp.next;
   end;

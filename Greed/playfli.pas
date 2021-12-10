@@ -80,7 +80,8 @@ uses
   intro,
   i_video,
   i_windows,
-  r_render;
+  r_render,
+  timer;
 
 var
   header: fliheader_t;
@@ -111,15 +112,15 @@ procedure fli_readcolors;
 var
   i, j, total: integer;
   packets: word;
-  change, skip: byte;
+  skip: byte;
   k: PByte;
 begin
   packets := getword;
   for i := 0 to packets - 1 do
   begin
     skip := getbyte;     // colors to skip
-    change := getbyte;   // num colors to change
-    if change = 0 then
+    total := getbyte;   // num colors to change
+    if total = 0 then
       total := 256;         // hack for 256
     k := @flipal[skip];
     for j := 0 to total - 1 do
@@ -185,7 +186,7 @@ begin
   inc(y2, y);
   while y < y2 do
   begin
-    line := @viewylookup[y][0];
+    line := @ylookup[y][0];
     packets := getbyte;
     for p := 0 to packets - 1 do
     begin
@@ -237,15 +238,24 @@ begin
     bufptr := 0;
     case chunk.typ of
     12:  // fli line compression
-      fli_linecompression;
+      begin
+        fli_linecompression;
+        I_TranslateBuffer(@viewbuffer, 64000);
+      end;
     15:  // fli line compression first time (only once at beginning)
-      fli_brun;
+      begin
+        fli_brun;
+        I_TranslateBuffer(@viewbuffer, 64000);
+      end;
     16:  // copy chunk
-      memcpy(@viewbuffer, chunkbuf, 64000);
+      begin
+        memcpy(@viewbuffer, chunkbuf, 64000);
+        I_TranslateBuffer(@viewbuffer, 64000);
+      end;
     11:  //  new palette
       fli_readcolors;
     13:  //  clear (only 1 usually at beginning)
-      memset(@viewbuffer, 0, 64000);
+      memset(@viewbuffer, approx_zero, 64000);
     end;
   end;
 end;
@@ -324,7 +334,7 @@ end;
 //   copy frame to screen
 //      reset timer
 //      dump out if keypressed or mousereleased
-function DoPlayFLI(const afname: string; const offset: integer): boolean;
+function _PlayFLI(const afname: string; const offset: integer): boolean;
 var
   f: file;
   delay: integer;
@@ -373,6 +383,16 @@ begin
     exit;
   end;
   result := true;
+end;
+
+function DoPlayFLI(const afname: string; const offset: integer): boolean;
+var
+  b: boolean;
+begin
+  b := needsblit;
+  needsblit := true;
+  result := _PlayFLI(afname, offset);
+  needsblit := b;
 end;
 
 end.

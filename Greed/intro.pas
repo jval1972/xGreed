@@ -215,6 +215,7 @@ uses
   playfli,
   raven,
   r_public,
+  timer,
   utils;
 
 function loadscreen(const s: string): boolean;
@@ -847,18 +848,31 @@ begin
   LoadData;
 
 restart:
+
   if nointro then
   begin
     redo :=  false;
     I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
-    newplayer(0, 0, 2);
+    if GAME1 then
+      newplayer(0, 0, 2)
+    else if GAME2 then
+      newplayer(8, 0, 2)
+    else if GAME3 then
+      newplayer(16, 0, 2)
+    else
+      newplayer(0, 0, 2);
+    needsblit := false;
     maingame;
   end
   else
+  begin
+    needsblit := true;
     dointro;
+  end;
 
   if not quitgame then
   begin
+    needsblit := false;
     maingame;
     if redo then
       goto restart;

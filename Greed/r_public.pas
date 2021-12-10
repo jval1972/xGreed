@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -48,7 +48,8 @@ var
   scrollmin, scrollmax, bloodcount, metalcount: integer;
   actionhook: PProcedure;
 
-function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+//function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+function FIXEDMUL(const a, b: fixed_t): fixed_t; 
 
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
@@ -80,7 +81,7 @@ procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
 
 procedure RF_Startup;
 
-procedure SetViewSize(const awidth, aheight: integer);
+procedure SetViewSize(const awidth, aheight: integer; const buffer: PByteArray);
 
 implementation
 
@@ -97,10 +98,20 @@ uses
   r_walls,
   spawn;
 
-function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+{function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
+end;}
+function FIXEDMUL(const a, b: fixed_t): fixed_t;
+var
+  d: double;
+begin
+  d := a / FRACUNIT * b;
+  if abs(d) > 32767 * FRACUNIT then
+    result := round(d)
+  else
+    result := round(d);
 end;
 
 function FIXEDDIV2(const a, b: fixed_t): fixed_t; assembler;
@@ -279,7 +290,7 @@ begin
     costable[i] := rint(cos(angle) * FRACUNIT);
   end;
   printf('.');
-  SetViewSize(windowWidth, windowHeight);
+  SetViewSize(windowWidth, windowHeight, @renderbuffer);
   // set up lights
   // Allocates a page aligned buffer and load in the light tables
   lightlump := CA_GetNamedNum('lights');
@@ -577,6 +588,8 @@ end;
 
 
 procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
+var
+  i: integer;
 begin
 {$IFDEF VALIDATE}
   if (x <= 0) or (x >= ((MAPSIZE - 1) shl (FRACBITS + TILESHIFT))) or (y <= 0) or (
@@ -603,17 +616,17 @@ begin
 end;
 
 
-procedure SetViewSize(const awidth, aheight: integer);
+procedure SetViewSize(const awidth, aheight: integer; const buffer: PByteArray);
 var
   i: integer;
   width, height: integer;
 begin
-  if awidth > MAX_VIEW_WIDTH then
-    width := MAX_VIEW_WIDTH
+  if awidth > RENDER_VIEW_WIDTH then
+    width := RENDER_VIEW_WIDTH
   else
     width := awidth;
-  if aheight > MAX_VIEW_HEIGHT then
-    height := MAX_VIEW_HEIGHT
+  if aheight > RENDER_VIEW_HEIGHT then
+    height := RENDER_VIEW_HEIGHT
   else
     height := aheight;
   windowHeight := height;
@@ -626,7 +639,7 @@ begin
   ISCALE := FRACUNIT div (width div 2);
 
   for i := 0 to height - 1 do
-    viewylookup[i] := @viewbuffer[i * width];
+    viewylookup[i] := @buffer[i * width];
 
 // slopes for rows and collumns of screen pixels
 // slightly biased to account for the truncation in coordinates

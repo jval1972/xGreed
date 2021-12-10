@@ -42,6 +42,9 @@ procedure dStopTimer;
 
 procedure dStartTimer(const atimer: PProcedure; const rate: integer);
 
+var
+  needsblit: boolean = true;
+
 implementation
 
 uses
@@ -55,7 +58,8 @@ var
 procedure TimerHandler(uTimerID, uMsg: LongWord; dwUser, dw1, dw2: LongWord); stdcall;
 begin
   User_Timer;
-  I_FinishUpdate;
+  if needsblit then
+    I_FinishUpdate;
 end;
 
 procedure dStopTimer;

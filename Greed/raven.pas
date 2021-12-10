@@ -3535,7 +3535,7 @@ begin
   viewLocation := screen;
   scrollmin1 := player.scrollmin;
   scrollmax1 := player.scrollmax;
-  SetViewSize(windowWidth, windowHeight);
+  SetViewSize(windowWidth, windowHeight, @viewbuffer);
   ResetScalePostWidth(windowWidth);
   scrollmin := 0;
   scrollmax := 64;
@@ -3549,7 +3549,7 @@ begin
   windowLeft := viewLoc[view];
   windowTop := viewLoc[view + 1];
   viewLocation := location;
-  SetViewSize(viewSizes[view], viewSizes[view + 1]);
+  SetViewSize(viewSizes[view], viewSizes[view + 1], @renderbuffer);
   ResetScalePostWidth(windowWidth);
   memcpy(@pixelangle, @wallpixelangle, SizeOf(pixelangle));
   memcpy(@pixelcosine, @wallpixelcosine, SizeOf(pixelcosine));
@@ -3925,7 +3925,9 @@ begin
     rtimecount := timecount;
   end;
 
+  SetViewSize(RENDER_VIEW_WIDTH, RENDER_VIEW_HEIGHT, @renderbuffer);
   RF_RenderView(px, py, pz, angle);
+  SetViewSize(MAX_VIEW_WIDTH, MAX_VIEW_HEIGHT, @viewbuffer);
 
   if update = 1 then
     TimeUpdate;
@@ -4116,6 +4118,7 @@ begin
   begin
     if fliplayed <> 0 then
     begin
+      needsblit := true;
       if deadrestart then
       begin
         memset(screen, 0, 64000);
@@ -4126,6 +4129,8 @@ begin
       end;
       continue;
     end;
+
+    needsblit := false;
 
     if netmode then
       NetGetData;
@@ -4173,7 +4178,10 @@ begin
       checktrigger := false;
       CheckHere(true, player.x, player.y, player.angle);
       if fliplayed <> 0 then
+      begin
+        needsblit := true;
         continue;
+      end;
     end;
 
     if warpjammer then
@@ -4320,7 +4328,12 @@ begin
 
     CheckWarps(player.x, player.y);
     if fliplayed <> 0 then
+    begin
+      needsblit := true;
       continue;
+    end;
+
+    needsblit := false;
 
     CheckDoors(player.x, player.y);
     if netmode then
@@ -4424,13 +4437,22 @@ begin
       SelectNewSong;
 
     if activatemenu then
+    begin
+      needsblit := true;
       RunMenu;
+    end;
 
     if activatehelp then
+    begin
+      needsblit := true;
       RunHelp;
+    end;
 
     if activatebrief then
+    begin
+      needsblit := true;
       RunBrief;
+    end;
 
     TimeUpdate;
 
@@ -4441,7 +4463,10 @@ begin
       NetGetData;
 
     if paused or netpaused then
+    begin
+      needsblit := true;
       RunPause;
+    end;
 
     inc(frames);
 
@@ -4485,6 +4510,7 @@ begin
       NetGetData;
 
     I_FinishUpdate;
+    needsblit := true;
   end;
 end;
 

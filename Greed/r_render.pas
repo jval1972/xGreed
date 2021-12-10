@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -84,9 +84,10 @@ var
   costable: array[0..ANGLES] of fixed_t;
   sintable: array[0..ANGLES] of fixed_t;
   viewbuffer: packed array[0..MAX_VIEW_WIDTH * MAX_VIEW_HEIGHT - 1] of pixel_t;
-  viewylookup: array[0..MAX_VIEW_HEIGHT - 1] of Ppixel_tArray;
-  yslope: array[0..MAX_VIEW_HEIGHT + MAXSCROLL2 - 1] of fixed_t;
-  xslope: array[0..MAX_VIEW_WIDTH] of fixed_t;
+  renderbuffer: packed array[0..RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT - 1] of pixel_t;
+  viewylookup: array[0..RENDER_VIEW_HEIGHT - 1] of Ppixel_tArray;
+  yslope: array[0..RENDER_VIEW_HEIGHT + MAXSCROLL2 - 1] of fixed_t;
+  xslope: array[0..RENDER_VIEW_WIDTH] of fixed_t;
   wallposts: PBytePArray;
   colormaps: PByteArray;
   numcolormaps: integer;
@@ -179,9 +180,12 @@ begin
   if point.tz >= MINZ then
   begin
     scale := FIXEDDIV(FSCALE, point.tz);
-    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
-    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) div FRACUNIT);
-    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight,scale) div FRACUNIT);
+//    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
+//    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) div FRACUNIT);
+//    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight, scale) div FRACUNIT);
+    point.px := CENTERX + rint((point.tx / FRACUNIT) * (scale / FRACUNIT));
+    point.floory := CENTERY - rint((point.floorheight / FRACUNIT) * (scale / FRACUNIT));
+    point.ceilingy := CENTERY - rint((point.ceilingheight / FRACUNIT) * (scale / FRACUNIT));
   end;
   framevalid[mapspot2] := frameon;
   cornervertex[mapspot2] := point;

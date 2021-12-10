@@ -795,7 +795,7 @@ begin
     windowTop := viewLoc[currentViewSize * 2 + 1];
     windowSize := windowHeight * windowWidth;
     viewLocation := @screen[windowTop * 320 + windowLeft];
-    SetViewSize(windowWidth, windowHeight);
+    SetViewSize(windowWidth, windowHeight, @renderbuffer);
     ResetScalePostWidth(windowWidth);
     InitWalls;
   end;

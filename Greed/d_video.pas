@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -28,11 +28,8 @@ interface
 
 uses
   g_delphi,
+  r_public_h,
   Windows;
-
-const
-  SCREENWIDTH = 320;
-  SCREENHEIGHT = 200;
 
 type
   pic_t = packed record
@@ -47,7 +44,7 @@ type
 (**** VARIABLES ****)
 var
   screen: PByteArray;
-  ylookup: array[0..SCREENHEIGHT - 1] of PByteArray;
+  ylookup: array[0..MAX_VIEW_WIDTH - 1] of PByteArray;
   transparency: PByteArray;
   translookup: array[0..255] of PByteArray;
 
@@ -80,7 +77,6 @@ uses
   i_windows,
   i_video,
   raven,
-  r_public_h,
   r_public,
   r_render;
 
@@ -197,7 +193,7 @@ begin
   while height > 0 do
   begin
     memcpy(dest, source, width);
-    dest := @dest[SCREENWIDTH];
+    dest := @dest[MAX_VIEW_WIDTH];
     source := @source[width];
     dec(height);
   end;
@@ -362,8 +358,8 @@ var
 begin
   screen := @viewbuffer;
 
-  for y := 0 to SCREENHEIGHT - 1 do
-    ylookup[y] := @screen[y * SCREENWIDTH];
+  for y := 0 to MAX_VIEW_HEIGHT - 1 do
+    ylookup[y] := @screen[y * MAX_VIEW_WIDTH];
 
   transparency := CA_CacheLump(CA_GetNamedNum('TRANSPARENCY'));
 

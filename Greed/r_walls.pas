@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -35,17 +35,17 @@ var
   tangents: array[0..TANANGLES * 2 - 1] of fixed_t;
   sines: array[0..TANANGLES * 5 - 1] of fixed_t;
   cosines: Pfixed_tArray; // point 1/4 phase into sines
-  pixelangle: array[0..MAX_VIEW_WIDTH] of integer;
-  pixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
-  wallz: array[0..MAX_VIEW_WIDTH - 1] of fixed_t;  // pointx
+  pixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
+  pixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
+  wallz: array[0..RENDER_VIEW_WIDTH - 1] of fixed_t;  // pointx
   tpwalls_dest: array[0..MAXPEND - 1] of PByteArray;
   tpwalls_colormap: array[0..MAXPEND - 1] of PByteArray;
   tpwalls_count: array[0..MAXPEND - 1] of integer;
   transparentposts: integer;
-  wallpixelangle: array[0..MAX_VIEW_WIDTH] of integer;
-  wallpixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
-  campixelangle: array[0..MAX_VIEW_WIDTH] of integer;
-  campixelcosine: array[0..MAX_VIEW_WIDTH] of fixed_t;
+  wallpixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
+  wallpixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
+  campixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
+  campixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
 
 procedure InitWalls;
 
@@ -104,7 +104,7 @@ var
   x: integer;               // collumn and ranges
   light: integer;
   wall: PSmallInt;
-  span: LongWord;
+  span: tag_t;
   span_p: Pspan_t;
   rotateright, rotateleft, transparent, rotateup, rotatedown, invisible: integer;
 begin
@@ -310,9 +310,9 @@ begin
     sp_dest := @viewylookup[bottomy - scrollmin][x];
     if transparent <> 0 then
     begin
-      span := (pointz * ZTOFRACUNIT) and ZMASK;
+      span.point := pointz;
       spansx[numspans] := x;
-      span := span or numspans;
+      span.span := numspans;
       spantags[numspans] := span;
       span_p := @spans[numspans];
       if invisible <> 0 then
@@ -362,7 +362,7 @@ var
   x: integer;      // collumn and ranges
   light: integer;
   wall1, wall2: PSmallInt;
-  span: LongWord;
+  span: tag_t;
   span_p: Pspan_t;
   walltype1, walltype2, c, rotateright1, rotateright2: integer;
   rotateleft1, rotateleft2, tm: integer;
@@ -594,9 +594,9 @@ skipceilingcalc:
         goto contceiling;
       sp_count := bottomy - topy + 1;
       sp_dest := @viewylookup[bottomy - scrollmin][x];
-      span := (pointz * ZTOFRACUNIT) and ZMASK;
+      span.point := pointz;
       spansx[numspans] := x;
-      span := span or numspans;
+      span.span := numspans;
       spantags[numspans] := span;
       span_p := @spans[numspans];
       span_p.spantype := sp_step;
@@ -657,13 +657,13 @@ contceiling:
         continue;
       sp_count := bottomy - topy + 1;
   {$IFDEF VALIDATE}
-      if (bottomy - scrollmin < 0) or (bottomy - scrollmin >= MAX_VIEW_HEIGHT) then
-        MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, MAX_VIEW_HEIGHT - 1]);
+      if (bottomy - scrollmin < 0) or (bottomy - scrollmin >= RENDER_VIEW_HEIGHT) then
+        MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, RENDER_VIEW_HEIGHT - 1]);
   {$ENDIF}
       sp_dest := @viewylookup[bottomy - scrollmin][x];
-      span := (pointz * ZTOFRACUNIT) and ZMASK;
+      span.point := pointz;
       spansx[numspans] := x;
-      span := span or numspans;
+      span.span := numspans;
       spantags[numspans] := span;
       span_p := @spans[numspans];
       span_p.spantype := sp_step;

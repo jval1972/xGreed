@@ -33,9 +33,9 @@ uses
 
 var
 (*a scaled object is just encoded like a span                                                   *)
-  spantags: array[0..MAXSPANS - 1] of LongWord;
-  starttaglist_p: PLongWordArray;        // set by SortSpans
-  endtaglist_p: PLongWord;
+  spantags: array[0..MAXSPANS - 1] of tag_t;
+  starttaglist_p: Ptag_tArray;        // set by SortSpans
+  endtaglist_p: Ptag_t;
   spans: array[0..MAXSPANS - 1] of span_t;
   spansx: array[0..MAXSPANS - 1] of integer;
   spanx: integer;
@@ -78,45 +78,60 @@ uses
 const
   QUICKSORT_CUTOFF = 16;
 
-procedure SWAPL(const a, b: PLongWord);
+
+procedure SWAPTAG(const a, b: Ptag_t);
 var
-  tmp: LongWord;
+  tmp: tag_t;
 begin
   tmp := a^;
   a^ := b^;
   b^ := tmp;
 end;
 
-procedure MedianOfThree(const data: PLongWordArray; const count: integer);
+function COMPARETAG(const t1, t2: Ptag_t): integer;
+begin
+  if t1.point > t2.point then
+    result := -1
+  else if t1.point < t2.point then
+    result := 1
+  else if t1.span > t2.span then
+    result := -1
+  else if t2.span < t2.span then
+    result := 1
+  else
+    result := 0;
+end;
+
+procedure MedianOfThree(const data: Ptag_tArray; const count: integer);
 var
-  beg, mid, stop: PLongWord;
+  beg, mid, stop: Ptag_t;
 begin
   if count >= 3 then
   begin
     beg := @data[0];
     mid := @data[count div 2];
     stop := @data[count - 1];
-    if beg^ > mid^ then
+    if COMPARETAG(beg, mid) = -1 then
     begin
-      if mid^ > stop^ then
-        SWAPL(beg, mid)
-      else if beg^ > stop^ then
-       SWAPL(beg, stop)
+      if COMPARETAG(mid, stop) = -1 then
+        SWAPTAG(beg, mid)
+      else if COMPARETAG(beg, stop) = -1 then
+       SWAPTAG(beg, stop)
     end
-    else if mid^ > stop^ then
+    else if COMPARETAG(mid, stop) = -1 then
     begin
-      if beg^ > stop^ then
-        SWAPL(beg, stop);
+      if COMPARETAG(beg, stop) = -1 then
+        SWAPTAG(beg, stop);
     end
     else
-      SWAPL(beg, mid);
+      SWAPTAG(beg, mid);
   end;
 end;
 
 
-function Partition(const data: PLongWordArray; const count: LongWord): integer;
+function Partition(const data: Ptag_tArray; const count: LongWord): integer;
 var
-  part: LongWord;
+  part: tag_t;
   i, j: integer;
 begin
   part := data[0];
@@ -125,17 +140,17 @@ begin
 
   while i < j do
   begin
-    while part > data[CSubI(j, 1)] do;
-    while data[CAddI(i, 1)] > part do;
+    while COMPARETAG(@part, @data[CSubI(j, 1)]) = -1 do;
+    while COMPARETAG(@data[CAddI(i, 1)], @part) = -1 do;
     if i >= j then
       break;
-    SWAPL(@data[i], @data[j]);
+    SWAPTAG(@data[i], @data[j]);
   end;
   result := j + 1;
 end;
 
 
-procedure QuickSortHelper(const data: PLongWordArray; count: LongWord);
+procedure QuickSortHelper(const data: Ptag_tArray; count: LongWord);
 var
   left, part: integer;
 begin
@@ -155,18 +170,18 @@ begin
 end;
 
 
-procedure InsertionSort(const data: PLongWordArray; const count: LongWord);
+procedure InsertionSort(const data: Ptag_tArray; const count: LongWord);
 var
   i, j: integer;
-  t: LongWord;
+  t: tag_t;
 begin
   for i := 1 to count - 1 do
   begin
-    if data[i] > data[i - 1] then
+    if COMPARETAG(@data[i], @data[i - 1]) = -1 then
     begin
       t := data[i];
       j := i;
-      while (j <> 0) and (t > data[j - 1]) do
+      while (j <> 0) and (COMPARETAG(@t, @data[j - 1]) = -1) do
       begin
         data[j] := data[j - 1];
         dec(j);
@@ -434,7 +449,8 @@ begin
   sp_fracstep := fracstep;
   leftx := span_p.x2;
   leftx := leftx - _SHL(pic.leftoffset, bitshift);
-  x := CENTERX + (FIXEDMUL(leftx, scale) div FRACUNIT);
+//  x := CENTERX + (FIXEDMUL(leftx, scale) div FRACUNIT);
+  x := CENTERX + rint((leftx / FRACUNIT) * (scale / FRACUNIT));
   // step through the shape, drawing posts where visible
   xfrac := 0;
   if x < 0 then
@@ -507,8 +523,8 @@ end;
 // Spans farther than MAXZ away should NOT have been entered into the list
 procedure DrawSpans;
 var
-  spantag_p: PLongWord;
-  tag: LongWord;
+  spantag_p: Ptag_t;
+  tag: tag_t;
   spannum: integer;
   x2: integer;
   lastz: fixed_t; // the pointz for which xystep is valid
@@ -536,7 +552,7 @@ begin
     InsertionSort(starttaglist_p, numspans);
     {$IFDEF VALIDATE}
     for x1 := 0 to numspans - 2 do
-      if starttaglist_p[x1] < starttaglist_p[x1 + 1] then
+      if COMPARETAG(@starttaglist_p[x1], @starttaglist_p[x1 + 1]) = 1 then
         MS_Error('DrawSpans(): Sorting failed');
     {$ENDIF}
   end;
@@ -556,8 +572,8 @@ begin
   begin
     tag := spantag_p^;
     inc(spantag_p);
-    pointz := tag shr ZTOFRAC;
-    spannum := tag and SPANMASK;
+    pointz := tag.point;
+    spannum := tag.span;
     span_p := @spans[spannum];
     spanx := spansx[spannum];
     case span_p.spantype of
@@ -608,14 +624,14 @@ begin
 
           y1 := span_p.y - scrollmin;
 
-          if (y1 >= 200) or (y1 < 0) then
+          if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
             goto abort1; // JVAL SOS
 
           mr_dest := @viewylookup[y1][spanx];
           mr_picture := span_p.picture;
           x2 := span_p.x2;
 
-          if (x2 > 320) or (x2 < 0) then
+          if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
             goto abort1; // JVAL SOS
 
           mr_count := x2 - spanx;
@@ -668,11 +684,11 @@ begin
     sp_sky:
       begin
         py := span_p.y - scrollmin;
-        if (py >= 200) or (py < 0) then
+        if (py >= RENDER_VIEW_HEIGHT) or (py < 0) then
           goto abort1;  // JVAL: SOS
         px := spanx;
 
-        if (span_p.x2 > 320) or (span_p.x2 < 0) then
+        if (span_p.x2 > RENDER_VIEW_WIDTH) or (span_p.x2 < 0) then
           goto abort1;  // JVAL: SOS
 
         mr_count := span_p.x2 - spanx;
@@ -759,9 +775,9 @@ begin
         x2 := span_p.x2;
         y1 := span_p.y - scrollmin;
 
-        if (y1 >= 200) or (y1 < 0) then
+        if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
           goto abort1;  // JVAL: SOS
-        if (x2 > 320) or (x2 < 0) then
+        if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
           goto abort1;  // JVAL: SOS
 
         mr_dest := @viewylookup[y1][spanx];
