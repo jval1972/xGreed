@@ -3546,6 +3546,7 @@ begin
   else
     RF_RenderView(player.x, player.y, player.z, player.angle + WEST);
   memcpy(@rearbuf, @viewbuffer, SizeOf(rearbuf));
+  I_TranslateBuffer(@rearbuf, SizeOf(rearbuf));
   windowLeft := viewLoc[view];
   windowTop := viewLoc[view + 1];
   viewLocation := location;
