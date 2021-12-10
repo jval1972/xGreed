@@ -118,6 +118,23 @@ begin
         sprite_p.active := true;
         sprite_p.typ := S_WALLPUFF;
         sprite_p.specialtype := st_transparent;
+      end
+      else if SC.violence then
+      begin
+        sprite_p := RF_GetSprite;
+        sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
+        sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);
+        sprite_p.z := z + ((7 + MS_RndT and 15) * FRACUNIT);
+        sprite_p.zadj := zadj;
+        sprite_p.active := true;
+        sprite_p.angle := MS_RndT * 4;
+        sprite_p.moveSpeed := 15 - (MS_RndT and 7);
+        sprite_p.angle2 := (MS_RndT and 63) + 32;
+        sprite_p.basepic := slumps[value - S_START] + (MS_RndT mod 10);
+        sprite_p.typ := S_BLOODSPLAT;
+        sprite_p.startspot := mapspot;
+        sprite_p.movesize := FRACUNIT;
+        sprite_p.scale := 1;
       end;
     end;
 
