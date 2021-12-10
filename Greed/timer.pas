@@ -50,7 +50,6 @@ implementation
 uses
   i_video,
   i_windows;
-
 var
   User_Timer: PProcedure;
   Timer_Event: LongWord;

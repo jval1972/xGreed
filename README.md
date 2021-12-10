@@ -10,6 +10,9 @@ DirectDraw blit buffer
 
 BASS.DLL for audio
 
+Screenshots in png format.
+
+
 ## Requirements
 XGreed needs data that the DOS installer produces:
 * GREED.BLO file (data)

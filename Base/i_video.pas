@@ -92,6 +92,9 @@ implementation
 uses
   DirectX,
   d_misc,
+  d_ints,
+  d_ints_h,
+  m_screenshot,
   i_windows,
   i_main,
   r_public_h,
@@ -360,6 +363,12 @@ begin
 
   if g_pDDSPrimary.Blt(destrect, g_pDDScreen, srcrect, DDBLTFAST_WAIT or DDBLTFAST_NOCOLORKEY, PDDBltFX(0)^) = DDERR_SURFACELOST then
     g_pDDSPrimary.Restore;
+
+  if keyboard[SC_PRINTSCREEN] = 1 then
+  begin
+    eat_key(SC_PRINTSCREEN);
+    SaveScreenShot;
+  end;
 
   infinishupdate := false;
 end;

@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020 by Jim Valavanis                                     *)
+(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -48,6 +48,7 @@ const
   SC_RIGHTARROW = $4d;
   SC_INSERT = $52;
   SC_DELETE = $53;
+  SC_PRINTSCREEN = $54;
   SC_HOME = $47;
   SC_END = $4f;
   SC_PGUP = $49;

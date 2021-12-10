@@ -235,6 +235,8 @@ function ibetween(const x: integer; const x1, x2: integer): integer;
 
 function fpath(const filename: string): string;
 
+function MkDir(const d: string): boolean;
+
 implementation
 
 uses
@@ -821,6 +823,23 @@ end;
 function fpath(const filename: string): string;
 begin
   result := ExtractFilePath(filename);
+end;
+
+function MkDir(const d: string): boolean;
+begin
+  try
+    if DirectoryExists(d) then
+    begin
+      result := true;
+      exit;
+    end;
+
+    result := CreateDir(d);
+    if not result then
+      result := ForceDirectories(d);
+  except
+    result := false;
+  end;
 end;
 
 end.

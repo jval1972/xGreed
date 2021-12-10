@@ -62,7 +62,10 @@ uses
   spawn in 'Greed\spawn.pas',
   sprites in 'Greed\sprites.pas',
   timer in 'Greed\timer.pas',
-  utils in 'Greed\utils.pas';
+  utils in 'Greed\utils.pas',
+  zlibpas in 'zlib\zlibpas.pas',
+  pngimage in 'Base\pngimage.pas',
+  m_screenshot in 'Base\m_screenshot.pas';
 
 var
   hGreedWnd: HWND = 0;
