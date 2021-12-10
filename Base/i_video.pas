@@ -163,9 +163,12 @@ end;
 
 var
   allocscreensize: integer;
+  infinishupdate: boolean = false;
 
 procedure I_ShutDownGraphics;
 begin
+  while infinishupdate do
+    I_Sleep(1);
   I_ClearInterface(IInterface(g_pDDScreen));
   I_ClearInterface(IInterface(g_pDDSPrimary));
   I_ClearInterface(IInterface(g_pDD));
@@ -192,8 +195,6 @@ var
 type
   screen320_t8 = packed array[0..199, 0..319] of byte;
   Pscreen320_t8 = ^screen320_t8;
-  screen640_t32 = packed array[0..399, 0..639] of LongWord;
-  Pscreen640_t32 = ^screen640_t32;
 
 procedure I_FinishUpdate8(parms: Pfinishupdateparms_t);
 var
@@ -205,7 +206,6 @@ var
   srcstop: PByte;
   i, x, y: integer;
   s8: Pscreen320_t8;
-  s32: Pscreen640_t32;
 begin
   src := @(renderbuffer[parms.start]);
   srcstop := @(renderbuffer[parms.stop]);
@@ -235,7 +235,6 @@ begin
   end;
 
   s8 := @viewbuffer[0];
-  s32 := @screen32[0];
   for i := parms.start to parms.stop do
   begin
     x := (i mod 640) div 2;
@@ -252,7 +251,6 @@ var
   old_windowheight: integer = -1;
   old_fullscreen: boolean = false;
   old_fullscreenexclusive: boolean = false;
-  infinishupdate: boolean = false;
 
 procedure I_FinishUpdate;
 var
@@ -985,9 +983,7 @@ end;
 
 procedure I_ChangeFullScreen(const dofull, doexclusive: boolean);
 begin
-//  I_IgnoreInput(MAXINT);
   I_DoChangeFullScreen(dofull, doexclusive);
-//  I_IgnoreInput(15);
 end;
 
 procedure I_ReadScreen32(dest: pointer);
