@@ -4198,10 +4198,37 @@ begin
     if ExitLevel then
     begin
       EndLevel;
-      if player.map >= 22 then
+      if DEMO then
       begin
-        quitgame := true;
-        exit;
+        if player.map >= 3 then
+        begin
+          quitgame := true;
+          exit;
+        end;
+      end
+      else if GAME1 then
+      begin
+        if player.map >= 8 then
+        begin
+          quitgame := true;
+          exit;
+        end;
+      end
+      else if GAME2 then
+      begin
+        if player.map >= 16 then
+        begin
+          quitgame := true;
+          exit;
+        end;
+      end
+      else
+      begin
+        if player.map >= 22 then
+        begin
+          quitgame := true;
+          exit;
+        end;
       end;
     end;
 
