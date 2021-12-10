@@ -184,6 +184,8 @@ begin
           ceiling := ceilingheight[mapspot + MAPCOLS];
       end;
     end;
+  else
+    exit; // Ouch!
   end;
 
   // the floor and ceiling height is the max of the points
@@ -206,7 +208,7 @@ begin
       sp_colormap := colormaps
     else
     begin
-      light := (pointz div FRACUNIT) + maplight;
+      light := {(pointz div FRACUNIT)} + maplight;
       if light > MAXZLIGHT then
         light := MAXZLIGHT
       else if light < 0 then
@@ -409,6 +411,8 @@ begin
       baseangle := baseangle + TANANGLES;
       tm := mapspot - 1;
     end;
+  else
+    exit; // Ouch!
   end;
 
   ceiling1 := floorheight[tm];
@@ -446,21 +450,20 @@ ceilingstep:
     begin
       tm := mapspot - MAPSIZE;
     end;
-
   1:  // west facing wall
     begin
       tm := mapspot + 1;
     end;
-
   2:  // north facing wall
     begin
       tm := mapspot + MAPSIZE;
     end;
-
   3:  // east facing wall
     begin
       tm := mapspot - 1;
     end;
+  else
+    exit; // Ouch!
   end;
 
   floor2 := ceilingheight[tm];
