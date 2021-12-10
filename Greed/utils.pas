@@ -1958,7 +1958,7 @@ begin
   end;
   player.map := map;
   songmap := map;
-  if ((map <> 8) and (map <> 16)) or netmode then
+  if (GAME1 and (map <> 8)) or (GAME2 and (map <> 16)) or (GAME3 and (map <> 22)) or netmode then
     selectsong(songmap)
   else
     StopMusic;
