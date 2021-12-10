@@ -121,6 +121,21 @@ begin
       end
       else if SC.violence then
       begin
+        if bloodcount > MAXBLOODSPRITES then
+        begin
+          s := firstscaleobj.next;
+          while s <> @lastscaleobj do
+          begin
+            if s.typ = S_BLOODSPLAT then
+            begin
+              RF_RemoveSprite(s);
+              dec(bloodcount);
+              break;
+            end;
+            s := s.next;
+          end;
+        end;
+        inc(bloodcount);
         sprite_p := RF_GetSprite;
         sprite_p.x := x + ((-3 + MS_RndT and 7) * FRACUNIT);
         sprite_p.y := y + ((-3 + MS_RndT and 7) * FRACUNIT);

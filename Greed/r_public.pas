@@ -48,6 +48,9 @@ var
   scrollmin, scrollmax, bloodcount, metalcount: integer;
   actionhook: PProcedure;
 
+const
+  MAXBLOODSPRITES = 200;
+
 //function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 function FIXEDMUL(const a, b: fixed_t): fixed_t; 
 
