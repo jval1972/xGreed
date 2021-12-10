@@ -818,6 +818,8 @@ begin
       begin
         if Length(savedir[menucursor]) > 0 then
           dec(savedir[menucursor][0]);
+        if Length(savedir[menucursor]) > 0 then
+          dec(savedir[menucursor][0]);
         savedir[menucursor] := savedir[menucursor] + '_';
         dec(cursor);
       end;
