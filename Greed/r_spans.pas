@@ -255,6 +255,7 @@ begin
   scale := FIXEDMUL(pointz, ISCALE);
   sp_source := span_p.picture;
 
+  sp_colormap := colormaps;
   if span_p.shadow = 0 then
   begin
     light := (pointz div FRACUNIT) + span_p.light;
@@ -391,9 +392,8 @@ begin
   specialtype := special_t(span_p.shadow div 256);
   shadow := span_p.shadow and 255;
 
-  if specialtype = st_maxlight then
-    sp_colormap := colormaps
-  else if specialtype = st_transparent then
+  sp_colormap := colormaps; // st_maxlight
+  if specialtype = st_transparent then
     sp_colormap := colormaps
   else if shadow = 0 then
   begin
@@ -545,6 +545,7 @@ begin
   center := viewangle and 255;
 
   // set up for drawing
+  sp_colormap := colormaps;
   starttaglist_p := @spantags[0];
   if numspans > 1 then
   begin
