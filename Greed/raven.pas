@@ -2205,8 +2205,9 @@ begin
     keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (keyboard[SC_P] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
+  if (keyboard[SC_P] = 1) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
+    eat_key(SC_P);
     paused := true;
     keyboardDelay := timecount + KBDELAY;
   end;
