@@ -468,12 +468,58 @@ begin
   FN_RawPrint4(str1);
 end;
 
+type
+  compassbackinfo_t = record
+    line: integer;
+    start, finish: integer;
+  end;
+
+const
+  NUMCOMPASSBACK = 19;
+
+const
+  compassbackinfo: array[0..NUMCOMPASSBACK - 1] of compassbackinfo_t = (
+    (line: 152; start: 234; finish: 240),
+    (line: 153; start: 231; finish: 243),
+    (line: 154; start: 230; finish: 244),
+    (line: 155; start: 228; finish: 246),
+    (line: 156; start: 228; finish: 246),
+    (line: 157; start: 227; finish: 247),
+    (line: 158; start: 227; finish: 247),
+    (line: 159; start: 226; finish: 248),
+    (line: 160; start: 226; finish: 248),
+    (line: 161; start: 226; finish: 248),
+    (line: 162; start: 226; finish: 248),
+    (line: 163; start: 226; finish: 248),
+    (line: 164; start: 227; finish: 247),
+    (line: 165; start: 227; finish: 247),
+    (line: 166; start: 228; finish: 246),
+    (line: 167; start: 228; finish: 246),
+    (line: 168; start: 230; finish: 244),
+    (line: 169; start: 231; finish: 243),
+    (line: 170; start: 234; finish: 240)
+  );
+
+procedure displaycompassback(const ofs: integer);
+var
+  c, x, y: integer;
+  dest: PByteArray;
+begin
+  for c := 0 to NUMCOMPASSBACK - 1 do
+  begin
+    dest := @ylookup[compassbackinfo[c].line + ofs][0];
+    for x := compassbackinfo[c].start to compassbackinfo[c].finish do
+      if dest[x] = 0 then
+        dest[x] := approx_zero;
+  end;
+end;
 
 procedure displaycompass1(const ofs: integer);
 var
   c, x, y, i: integer;
   x1, y1: fixed_t;
 begin
+  displaycompassback(ofs);
   x := 237;
   x1 := x * FRACUNIT;
   y := 161 + ofs;
@@ -890,8 +936,7 @@ var
   c, x, y, i: integer;
   x1, y1: fixed_t;
 begin
-  if player.angle = oldangle then
-    exit;
+  displaycompassback(0);
   if oldangle <> -1 then
   begin
     x := 237;
