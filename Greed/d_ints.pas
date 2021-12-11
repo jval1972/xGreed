@@ -147,7 +147,6 @@ implementation
 
 uses
   i_windows,
-  windows,
   timer;
 
 var

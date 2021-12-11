@@ -45,7 +45,6 @@ implementation
 uses
   Messages,
   d_misc,
-  d_video,
   i_windows,
   raven;
 

@@ -33,8 +33,7 @@ interface
 uses
   SysUtils,
   g_delphi,
-  Windows,
-  d_video;
+  Windows;
 
 // Called by D_DoomMain,
 // determines the hardware configuration
@@ -96,7 +95,6 @@ uses
   d_ints_h,
   m_screenshot,
   i_windows,
-  i_main,
   r_public_h,
   r_render;
 

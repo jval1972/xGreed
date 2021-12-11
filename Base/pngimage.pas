@@ -940,9 +940,6 @@ function ByteSwap(const a: integer): integer;
 
 implementation
 
-uses
-  d_misc;
-
 var
   ChunkClasses: TPngPointerList;
   {Table of CRCs of all 8-bit messages}

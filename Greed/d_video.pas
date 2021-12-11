@@ -28,8 +28,7 @@ interface
 
 uses
   g_delphi,
-  r_public_h,
-  Windows;
+  r_public_h;
 
 type
   pic_t = packed record
@@ -72,9 +71,7 @@ implementation
 
 uses
   d_disk,
-  d_misc,
   intro,
-  i_windows,
   i_video,
   raven,
   r_public,

@@ -40,8 +40,6 @@ implementation
 uses
   SysUtils,
   g_delphi,
-  d_video,
-  r_render,
   i_video,
   i_windows,
   r_public_h,

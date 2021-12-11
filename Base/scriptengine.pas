@@ -115,14 +115,10 @@ function SC_TokensToList(const inp: string): TStringList;
 
 implementation
 
-uses
-  d_misc;
-
 const
   ASCII_QUOTE = '"';
   ASCII_COMMENT1 = '/';
   ASCII_COMMENT = $2F2F; // = '//'
-
 
 // TScriptEngine
 constructor TScriptEngine.Create(const tx: string);

@@ -199,7 +199,6 @@ uses
   d_misc,
   protos_h,
   i_video,
-  i_windows,
   intro,
   modplay,
   net,

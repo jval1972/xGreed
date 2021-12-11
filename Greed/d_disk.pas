@@ -28,8 +28,7 @@ interface
 
 uses
   SysUtils,
-  g_delphi,
-  protos_h;
+  g_delphi;
 
 type
   Pfileinfo_t = ^fileinfo_t;
