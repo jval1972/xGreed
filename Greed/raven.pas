@@ -2928,6 +2928,27 @@ begin
     enemyviewmode := enemyviewmode xor 1;
     writemsg('Enemy view toggled');
   end
+  else if Check_Secret('game1') then
+  begin
+    GAME1 := true;
+    GAME2 := false;
+    GAME3 := false;
+    newmap(0, 2);
+  end
+  else if Check_Secret('game2') and not DEMO then
+  begin
+    GAME1 := false;
+    GAME2 := true;
+    GAME3 := false;
+    newmap(8, 2);
+  end
+  else if Check_Secret('game3') and not DEMO then
+  begin
+    GAME1 := false;
+    GAME2 := false;
+    GAME3 := true;
+    newmap(16, 2);
+  end
   else if Length(secretbuf) > 2 then
   begin
     if Pos('GO', strupper(secretbuf)) > 0 then
