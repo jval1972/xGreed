@@ -128,12 +128,12 @@ CompanyName=Jim Valavanis
 FileDescription=In Pursuit of Greed
 FileVersion=1.0.1.24
 InternalName=xGreed
-LegalCopyright=(c) 2020, Jim Valavanis
-LegalTrademarks=(c) 2020, Jim Valavanis
+LegalCopyright=Copyright 2020 - 2021, Jim Valavanis
+LegalTrademarks=Copyright 2020 - 2021, Jim Valavanis
 OriginalFilename=xGreed.exe
 ProductName=xGreed
 ProductVersion=1.0.0.0
-Comments=Source port of Greed
+Comments=Source port of the game "In pursuit of Greed"
 [HistoryLists\hlConditionals]
 Count=1
 Item0=VALIDATE
