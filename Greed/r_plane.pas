@@ -374,157 +374,164 @@ begin
   mr_light := maplight;
   flatpic := flattranslation[flatpic];
   mr_picture := lumpmain[flatlump + flatpic];
-  polytype := (flags and FL_FLOOR) shr FLS_FLOOR;
-  ceilingbit := false;
-  case polytype of
-  POLY_FLAT:
-    begin
-      spantype := sp_flat;
-      mr_deltaheight := vertex[0].floorheight;
-      if mr_deltaheight < 0 then
+  if mr_picture <> nil then
+  begin
+    polytype := (flags and FL_FLOOR) shr FLS_FLOOR;
+    ceilingbit := false;
+    case polytype of
+    POLY_FLAT:
       begin
+        spantype := sp_flat;
+        mr_deltaheight := vertex[0].floorheight;
+        if mr_deltaheight < 0 then
+        begin
+          COPYFLOOR(0, 0);
+          COPYFLOOR(1, 1);
+          COPYFLOOR(2, 2);
+          COPYFLOOR(3, 3);
+          if ZClipPolygon(4, -mr_deltaheight) then
+            RenderPolygon(FlatSpan);
+        end;
+      end;
+
+    POLY_SLOPE:
+      begin
+        spantype := sp_slope;
         COPYFLOOR(0, 0);
         COPYFLOOR(1, 1);
         COPYFLOOR(2, 2);
         COPYFLOOR(3, 3);
-        if ZClipPolygon(4, -mr_deltaheight) then
-          RenderPolygon(FlatSpan);
+        CalcPlaneEquation;
+        if ZClipPolygon(4, MINZ) then
+          RenderPolygon(SlopeSpan);
+      end;
+
+    POLY_ULTOLR:
+      begin
+        spantype := sp_slope;
+        COPYFLOOR(0, 0);
+        COPYFLOOR(1, 1);
+        COPYFLOOR(2, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
+        COPYFLOOR(2, 0);
+        COPYFLOOR(3, 1);
+        COPYFLOOR(0, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
+      end;
+
+    POLY_URTOLL:
+      begin
+        spantype := sp_slope;
+        COPYFLOOR(0, 0);
+        COPYFLOOR(1, 1);
+        COPYFLOOR(3, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
+        COPYFLOOR(1, 0);
+        COPYFLOOR(2, 1);
+        COPYFLOOR(3, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
       end;
     end;
-
-  POLY_SLOPE:
-    begin
-      spantype := sp_slope;
-      COPYFLOOR(0, 0);
-      COPYFLOOR(1, 1);
-      COPYFLOOR(2, 2);
-      COPYFLOOR(3, 3);
-      CalcPlaneEquation;
-      if ZClipPolygon(4, MINZ) then
-        RenderPolygon(SlopeSpan);
-    end;
-
-  POLY_ULTOLR:
-    begin
-      spantype := sp_slope;
-      COPYFLOOR(0, 0);
-      COPYFLOOR(1, 1);
-      COPYFLOOR(2, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
-      COPYFLOOR(2, 0);
-      COPYFLOOR(3, 1);
-      COPYFLOOR(0, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
-    end;
-
-  POLY_URTOLL:
-    begin
-      spantype := sp_slope;
-      COPYFLOOR(0, 0);
-      COPYFLOOR(1, 1);
-      COPYFLOOR(3, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
-      COPYFLOOR(1, 0);
-      COPYFLOOR(2, 1);
-      COPYFLOOR(3, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
-    end;
   end;
+
   // draw the ceiling
   ceilingbit := true;
   flatpic := ceilingpic[mapspot];
   transparent := ceilingflags[mapspot] and F_TRANSPARENT <> 0;
   flatpic := flattranslation[flatpic];
   mr_picture := lumpmain[flatlump + flatpic];
-  polytype := (flags and FL_CEILING) shr FLS_CEILING;
-  case polytype of
-  POLY_FLAT:
-    begin
-      if flatpic = 63 then
-        spantype := sp_sky
-      else if transparent then
-        spantype := sp_flatsky
-      else
-        spantype := sp_flat;
-      mr_deltaheight := vertex[0].ceilingheight;
-      if mr_deltaheight > 0 then
+  if mr_picture <> nil then
+  begin
+    polytype := (flags and FL_CEILING) shr FLS_CEILING;
+    case polytype of
+    POLY_FLAT:
       begin
+        if flatpic = 63 then
+          spantype := sp_sky
+        else if transparent then
+          spantype := sp_flatsky
+        else
+          spantype := sp_flat;
+        mr_deltaheight := vertex[0].ceilingheight;
+        if mr_deltaheight > 0 then
+        begin
+          COPYCEILING(3, 0);
+          COPYCEILING(2, 1);
+          COPYCEILING(1, 2);
+          COPYCEILING(0, 3);
+          if ZClipPolygon(4, mr_deltaheight) then
+            RenderPolygon(FlatSpan);
+        end;
+      end;
+
+    POLY_SLOPE:
+      begin
+        if flatpic = 63 then
+          spantype := sp_sky
+        else if transparent then
+          spantype := sp_slopesky
+        else
+          spantype := sp_slope;
         COPYCEILING(3, 0);
         COPYCEILING(2, 1);
         COPYCEILING(1, 2);
         COPYCEILING(0, 3);
-        if ZClipPolygon(4, mr_deltaheight) then
-          RenderPolygon(FlatSpan);
+        CalcPlaneEquation;
+        if ZClipPolygon(4, MINZ) then
+          RenderPolygon(SlopeSpan);
       end;
-    end;
 
-  POLY_SLOPE:
-    begin
-      if flatpic = 63 then
-        spantype := sp_sky
-      else if transparent then
-        spantype := sp_slopesky
-      else
-        spantype := sp_slope;
-      COPYCEILING(3, 0);
-      COPYCEILING(2, 1);
-      COPYCEILING(1, 2);
-      COPYCEILING(0, 3);
-      CalcPlaneEquation;
-      if ZClipPolygon(4, MINZ) then
-        RenderPolygon(SlopeSpan);
-    end;
+    POLY_ULTOLR:
+      begin
+        if flatpic = 63 then
+          spantype := sp_sky
+        else if transparent then
+          spantype := sp_slopesky
+        else
+          spantype := sp_slope;
+        COPYCEILING(3, 0);
+        COPYCEILING(2, 1);
+        COPYCEILING(1, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
+        COPYCEILING(3, 0);
+        COPYCEILING(1, 1);
+        COPYCEILING(0, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
+      end;
 
-  POLY_ULTOLR:
-    begin
-      if flatpic = 63 then
-        spantype := sp_sky
-      else if transparent then
-        spantype := sp_slopesky
-      else
-        spantype := sp_slope;
-      COPYCEILING(3, 0);
-      COPYCEILING(2, 1);
-      COPYCEILING(1, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
-      COPYCEILING(3, 0);
-      COPYCEILING(1, 1);
-      COPYCEILING(0, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
-    end;
-
-  POLY_URTOLL:
-    begin
-      if flatpic = 63 then
-        spantype := sp_sky
-      else if transparent then
-        spantype := sp_slopesky
-      else
-        spantype := sp_slope;
-      COPYCEILING(3, 0);
-      COPYCEILING(2, 1);
-      COPYCEILING(0, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
-      COPYCEILING(2, 0);
-      COPYCEILING(1, 1);
-      COPYCEILING(0, 2);
-      CalcPlaneEquation;
-      if ZClipPolygon(3, MINZ) then
-        RenderPolygon(SlopeSpan);
+    POLY_URTOLL:
+      begin
+        if flatpic = 63 then
+          spantype := sp_sky
+        else if transparent then
+          spantype := sp_slopesky
+        else
+          spantype := sp_slope;
+        COPYCEILING(3, 0);
+        COPYCEILING(2, 1);
+        COPYCEILING(0, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
+        COPYCEILING(2, 0);
+        COPYCEILING(1, 1);
+        COPYCEILING(0, 2);
+        CalcPlaneEquation;
+        if ZClipPolygon(3, MINZ) then
+          RenderPolygon(SlopeSpan);
+      end;
     end;
   end;
 end;
