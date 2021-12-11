@@ -382,7 +382,7 @@ procedure DrawSprite;
 var
   leftx, scale, xfrac, fracstep: fixed_t;
   shapebottom, topheight, bottomheight: fixed_t;
-  post, x, topy, bottomy, light, shadow, height, bitshift: integer;
+  post, x, topy, bottomy, light, shadow, bitshift: integer;
   specialtype: special_t;
   pic: Pscalepic_t;
   collumn: PByteArray;
@@ -459,7 +459,6 @@ begin
     x := 0;
   end;
   sp_loopvalue := 256 * FRACUNIT - 1;
-  height := pic.collumnofs[1] - pic.collumnofs[0];
 
   while x < windowWidth do
   begin
@@ -568,6 +567,7 @@ begin
   x2 := -1;
   lastz := -1;
   zeroxfrac := 0; // JVAL: avoid compiler warning
+  zeroyfrac := 0; // JVAL: avoid compiler warning
   // draw everything else
   while spantag_p <> endtaglist_p do
   begin
