@@ -237,10 +237,10 @@ begin
         elev_p.elevDown := false;
         elev_p.elevTimer := elev_p.elevTimer + 280;
       end;
-    if (elev_p.typ = E_SECRET) and elev_p.elevUp then
-    begin
-      if (player.mapspot = elev_p.mapspot) or (mapsprites[elev_p.mapspot] <> 0) then
-        elev_p.position := elev_p.floor;
+      if (elev_p.typ = E_SECRET) and elev_p.elevUp then
+      begin
+        if (player.mapspot = elev_p.mapspot) or (mapsprites[elev_p.mapspot] <> 0) then
+          elev_p.position := elev_p.floor;
       end;
       if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
         mapsprites[elev_p.mapspot] := 0;
