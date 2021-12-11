@@ -231,7 +231,7 @@ begin
     exit;
   end;
   l := CA_CacheLump(i);
-  VI_DrawPic(0, 0, l);
+  VI_DrawPicSolid(0, 0, l);
   CA_FreeLump(i);
   pal := CA_CacheLump(i + 1);
   memcpy(@colors, pal, 768);

@@ -853,7 +853,7 @@ begin
       d := 9;
     if oldangstpic <> d then
     begin
-      VI_DrawPic(269, 161, heart[d]);
+      VI_DrawPicSolid(269, 161, heart[d]);
       oldangstpic := d;
     end;
     oldangst := player.angst;

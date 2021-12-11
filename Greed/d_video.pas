@@ -56,7 +56,7 @@ procedure VI_FadeOut(start, stop: integer; const red, green, blue: integer;
 procedure VI_FadeIn(start, stop: integer; const apal: PByteArray;
   const steps: integer);
 
-procedure VI_DrawPic(const x, y: integer; const pic: Ppic_t);
+procedure VI_DrawPicSolid(const x, y: integer; const pic: Ppic_t);
 
 procedure VI_DrawMaskedPic(x, y: integer; const pic: Ppic_t);
 
@@ -179,7 +179,7 @@ begin
 end;
 
 
-procedure VI_DrawPic(const x, y: integer; const pic: Ppic_t);
+procedure VI_DrawPicSolid(const x, y: integer; const pic: Ppic_t);
 var
   dest, source: PByteArray;
   width: integer;
@@ -188,6 +188,7 @@ begin
   width := pic.width;
   height := pic.height;
   source := @pic.data;
+  I_TranslateBuffer(source, width * height);
   dest := @ylookup[y][x];
 
   while height > 0 do

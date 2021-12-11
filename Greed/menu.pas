@@ -482,47 +482,47 @@ begin
   case menucursor of
   2: // music vol
     begin
-      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menumussli')));
+      VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menumussli')));
       ShowMenuSliders(SC.musicvol, 256);
     end;
 
   3: // sound vol
     begin
-      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menusousli')));
+      VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menusousli')));
       ShowMenuSliders(SC.sfxvol, 256);
     end;
 
   4: // violence
     begin
       if SC.violence then
-        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuvioon')))
+        VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menuvioon')))
       else
-        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuviooff')));
+        VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menuviooff')));
     end;
 
   5: // animation
     begin
       if SC.animation then
-        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuanion')))
+        VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menuanion')))
       else
-        VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuanioff')));
+        VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menuanioff')));
     end;
 
   6: // ambient light
     begin
-      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuambsli')));
+      VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menuambsli')));
       ShowMenuSliders(SC.ambientlight, 4096);
     end;
 
   7: // screen size
     begin
-      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menuscrsli')));
+      VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menuscrsli')));
       ShowMenuSliders(MAXVIEWSIZE - SC.screensize - 1, MAXVIEWSIZE - 1);
     end;
 
   8: // asscam
     begin
-      VI_DrawPic(35, 29, CA_CacheLump(CA_GetNamedNum('menucamsli')));
+      VI_DrawPicSolid(35, 29, CA_CacheLump(CA_GetNamedNum('menucamsli')));
       ShowMenuSliders(SC.camdelay, 70);
     end;
   end;
