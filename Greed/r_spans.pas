@@ -623,62 +623,62 @@ begin
         else
           mr_colormap := PByteArray(span_p.shadow);
 
-          y1 := span_p.y - scrollmin;
+        y1 := span_p.y - scrollmin;
 
-          if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
-            goto abort1; // JVAL SOS
+        if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
+          goto abort1; // JVAL SOS
 
-          mr_dest := @viewylookup[y1][spanx];
-          mr_picture := span_p.picture;
-          x2 := span_p.x2;
+        mr_dest := @viewylookup[y1][spanx];
+        mr_picture := span_p.picture;
+        x2 := span_p.x2;
 
-          if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
-            goto abort1; // JVAL SOS
+        if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
+          goto abort1; // JVAL SOS
 
-          mr_count := x2 - spanx;
-          MapRow;
+        mr_count := x2 - spanx;
+        MapRow;
 
-          if span_p.spantype = sp_flatsky then
+        if span_p.spantype = sp_flatsky then
+        begin
+          py := span_p.y - scrollmin;
+          px := spanx;
+          mr_count := span_p.x2 - spanx;
+          mr_dest := @viewylookup[py][px];
+          if windowHeight <> 64 then
+            py := span_p.y + 64;
+          h1 := (hfrac * py) div FRACUNIT;
+          if px <= w then
           begin
-            py := span_p.y - scrollmin;
-            px := spanx;
-            mr_count := span_p.x2 - spanx;
-            mr_dest := @viewylookup[py][px];
-            if windowHeight <> 64 then
-              py := span_p.y + 64;
-            h1 := (hfrac * py) div FRACUNIT;
-            if px <= w then
+            a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
+            while (px <= w) and (mr_count > 0) do
             begin
-              a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
-              while (px <= w) and (mr_count>0) do
-              begin
-                x := backtangents[a div FRACUNIT];
-                x2 := center - x + windowWidth - 257;
-                x2 := x2 and 255;
-                if mr_dest[0] = 255 then
-                  mr_dest[0] := backdroplookup[h1][x2];
-                a := a - afrac;
-                inc(px);
-                dec(mr_count);
-                mr_dest := @mr_dest[1];
-              end;
-            end;
-            if px > w then
-            begin
-              a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
-              while mr_count > 0 do
-              begin
-                x1 := center + backtangents[a div FRACUNIT];
-                x1 := x1 and 255;
-                if mr_dest[0] = 255 then
-                  mr_dest[0] := backdroplookup[h1][x1];
-                a := a + afrac;
-                inc(px);
-                dec(mr_count);
-                mr_dest := @mr_dest[1];
-              end;
+              x := backtangents[a div FRACUNIT];
+              x2 := center - x + windowWidth - 257;
+              x2 := x2 and 255;
+              if mr_dest[0] = 255 then
+                mr_dest[0] := backdroplookup[h1][x2];
+              a := a - afrac;
+              inc(px);
+              dec(mr_count);
+              mr_dest := @mr_dest[1];
             end;
           end;
+          if px > w then
+          begin
+            a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
+            while mr_count > 0 do
+            begin
+              x1 := center + backtangents[a div FRACUNIT];
+              x1 := x1 and 255;
+              if mr_dest[0] = 255 then
+                mr_dest[0] := backdroplookup[h1][x1];
+              a := a + afrac;
+              inc(px);
+              dec(mr_count);
+              mr_dest := @mr_dest[1];
+            end;
+          end;
+        end;
 
       end;
 
