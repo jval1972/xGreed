@@ -118,10 +118,10 @@ begin
   packets := getword;
   for i := 0 to packets - 1 do
   begin
-    skip := getbyte;     // colors to skip
+    skip := getbyte;    // colors to skip
     total := getbyte;   // num colors to change
     if total = 0 then
-      total := 256;         // hack for 256
+      total := 256;     // hack for 256
     k := @flipal[skip];
     for j := 0 to total - 1 do
     begin
@@ -149,7 +149,7 @@ begin
     for p := 0 to packets - 1 do
     begin
       count := getshortint;
-      if count < 0 then  // uncompressed
+      if count < 0 then // uncompressed
       begin
         j := -count;
         for i := 0 to j - 1 do
@@ -192,7 +192,7 @@ begin
     begin
       line := @line[getbyte];
       count := getshortint;
-      if count < 0 then  // uncompressed
+      if count < 0 then // uncompressed
       begin
         data := getbyte;
         j := -count;
