@@ -66,7 +66,6 @@ var
   recording: boolean;
   playback: boolean;
   activatemenu: boolean;
-  specialcode: boolean;
   debugmode: boolean;
   gameloaded: boolean;
   nospawn: boolean;
@@ -107,7 +106,6 @@ var
   wbobcount: integer;
   turnrate: integer;
   mapmode: integer;
-  secretindex: integer;
   scrollview: integer;
   doorx: integer;
   doory: integer;
@@ -140,7 +138,7 @@ const
   SECRETBUFSIZE = 20;
 
 var
-  secretbuf: string[SECRETBUFSIZE];
+  secretbuf: string[SECRETBUFSIZE] = '';
 
 const
   NETMSGSIZE = 30;
@@ -2316,10 +2314,12 @@ begin
   // secrets
   if newascii then
   begin
-    secretbuf := secretbuf + lastascii;
-    inc(secretindex);
-    if secretindex >= SECRETBUFSIZE - 1 then
-      specialcode := true;
+    if Pos(toupper(lastascii), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') > 0 then
+    begin
+      if Length(secretbuf) >= SECRETBUFSIZE - 1 then
+        Delete(secretbuf, 1, 1);
+      secretbuf := secretbuf + lastascii;
+    end;
     if netmsgstatus = 1 then  // getting message
     begin
       case Ord(lastascii) of
@@ -2349,10 +2349,7 @@ begin
   end;
 
   if timecount > secretdelay then
-  begin
-    specialcode := true;
-    secretdelay := timecount + KBDELAY * 5;
-  end;
+    secretdelay := timecount + KBDELAY;
 
   if (keyboard[SC_F6] <> 0) and netmode and (netmsgstatus = 0) and (timecount > keyboardDelay) then
   begin
@@ -2771,22 +2768,34 @@ begin
   scrollview := 0;
 end;
 
+function Check_Secret(const code: string): boolean;
+var
+  p: integer;
+  i: integer;
+begin
+  p := Pos(strupper(code), strupper(secretbuf));
+  if p > 0 then
+  begin
+    secretbuf := '';
+    result := true;
+  end
+  else
+    result := false;
+end;
 
 // secrets
-procedure Special_Code(const s: string);
+procedure Special_Code;
 var
   hsprite_p, sprite_p: Pscaleobj_t;
   i: integer;
 begin
   if netmode and (MS_CheckParm('ravenger') = 0) then
   begin
-    specialcode := false;
     secretbuf := '';
-    secretindex := 0;
     exit;
   end;
 
-  if stricmp(s, 'belfast') = 0 then
+  if Check_Secret('belfast') then
   begin
     sprite_p := firstscaleobj.next;
     while sprite_p <> @lastscaleobj do
@@ -2803,7 +2812,7 @@ begin
     end;
     writemsg('DeathKiss');
   end
-  else if stricmp(s, 'allahmode') = 0 then
+  else if Check_Secret('allahmode') then
   begin
     if godmode then
     begin
@@ -2816,33 +2825,33 @@ begin
       writemsg('GodMode On');
     end;
   end
-  else if stricmp(s, 'channel7') = 0 then
+  else if Check_Secret('channel7') then
   begin
     writemsg('Rob Lays Eggs');
   end
-  else if stricmp(s, 'lizardman') = 0 then
+  else if Check_Secret('lizardman') then
   begin
     writemsg('Jeremy Lays Eggs');
   end
-  else if stricmp(s, 'dominatrix') = 0 then
+  else if Check_Secret('dominatrix') then
   begin
     writemsg('On your knees worm!');
   end
-  else if stricmp(s, 'cyborg') = 0 then
+  else if Check_Secret('cyborg') then
   begin
     writemsg('Psyborgs Rule!');
   end
-  else if stricmp(s, 'mooman') = 0 then
+  else if Check_Secret('mooman') then
   begin
     writemsg('Brady is better than you, and that ain''t saying much!');
   end
-  else if stricmp(s, 'raven') = 0 then
+  else if Check_Secret('raven') then
   begin
     player.angst := player.maxangst;
     player.shield := player.maxshield;
     writemsg('Ambrosia');
   end
-  else if stricmp(s, 'omni') = 0 then
+  else if Check_Secret('omni') then
   begin
     for i := 0 to MAPCOLS * MAPROWS - 1 do
       if northwall[i] and 255 <> 0 then
@@ -2852,7 +2861,7 @@ begin
         player.westmap[i] := WALL_COLOR;
     writemsg('Omniscience');
   end
-  else if stricmp(s, 'kmfdm') = 0 then
+  else if Check_Secret('kmfdm') then
   begin
     player.ammo[0] := 999;
     player.ammo[1] := 999;
@@ -2860,7 +2869,7 @@ begin
     writemsg('Backpack of Holding');
     oldshots := -1;
   end
-  else if stricmp(s, 'beavis') = 0 then
+  else if Check_Secret('beavis') then
   begin
     player.levelscore := 100;
     player.primaries[0] := pcount[0];
@@ -2869,7 +2878,7 @@ begin
       player.secondaries[i] := scount[i];
     writemsg('Time Warp');
   end
-  else if stricmp(s, 'gulliver') = 0 then
+  else if Check_Secret('gulliver') then
   begin
     if midgetmode then
     begin
@@ -2894,7 +2903,7 @@ begin
       writemsg('Midget Mode On');
     end;
   end
-  else if stricmp(s, 'gimme') = 0 then
+  else if Check_Secret('gimme') then
   begin
     player.inventory[0] := 20;
     player.inventory[1] := 20;
@@ -2914,99 +2923,112 @@ begin
     end;
     writemsg('Bag of Holding');
   end
-  else if stricmp(s, 'taco') = 0 then
+  else if Check_Secret('taco') then
   begin
     enemyviewmode := enemyviewmode xor 1;
     writemsg('Enemy view toggled');
-  end;
-
-  if Length(s) > 2 then
+  end
+  else if Length(secretbuf) > 2 then
   begin
-    if not DEMO and not GAME1 and not GAME2 and not GAME3 then
+    if Pos('GO', strupper(secretbuf)) > 0 then
     begin
-      if (s[1] = 'g') and (s[2] = 'o') then
+      if DEMO or GAME1 then
       begin
-        if stricmp(s, 'go1') = 0 then
+        if Check_Secret('go01') then
           newmap(0, 2)
-        else if (stricmp(s, 'go2') = 0) then
+        else if Check_Secret('go02') then
           newmap(1, 2)
-        else if (stricmp(s, 'go3') = 0) then
-          newmap(2, 2)
-        else if (stricmp(s, 'go4') = 0) then
-          newmap(3, 2)
-        else if (stricmp(s, 'go5') = 0) then
-          newmap(4, 2)
-        else if (stricmp(s, 'go6') = 0) then
-          newmap(5, 2)
-        else if (stricmp(s, 'go7') = 0) then
-          newmap(6, 2)
-        else if (stricmp(s, 'go8') = 0) then
-          newmap(7, 2)
-        else if (stricmp(s, 'go9') = 0) then
-          newmap(8, 2)
-        else if (stricmp(s, 'go10') = 0) then
-          newmap(9, 2)
-        else if (stricmp(s, 'go11') = 0) then
-          newmap(10, 2)
-        else if (stricmp(s, 'go12') = 0) then
-          newmap(11, 2)
-        else if (stricmp(s, 'go13') = 0) then
-          newmap(12, 2)
-        else if (stricmp(s, 'go14') = 0) then
-          newmap(13, 2)
-        else if (stricmp(s, 'go15') = 0) then
-          newmap(14, 2)
-        else if (stricmp(s, 'go16') = 0) then
-          newmap(15, 2)
-        else if (stricmp(s, 'go17') = 0) then
-          newmap(16, 2)
-        else if (stricmp(s, 'go18') = 0) then
-          newmap(17, 2)
-        else if (stricmp(s, 'go19') = 0) then
-          newmap(18, 2)
-        else if (stricmp(s, 'go20') = 0) then
-          newmap(19, 2)
-        else if (stricmp(s, 'go21') = 0) then
-          newmap(20, 2)
-        else if (stricmp(s, 'go22') = 0) then
-          newmap(21, 2)
-        else if (stricmp(s, 'go23') = 0) then
-          newmap(22, 2)
-        else if (stricmp(s, 'go24') = 0) then
-          newmap(23, 2)
-        else if (stricmp(s, 'go25') = 0) then
-          newmap(24, 2)
-        else if (stricmp(s, 'go26') = 0) then
-          newmap(25, 2)
-        else if (stricmp(s, 'go27') = 0) then
-          newmap(26, 2)
-        else if (stricmp(s, 'go28') = 0) then
-          newmap(27, 2)
-        else if (stricmp(s, 'go29') = 0) then
-          newmap(28, 2)
-        else if (stricmp(s, 'go30') = 0) then
-          newmap(29, 2)
-        else if (stricmp(s, 'go31') = 0) then
-          newmap(30, 2)
-        else if (stricmp(s, 'go32') = 0) then
-          newmap(31, 2);
-        INT_TimerHook(PlayerCommand);
+        else if Check_Secret('go03') then
+          newmap(2, 2);
       end;
+
+      if GAME1 then
+      begin
+        if Check_Secret('go04') then
+          newmap(3, 2)
+        else if Check_Secret('go05') then
+          newmap(4, 2)
+        else if Check_Secret('go06') then
+          newmap(5, 2)
+        else if Check_Secret('go07') then
+          newmap(6, 2)
+      end;
+
+      if GAME2 then
+      begin
+        if Check_Secret('go08') then
+          newmap(7, 2)
+        else if Check_Secret('go09') then
+          newmap(8, 2)
+        else if Check_Secret('go10') then
+          newmap(9, 2)
+        else if Check_Secret('go11') then
+          newmap(10, 2)
+        else if Check_Secret('go12') then
+          newmap(11, 2)
+        else if Check_Secret('go13') then
+          newmap(12, 2)
+        else if Check_Secret('go14') then
+          newmap(13, 2)
+        else if Check_Secret('go15') then
+          newmap(14, 2)
+      end;
+
+      if GAME3 then
+      begin
+        if Check_Secret('go16') then
+          newmap(15, 2)
+        else if Check_Secret('go17') then
+          newmap(16, 2)
+        else if Check_Secret('go18') then
+          newmap(17, 2)
+        else if Check_Secret('go19') then
+          newmap(18, 2)
+        else if Check_Secret('go20') then
+          newmap(19, 2)
+        else if Check_Secret('go21') then
+          newmap(20, 2)
+        else if Check_Secret('go22') then
+          newmap(21, 2);
+      end;
+
+      if Check_Secret('go23') then
+        newmap(22, 2)
+      else if Check_Secret('go24') then
+        newmap(23, 2)
+      else if Check_Secret('go25') then
+        newmap(24, 2)
+      else if Check_Secret('go26') then
+        newmap(25, 2)
+      else if Check_Secret('go27') then
+        newmap(26, 2)
+      else if Check_Secret('go28') then
+        newmap(27, 2)
+      else if Check_Secret('go29') then
+        newmap(28, 2)
+      else if Check_Secret('go30') then
+        newmap(29, 2)
+      else if Check_Secret('go31') then
+        newmap(30, 2)
+      else if Check_Secret('go32') then
+        newmap(31, 2);
+
+      INT_TimerHook(PlayerCommand);
     end;
 
-    if (s[1] = 'b') and (s[2] = 'l') then
+    if Pos('BL', strupper(secretbuf)) > 0 then
     begin
-      if stricmp(s, 'blammo1') = 0 then
+      if Check_Secret('blammo1') then
         player.weapons[2] := 2
-      else if (stricmp(s, 'blammo2') = 0) then
+      else if Check_Secret('blammo2') then
         player.weapons[2] := 3
-      else if (stricmp(s, 'blammo3') = 0) then
+      else if Check_Secret('blammo3') then
         player.weapons[2] := 4
-      else if (stricmp(s, 'blammo4') = 0) then
+      else if Check_Secret('blammo4') then
         player.weapons[2] := 16
-      else if (stricmp(s, 'blammo5') = 0) then
+      else if Check_Secret('blammo5') then
         player.weapons[2] := 17
-      else if (stricmp(s, 'blammo6') = 0) then
+      else if Check_Secret('blammo6') then
         player.weapons[2] := 18;
       if player.weapons[2] >= 0 then
       begin
@@ -3016,9 +3038,6 @@ begin
       end;
     end;
   end;
-  specialcode := false;
-  secretbuf := '';
-  secretindex := 0;
 end;
 
 
@@ -4270,8 +4289,7 @@ begin
       NetGetData;
 
     // check special code flag
-    if specialcode then
-      Special_Code(secretbuf);
+    Special_Code;
 
     // update sprite movement
     TimeUpdate;
@@ -4530,7 +4548,6 @@ begin
   strafrate := 0;
   MapZoom := 8;
   secretbuf := '';
-  secretindex := 0;
   if playback then
   begin
     demobuffer := CA_LoadFile('demo1');

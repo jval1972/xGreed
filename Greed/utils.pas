@@ -1366,6 +1366,7 @@ begin
   nethurtsoundtime := 0;
   midgetmode := false;
   fxtimecount := 0;
+  secretbuf := '';
   ResetMouse;
 end;
 
