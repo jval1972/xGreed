@@ -768,6 +768,12 @@ begin
 end;
 
 
+procedure FreeMiscData;
+begin
+  memfree(pointer(backdrop));
+end;
+
+
 procedure checkexit;
 begin
   if newascii and (lastascii = #27) then
@@ -882,6 +888,10 @@ restart:
 
   I_ShutDownSound;
   INT_Shutdown;
+  CA_ShutDown;
+  RF_ShutDown;
+  FreeMiscData;
+  FreeWallPosts;
 end;
 
 

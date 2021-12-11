@@ -289,6 +289,8 @@ begin
     printx := 0;
     printy := printy + h;
   end;
+
+  sl.Free;
 end;
 
 // Prints a multi line string with each line centered
@@ -316,6 +318,8 @@ begin
     printx := 0;
     printy := printy + h;
   end;
+
+  sl.Free;
 end;
 
 // Prints a printf style formatted string at the current print position

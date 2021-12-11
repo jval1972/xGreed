@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=game3 nointro
+RunParams=game3 
 HostApplication=
 Launcher=
 UseLauncher=0

@@ -48,6 +48,8 @@ var
 
 procedure KillSprite(const sp: Pscaleobj_t; const weapon: integer);
 
+procedure FreeWallPosts;
+
 procedure ChangeViewSize(const MakeLarger: boolean);
 
 procedure SaveGame(const n: integer);
@@ -310,6 +312,11 @@ begin
     end;
 end;
 
+procedure FreeWallPosts;
+begin
+  if wallposts <> nil then
+    memfree(pointer(wallposts));
+end;
 
 procedure LoadTextures;
 var
@@ -340,8 +347,7 @@ begin
   for i := 1 to numwalls - 8 do  // JVAL: SOS
     CA_FreeLump(walllump + i);
   UpdateWait;
-  if wallposts <> nil then
-    memfree(pointer(wallposts));
+  FreeWallPosts;
   memset(@textures, 0, SizeOf(textures));
   UpdateWait;
   for i := 0 to MAPCOLS * MAPROWS - 1 do
@@ -393,7 +399,7 @@ begin
       CA_CacheLump(walllump + i);
       UpdateWait;
     end;
-  wallposts := malloc((numwalls + 1) * 64 * 4);
+  wallposts := mallocz((numwalls + 1) * 64 * 4);
   UpdateWait;
 
   for i :=  0 to numwalls - 2 do

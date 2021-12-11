@@ -84,6 +84,8 @@ procedure RF_RenderView(const x, y, z: fixed_t; const angle: integer);
 
 procedure RF_Startup;
 
+procedure RF_ShutDown;
+
 procedure SetViewSize(const awidth, aheight: integer; const buffer: PByteArray);
 
 implementation
@@ -326,6 +328,14 @@ begin
   InitReverseCam;
   InitWalls;
   printf('.Done!'#13#10);
+end;
+
+
+procedure RF_ShutDown;
+begin
+  memfree(pointer(colormaps));
+  memfree(pointer(walltranslation));
+  memfree(pointer(flattranslation));
 end;
 
 

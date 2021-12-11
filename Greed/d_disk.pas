@@ -61,6 +61,8 @@ function CA_LoadFile(const fname: string): pointer;
 
 procedure CA_InitFile(const afilename: string);
 
+procedure CA_ShutDown;
+
 function CA_CheckNamedNum(const name: string): integer;
 
 function CA_GetNamedNum(const name: string): integer;
@@ -162,11 +164,9 @@ begin
   end;
 end;
 
-procedure CA_InitFile(const afilename: string);
+procedure CA_ShutDown;
 var
-  size: integer;
   i: integer;
-  filename: string;
 begin
   if ca_initialized then // already open, must shut down
   begin
@@ -177,6 +177,14 @@ begin
         memfree(lumpmain[i]);
     memfree(pointer(lumpmain));
   end;
+end;
+
+procedure CA_InitFile(const afilename: string);
+var
+  size: integer;
+  filename: string;
+begin
+  CA_ShutDown;
   filename := afilename;
   if not fexists(filename) then
     FindBLOFile(filename);
