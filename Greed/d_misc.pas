@@ -132,9 +132,11 @@ end;
 function MS_CheckParm(const check: string): integer;
 var
   i: integer;
+  check1: string;
 begin
+  check1 := strupper(check);
   for i := 1 to my_argc do
-    if strupper(check) = strupper(my_argv(i)) then
+    if check1 = strupper(my_argv(i)) then
     begin
       result := i;
       exit;
