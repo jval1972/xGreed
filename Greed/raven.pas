@@ -2942,76 +2942,79 @@ begin
           newmap(2, 2);
       end;
 
-      if GAME1 then
+      if not DEMO then
       begin
-        if Check_Secret('go04') then
-          newmap(3, 2)
-        else if Check_Secret('go05') then
-          newmap(4, 2)
-        else if Check_Secret('go06') then
-          newmap(5, 2)
-        else if Check_Secret('go07') then
-          newmap(6, 2)
-      end;
+        if GAME1 then
+        begin
+          if Check_Secret('go04') then
+            newmap(3, 2)
+          else if Check_Secret('go05') then
+            newmap(4, 2)
+          else if Check_Secret('go06') then
+            newmap(5, 2)
+          else if Check_Secret('go07') then
+            newmap(6, 2)
+        end;
 
-      if GAME2 then
-      begin
-        if Check_Secret('go08') then
-          newmap(7, 2)
-        else if Check_Secret('go09') then
-          newmap(8, 2)
-        else if Check_Secret('go10') then
-          newmap(9, 2)
-        else if Check_Secret('go11') then
-          newmap(10, 2)
-        else if Check_Secret('go12') then
-          newmap(11, 2)
-        else if Check_Secret('go13') then
-          newmap(12, 2)
-        else if Check_Secret('go14') then
-          newmap(13, 2)
-        else if Check_Secret('go15') then
-          newmap(14, 2)
-      end;
+        if GAME2 then
+        begin
+          if Check_Secret('go08') then
+            newmap(7, 2)
+          else if Check_Secret('go09') then
+            newmap(8, 2)
+          else if Check_Secret('go10') then
+            newmap(9, 2)
+          else if Check_Secret('go11') then
+            newmap(10, 2)
+          else if Check_Secret('go12') then
+            newmap(11, 2)
+          else if Check_Secret('go13') then
+            newmap(12, 2)
+          else if Check_Secret('go14') then
+            newmap(13, 2)
+          else if Check_Secret('go15') then
+            newmap(14, 2)
+        end;
 
-      if GAME3 then
-      begin
-        if Check_Secret('go16') then
-          newmap(15, 2)
-        else if Check_Secret('go17') then
-          newmap(16, 2)
-        else if Check_Secret('go18') then
-          newmap(17, 2)
-        else if Check_Secret('go19') then
-          newmap(18, 2)
-        else if Check_Secret('go20') then
-          newmap(19, 2)
-        else if Check_Secret('go21') then
-          newmap(20, 2)
-        else if Check_Secret('go22') then
-          newmap(21, 2);
-      end;
+        if GAME3 then
+        begin
+          if Check_Secret('go16') then
+            newmap(15, 2)
+          else if Check_Secret('go17') then
+            newmap(16, 2)
+          else if Check_Secret('go18') then
+            newmap(17, 2)
+          else if Check_Secret('go19') then
+            newmap(18, 2)
+          else if Check_Secret('go20') then
+            newmap(19, 2)
+          else if Check_Secret('go21') then
+            newmap(20, 2)
+          else if Check_Secret('go22') then
+            newmap(21, 2);
+        end;
 
-      if Check_Secret('go23') then
-        newmap(22, 2)
-      else if Check_Secret('go24') then
-        newmap(23, 2)
-      else if Check_Secret('go25') then
-        newmap(24, 2)
-      else if Check_Secret('go26') then
-        newmap(25, 2)
-      else if Check_Secret('go27') then
-        newmap(26, 2)
-      else if Check_Secret('go28') then
-        newmap(27, 2)
-      else if Check_Secret('go29') then
-        newmap(28, 2)
-      else if Check_Secret('go30') then
-        newmap(29, 2)
-      else if Check_Secret('go31') then
-        newmap(30, 2)
-      else if Check_Secret('go32') then
-        newmap(31, 2);
+        if Check_Secret('go23') then
+          newmap(22, 2)
+        else if Check_Secret('go24') then
+          newmap(23, 2)
+        else if Check_Secret('go25') then
+          newmap(24, 2)
+        else if Check_Secret('go26') then
+          newmap(25, 2)
+        else if Check_Secret('go27') then
+          newmap(26, 2)
+        else if Check_Secret('go28') then
+          newmap(27, 2)
+        else if Check_Secret('go29') then
+          newmap(28, 2)
+        else if Check_Secret('go30') then
+          newmap(29, 2)
+        else if Check_Secret('go31') then
+          newmap(30, 2)
+        else if Check_Secret('go32') then
+          newmap(31, 2);
+      end;
 
       INT_TimerHook(PlayerCommand);
     end;
