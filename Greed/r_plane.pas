@@ -367,7 +367,7 @@ begin
   else if (mr_shadow >= 5) and (mr_shadow <= 8) then
   begin
     if (wallcycle = mr_shadow - 5) then
-      mr_shadow := integer(@colormaps)
+      mr_shadow := integer(colormaps)
     else
       mr_shadow := 0;
   end;
