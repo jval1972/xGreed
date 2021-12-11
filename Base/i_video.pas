@@ -165,9 +165,11 @@ end;
 var
   allocscreensize: integer;
   infinishupdate: boolean = false;
+  inshutdown: boolean = false;
 
 procedure I_ShutDownGraphics;
 begin
+  inshutdown := true;
   while infinishupdate do
     I_Sleep(1);
   I_ClearInterface(IInterface(g_pDDScreen));
@@ -262,7 +264,7 @@ var
   parms1: finishupdateparms_t;
   hpan, vpan: integer;
 begin
-  if (screen16 = nil) and (screen32 = nil) or (g_pDDScreen = nil) or infinishupdate then
+  if (screen16 = nil) and (screen32 = nil) or (g_pDDScreen = nil) or infinishupdate or inshutdown then
     exit;
 
   infinishupdate := true;
