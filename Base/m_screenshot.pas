@@ -40,6 +40,7 @@ implementation
 uses
   SysUtils,
   g_delphi,
+  d_font,
   i_video,
   i_windows,
   r_public_h,
@@ -72,17 +73,18 @@ end;
 
 procedure SaveScreenShot;
 var
-  imgname: string;
+  imgname, shortname: string;
   src: PByteArray;
   dir: string;
 begin
-  DateTimeToString(imgname, 'yyyymmdd_hhnnsszzz', Now);
+  DateTimeToString(shortname, 'yyyymmdd_hhnnsszzz', Now);
   dir := basedefault + 'ScreenShots\';
   MkDir(dir);
-  imgname := dir + imgname + '.png';
+  imgname := dir + shortname + '.png';
   src := malloc(RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT * SizeOf(LongWord));
   I_ReadScreen32(src);
   Save_24_Bit_PNG(imgname, src, RENDER_VIEW_WIDTH, RENDER_VIEW_HEIGHT);
+  writemsg('SCREENSHOT SAVED AT ' + shortname + '.PNG');
   memfree(pointer(src));
   doscreenshot := false;
 end;
