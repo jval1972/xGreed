@@ -2829,9 +2829,9 @@ begin
     PByte(Dest)^ := fOwner.GammaTable[PByte(Src)^]; inc(Dest);
     {$IFDEF Store16bits}
     {Copy extra pixel values}
-    PByte(Dest)^ := fOwner.GammaTable[PByte(pOp(Src, 5))^]; inc(Extra);
-    PByte(Dest)^ := fOwner.GammaTable[PByte(pOp(Src, 3))^]; inc(Extra);
-    PByte(Dest)^ := fOwner.GammaTable[PByte(pOp(Src, 1))^]; inc(Extra);
+    PByte(Extra)^ := fOwner.GammaTable[PByte(pOp(Src, 5))^]; inc(Extra);
+    PByte(Extra)^ := fOwner.GammaTable[PByte(pOp(Src, 3))^]; inc(Extra);
+    PByte(Extra)^ := fOwner.GammaTable[PByte(pOp(Src, 1))^]; inc(Extra);
     {$ENDIF}
 
     {Move to next pixel}
