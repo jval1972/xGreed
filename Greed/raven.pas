@@ -2763,7 +2763,7 @@ begin
       Thrust(SOUTH, FRACUNIT * 4);
   end;
 
-// floorz := RF_GetFloorZ(player.x, player.y)+player.height;
+  floorz := RF_GetFloorZ(player.x, player.y)+player.height;
 
   player.z := player.z - fallrate;
   if player.z > floorz then
