@@ -238,6 +238,7 @@ implementation
 uses
   Classes,
   g_delphi,
+  constant,
   d_misc;
 
 var
@@ -249,6 +250,13 @@ var
   i: integer;
   s: TStringList;
 begin
+  if GAME2 then
+    gameepisode := 2
+  else if GAME3 then
+    gameepisode := 3
+  else
+    gameepisode := 1;
+
   s := TStringList.Create;
   try
     for i := 0 to NUMDEFAULTS - 1 do
@@ -341,6 +349,25 @@ begin
 
   finally
     s.Free;
+  end;
+
+  if gameepisode = 2 then
+  begin
+    GAME1 := false;
+    GAME2 := true;
+    GAME3 := false;
+  end
+  else if gameepisode := 3 then
+  begin
+    GAME1 := false;
+    GAME2 := false;
+    GAME3 := true;
+  end
+  else
+  begin
+    GAME1 := true;
+    GAME2 := false;
+    GAME3 := false;
   end;
 end;
 
