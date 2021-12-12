@@ -33,8 +33,8 @@ uses
 (**** CONSTANTS ****)
 const
   PLAYERMOVESPEED = (FRACUNIT * 5) div 2;
-  PLAYERTURNSPEED = 8;
-  TURNUNIT = 2;
+  DEF_PLAYERTURNSPEED = 8;
+  DEF_TURNUNIT = 2;
 
 const
   // weapon info

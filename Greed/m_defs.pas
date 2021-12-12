@@ -34,7 +34,8 @@ uses
   d_ints,
   d_ints_h,
   i_video,
-  modplay;
+  modplay,
+  protos_h;
 
 type
   ttype_t = (tString, tBoolean, tInteger);
@@ -57,7 +58,7 @@ const
 
     (name: 'ambientlight';
      location: @SC.ambientlight;
-     defaultivalue: 2048;
+     defaultivalue: AMBIENTLIGHT;
      _type: tInteger),
 
     (name: 'violence';

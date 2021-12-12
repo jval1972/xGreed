@@ -67,6 +67,7 @@ implementation
 
 uses
   SysUtils,
+  constant,
   g_delphi,
   d_disk,
   d_ints_h,
@@ -112,7 +113,7 @@ procedure InitSound;
 begin
   MusicPresent := false;
 
-  SC.ambientlight := 2048;      // load all defaults
+  SC.ambientlight := AMBIENTLIGHT;      // load all defaults
   SC.violence := true;
   SC.animation := true;
   SC.musicvol := 100;
@@ -151,8 +152,8 @@ begin
   SC.netname := '            ';
   SC.netmap := 22;
   SC.netdifficulty := 2;
-  SC.turnspeed := 8;
-  SC.turnaccel := 2;
+  SC.turnspeed := DEF_PLAYERTURNSPEED;
+  SC.turnaccel := DEF_TURNUNIT;
   SC.mousesensitivity := 10;
 
   SC.vrhelmet := 0;
