@@ -160,6 +160,7 @@ begin
 
   ShowWindow(hMainWnd, SW_SHOW);
   UpdateWindow(hMainWnd);
+  SetForegroundWindow(hMainWnd);
 
   result := true; // Window handle hWnd is valid.
 end;
