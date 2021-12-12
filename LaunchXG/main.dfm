@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 261
-  Top = 220
+  Left = 332
+  Top = 173
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'xGreed Launcher'
-  ClientHeight = 292
-  ClientWidth = 480
+  ClientHeight = 453
+  ClientWidth = 462
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -1052,7 +1052,7 @@ object Form1: TForm1
   TextHeight = 13
   object SoundGroupBox: TGroupBox
     Left = 16
-    Top = 128
+    Top = 192
     Width = 321
     Height = 97
     Caption = ' Sound  '
@@ -1063,6 +1063,7 @@ object Form1: TForm1
       Width = 63
       Height = 13
       Caption = 'SFX volume: '
+      FocusControl = SFXTrackBar
     end
     object Label3: TLabel
       Left = 16
@@ -1070,11 +1071,12 @@ object Form1: TForm1
       Width = 71
       Height = 13
       Caption = 'Music volume: '
+      FocusControl = MusicTrackBar
     end
     object SFXTrackBar: TTrackBar
       Left = 104
       Top = 24
-      Width = 185
+      Width = 201
       Height = 33
       Max = 255
       PageSize = 16
@@ -1085,7 +1087,7 @@ object Form1: TForm1
     object MusicTrackBar: TTrackBar
       Left = 104
       Top = 56
-      Width = 185
+      Width = 201
       Height = 33
       Max = 255
       PageSize = 16
@@ -1096,9 +1098,9 @@ object Form1: TForm1
   end
   object InputGroupBox: TGroupBox
     Left = 16
-    Top = 16
+    Top = 104
     Width = 321
-    Height = 105
+    Height = 81
     Caption = ' Graphics '
     TabOrder = 0
     object Label1: TLabel
@@ -1107,11 +1109,12 @@ object Form1: TForm1
       Width = 47
       Height = 13
       Caption = 'Hud size: '
+      FocusControl = ScreenblocksTrackBar
     end
     object ScreenblocksTrackBar: TTrackBar
       Left = 104
       Top = 24
-      Width = 185
+      Width = 201
       Height = 33
       Max = 4
       Position = 4
@@ -1121,17 +1124,17 @@ object Form1: TForm1
     object CheckBox_4_3: TCheckBox
       Left = 16
       Top = 56
-      Width = 273
-      Height = 25
+      Width = 89
+      Height = 17
       Caption = '4:3 display'
       TabOrder = 1
     end
   end
   object KeyboardRadioGroup: TRadioGroup
-    Left = 360
-    Top = 16
+    Left = 16
+    Top = 296
     Width = 97
-    Height = 105
+    Height = 137
     Caption = ' Keyboard '
     Items.Strings = (
       'Arrows'
@@ -1140,8 +1143,8 @@ object Form1: TForm1
     TabOrder = 2
   end
   object Button1: TButton
-    Left = 360
-    Top = 184
+    Left = 352
+    Top = 336
     Width = 97
     Height = 25
     Caption = 'Save and Run'
@@ -1150,8 +1153,8 @@ object Form1: TForm1
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 360
-    Top = 216
+    Left = 352
+    Top = 368
     Width = 97
     Height = 25
     Caption = 'Save'
@@ -1159,8 +1162,8 @@ object Form1: TForm1
     OnClick = Button2Click
   end
   object Button3: TButton
-    Left = 360
-    Top = 248
+    Left = 352
+    Top = 400
     Width = 97
     Height = 25
     Caption = 'Exit'
@@ -1168,11 +1171,97 @@ object Form1: TForm1
     OnClick = Button3Click
   end
   object SkipIntroCheckBox: TCheckBox
-    Left = 360
-    Top = 136
+    Left = 352
+    Top = 304
     Width = 97
     Height = 17
     Caption = 'Skip Intro'
     TabOrder = 6
+  end
+  object MouseGroupBox1: TGroupBox
+    Left = 128
+    Top = 296
+    Width = 209
+    Height = 137
+    Caption = ' Mouse '
+    TabOrder = 7
+    object Label4: TLabel
+      Left = 16
+      Top = 40
+      Width = 53
+      Height = 13
+      Caption = 'Sensitivity: '
+      FocusControl = SensitivityTrackBar
+    end
+    object Label5: TLabel
+      Left = 16
+      Top = 64
+      Width = 63
+      Height = 13
+      Caption = 'Sensitivity X: '
+      FocusControl = SensitivityXTrackBar
+    end
+    object Label6: TLabel
+      Left = 16
+      Top = 96
+      Width = 63
+      Height = 13
+      Caption = 'Sensitivity Y: '
+      FocusControl = SensitivityYTrackBar
+    end
+    object UseMouseCheckBox: TCheckBox
+      Left = 16
+      Top = 16
+      Width = 161
+      Height = 17
+      Caption = 'Use mouse'
+      TabOrder = 0
+    end
+    object SensitivityTrackBar: TTrackBar
+      Left = 88
+      Top = 32
+      Width = 105
+      Height = 33
+      Max = 40
+      Min = 1
+      Position = 10
+      TabOrder = 1
+      OnChange = ScreenblocksTrackBarChange
+    end
+    object SensitivityXTrackBar: TTrackBar
+      Left = 88
+      Top = 64
+      Width = 105
+      Height = 33
+      Max = 20
+      Min = 1
+      Position = 10
+      TabOrder = 2
+      OnChange = ScreenblocksTrackBarChange
+    end
+    object SensitivityYTrackBar: TTrackBar
+      Left = 88
+      Top = 96
+      Width = 105
+      Height = 33
+      Max = 20
+      Min = 1
+      Position = 10
+      TabOrder = 3
+      OnChange = ScreenblocksTrackBarChange
+    end
+  end
+  object EpisodeRadioGroup: TRadioGroup
+    Left = 16
+    Top = 8
+    Width = 321
+    Height = 89
+    Caption = ' Episode Selection '
+    ItemIndex = 0
+    Items.Strings = (
+      'Episode 1 - DESARIAN PENAL COLONY'
+      'Episode 2 - THE CITY TEMPLE OF RISTANAK'
+      'Episode 3 - KAAL')
+    TabOrder = 8
   end
 end

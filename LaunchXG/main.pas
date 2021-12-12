@@ -22,6 +22,15 @@ type
     Button3: TButton;
     SkipIntroCheckBox: TCheckBox;
     CheckBox_4_3: TCheckBox;
+    MouseGroupBox1: TGroupBox;
+    UseMouseCheckBox: TCheckBox;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    SensitivityTrackBar: TTrackBar;
+    SensitivityXTrackBar: TTrackBar;
+    SensitivityYTrackBar: TTrackBar;
+    EpisodeRadioGroup: TRadioGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ScreenblocksTrackBarChange(Sender: TObject);
@@ -146,6 +155,11 @@ begin
   SFXTrackBar.Position := GetDefault('sfxvol');
   MusicTrackBar.Position := GetDefault('musicvol');
   CheckBox_4_3.Checked := GetDefault('vid_pillarbox_pct') = 17;
+  UseMouseCheckBox.Checked := GetDefault('mouse') <> 0;
+  EpisodeRadioGroup.ItemIndex := GetDefault('gameepisode') - 1;
+  SensitivityTrackBar.Position := GetDefault('mousesensitivity');
+  SensitivityXTrackBar.Position := GetDefault('mousesensitivityx');
+  SensitivityYTrackBar.Position := GetDefault('mousesensitivityy');
 end;
 
 procedure TForm1.FromControls;
@@ -178,6 +192,14 @@ begin
     SetDefault('vid_pillarbox_pct', 17)
   else
     SetDefault('vid_pillarbox_pct', 0);
+  if UseMouseCheckBox.Checked then
+    SetDefault('mouse', 1)
+  else
+    SetDefault('mouse', 0);
+  SetDefault('gameepisode', EpisodeRadioGroup.ItemIndex + 1);
+  SetDefault('mousesensitivity', SensitivityTrackBar.Position);
+  SetDefault('mousesensitivityx', SensitivityXTrackBar.Position);
+  SetDefault('mousesensitivityy', SensitivityYTrackBar.Position);
 end;
 
 procedure TForm1.ScreenblocksTrackBarChange(Sender: TObject);
@@ -221,6 +243,12 @@ begin
   cmdline := 'xGreed.exe';
   if SkipIntroCheckBox.Checked then
     cmdline := cmdline + ' nointro';
+  if EpisodeRadioGroup.ItemIndex = 1 then
+    cmdline := cmdline + ' game2'
+  else if EpisodeRadioGroup.ItemIndex = 2 then
+    cmdline := cmdline + ' game3'
+  else
+    cmdline := cmdline + ' game1';
   weret := WinExec(PChar(cmdline), SW_SHOWNORMAL);
   if weret > 31 then
     Close
