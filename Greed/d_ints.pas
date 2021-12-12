@@ -260,7 +260,7 @@ procedure INT_TimerISR;
 begin
   inc(timecount);
   inc(gametic);
-  if timecount and 1 <> 0 then
+//  if timecount and 1 <> 0 then
   begin
     INT_ReadControls;
     if Assigned(timerhook) then

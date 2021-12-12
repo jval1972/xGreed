@@ -35,7 +35,7 @@ uses
   r_public_h;
 
 const
-  MOVEUNIT = FRACUNIT;
+  MOVEUNIT = FRACUNIT div 2;
   FALLUNIT = FRACUNIT;
   MAXAMMO = 300;
   DEFAULTVRDIST = 157286;
@@ -2637,17 +2637,15 @@ begin
   // move along move vector & compute head bobbing
   if moverate < 0 then
   begin
-    if headbob = MAXBOBS - 1 then
-      headbob := 0
-    else
-      inc(headbob);
-    if wbobcount = 4 then
+    inc(headbob, 4);
+    if headbob >= MAXBOBS then
+      headbob := 0;
+    if wbobcount = 8 then
     begin
       wbobcount := 0;
-      if weapbob = MAXBOBS - 1 then
-        weapbob := 0
-      else
-        inc(weapbob);
+      inc(weapbob, 4);
+      if weapbob >= MAXBOBS then
+        weapbob := 0;
     end
     else
       inc(wbobcount);
@@ -2656,28 +2654,27 @@ begin
   end
   else if moverate > 0 then
   begin
-    if headbob = MAXBOBS - 1 then
-      headbob := 0
-    else
-      inc(headbob);
-    if wbobcount = 4 then
+    inc(headbob, 4);
+    if headbob >= MAXBOBS then
+      headbob := 0;
+    if wbobcount = 8 then
     begin
       wbobcount := 0;
-      if weapbob = MAXBOBS - 1 then
+      inc(weapbob, 4);
+      if weapbob >= MAXBOBS then
         weapbob := 0
       else
-        inc(weapbob);
     end
     else
       inc(wbobcount);
     if not Thrust(player.angle, moverate) then
       moverate := 0;
   end
-  else if timecount and 8 <> 0 then
+  else if timecount and 1 <> 0 then
   begin
     if weapmove[weapbob] <> 0 then
     begin
-      if absI(weapmove[weapbob - 1]) < absI(weapmove[weapbob]) then
+      if absI(headmove[weapbob - 1]) < absI(headmove[weapbob]) then
         dec(weapbob)
       else
       begin
