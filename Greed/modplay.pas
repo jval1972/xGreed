@@ -99,12 +99,12 @@ begin
       i := oldvol;
       while i > 0 do  // fade out
       begin
-        SetVolumes(i, SC.sfxvol);
+        SetVolumes(i, SC.musicvol);
         Wait(1);
         dec(i, 3);
       end;
     end;
-    SetVolumes(oldvol, SC.sfxvol);
+    SetVolumes(oldvol, SC.musicvol);
     BASS_ChannelStop(MUSIC_HANDLE);
     MUSIC_HANDLE := 0;
   end;
@@ -352,7 +352,7 @@ begin
   d := dx * dx + dy * dy;
   if d > MAXSOUNDDIST then
     d := MAXSOUNDDIST;
-  BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_VOL, (MAXSOUNDDIST - d) / MAXSOUNDDIST);
+  BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_VOL, (MAXSOUNDDIST - d) / MAXSOUNDDIST * SC.sfxvol / 255);
 end;
 
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
@@ -393,7 +393,6 @@ begin
   channels[ch].x := x;
   channels[ch].y := y;
   channels[ch].lump := lump;
-  BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_VOL, SC.sfxvol / 255);
   BASS_ChannelPlay(channels[ch].channel, false);
   UpdateChannelParams(ch);
 end;
