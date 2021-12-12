@@ -2129,6 +2129,7 @@ var
   modifiedTurn, modifiedMoveUnit, modifiedturnunit, n: integer;
   floorz, fz, xl, yl, xh, yh, maxz: fixed_t;
   maxx, maxy, mapspot: integer;
+  imousedx, imousedy: integer;
 begin
   if Warping <> 0 then
   begin
@@ -2147,6 +2148,42 @@ begin
    end;
    exit;
  end;
+
+  if SC.mouse = 1 then
+  begin
+    mousebuttons[mbt_fire] := mouse.flags and 1 <> 0;
+    mousebuttons[mbt_use] := mouse.flags and 2 <> 0;
+    mousebuttons[mbt_north] := mouse.flags and 4 <> 0;
+    if mousebuttons[mbt_north] then
+      mousebuttons[mbt_north] := true;
+    mousedx := mousedx + ((mouse.dx * FRACUNIT * (SC.mousesensitivity + 5)) div 10) * (mousesensitivityx + 1) div 5;
+    mousedy := mousedy + ((mouse.dy * FRACUNIT * (SC.mousesensitivity + 5)) div 10) * (mousesensitivityy + 1) div 5;
+  end
+  else
+  begin
+    mousebuttons[mbt_fire] := false;
+    mousebuttons[mbt_use] := false;
+    mousebuttons[mbt_north] := false;
+    mousedx := 0;
+    mousedy := 0;
+  end;
+
+  // JVAL: invert mouse
+  if invertmouseturn then
+    imousedx := -mousedx
+  else
+    imousedx := mousedx;
+
+  if invertmouselook then
+    imousedy := -mousedy
+  else
+    imousedy := mousedy;
+
+  // For smooth mouse movement
+  if mousedx <> 0 then
+    mousedx := mousedx div 2;
+  if mousedy <> 0 then
+    mousedy := mousedy div 2;
 
   if (keyboard[SC_ESCAPE] = 1) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
@@ -2250,9 +2287,9 @@ begin
     keyboardDelay := timecount + KBDELAY;
   end;
 
-  if (in_button[bt_lookup] <> 0) and (netmsgstatus = 0) then
+  if ((in_button[bt_lookup] <> 0) or (imousedy > FRACUNIT)) and (netmsgstatus = 0) then
     scrollview := scrollview - SCROLLRATE;
-  if (in_button[bt_lookdown] <> 0) and (netmsgstatus = 0) then
+  if ((in_button[bt_lookdown] <> 0) or (imousedy < -FRACUNIT)) and (netmsgstatus = 0) then
     scrollview := scrollview + SCROLLRATE;
   if (in_button[bt_centerview] <> 0) and (netmsgstatus = 0) then
     scrollview := 255;
@@ -2516,6 +2553,20 @@ begin
         turnrate := modifiedTurn;
       player.angle := player.angle + turnrate;
     end
+    else if imousedx <= -FRACUNIT then
+    begin
+      turnrate := turnrate - modifiedturnunit div 2 + imousedx div (2 * FRACUNIT);
+      if turnrate < -modifiedTurn then
+        turnrate := -modifiedTurn;
+      player.angle := player.angle + turnrate;
+    end
+    else if imousedx >= FRACUNIT then
+    begin
+      turnrate := turnrate + modifiedturnunit div 2 + imousedx div (2 * FRACUNIT);
+      if turnrate > modifiedTurn then
+        turnrate := modifiedTurn;
+      player.angle := player.angle + turnrate;
+    end
     else
     begin
       if turnrate < 0 then
@@ -2553,7 +2604,7 @@ begin
   end;
 
   // forward/backwards move
-  if in_button[bt_north] <> 0 then
+  if (in_button[bt_north] <> 0) or mousebuttons[mbt_north] then
     moveforward := 1
   else if in_button[bt_south] <> 0 then
     moveforward := -1
@@ -2649,14 +2700,14 @@ begin
   end;
 
   // try to open a door in front of player
-  if (in_button[bt_use] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
+  if ((in_button[bt_use] <> 0) or mousebuttons[mbt_use]) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     checktrigger := true;
     keyboardDelay := timecount + KBDELAY * 2;
   end;
 
   // fire a weapon
-  if (in_button[bt_fire] <> 0) and (weapons[player.weapons[player.currentweapon]].charge = 100) and not changingweapons then
+  if ((in_button[bt_fire] <> 0) or mousebuttons[mbt_fire]) and (weapons[player.weapons[player.currentweapon]].charge = 100) and not changingweapons then
   begin
     n := player.weapons[player.currentweapon];
     if (n = 18) or (n = 4) then

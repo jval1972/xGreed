@@ -55,6 +55,10 @@ procedure I_ReadScreen32(dest: pointer);
 
 procedure I_RestoreWindowPos;
 
+function I_WindowWidth: integer;
+
+function I_WindowHeight: integer;
+
 type
   displaymode_t = record
     width, height: integer;
@@ -120,6 +124,16 @@ var
 procedure I_RestoreWindowPos;
 begin
   SetWindowPos(hMainWnd, HWND_TOP, 0, 0, XWINDOWWIDTH, XWINDOWHEIGHT, SWP_SHOWWINDOW);
+end;
+
+function I_WindowWidth: integer;
+begin
+  result := XWINDOWWIDTH;
+end;
+
+function I_WindowHeight: integer;
+begin
+  result := XWINDOWHEIGHT;
 end;
 
 procedure I_DisableAltTab;

@@ -151,9 +151,9 @@ begin
   SC.netname := '            ';
   SC.netmap := 22;
   SC.netdifficulty := 2;
-  SC.mousesensitivity := 32;
   SC.turnspeed := 8;
   SC.turnaccel := 2;
+  SC.mousesensitivity := 10;
 
   SC.vrhelmet := 0;
   SC.vrangle := DEFAULTVRANGLE;

@@ -41,6 +41,7 @@ var
   keyboard: array[0..NUMCODES - 1] of smallint;  // keyboard flags
   pause, capslock, newascii: boolean;
   mouseinstalled, joyinstalled: boolean;
+  invertmouseturn, invertmouselook: boolean;
   in_button: array[0..NUMBUTTONS - 1] of integer; // frames the button has been down
   lastscan: byte;
   lastascii: char;
@@ -49,11 +50,20 @@ var
   mdx, mdy, b1, b2: smallint;
   hiding: integer = 1;
   busy: integer = 1;  // internal flags
+  // For hud
   mousex: integer = 160;
   mousey: integer = 100;
   back: array[0..MOUSESIZE * MOUSESIZE - 1] of byte;  // background for mouse
   fore: array[0..MOUSESIZE * MOUSESIZE - 1] of byte;  // mouse foreground
-
+  // For gameplay
+  mousedx: integer = 0;
+  mousedy: integer = 0;
+  mousebuttons: array[0..NUMMBUTTONS - 1] of boolean;
+  mousesensitivityx: integer = 10;
+  mousesensitivityy: integer = 5;
+  lbuttondown: boolean = false;
+  mbuttondown: boolean = false;
+  rbuttondown: boolean = false;
 
 (* joystick data *)
   jx, jy, jdx, jdy, j1, j2: integer;
@@ -123,6 +133,8 @@ const
 
 procedure INT_ReadControls;
 
+procedure INT_ReadMouse;
+
 procedure eat_key(const k: integer);
 
 procedure INT_TimerISR;
@@ -143,11 +155,41 @@ procedure UpdateMouse;
 
 procedure INT_Setup;
 
+type
+  mouse_t = record
+    flags: integer;
+    dx, dy: integer;
+  end;
+
+var
+  mouse: mouse_t;
+
+procedure I_SynchronizeInput(active: boolean);
+
 implementation
 
 uses
+  windows,
+  i_main,
   i_windows,
+  i_video,
+  modplay,
   timer;
+
+var
+  ignoretics: integer = 0;
+
+const
+  I_IGNORETICKS = TICRATE div 2;
+
+procedure I_SynchronizeInput(active: boolean);
+begin
+  if active then
+    ignoretics := I_IGNORETICKS; // Wait ~ half second when get the focus again
+  lbuttondown := false;
+  mbuttondown := false;
+  rbuttondown := false;
+end;
 
 var
   oldkeyboard: array[0..NUMCODES - 1] of smallint;  // keyboard flags
@@ -160,6 +202,16 @@ var
   key: integer;
   kstate: integer;
 begin
+  if GameFinished or InBackground or
+     IsIconic(hMainWnd) or (GetForegroundWindow <> hMainWnd) then
+    exit;
+
+  if ignoretics > 0 then
+  begin
+    Dec(ignoretics);
+    exit;
+  end;
+
   lastascii := #0;
   for i := 0 to NUMCODES - 1 do
   begin
@@ -192,8 +244,9 @@ begin
     oldkeyboard[i] := keyboard[i];
 
   if mouseinstalled then
-  begin
-  end;
+    INT_ReadMouse
+  else
+    FillChar(mouse, SizeOf(mouse), #0);
 end;
 
 procedure eat_key(const k: integer);
@@ -231,18 +284,72 @@ begin
   result := false;
 end;
 
+type
+  setcursorposfunc_t = function(x, y:Integer): BOOL; stdcall;
+  getcursorposfunc_t = function(var lpPoint: TPoint): BOOL; stdcall;
+
+var
+  getcursorposfunc: getcursorposfunc_t;
+  setcursorposfunc: setcursorposfunc_t;
+  user32inst: THandle;
+
+var
+// Mouse support
+  mlastx,
+  mlasty: integer;
+  mflags: byte;
+
 procedure ResetMouse;
 begin
+  mlastx := I_WindowWidth div 2;
+  mlasty := I_WindowHeight div 2;
+  setcursorposfunc(mlastx, mlasty);
+  mflags := 0;
 end;
 
 procedure M_InitMouse;
 begin
-  mouseinstalled := true;
-  printf('Mouse Not Found'#13#10);
+  printf('M_InitMouse: Initializing Mouse'#13#10);
+  user32inst := LoadLibrary(user32);
+  getcursorposfunc := GetProcAddress(user32inst, 'GetPhysicalCursorPos');
+  if not assigned(getcursorposfunc) then
+    getcursorposfunc := GetProcAddress(user32inst, 'GetCursorPos');
+  setcursorposfunc := GetProcAddress(user32inst, 'SetPhysicalCursorPos');
+  if not assigned(setcursorposfunc) then
+    setcursorposfunc := GetProcAddress(user32inst, 'SetCursorPos');
+  mouseinstalled := Assigned(getcursorposfunc) and Assigned(setcursorposfunc);
+  if mouseinstalled then
+    printf(' Mouse installed')
+  else
+    printf(' Mouse not installed');
 end;
 
 procedure M_Shutdown;
 begin
+  FreeLibrary(user32inst);
+end;
+
+
+procedure INT_ReadMouse;
+var
+  pt: TPoint;
+begin
+  mflags := 0;
+
+  if lbuttondown then
+    mflags := mflags or 1;
+  if rbuttondown then
+    mflags := mflags or 2;
+  if mbuttondown then
+    mflags := mflags or 4;
+
+  getcursorposfunc(pt);
+
+  mouse.flags := mflags;
+  mouse.dx := mlastx - pt.x;
+  mouse.dy := mlasty - pt.y;
+
+  ResetMouse;
 end;
 
 procedure INT_Setup;
@@ -264,8 +371,7 @@ procedure INT_Shutdown;
 begin
   if timeractive then
     dStopTimer;
-  if mouseinstalled then
-    M_Shutdown;
+  M_Shutdown;
 end;
 
 

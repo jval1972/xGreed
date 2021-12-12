@@ -51,7 +51,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 29;
+  NUMDEFAULTS = 33;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -197,8 +197,28 @@ const
 
     (name: 'mousesensitivity';
      location: @SC.mousesensitivity;
-     defaultivalue: 32;
-     _type: tInteger)
+     defaultivalue: 10;
+     _type: tInteger),
+
+    (name: 'mousesensitivityx';
+     location: @mousesensitivityx;
+     defaultivalue: 10;
+     _type: tInteger),
+
+    (name: 'mousesensitivityy';
+     location: @mousesensitivityy;
+     defaultivalue: 5;
+     _type: tInteger),
+
+    (name: 'invertmouseturn';
+     location: @invertmouseturn;
+     defaultivalue: 0;
+     _type: tBoolean),
+
+    (name: 'invertmouselook';
+     location: @invertmouselook;
+     defaultivalue: 0;
+     _type: tBoolean)
 
   );
 

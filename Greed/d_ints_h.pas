@@ -125,6 +125,10 @@ const
   bt_slideright = 15;
   bt_invleft = 16;
   bt_invright = 17;
+  NUMMBUTTONS = 3;
+  mbt_fire = 0;
+  mbt_use = 1;
+  mbt_north = 2;
 
 implementation
 

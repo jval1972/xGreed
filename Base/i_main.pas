@@ -40,11 +40,16 @@ function InitApplication(inst: HINST): boolean;
 
 function InitInstance(inst: HINST; nCmdShow: integer): boolean;
 
+var
+  InBackground: boolean = true;
+  GameFinished: boolean = false;
+
 implementation
 
 uses
   Messages,
   d_misc,
+  d_ints,
   i_windows,
   raven;
 
@@ -64,10 +69,31 @@ begin
           exit;
         end;
       end;
-  WM_CLOSE:
-    quitgame := true;
-  WM_DESTROY:
-    PostQuitMessage(0);
+    WM_ACTIVATE:
+      begin
+        InBackground := (LOWORD(wparam) = WA_INACTIVE) or (HIWORD(wparam) <> 0);
+        I_SynchronizeInput(not InBackground);
+      end;
+    WM_CLOSE:
+      quitgame := true;
+    WM_LBUTTONDOWN:
+      lbuttondown := true;
+    WM_LBUTTONUP:
+      lbuttondown := false;
+    WM_MBUTTONDOWN:
+      mbuttondown := true;
+    WM_MBUTTONUP:
+      mbuttondown := false;
+    WM_RBUTTONDOWN:
+      rbuttondown := true;
+    WM_RBUTTONUP:
+      rbuttondown := false;
+    WM_DESTROY:
+      begin
+        ShowWindow(hWnd, SW_HIDE);
+        GameFinished := true;
+        PostQuitMessage(0);
+      end;
   else
     result := DefWindowProc(hWnd, msg, wParam, lParam);
     exit;
