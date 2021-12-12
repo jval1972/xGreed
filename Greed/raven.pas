@@ -3645,29 +3645,6 @@ begin
 end;
 
 
-procedure GrabTheScreen;
-begin
- { FILE *f;
-  char name[15];
-  byte palette[768];
-  static int count := 0;
-
-  if (MS_CheckParm('GRAB')) then
-  begin
-   sprintf(name,'grab%i.raw',count);
-   ++count;
-   f := fopen(name,'wb');
-   if f = NULL then
-    MS_Error('Error opening the screen grab file!');
-   fwrite((char *)0xa0000,64000,1,f);
-   I_GetPalette(palette);
-   fwrite(palette,768,1,f);
-   fclose(f);
-    end;
-  SaveTheScreen := false;  }
-end;
-
-
 procedure startover(const restartvalue: integer);
 var
   i: integer;
