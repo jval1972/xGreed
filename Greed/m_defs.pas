@@ -357,7 +357,7 @@ begin
     GAME2 := true;
     GAME3 := false;
   end
-  else if gameepisode := 3 then
+  else if gameepisode = 3 then
   begin
     GAME1 := false;
     GAME2 := false;
