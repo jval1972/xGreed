@@ -2321,7 +2321,7 @@ begin
     toggleheatmode := true;
     keyboardDelay := timecount + KBDELAY;
   end;
-  if (keyboard[SC_S] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
+  if (in_button[bt_motionmode] <> 0) and (timecount > keyboardDelay) and (netmsgstatus = 0) then
   begin
     togglemotionmode := true;
     keyboardDelay := timecount + KBDELAY;

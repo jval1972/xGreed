@@ -106,7 +106,7 @@ const
   SC_Z = $2c;
   SC_MINUS = $0c;
   SC_PLUS = $0d;
-  NUMBUTTONS = 18;
+  NUMBUTTONS = 19;
   bt_north = 0;
   bt_east = 1;
   bt_south = 2;
@@ -125,6 +125,7 @@ const
   bt_slideright = 15;
   bt_invleft = 16;
   bt_invright = 17;
+  bt_motionmode = 18;
   NUMMBUTTONS = 3;
   mbt_fire = 0;
   mbt_use = 1;

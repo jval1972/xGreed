@@ -52,7 +52,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 33;
+  NUMDEFAULTS = 34;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -169,6 +169,11 @@ const
     (name: 'bt_invright';
      location: @scanbuttons[bt_invright];
      defaultivalue: SC_DELETE;
+     _type: tInteger),
+
+    (name: 'bt_motionmode';
+     location: @scanbuttons[bt_motionmode];
+     defaultivalue: SC_S;
      _type: tInteger),
 
     (name: 'gameepisode';

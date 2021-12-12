@@ -125,7 +125,8 @@ const
     SC_COMMA,         // bt_slideleft
     SC_PERIOD,        // bt_slideright
     SC_INSERT,        // bt_invleft
-    SC_DELETE         // bt_invright
+    SC_DELETE,        // bt_invright
+    SC_S              // bt_motionmode
   );
 
 const
