@@ -2864,7 +2864,7 @@ begin
     end;
     writemsg('DeathKiss');
   end
-  else if Check_Secret('allahmode') then
+  else if Check_Secret('allahmode') or Check_Secret('god') then
   begin
     if godmode then
     begin
