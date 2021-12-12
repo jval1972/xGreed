@@ -2133,21 +2133,21 @@ var
 begin
   if Warping <> 0 then
   begin
-   floorz := RF_GetFloorZ(player.x, player.y) + player.height;
-   if player.z > floorz then
-   begin
-     fallrate := fallrate + MOVEUNIT;
-     player.z := player.z - fallrate;
-     if player.z < floorz then
+    floorz := RF_GetFloorZ(player.x, player.y) + player.height;
+    if player.z > floorz then
+    begin
+      fallrate := fallrate + MOVEUNIT;
+      player.z := player.z - fallrate;
+      if player.z < floorz then
         player.z := floorz;
-   end
-   else if player.z < floorz then
-   begin
-     player.z := floorz;
-     fallrate := 0;
-   end;
-   exit;
- end;
+    end
+    else if player.z < floorz then
+    begin
+      player.z := floorz;
+      fallrate := 0;
+    end;
+    exit;
+  end;
 
   if SC.mouse = 1 then
   begin
