@@ -378,6 +378,9 @@ begin
   if g_pDDSPrimary.Blt(destrect, g_pDDScreen, srcrect, DDBLTFAST_WAIT or DDBLTFAST_NOCOLORKEY, PDDBltFX(0)^) = DDERR_SURFACELOST then
     g_pDDSPrimary.Restore;
 
+  if g_pDDSPrimary.Blt(destrect, g_pDDScreen, srcrect, DDBLTFAST_WAIT or DDBLTFAST_NOCOLORKEY, PDDBltFX(0)^) = DDERR_SURFACELOST then
+    g_pDDSPrimary.Restore;
+
   if keyboard[SC_PRINTSCREEN] = 1 then
   begin
     eat_key(SC_PRINTSCREEN);
