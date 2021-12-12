@@ -645,7 +645,11 @@ begin
           mr_count := span_p.x2 - spanx;
           mr_dest := @viewylookup[py][px];
           if windowHeight <> 64 then
-            py := span_p.y + 64;
+          begin
+            py := span_p.y;
+            while py < 0 do
+              py := py + 64;
+          end;
           h1 := (hfrac * py) div FRACUNIT;
           if px <= w then
           begin
@@ -695,7 +699,11 @@ begin
         mr_count := span_p.x2 - spanx;
         mr_dest := @viewylookup[py][px];
         if windowHeight <> 64 then
-          py := span_p.y + 64;
+        begin
+          py := span_p.y;
+          while py < 0 do
+            py := py + 64;
+        end;
         h1 := (hfrac * py) div FRACUNIT;
         if px <= w then
         begin
