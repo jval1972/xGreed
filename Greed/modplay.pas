@@ -105,6 +105,8 @@ begin
       end;
     end;
     SetVolumes(oldvol, SC.sfxvol);
+    BASS_ChannelStop(MUSIC_HANDLE);
+    MUSIC_HANDLE := 0;
   end;
 end;
 
@@ -269,6 +271,7 @@ procedure PlaySong(const aname: string; const pattern: integer);
 var
   sname: string;
 begin
+  StopMusic;
   sname := aname;
   if not fexists(sname) then
     FindMusicFile(sname);
@@ -390,7 +393,7 @@ begin
   channels[ch].x := x;
   channels[ch].y := y;
   channels[ch].lump := lump;
-  BASS_ChannelSetAttribute(MUSIC_HANDLE, BASS_ATTRIB_VOL, SC.sfxvol / 255);
+  BASS_ChannelSetAttribute(channels[ch].channel, BASS_ATTRIB_VOL, SC.sfxvol / 255);
   BASS_ChannelPlay(channels[ch].channel, false);
   UpdateChannelParams(ch);
 end;
