@@ -787,7 +787,7 @@ begin
           if (player.angst = 0) and netmode then
             NetDeath(msprite.spawnid);
           end;
-          Thrust(msprite.angle, msprite.damage shl (FRACBITS-3));
+          Thrust(msprite.angle, msprite.damage shl (FRACBITS - 3));
           playerhit := false;
           killed := true;
           if msprite.damage > 50 then
