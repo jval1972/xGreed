@@ -3626,7 +3626,7 @@ begin
   windowHeight := 64;
   windowLeft := 0;
   windowTop := 0;
-  windowSize := 4096;
+  windowSize := windowWidth * windowHeight;
   viewLocation := screen;
   scrollmin1 := player.scrollmin;
   scrollmax1 := player.scrollmax;
@@ -4013,19 +4013,19 @@ begin
 
   if timecount < RearViewTime then
   begin
-    x := windowWidth - 66;
+    x := windowWidth - 65;
     if currentViewSize >= 4 then
       rtop := 10
     else
       rtop := 0;
-    for i := 1 to 63 do
+    for i := 0 to 63 do
     begin
-      memcpy(@viewylookup[rtop + i + 1][x], @rearbuf[i * 64], 64);
-      viewylookup[rtop + i + 1][x - 1] := 30;
-      viewylookup[rtop + i + 1][x + 64] := 30;
+      memcpy(@ylookup[rtop + i + 1][x], @rearbuf[i * 64], 64);
+      ylookup[rtop + i + 1][x - 1] := 30;
+      ylookup[rtop + i + 1][x + 64] := 30;
     end;
-    memset(@viewylookup[rtop + 65][x - 1], 30, 66);
-    memset(@viewylookup[rtop + 1][x - 1], 30, 66);
+    memset(@ylookup[rtop + 64][x - 1], 30, 66);
+    memset(@ylookup[rtop + 1][x - 1], 30, 66);
   end;
 
   // update sprite movement
