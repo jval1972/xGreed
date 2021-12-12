@@ -794,6 +794,7 @@ begin
           begin
             player.angle := player.angle - 15 + (MS_RndT and 31);
             player.angle := player.angle and ANGLES;
+            player_angle64 := player.angle * 64;
           end;
         end;
         if ret = 2 then

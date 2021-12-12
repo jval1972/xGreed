@@ -2151,6 +2151,7 @@ begin
         player.z := RF_GetFloorZ(player.x, player.y) + player.height;
         player.mapspot := mapspot;
         player.angle := NORTH;
+        player_angle64 := NORTH * 64;
       end;
       mapsprites[mapspot] := 0;
     end;
@@ -2174,6 +2175,7 @@ begin
         player.z := RF_GetFloorZ(player.x, player.y) + player.height;
         player.mapspot := mapspot;
         player.angle := NORTH;
+        player_angle64 := NORTH * 64;
       end;
       mapsprites[mapspot] := 0;
     end;

@@ -43,6 +43,7 @@ const
 
 var
   player: player_t;
+  player_angle64: integer;
   warpActive, currentViewSize: byte;
   resizeScreen: boolean = false;
   biggerScreen: boolean;
@@ -338,6 +339,7 @@ begin
           begin
             found := true;
             player.angle := player.angle + accuracy;
+            player_angle64 := player_angle64 + accuracy * 64;
             counter := MAXPROBE;
             break;
           end;
@@ -374,6 +376,7 @@ begin
           begin
             found := true;
             player.angle := player.angle - accuracy;
+            player_angle64 := player_angle64 - accuracy * 64;
             counter := MAXPROBE;
             break;
           end;
@@ -410,6 +413,7 @@ begin
           begin
             found := true;
             player.angle := player.angle + accuracy div 2;
+            player_angle64 := player_angle64 + accuracy * 32;
             counter := MAXPROBE;
             break;
           end;
@@ -446,6 +450,7 @@ begin
           begin
             found := true;
             player.angle := player.angle - accuracy div 2;
+            player_angle64 := player_angle64 - accuracy * 32;
             counter := MAXPROBE;
             break;
           end;
@@ -514,7 +519,7 @@ end;
 
 procedure fireweapon;
 var
-  i, n, angle2, ammo, angle, angleinc, oldangle: integer;
+  i, n, angle2, ammo, angle, angleinc, oldangle, oldangle64: integer;
   z, xmove2, ymove2: fixed_t;
 begin
   player.status := 2;
@@ -523,6 +528,7 @@ begin
   if player.ammo[weapons[n].ammotype] < ammo then
     exit;
   oldangle := player.angle;
+  oldangle64 := player_angle64;
   weapons[n].charge := 0;
   player.ammo[weapons[n].ammotype] := player.ammo[weapons[n].ammotype] - ammo;
   if (n <> 4) and (n <> 18) and (weapmode <> 1) then
@@ -689,6 +695,7 @@ begin
     end;
   end;
   player.angle := oldangle;
+  player_angle64 := oldangle64;
 end;
 
 
@@ -2130,6 +2137,8 @@ var
   floorz, fz, xl, yl, xh, yh, maxz: fixed_t;
   maxx, maxy, mapspot: integer;
   imousedx, imousedy: integer;
+  angleturn: integer;
+  angleturnunit: integer;
 begin
   if Warping <> 0 then
   begin
@@ -2492,6 +2501,7 @@ begin
     modifiedTurn := (playerturnspeed * 5) div 2;
     modifiedMoveUnit := MOVEUNIT * 2;
     modifiedturnunit := turnunit;
+    angleturnunit := 1024;
   end
   else
   begin
@@ -2499,6 +2509,7 @@ begin
     modifiedTurn := playerturnspeed;
     modifiedMoveUnit := MOVEUNIT;
     modifiedturnunit := turnunit * 2;
+    angleturnunit := 512;
   end;
 
   floorz := RF_GetFloorZ(player.x, player.y) + player.height;
@@ -2583,6 +2594,18 @@ begin
       end;
       player.angle := player.angle + turnrate;
     end;
+
+
+    angleturn := 0;
+    if in_button[bt_east] <> 0 then
+      angleturn := angleturn - angleturnunit;
+    if in_button[bt_west] <> 0 then
+      angleturn := angleturn + angleturnunit;
+    angleturn := angleturn + imousedx div 16384;
+    player_angle64 := player_angle64 + angleturn;
+    player_angle64 := player_angle64 and (FRACUNIT - 1);
+    player.angle := player_angle64 div 64;
+
     player.angle := player.angle and ANGLES;
   end;
 

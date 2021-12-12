@@ -2090,6 +2090,8 @@ begin
   fclose(handle);
   oldscore := player.levelscore;
 
+  player_angle64 := player.angle * 64;
+
   resetengine;
   gameloaded := true;
   player.scrollmax := windowHeight + player.scrollmin;
@@ -2287,6 +2289,7 @@ begin
   player.y := (y * FRACTILEUNIT) + (32 * FRACUNIT);
   player.z := RF_GetFloorZ(player.x, player.y) + player.height;
   player.angle := NORTH;
+  player_angle64 := NORTH * 64;
   NetNewPlayerData;
 end;
 
