@@ -507,7 +507,7 @@ begin
       continue;
     end;
 
-    sp_count := bottomy - topy + 1;
+    sp_count := bottomy - topy; // + 1; JVAL: 20211212 - Fix sprite glitch
 
     sp_dest := @viewylookup[bottomy - scrollmin][x];
     sp_source := collumn;
