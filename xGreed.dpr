@@ -67,7 +67,8 @@ uses
   utils in 'Greed\utils.pas',
   zlibpas in 'zlib\zlibpas.pas',
   pngimage in 'Base\pngimage.pas',
-  m_screenshot in 'Base\m_screenshot.pas';
+  m_screenshot in 'Base\m_screenshot.pas',
+  m_defs in 'Greed\m_defs.pas';
 
 var
   hGreedWnd: HWND = 0;

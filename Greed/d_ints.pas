@@ -235,9 +235,9 @@ procedure ResetMouse;
 begin
 end;
 
-procedure M_Init;
+procedure M_InitMouse;
 begin
-  mouseinstalled := false;
+  mouseinstalled := true;
   printf('Mouse Not Found'#13#10);
 end;
 
@@ -248,7 +248,7 @@ end;
 procedure INT_Setup;
 begin
   memset(@keyboard, 0, SizeOf(keyboard));
-  M_Init;
+  M_InitMouse;
   dStartTimer(INT_TimerISR, TICRATE);
   timeractive := true;
 end;

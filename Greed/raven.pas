@@ -169,6 +169,7 @@ uses
   i_windows,
   i_video,
   menu,
+  m_defs,
   modplay,
   net,
   r_conten,
@@ -4613,7 +4614,7 @@ begin
     NetQuitGame;
   if recording then
     SaveDemo;
-  SaveSetup(@SC, 'SETUP.CFG');
+  M_SaveDefaults;
   playback := false;
 end;
 

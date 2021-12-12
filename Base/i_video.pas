@@ -72,7 +72,7 @@ function I_DisplayModeIndex(const w, h: integer): integer;
 function I_NearestDisplayModeIndex(const w, h: integer): integer;
 
 var
-  vid_pillarbox_pct: integer;
+  vid_pillarbox_pct: integer = 17;
   vid_letterbox_pct: integer;
 
 const

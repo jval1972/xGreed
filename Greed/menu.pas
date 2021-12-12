@@ -200,6 +200,7 @@ uses
   protos_h,
   i_video,
   intro,
+  m_defs,
   modplay,
   net,
   raven,
@@ -1326,7 +1327,7 @@ begin
         ChangeViewSize(false);
     end;
   end;
-  SaveSetup(@SC, 'SETUP.CFG');
+  M_SaveDefaults;
   turnrate := 0;
   moverate := 0;
   fallrate := 0;

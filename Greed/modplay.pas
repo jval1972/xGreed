@@ -49,8 +49,6 @@ var
   MusicError, EffectChan, CurrentChan, FXLump: integer;
   effecttracks: integer;
 
-function SaveSetup(const SC: PSoundCard; const Filename: string): integer;
-
 procedure PlaySong(const aname: string; const pattern: integer);
 
 procedure StopMusic;
@@ -74,54 +72,13 @@ uses
   d_ints_h,
   d_ints,
   d_misc,
+  m_defs,
   bass,
   intro,
   i_windows,
   raven,
   r_public,
   r_render;
-
-function LoadSetup(const SC: PSoundCard; const Filename: string): integer;
-var
-  f: file;
-begin
-  if not fopen(f, FileName, fOpenReadOnly) then
-  begin
-    result := 1;
-    exit;
-  end;
-  if not fread(SC, SizeOf(SoundCard), 1, f) then
-  begin
-    fclose(f);
-    result := 1;
-    exit;
-  end;
-
-  fclose(f);
-  result := 0;
-end;
-
-
-function SaveSetup(const SC: PSoundCard; const Filename: string): integer;
-var
-  f: file;
-begin
-  if not fopen(f, FileName, fCreate) then
-  begin
-    result := 1;
-    exit;
-  end;
-
-  if not fwrite(SC, SizeOf(SoundCard), 1, f) then
-  begin
-    fclose(f);
-    result := 1;
-    exit;
-  end;
-
-  fclose(f);
-  result := 0;
-end;
 
 var
   MUSIC_HANDLE: DWORD;
@@ -155,62 +112,59 @@ procedure InitSound;
 begin
   MusicPresent := false;
 
+  SC.ambientlight := 2048;      // load all defaults
+  SC.violence := true;
+  SC.animation := true;
+  SC.musicvol := 100;
+  SC.sfxvol := 128;
+  SC.ckeys[0] := scanbuttons[bt_run];
+  SC.ckeys[1] := scanbuttons[bt_jump];
+  SC.ckeys[2] := scanbuttons[bt_straf];
+  SC.ckeys[3] := scanbuttons[bt_fire];
+  SC.ckeys[4] := scanbuttons[bt_use];
+  SC.ckeys[5] := scanbuttons[bt_useitem];
+  SC.ckeys[6] := scanbuttons[bt_asscam];
+  SC.ckeys[7] := scanbuttons[bt_lookup];
+  SC.ckeys[8] := scanbuttons[bt_lookdown];
+  SC.ckeys[9] := scanbuttons[bt_centerview];
+  SC.ckeys[10] := scanbuttons[bt_slideleft];
+  SC.ckeys[11] := scanbuttons[bt_slideright];
+  SC.ckeys[12] := scanbuttons[bt_invleft];
+  SC.ckeys[13] := scanbuttons[bt_invright];
+  SC.inversepan := false;
+  SC.screensize := 4;
+  SC.camdelay := 35;
+  SC.effecttracks := 4;
+  SC.mouse := 1;
+  SC.joystick := 0;
+
+  SC.chartype := 0;
+  SC.socket := 1234;
+  SC.numplayers := 2;
+  SC.serplayers := 1;
+  SC.com := 1;
+  SC.rightbutton := bt_north;
+  SC.leftbutton := bt_fire;
+  SC.joybut1 := bt_fire;
+  SC.joybut2 := bt_straf;
+  SC.dialnum := '            ';
+  SC.netname := '            ';
+  SC.netmap := 22;
+  SC.netdifficulty := 2;
+  SC.mousesensitivity := 32;
+  SC.turnspeed := 8;
+  SC.turnaccel := 2;
+
+  SC.vrhelmet := 0;
+  SC.vrangle := DEFAULTVRANGLE;
+  SC.vrdist := DEFAULTVRDIST;
+
+  lighting := 1;
+  changelight := SC.ambientlight;
+
   // load config file
-  if LoadSetup(@SC, 'SETUP.CFG') <> 0 then
-  begin
-    printf('Sound: SETUP.CFG not found'#13#10);
-    printf('       Setting default values'#13#10);
-
-    SC.ambientlight := 2048;      // load all defaults
-    SC.violence := true;
-    SC.animation := true;
-    SC.musicvol := 100;
-    SC.sfxvol := 128;
-    SC.ckeys[0] := scanbuttons[bt_run];
-    SC.ckeys[1] := scanbuttons[bt_jump];
-    SC.ckeys[2] := scanbuttons[bt_straf];
-    SC.ckeys[3] := scanbuttons[bt_fire];
-    SC.ckeys[4] := scanbuttons[bt_use];
-    SC.ckeys[5] := scanbuttons[bt_useitem];
-    SC.ckeys[6] := scanbuttons[bt_asscam];
-    SC.ckeys[7] := scanbuttons[bt_lookup];
-    SC.ckeys[8] := scanbuttons[bt_lookdown];
-    SC.ckeys[9] := scanbuttons[bt_centerview];
-    SC.ckeys[10] := scanbuttons[bt_slideleft];
-    SC.ckeys[11] := scanbuttons[bt_slideright];
-    SC.ckeys[12] := scanbuttons[bt_invleft];
-    SC.ckeys[13] := scanbuttons[bt_invright];
-    SC.inversepan := false;
-    SC.screensize := 0;
-    SC.camdelay := 35;
-    SC.effecttracks := 4;
-    SC.mouse := 1;
-    SC.joystick := 0;
-
-    SC.chartype := 0;
-    SC.socket := 1234;
-    SC.numplayers := 2;
-    SC.serplayers := 1;
-    SC.com := 1;
-    SC.rightbutton := bt_north;
-    SC.leftbutton := bt_fire;
-    SC.joybut1 := bt_fire;
-    SC.joybut2 := bt_straf;
-    SC.dialnum := '            ';
-    SC.netname := '            ';
-    SC.netmap := 22;
-    SC.netdifficulty := 2;
-    SC.mousesensitivity := 32;
-    SC.turnspeed := 8;
-    SC.turnaccel := 2;
-
-    SC.vrhelmet := 0;
-    SC.vrangle := DEFAULTVRANGLE;
-    SC.vrdist := DEFAULTVRDIST;
-
-    lighting := 1;
-    changelight := SC.ambientlight;
-  end;
+  if not M_LoadDefaults then
+    printf('LoadDefaults: Default file not found, using defaults'#13#10);
 
   MusicError := 0;
   if not BASS_Init(-1, 44100, 0, hMainWnd, nil) then
@@ -231,21 +185,6 @@ begin
     MS_Error('InitSound: SOUNDEFFECTS lump not found in BLO file.');
 
   MusicSwapChannels := SC.inversepan;
-
-  scanbuttons[bt_run] := SC.ckeys[0];
-  scanbuttons[bt_jump] := SC.ckeys[1];
-  scanbuttons[bt_straf] := SC.ckeys[2];
-  scanbuttons[bt_fire] := SC.ckeys[3];
-  scanbuttons[bt_use] := SC.ckeys[4];
-  scanbuttons[bt_useitem] := SC.ckeys[5];
-  scanbuttons[bt_asscam] := SC.ckeys[6];
-  scanbuttons[bt_lookup] := SC.ckeys[7];
-  scanbuttons[bt_lookdown] := SC.ckeys[8];
-  scanbuttons[bt_centerview] := SC.ckeys[9];
-  scanbuttons[bt_slideleft] := SC.ckeys[10];
-  scanbuttons[bt_slideright] := SC.ckeys[11];
-  scanbuttons[bt_invleft] := SC.ckeys[12];
-  scanbuttons[bt_invright] := SC.ckeys[13];
 
   lighting := 1;
   changelight := SC.ambientlight;
