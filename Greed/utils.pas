@@ -102,7 +102,8 @@ uses
   r_public,
   r_render,
   r_walls,
-  spawn;
+  spawn,
+  timer;
 
 function SAVENAME: string;
 begin
@@ -1587,6 +1588,8 @@ label
 begin
   selectsong(22);
 
+  INT_TimerHook(nil);
+
   c := Chr(cdr_drivenum + Ord('A'));
   if CDROMGREEDDIR then
   begin
@@ -1602,6 +1605,8 @@ begin
     name := c + ':\MOVIES\TEMPLE1.FLI';
     DoPlayFLI(name, 0);
   end;
+
+  needsblit := true;
 
   VI_FillPalette(0, 0, 0);
 
@@ -1636,45 +1641,8 @@ begin
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   memset(screen, 0, 64000);
 
-  loadscreen('SOFTLOGO');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('SOFTLOGO') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
-  end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
-
-  loadscreen('CREDITS1');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
-  begin
-    Wait(10, 1);
-    if newascii then
-      break;
-  end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
-
-  loadscreen('CREDITS2');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
-  begin
-    Wait(10, 1);
-    if newascii then
-      break;
-  end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
-
-  if not ASSASSINATOR then
-  begin
-    loadscreen('CREDITS3');
     VI_FadeIn(0, 256, @colors, 48);
     newascii := false;
     while true do
@@ -1685,6 +1653,51 @@ begin
     end;
     VI_FadeOut(0, 256, 0, 0, 0, 48);
     memset(screen, 0, 64000);
+  end;
+
+  if loadscreen('CREDITS1') then
+  begin
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
+  end;
+
+  if loadscreen('CREDITS2') then
+  begin
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
+  end;
+
+  if not ASSASSINATOR then
+  begin
+    if loadscreen('CREDITS3') then
+    begin
+      VI_FadeIn(0, 256, @colors, 48);
+      newascii := false;
+      while true do
+      begin
+        Wait(10, 1);
+        if newascii then
+          break;
+      end;
+      VI_FadeOut(0, 256, 0, 0, 0, 48);
+      memset(screen, 0, 64000);
+    end;
   end;
 
 endgame1exit:
@@ -1698,6 +1711,8 @@ var
   c: char;
 begin
   selectsong(22);
+
+  INT_TimerHook(nil);
 
   c := Chr(cdr_drivenum + Ord('A'));
   if CDROMGREEDDIR then
@@ -1719,6 +1734,7 @@ begin
     DoPlayFLI(name, 0);
   end;
 
+  needsblit := true;
 
   VI_FillPalette(0, 0, 0);
 
@@ -1754,53 +1770,61 @@ begin
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   memset(screen, 0, 64000);
 
-  loadscreen('SOFTLOGO');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('SOFTLOGO') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
-  loadscreen('CREDITS1');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('CREDITS1') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
-  loadscreen('CREDITS2');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('CREDITS2') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
-  loadscreen('CREDITS3');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('CREDITS3') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
   redo := true;
 end;
@@ -1811,6 +1835,8 @@ var
   name: string;
   c: char;
 begin
+  INT_TimerHook(nil);
+
   c := Chr(cdr_drivenum + Ord('A'));
   if CDROMGREEDDIR then
   begin
@@ -1850,6 +1876,8 @@ begin
     name := c + ':\MOVIES\JUMPBAS9.FLI';
     DoPlayFLI(name, 0);
   end;
+
+  needsblit := true;
 
   VI_FillPalette(0, 0, 0);
 
@@ -1899,53 +1927,61 @@ begin
   VI_FadeOut(0, 256, 0, 0, 0, 48);
   memset(screen, 0, 64000);
 
-  loadscreen('SOFTLOGO');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('SOFTLOGO') then
   begin
-    Wait(10, 1);
-    if newascii then
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
       break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
-  loadscreen('CREDITS1');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('CREDITS1') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
-  loadscreen('CREDITS2');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('CREDITS2') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
-  loadscreen('CREDITS3');
-  VI_FadeIn(0, 256, @colors, 48);
-  newascii := false;
-  while true do
+  if loadscreen('CREDITS3') then
   begin
-    Wait(10, 1);
-    if newascii then
-      break;
+    VI_FadeIn(0, 256, @colors, 48);
+    newascii := false;
+    while true do
+    begin
+      Wait(10, 1);
+      if newascii then
+        break;
+    end;
+    VI_FadeOut(0, 256, 0, 0, 0, 48);
+    memset(screen, 0, 64000);
   end;
-  VI_FadeOut(0, 256, 0, 0, 0, 48);
-  memset(screen, 0, 64000);
 
   redo := true;
 end;
