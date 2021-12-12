@@ -99,12 +99,12 @@ begin
       i := oldvol;
       while i > 0 do  // fade out
       begin
-        SetVolumes(i, SC.musicvol);
+        SetVolumes(i, SC.sfxvol);
         Wait(1);
         dec(i, 3);
       end;
     end;
-    SetVolumes(oldvol, SC.musicvol);
+    SetVolumes(oldvol, SC.sfxvol);
     BASS_ChannelStop(MUSIC_HANDLE);
     MUSIC_HANDLE := 0;
   end;
