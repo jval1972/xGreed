@@ -536,6 +536,7 @@ var
   px, py, h1, x1, center, y1, x: integer;
   a, w: fixed_t;
   color: pixel_t;
+  afrac1: fixed_t;
 label
   abort1;
 begin
@@ -647,12 +648,16 @@ begin
           if windowHeight <> 64 then
           begin
             py := span_p.y;
-            while py < 0 do
-              py := py + 64;
+            repeat
+              py := py + 128;
+            until py >= 0;
           end;
           h1 := (hfrac * py) div FRACUNIT;
           if px <= w then
           begin
+            afrac1 := afrac;
+            if windowHeight <> 64 then
+              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
             while (px <= w) and (mr_count > 0) do
             begin
@@ -666,9 +671,13 @@ begin
               dec(mr_count);
               mr_dest := @mr_dest[1];
             end;
+            afrac := afrac1;
           end;
           if px > w then
           begin
+            afrac1 := afrac;
+            if windowHeight <> 64 then
+              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
             while mr_count > 0 do
             begin
@@ -681,6 +690,7 @@ begin
               dec(mr_count);
               mr_dest := @mr_dest[1];
             end;
+            afrac := afrac1;
           end;
         end;
 
@@ -701,12 +711,16 @@ begin
         if windowHeight <> 64 then
         begin
           py := span_p.y;
-          while py < 0 do
-            py := py + 64;
+          repeat
+            py := py + 128;
+          until py >= 0;
         end;
         h1 := (hfrac * py) div FRACUNIT;
         if px <= w then
         begin
+          afrac1 := afrac;
+          if windowHeight <> 64 then
+            afrac := afrac * 320 div windowWidth;
           a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
           while (px <= w) and (mr_count > 0) do
           begin
@@ -719,9 +733,13 @@ begin
             dec(mr_count);
             mr_dest := @mr_dest[1];
           end;
+          afrac := afrac1;
         end;
         if px > w then
         begin
+          afrac1 := afrac;
+          if windowHeight <> 64 then
+            afrac := afrac * 320 div windowWidth;
           a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
           while mr_count > 0 do
           begin
@@ -733,6 +751,7 @@ begin
             dec(mr_count);
             mr_dest := @mr_dest[1];
           end;
+          afrac := afrac1;
         end;
       end;
 
@@ -818,12 +837,16 @@ begin
           if windowHeight <> 64 then
           begin
             py := span_p.y;
-            while py < 0 do
-              py := py + 64;
+            repeat
+              py := py + 128;
+            until py >= 0;
           end;
           h1 := (hfrac * py) div FRACUNIT;
           if px <= w then
           begin
+            afrac1 := afrac;
+            if windowHeight <> 64 then
+              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
             while (px <= w) and (mr_count > 0) do
             begin
@@ -837,9 +860,13 @@ begin
               dec(mr_count);
               mr_dest := @mr_dest[1];
             end;
+            afrac := afrac1;
           end;
           if px > w then
           begin
+            afrac1 := afrac;
+            if windowHeight <> 64 then
+              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
             while mr_count > 0 do
             begin
@@ -852,6 +879,7 @@ begin
               dec(mr_count);
               mr_dest := @mr_dest[1];
             end;
+            afrac := afrac1;
           end;
         end;
       end;
