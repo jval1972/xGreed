@@ -3008,6 +3008,7 @@ begin
     GAME1 := true;
     GAME2 := false;
     GAME3 := false;
+    gameepisode := 1;
     newmap(0, 2);
   end
   else if Check_Secret('game2') and not DEMO then
@@ -3015,6 +3016,7 @@ begin
     GAME1 := false;
     GAME2 := true;
     GAME3 := false;
+    gameepisode := 2;
     newmap(8, 2);
   end
   else if Check_Secret('game3') and not DEMO then
@@ -3022,6 +3024,7 @@ begin
     GAME1 := false;
     GAME2 := false;
     GAME3 := true;
+    gameepisode := 3;
     newmap(16, 2);
   end
   else if Length(secretbuf) > 2 then
