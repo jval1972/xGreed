@@ -791,27 +791,8 @@ var
 begin
   netplay := false;
 
-  if MS_CheckParm('game1') > 0 then
-  begin
-    GAME1 := true;
-    GAME2 := false;
-    GAME3 := false;
-    gameepisode := 1;
-  end
-  else if MS_CheckParm('game2') > 0 then
-  begin
-    GAME1 := false;
-    GAME2 := true;
-    GAME3 := false;
-    gameepisode := 2;
-  end
-  else if MS_CheckParm('game3') > 0 then
-  begin
-    GAME1 := false;
-    GAME2 := false;
-    GAME3 := true;
-    gameepisode := 3;
-  end;
+  M_ResolveCommandLineEpisode;
+
   if MS_CheckParm('nointro') > 0 then
     nointro := true;
   if MS_CheckParm('record') > 0 then
