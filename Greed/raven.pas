@@ -2522,19 +2522,19 @@ begin
   // check strafe
   if ((in_button[bt_straf] <> 0) or (in_button[bt_slideleft] <> 0) or (in_button[bt_slideright] <> 0)) and (netmsgstatus = 0) then
   begin
-    if (in_button[bt_west] <> 0) or (in_button[bt_slideleft] <> 0) then
+    if (in_button[bt_west] <> 0) or (in_button[bt_slideleft] <> 0) or (imousedx >= FRACUNIT) then
     begin
       strafrate := strafrate - modifiedMoveUnit;
       if strafrate < -modifiedSpeed then
         strafrate := strafrate + modifiedMoveUnit;
     end;
-    if (in_button[bt_east] <> 0) or (in_button[bt_slideright] <> 0) then
+    if (in_button[bt_east] <> 0) or (in_button[bt_slideright] <> 0) or (imousedx <= -FRACUNIT) then
     begin
       strafrate := strafrate + modifiedMoveUnit;
       if strafrate > modifiedSpeed then
         strafrate := strafrate - modifiedMoveUnit;
     end
-    else if (in_button[bt_west] = 0) and (in_button[bt_slideleft] = 0) then
+    else if (in_button[bt_west] = 0) and (in_button[bt_slideleft] = 0) and (imousedx > - FRACUNIT) and (imousedx < FRACUNIT) then
     begin
       if strafrate < 0 then
         strafrate := strafrate + MOVEUNIT
