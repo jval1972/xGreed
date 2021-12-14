@@ -2189,8 +2189,8 @@ begin
       else
          door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.pic := CA_GetNamedNum('door_1') - walllump;
       door_p.doorTimer := player.timecount;
       mapsprites[mapspot] := 0;
@@ -2204,8 +2204,8 @@ begin
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_1') - walllump;
       mapsprites[mapspot] := 0;
@@ -2219,8 +2219,8 @@ begin
       else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
     //   door_p.transparent := true;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_2') - walllump;
@@ -2235,8 +2235,8 @@ begin
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
     //   door_p.transparent := true;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_2') - walllump;
@@ -2251,8 +2251,8 @@ begin
       else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_3') - walllump;
       mapsprites[mapspot] := 0;
@@ -2266,8 +2266,8 @@ begin
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_3') - walllump;
       mapsprites[mapspot] := 0;
@@ -2281,8 +2281,8 @@ begin
       else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_4') - walllump;
       mapsprites[mapspot] := 0;
@@ -2296,8 +2296,8 @@ begin
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_4') - walllump;
       mapsprites[mapspot] := 0;
@@ -2311,8 +2311,8 @@ begin
       else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.pic := CA_GetNamedNum('door_5') - walllump;
       door_p.doorTimer := player.timecount;
       mapsprites[mapspot] := 0;
@@ -2326,8 +2326,8 @@ begin
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_5') - walllump;
       mapsprites[mapspot] := 0;
@@ -2341,8 +2341,8 @@ begin
       else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.pic := CA_GetNamedNum('door_6') - walllump;
       door_p.doorTimer := player.timecount;
       mapsprites[mapspot] := 0;
@@ -2356,8 +2356,8 @@ begin
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_6') - walllump;
       mapsprites[mapspot] := 0;
@@ -2371,8 +2371,8 @@ begin
       else
         door_p.orientation := dr_vertical;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.pic := CA_GetNamedNum('door_7') - walllump;
       door_p.doorTimer := player.timecount;
       mapsprites[mapspot] := 0;
@@ -2386,8 +2386,8 @@ begin
       else
         door_p.orientation := dr_horizontal;
       door_p.doorBumpable := true;
-      door_p.doorSize := 64;
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.doorSize := 64 * FRACUNIT;
+      door_p.position := door_p.doorSize;
       door_p.doorTimer := player.timecount;
       door_p.pic := CA_GetNamedNum('door_7') - walllump;
       mapsprites[mapspot] := 0;
@@ -2411,6 +2411,7 @@ begin
         end;
       elevator_p.ceiling := maxheight;
       elevator_p.position := maxheight;
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.typ := E_NORMAL;
       elevator_p.elevTimer := player.timecount;
       elevator_p.speed := 8;
@@ -2433,6 +2434,7 @@ begin
         end;
       elevator_p.ceiling := maxheight;
       elevator_p.position := maxheight;
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.typ := E_NORMAL;
       elevator_p.elevTimer := $70000000;
       elevator_p.speed := 8;
@@ -2448,6 +2450,7 @@ begin
     begin
       elevator_p := RF_GetElevator;
       elevator_p.position := floorheight[mapspot];
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.floor := floorheight[mapspot];
       elevator_p.mapspot := mapspot;
       mapsprites[mapspot] := 0;
@@ -2476,6 +2479,7 @@ begin
       elevator_p := RF_GetElevator;
       elevator_p.elevDown := true;
       elevator_p.position := ceilingheight[mapspot];
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.floor := floorheight[mapspot];
       elevator_p.ceiling := ceilingheight[mapspot];
       floorheight[mapspot] := ceilingheight[mapspot];
@@ -2491,6 +2495,7 @@ begin
       elevator_p := RF_GetElevator;
       elevator_p.elevDown := true;
       elevator_p.position := ceilingheight[mapspot];
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.floor := floorheight[mapspot];
       elevator_p.ceiling := ceilingheight[mapspot];
       floorheight[mapspot] := ceilingheight[mapspot];
@@ -2506,6 +2511,7 @@ begin
       elevator_p := RF_GetElevator;
       elevator_p.elevDown := true;
       elevator_p.position := ceilingheight[mapspot];
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.floor := floorheight[mapspot];
       elevator_p.ceiling := ceilingheight[mapspot];
       floorheight[mapspot] := ceilingheight[mapspot];
@@ -2525,6 +2531,7 @@ begin
     begin
       elevator_p := RF_GetElevator;
       elevator_p.position := ceilingheight[mapspot];
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.floor := floorheight[mapspot];
       elevator_p.ceiling := ceilingheight[mapspot];
       elevator_p.mapspot := mapspot;
@@ -2544,6 +2551,7 @@ begin
     begin
       elevator_p := RF_GetElevator;
       elevator_p.position := ceilingheight[mapspot];
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.floor := floorheight[mapspot];
       elevator_p.ceiling := ceilingheight[mapspot];
       elevator_p.mapspot := mapspot;
@@ -2566,6 +2574,7 @@ begin
       elevator_p.mapspot := mapspot;
       elevator_p.ceiling := ceilingheight[mapspot];
       elevator_p.position := ceilingheight[mapspot];
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.typ := E_SECRET;
       elevator_p.elevTimer := $70000000;
       elevator_p.speed := 8;

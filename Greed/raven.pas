@@ -197,10 +197,11 @@ begin
   begin
     while time >= elev_p.elevTimer do
     begin
-      if elev_p.elevUp and (CAddI(elev_p.position, elev_p.speed) >= elev_p.ceiling) then
+      if elev_p.elevUp and (CAddI(elev_p.position64, FRACUNIT * elev_p.speed div MOVEDELAY) >= elev_p.ceiling * FRACUNIT) then
       begin
         SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         elev_p.position := elev_p.ceiling;
+        elev_p.position64 := elev_p.position * FRACUNIT;
         if elev_p.typ = E_NORMAL then
           elev_p.elevDown := true
         else if (elev_p.typ <> E_SWAP) and (elev_p.typ <> E_SECRET) then
@@ -217,10 +218,11 @@ begin
         elev_p.elevUp := false;
         elev_p.elevTimer := elev_p.elevTimer + 4 * TICRATE;
       end
-      else if (elev_p.elevDown) and (CSubI(elev_p.position, elev_p.speed) <= elev_p.floor) then
+      else if elev_p.elevDown and (CSubI(elev_p.position64, FRACUNIT * elev_p.speed div MOVEDELAY) <= elev_p.floor * FRACUNIT) then
       begin
-        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot) and (63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
+        SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         elev_p.position := elev_p.floor;
+        elev_p.position64 := elev_p.position * FRACUNIT;
         if (elev_p.typ = E_NORMAL) or (elev_p.typ = E_SECRET) then
           elev_p.elevUp := true
         else if elev_p.typ <> E_SWAP then
@@ -236,16 +238,21 @@ begin
         end;
         elev_p.elevDown := false;
         elev_p.elevTimer := elev_p.elevTimer + 4 * TICRATE;
-      end;
+      end
+      else
+        elev_p.position := elev_p.position64 div FRACUNIT;
       if (elev_p.typ = E_SECRET) and elev_p.elevUp then
       begin
         if (player.mapspot = elev_p.mapspot) or (mapsprites[elev_p.mapspot] <> 0) then
+        begin
           elev_p.position := elev_p.floor;
+          elev_p.position64 := elev_p.position * FRACUNIT;
+        end;
       end;
       if mapsprites[elev_p.mapspot] = SM_ELEVATOR then
         mapsprites[elev_p.mapspot] := 0;
       floorheight[elev_p.mapspot] := elev_p.position;
-      elev_p.elevTimer := elev_p.elevTimer + MOVEDELAY;
+      elev_p.elevTimer := elev_p.elevTimer + 1;
     end;
     elev_p := elev_p.next;
   end;
@@ -1371,38 +1378,38 @@ begin
 
       if door_p.doorOpening then
       begin
-        if CSubI(door_p.doorSize, 4) <= MINDOORSIZE then
+        if CSubI(door_p.doorSize, 4 * FRACUNIT div MOVEDELAY) <= MINDOORSIZE * FRACUNIT then
         begin
-          door_p.doorSize := MINDOORSIZE;
+          door_p.doorSize := MINDOORSIZE * FRACUNIT;
           door_p.doorOpening := false;
           door_p.doorOpen := true;
           door_p.doorTimer := door_p.doorTimer + 270; // 3 seconds
         end
         else
-          door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+          door_p.doorTimer := door_p.doorTimer + 1;
       end
       else if door_p.doorClosing then
       begin
-        if CAddI(door_p.doorSize, 4) >= 64 then
+        if CAddI(door_p.doorSize, 4 * FRACUNIT div MOVEDELAY) >= 64 * FRACUNIT then
         begin
-          door_p.doorSize := 64;
+          door_p.doorSize := 64 * FRACUNIT;
           door_p.doorClosing := false;
-          door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+          door_p.doorTimer := door_p.doorTimer + 1;
         end
         else
-          door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+          door_p.doorTimer := door_p.doorTimer + 1;
       end
       else if door_p.doorOpen and (timecount > door_p.doorTimer) and not door_p.doorBlocked then
       begin
         door_p.doorClosing := true;
         door_p.doorOpen := false;
         SoundEffect(SN_DOOR, 15, door_p.tilex * FRACTILEUNIT, door_p.tiley * FRACTILEUNIT);
-        door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+        door_p.doorTimer := door_p.doorTimer + 1;
       end
       else
-        door_p.doorTimer := door_p.doorTimer + MOVEDELAY;
+        door_p.doorTimer := door_p.doorTimer + 1;
 
-      door_p.position := door_p.doorSize * FRACUNIT;
+      door_p.position := door_p.doorSize;
     end;
     inc(door_p);
   end;

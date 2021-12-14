@@ -244,6 +244,7 @@ type
     elevUp: bool;
     elevDown: bool;
     position: integer;
+    position64: integer;
     elevTimer: integer;
     floor: integer;
     ceiling: integer;

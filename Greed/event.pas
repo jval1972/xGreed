@@ -110,7 +110,7 @@ begin
   while (i < MAXPROCESS) and (processes[i] <> 0) do
     inc(i);
   if i = MAXPROCESS then
-  MS_Error('AddProcess(): Process array overflow');
+    MS_Error('AddProcess(): Process array overflow');
   processes[i] := 1000 + n;
   inc(numprocesses);
 end;
@@ -296,7 +296,10 @@ var
   z: Pzone_t;
   layer: PByteArray;
   changed: boolean;
+  oldfloorz, newfloorz: fixed_t;
 begin
+  oldfloorz := RF_GetFloorZ(player.x, player.y) + player.height;
+
   count := numprocesses;
   index := -1;
   repeat
@@ -353,6 +356,13 @@ begin
         RunEvent(z.endeval, false);
     end;
   until count <= 0;
+
+  newfloorz := RF_GetFloorZ(player.x, player.y) + player.height;
+  if newfloorz <> oldfloorz then
+  begin
+    player.z := newfloorz;
+    fallrate := 0;
+  end;
 end;
 
 
@@ -469,6 +479,7 @@ begin
         elevator_p.position := lower
       else
         elevator_p.position := upper;
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.typ := E_TRIGGERED;
       elevator_p.elevTimer := $70000000;
       elevator_p.speed := speed;
@@ -502,6 +513,7 @@ begin
         elevator_p.position := lower
       else
         elevator_p.position := upper;
+      elevator_p.position64 := elevator_p.position * FRACUNIT;
       elevator_p.typ := E_NORMAL;
       elevator_p.elevTimer := $70000000;
       elevator_p.speed := speed;
