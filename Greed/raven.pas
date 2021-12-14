@@ -215,7 +215,7 @@ begin
           break;
         end;
         elev_p.elevUp := false;
-        elev_p.elevTimer := elev_p.elevTimer + 280;
+        elev_p.elevTimer := elev_p.elevTimer + 4 * TICRATE;
       end
       else if (elev_p.elevDown) and (CSubI(elev_p.position, elev_p.speed) <= elev_p.floor) then
       begin
@@ -235,7 +235,7 @@ begin
           break;
         end;
         elev_p.elevDown := false;
-        elev_p.elevTimer := elev_p.elevTimer + 280;
+        elev_p.elevTimer := elev_p.elevTimer + 4 * TICRATE;
       end;
       if (elev_p.typ = E_SECRET) and elev_p.elevUp then
       begin
@@ -484,7 +484,7 @@ begin
       result := autoangle2[d][z];
       exit;
     end
-    else if sz<pz then
+    else if sz < pz then
     begin
       z := _SHR((pz - sz), (FRACBITS + 2));
       if z >= MAXAUTO then
