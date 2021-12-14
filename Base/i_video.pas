@@ -235,6 +235,14 @@ begin
       inc(destl);
       inc(src);
     end;
+    s8 := @viewbuffer[0];
+    for i := parms.start to parms.stop do
+    begin
+      x := (i mod 640) div 2;
+      y := (i div 640) div 2;
+      if s8[y, x] <> 0 then
+        screen32[i] := curpal[s8[y, x]];
+    end;
   end
   else if bpp = 16 then
   begin
@@ -249,16 +257,21 @@ begin
       inc(destw);
       inc(src);
     end;
+    s8 := @viewbuffer[0];
+    for i := parms.start to parms.stop do
+    begin
+      x := (i mod 640) div 2;
+      y := (i div 640) div 2;
+      if s8[y, x] <> 0 then
+      begin
+        pixel := curpal[s8[y, x]];
+        r := (pixel shr 19) and 31;
+        g := (pixel shr 11) and 31;
+        b := (pixel shr 3) and 31;
+        screen16[i] := (r shl 11) or (g shl 6) or b;
+      end;
+    end;
   end;
-
-  s8 := @viewbuffer[0];
-  for i := parms.start to parms.stop do
-  begin
-    x := (i mod 640) div 2;
-    y := (i div 640) div 2;
-    if s8[y, x] <> 0 then
-      screen32[i] := curpal[s8[y, x]];
-  end;     
 end;
 
 var
