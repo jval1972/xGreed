@@ -2550,52 +2550,6 @@ begin
       strafrate := strafrate - MOVEUNIT;
 
     // not strafing
-    if in_button[bt_east] <> 0 then
-    begin
-      turnrate := turnrate - modifiedturnunit;
-      if turnrate < -modifiedTurn then
-        turnrate := -modifiedTurn;
-      player.angle := player.angle + turnrate;
-    end
-    else if in_button[bt_west] <> 0 then
-    begin
-      turnrate := turnrate + modifiedturnunit;
-      if turnrate > modifiedTurn then
-        turnrate := modifiedTurn;
-      player.angle := player.angle + turnrate;
-    end
-    else if imousedx <= -FRACUNIT then
-    begin
-      turnrate := turnrate - modifiedturnunit div 2 + imousedx div (2 * FRACUNIT);
-      if turnrate < -modifiedTurn then
-        turnrate := -modifiedTurn;
-      player.angle := player.angle + turnrate;
-    end
-    else if imousedx >= FRACUNIT then
-    begin
-      turnrate := turnrate + modifiedturnunit div 2 + imousedx div (2 * FRACUNIT);
-      if turnrate > modifiedTurn then
-        turnrate := modifiedTurn;
-      player.angle := player.angle + turnrate;
-    end
-    else
-    begin
-      if turnrate < 0 then
-      begin
-        turnrate := turnrate + modifiedturnunit;
-        if turnrate > 0 then
-          turnrate := 0
-      end
-      else if turnrate > 0 then
-      begin
-        turnrate := turnrate - modifiedturnunit;
-        if turnrate < 0 then
-          turnrate := 0;
-      end;
-      player.angle := player.angle + turnrate;
-    end;
-
-
     angleturn := 0;
     if in_button[bt_east] <> 0 then
       angleturn := angleturn - angleturnunit;
