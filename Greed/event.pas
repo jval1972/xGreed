@@ -168,14 +168,6 @@ begin
     elev_p := elev_p.next;
   end;
 
-// if (eval = 50)
-//   begin
-//   debug := fopen('debug.txt','wt');
-//   for (i := 0;i<numzones;i++)
-//    fprintf(debug,'zone:%i eval:%i type:%i\n',i,zones[i].eval,zones[i].typ);
-//   fclose(debug);
-//    end;
-
   for i := 0 to numzones - 1 do
     if zones[i].eval = eval then
     begin
@@ -184,7 +176,7 @@ begin
         sp := firstscaleobj.next;
         while sp <> @lastscaleobj do
         begin
-          if (not sp.active) and (sp.moveSpeed <> 0) then
+          if not sp.active and (sp.moveSpeed <> 0) then
           begin
             x := sp.x div FRACTILEUNIT;
             y := sp.y div FRACTILEUNIT;
@@ -659,9 +651,9 @@ begin
         z.typ := SPAWNTYPE;
         z.removeable := removeable;
       end;
-   end
-   else if stmp = 'SPAWNTRIGGER' then
-   begin
+    end
+    else if stmp = 'SPAWNTRIGGER' then
+    begin
       sce.MustGetInteger;
       x := sce._Integer;
       sce.MustGetInteger;
