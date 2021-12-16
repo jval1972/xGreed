@@ -1302,7 +1302,7 @@ object Form1: TForm1
   object OpenDialog1: TOpenDialog
     DefaultExt = 'blo'
     Filter = 'GREED.BLO|GREED.BLO|BLO Files (*.blo)|*.blo'
-    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
+    Options = [ofHideReadOnly, ofNoChangeDir, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 328
     Top = 48
   end
