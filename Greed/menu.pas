@@ -726,10 +726,6 @@ begin
   end;
 end;
 
-procedure MenuStub;
-begin
-end;
-
 
 procedure MenuShowCursor(const menucursor: integer);
 var
