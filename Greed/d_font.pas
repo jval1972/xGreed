@@ -91,11 +91,10 @@ var
   b: byte;
   dest: PByteArray;
   source: PByte;
-  width, height, y, oldpx, yh: integer;
+  width, height, y, yh: integer;
   ch: char;
   i: integer;
 begin
-  oldpx := printx;
   dest := @viewylookup[printy][printx];
   height := font.height;
   for i := 1 to Length(str) do
@@ -133,11 +132,10 @@ var
   b: byte;
   dest: PByteArray;
   source: PByte;
-  width, height, y, oldpx, yh: integer;
+  width, height, y, yh: integer;
   ch: char;
   i: integer;
 begin
-  oldpx := printx;
   dest := @viewylookup[printy][printx];
   height := font.height;
   for i := 1 to Length(str) do
@@ -174,11 +172,10 @@ var
   b: byte;
   dest: PByteArray;
   source: PByte;
-  width, height, y, oldpx, yh: integer;
+  width, height, y, yh: integer;
   ch: char;
   i: integer;
 begin
-  oldpx := printx;
   dest := @ylookup[printy][printx];
   height := font.height;
   for i := 1 to Length(str) do
@@ -217,11 +214,10 @@ var
   b: byte;
   dest: PByteArray;
   source: PByte;
-  width, height, y, oldpx, yh: integer;
+  width, height, y, yh: integer;
   ch: char;
   i: integer;
 begin
-  oldpx := printx;
   dest := @ylookup[printy][printx];
   height := font.height;
   for i := 1 to Length(str) do

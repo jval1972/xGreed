@@ -247,16 +247,16 @@ begin
       end;
       p2.px := windowWidth;
     end;
-  end;
-  if p1.tz < MINZ then
-  begin
-    clipz :=  p1.tz + FIXEDMUL(dz, leftfrac);
-    if clipz < 0 then
+    if p1.tz < MINZ then
     begin
-      result := false;
-      exit;
+      clipz :=  p1.tz + FIXEDMUL(dz, leftfrac);
+      if clipz < 0 then
+      begin
+        result := false;
+        exit;
+      end;
+      p1.px :=  0;
     end;
-    p1.px :=  0;
   end;
   result := p1.px <> p2.px;
 end;

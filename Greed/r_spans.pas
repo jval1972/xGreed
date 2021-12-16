@@ -414,7 +414,8 @@ begin
     sp_colormap := @colormaps[wallflicker3 * 256]
   else if (span_p.shadow >= 5) and (span_p.shadow <= 8) then
   begin
-    if wallcycle = span_p.shadow - 5 then sp_colormap := colormaps
+    if wallcycle = span_p.shadow - 5 then
+      sp_colormap := colormaps
     else
     begin
       light := (pointz div FRACUNIT) + span_p.light;

@@ -1207,7 +1207,7 @@ var
   collumn: PByteArray;
   time: integer;
 begin
-  if goalitem = -1 then
+  if goalitem < 0 then
   begin
     if BonusItem.score <> 0 then
       togglegoalitem := true;

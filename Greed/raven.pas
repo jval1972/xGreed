@@ -287,6 +287,9 @@ begin
     result := (-player.scrollmin) and ANGLES;
     exit;
   end;
+
+  hsprite := nil;
+
   accuracy := 16; //16 + 2*player.difficulty;
   counter := 0;
   found := false;
@@ -468,7 +471,7 @@ begin
 
   end;
 
-  if found then
+  if found and (hsprite <> nil) then
   begin
     pz := pz + player.z;
     sz := hsprite.z + (hsprite.height div 2);
@@ -2807,7 +2810,6 @@ end;
 function Check_Secret(const code: string): boolean;
 var
   p: integer;
-  i: integer;
 begin
   p := Pos(strupper(code), strupper(secretbuf));
   if p > 0 then
@@ -3924,7 +3926,6 @@ procedure JamWarps;
 var
   sp, t: Pscaleobj_t;
   mapspot, i: integer;
-  sa: Pspawnarea_t;
 begin
   if specialeffect <> SE_WARPJAMMER then
   begin
@@ -4575,8 +4576,6 @@ end;
 
 
 procedure InitData;
-var
-  i: integer;
 begin
   quitgame := false;
   mapmode := 0;
