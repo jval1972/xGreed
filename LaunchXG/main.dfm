@@ -1234,7 +1234,7 @@ object Form1: TForm1
       Width = 105
       Height = 33
       Max = 20
-      Min = 1
+      Min = -1
       Position = 10
       TabOrder = 2
       OnChange = ScreenblocksTrackBarChange
@@ -1245,7 +1245,7 @@ object Form1: TForm1
       Width = 105
       Height = 33
       Max = 20
-      Min = 1
+      Min = -1
       Position = 10
       TabOrder = 3
       OnChange = ScreenblocksTrackBarChange
