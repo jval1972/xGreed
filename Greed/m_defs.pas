@@ -349,7 +349,7 @@ begin
           PBoolean(defaults[idx].location)^ := (v <> '0') and (v <> '');
         end
         else if defaults[idx]._type = tString then
-          PString(defaults[idx].location)^ := v;
+          PString255_t(defaults[idx].location)^ := v;
       end;
     end;
 

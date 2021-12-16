@@ -148,5 +148,6 @@ Item0=$(DELPHI)\Lib\Debug
 Count=1
 Item0=..\dcu
 [HistoryLists\hlOutputDirectorry]
-Count=1
+Count=2
 Item0=..\bin
+Item1=..\bin1
