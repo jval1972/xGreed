@@ -1259,9 +1259,9 @@ object Form1: TForm1
     Caption = ' Episode Selection '
     ItemIndex = 0
     Items.Strings = (
-      'Episode 1 - DESARIAN PENAL COLONY'
-      'Episode 2 - THE CITY TEMPLE OF RISTANAK'
-      'Episode 3 - KAAL')
+      'Part 1: Desarian Penal Colony'
+      'Part 2: City Temple of Ristanak'
+      'Part 3: Mt. Kaal Jump Base')
     TabOrder = 1
   end
   object Panel1: TPanel
