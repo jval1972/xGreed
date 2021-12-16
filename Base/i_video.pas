@@ -229,7 +229,7 @@ begin
   if bpp = 32 then
   begin
     destl := @screen32[parms.start];
-    while PCAST(src) < PCAST(srcstop) do
+    while PCAST(src) <= PCAST(srcstop) do
     begin
       destl^ := curpal[src^];
       inc(destl);
@@ -247,7 +247,7 @@ begin
   else if bpp = 16 then
   begin
     destw := @screen16[parms.start];
-    while PCAST(src) < PCAST(srcstop) do
+    while PCAST(src) <= PCAST(srcstop) do
     begin
       pixel := curpal[src^];
       r := (pixel shr 19) and 31;
