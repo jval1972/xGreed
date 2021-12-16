@@ -57,6 +57,8 @@ procedure VI_FadeIn(start, stop: integer; const apal: PByteArray;
 
 procedure VI_DrawPicSolid(const x, y: integer; const pic: Ppic_t);
 
+procedure VI_DrawPicSolidUntranslated(const x, y: integer; const pic: Ppic_t);
+
 procedure VI_DrawMaskedPic(x, y: integer; const pic: Ppic_t);
 
 procedure VI_DrawTransPicToBuffer(x, y: integer; const pic: Ppic_t);
@@ -186,6 +188,27 @@ begin
   height := pic.height;
   source := @pic.data;
   I_TranslateBuffer(source, width * height);
+  dest := @ylookup[y][x];
+
+  while height > 0 do
+  begin
+    memcpy(dest, source, width);
+    dest := @dest[MAX_VIEW_WIDTH];
+    source := @source[width];
+    dec(height);
+  end;
+end;
+
+
+procedure VI_DrawPicSolidUntranslated(const x, y: integer; const pic: Ppic_t);
+var
+  dest, source: PByteArray;
+  width: integer;
+  height: integer;
+begin
+  width := pic.width;
+  height := pic.height;
+  source := @pic.data;
   dest := @ylookup[y][x];
 
   while height > 0 do

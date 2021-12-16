@@ -216,6 +216,7 @@ uses
   playfli,
   raven,
   r_public,
+  r_render,
   timer,
   utils;
 
@@ -232,7 +233,8 @@ begin
     exit;
   end;
   l := CA_CacheLump(i);
-  VI_DrawPicSolid(0, 0, l);
+  R_ClearRenderBuffer;
+  VI_DrawPicSolidUntranslated(0, 0, l);
   CA_FreeLump(i);
   pal := CA_CacheLump(i + 1);
   memcpy(@colors, pal, 768);
