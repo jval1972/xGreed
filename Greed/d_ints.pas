@@ -51,10 +51,10 @@ var
   hiding: integer = 1;
   busy: integer = 1;  // internal flags
   // For hud
-  mousex: integer = 160;
-  mousey: integer = 100;
-  back: array[0..MOUSESIZE * MOUSESIZE - 1] of byte;  // background for mouse
-  fore: array[0..MOUSESIZE * MOUSESIZE - 1] of byte;  // mouse foreground
+  mousehx: float = 160.0;
+  mousehy: float = 100.0;
+  mousevisible: boolean = false;
+  mcursor: array[0..MOUSESIZE * MOUSESIZE - 1] of byte;  // mouse foreground
   // For gameplay
   mousedx: integer = 0;
   mousedy: integer = 0;
@@ -158,6 +158,7 @@ procedure INT_Setup;
 
 type
   mouse_t = record
+    oldflags: integer;
     flags: integer;
     dx, dy: integer;
   end;
@@ -171,6 +172,7 @@ implementation
 
 uses
   windows,
+  d_disk,
   i_main,
   i_windows,
   i_video,
@@ -282,7 +284,13 @@ end;
 
 function MouseGetClick(var x, y: smallint): boolean;
 begin
-  result := false;
+  result := (mouse.flags and 1 <> 0) and (mouse.oldflags and 1 = 0);
+  if result then
+  begin
+    mouse.oldflags := mouse.oldflags or 1;
+    x := round(mousehx);
+    y := round(mousehy);
+  end;
 end;
 
 type
@@ -309,6 +317,8 @@ begin
 end;
 
 procedure M_InitMouse;
+var
+  lump: integer;
 begin
   printf('M_InitMouse: Initializing Mouse'#13#10);
   user32inst := LoadLibrary(user32);
@@ -323,6 +333,9 @@ begin
     printf(' Mouse installed')
   else
     printf(' Mouse not installed');
+ lump := CA_GetNamedNum('MCURSOR');
+ seek(cachehandle, infotable[lump].filepos + 8);
+ fread(@mcursor, MOUSESIZE * MOUSESIZE, 1, cachehandle);
 end;
 
 procedure M_Shutdown;
@@ -346,9 +359,24 @@ begin
 
   getcursorposfunc(pt);
 
+  mouse.oldflags := mouse.flags;
   mouse.flags := mflags;
   mouse.dx := mlastx - pt.x;
   mouse.dy := mlasty - pt.y;
+
+  if mousevisible then
+  begin
+    mousehx := mousehx - mouse.dx * 320 / I_WindowWidth;
+    if mousehx < 0.0 then
+      mousehx := 0.0
+    else if mousehx > 319.0 then
+      mousehx := 319.0;
+    mousehy := mousehy - mouse.dy * 200 / I_WindowHeight;
+    if mousehy < 0.0 then
+      mousehy := 0.0
+    else if mousehy > 199.0 then
+      mousehy := 199.0;
+  end;
 
   ResetMouse;
 end;
@@ -378,11 +406,13 @@ end;
 
 procedure MouseHide;
 begin
+  mousevisible := false;
 end;
 
 
 procedure MouseShow;
 begin
+  mousevisible := true;
 end;
 
 end.

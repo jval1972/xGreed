@@ -2306,10 +2306,18 @@ begin
     keyboardDelay := timecount + KBDELAY;
   end;
 
-  if ((in_button[bt_lookup] <> 0) or (imousedy > FRACUNIT)) and (netmsgstatus = 0) then
+  if ((in_button[bt_lookup] <> 0) or (imousedy > FRACUNIT div 4)) and (netmsgstatus = 0) then
+  begin
     scrollview := scrollview - SCROLLRATE;
-  if ((in_button[bt_lookdown] <> 0) or (imousedy < -FRACUNIT)) and (netmsgstatus = 0) then
+    if imousedy > FRACUNIT div 2 then
+      scrollview := scrollview - SCROLLRATE;
+  end;
+  if ((in_button[bt_lookdown] <> 0) or (imousedy < -FRACUNIT div 4)) and (netmsgstatus = 0) then
+  begin
     scrollview := scrollview + SCROLLRATE;
+    if imousedy < -FRACUNIT div 2 then
+      scrollview := scrollview + SCROLLRATE;
+  end;
   if (in_button[bt_centerview] <> 0) and (netmsgstatus = 0) then
     scrollview := 255;
 

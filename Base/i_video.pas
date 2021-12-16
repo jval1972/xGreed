@@ -274,6 +274,68 @@ begin
   end;
 end;
 
+procedure I_DrawMouse;
+var
+  i: integer;
+  mx, my: integer; // Mouse image pos
+  bx, by: integer; // Screen image rover
+  x, y: integer; // Pixel
+  c: LongWord;
+  w: word;
+  r, g, b: LongWord;
+
+  procedure _pixel16(const xx, yy: integer);
+  begin
+    if (xx >= 0) and (xx < RENDER_VIEW_WIDTH) then
+      if (yy >= 0) and (yy < RENDER_VIEW_HEIGHT) then
+        screen16[xx + yy * RENDER_VIEW_WIDTH] := w;
+  end;
+
+  procedure _pixel32(const xx, yy: integer);
+  begin
+    if (xx >= 0) and (xx < RENDER_VIEW_WIDTH) then
+      if (yy >= 0) and (yy < RENDER_VIEW_HEIGHT) then
+        screen32[xx + yy * RENDER_VIEW_WIDTH] := c;
+  end;
+
+begin
+  if not mousevisible then
+    exit;
+
+  bx := Round(2 * mousehx);
+  by := Round(2 * mousehy);
+  for i := 0 to MOUSESIZE * MOUSESIZE - 1 do
+  begin
+    if mcursor[i] <> 0 then
+      if mcursor[i] <> 255 then
+      begin
+        mx := i mod MOUSESIZE;
+        my := i div MOUSESIZE;
+        x := bx + 2 * mx;
+        y := by + 2 * my;
+        c := curpal[mcursor[i]];
+        if bpp = 32 then
+        begin
+          _pixel32(x, y);
+          _pixel32(x + 1, y);
+          _pixel32(x, y + 1);
+          _pixel32(x + 1, y + 1);
+        end
+        else if bpp = 16 then
+        begin
+          r := (c shr 19) and 31;
+          g := (c shr 11) and 31;
+          b := (c shr 3) and 31;
+          w := (r shl 11) or (g shl 6) or b;
+          _pixel16(x, y);
+          _pixel16(x + 1, y);
+          _pixel16(x, y + 1);
+          _pixel16(x + 1, y + 1);
+        end;
+      end;
+  end;
+end;
+
 var
   old_pillarbox_pct: integer = -1;
   old_letterbox_pct: integer = -1;
@@ -298,6 +360,7 @@ begin
   parms1.start := 0;
   parms1.stop := RENDER_VIEW_WIDTH * RENDER_VIEW_HEIGHT - 1;
   I_FinishUpdate8(@parms1);
+  I_DrawMouse;
 
   vid_pillarbox_pct := ibetween(vid_pillarbox_pct, PILLARLETTER_MIN, PILLARLETTER_MAX);
   vid_letterbox_pct := ibetween(vid_letterbox_pct, PILLARLETTER_MIN, PILLARLETTER_MAX);
