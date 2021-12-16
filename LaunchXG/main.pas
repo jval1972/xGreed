@@ -262,7 +262,7 @@ begin
   else
     cmdline := cmdline + ' game1';
   if FileExists(MainDataFileEdit.Text) then
-    cmdline := cmdline + ' blo ' + '''' + MainDataFileEdit.Text + '''';
+    cmdline := cmdline + ' blo ' + '"' + MainDataFileEdit.Text + '"';
   weret := WinExec(PChar(cmdline), SW_SHOWNORMAL);
   if weret > 31 then
     Close
