@@ -36,6 +36,7 @@ type
     Label7: TLabel;
     MainDataFileEdit: TEdit;
     OpenBLOSpeedButton: TSpeedButton;
+    Timer1: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ScreenblocksTrackBarChange(Sender: TObject);
@@ -49,14 +50,18 @@ type
     procedure Button3Click(Sender: TObject);
     procedure AutorunModeCheckBoxClick(Sender: TObject);
     procedure OpenBLOSpeedButtonClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure MainDataFileEditChange(Sender: TObject);
   private
     { Private declarations }
     defaults: TStringList;
     in_startup: boolean;
+    in_runprepare: boolean;
     procedure SetDefault(const defname: string; const defvalue: integer);
     function GetDefault(const defname: string): integer;
     procedure ToControls;
     procedure FromControls;
+    procedure CheckBloFile;
   public
     { Public declarations }
   end;
@@ -120,6 +125,8 @@ begin
   in_startup := True;
   ToControls;
   in_startup := False;
+  in_runprepare := False;
+  Timer1.Enabled := True;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -250,6 +257,7 @@ var
   errmsg: string;
   cmdline: string;
 begin
+  in_runprepare := True;
   FromControls;
   defaults.SaveToFile('xGreed.ini');
   cmdline := 'xGreed.exe';
@@ -280,6 +288,7 @@ begin
       errmsg := 'Can not run "xGreed.exe".';
 
     ShowMessage(errmsg);
+    in_runprepare := False;
   end;
 end;
 
@@ -303,6 +312,27 @@ procedure TForm1.OpenBLOSpeedButtonClick(Sender: TObject);
 begin
   if OpenDialog1.Execute then
     MainDataFileEdit.Text := OpenDialog1.FileName;
+end;
+
+procedure TForm1.CheckBloFile;
+begin
+  if not in_runprepare then
+  begin
+    if FileExists(MainDataFileEdit.Text) then
+      MainDataFileEdit.Font.Color := clWindowText
+    else
+      MainDataFileEdit.Font.Color := clRed;
+  end;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+  CheckBloFile;
+end;
+
+procedure TForm1.MainDataFileEditChange(Sender: TObject);
+begin
+  CheckBloFile;
 end;
 
 end.

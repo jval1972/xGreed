@@ -1296,6 +1296,7 @@ object Form1: TForm1
       Width = 537
       Height = 21
       TabOrder = 0
+      OnChange = MainDataFileEditChange
     end
   end
   object OpenDialog1: TOpenDialog
@@ -1304,5 +1305,11 @@ object Form1: TForm1
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 328
     Top = 48
+  end
+  object Timer1: TTimer
+    Enabled = False
+    OnTimer = Timer1Timer
+    Left = 504
+    Top = 224
   end
 end
