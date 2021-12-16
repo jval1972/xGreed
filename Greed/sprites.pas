@@ -419,6 +419,7 @@ begin
     msprite.x := msprite.x + xmove;
     mapsprites[(msprite.y div FRACTILEUNIT) * MAPCOLS + (msprite.x div FRACTILEUNIT)] := ms;
     result := 2;
+    exit;
   end;
 
   if ymove > 0 then
