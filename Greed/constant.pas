@@ -248,9 +248,9 @@ const
     'pulsebullet', 'prongshot', 'pinkball', 'missile', 'greenball',
 
     'explode', 'explode2',
-    'pulsebullet', 'firewall', // mine stuff
-    'pulsebullet',            // hand weapon attack
-    'pulsebullet',            // soul stealer bullet
+    'pulsebullet', 'firewall',  // mine stuff
+    'pulsebullet',              // hand weapon attack
+    'pulsebullet',              // soul stealer bullet
     'wallpuff', 'blood', 'greedblood',
     'plasmawallpuff', 'greenring', 'explode',
     'generator', 'warp',

@@ -4,12 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls;
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Buttons;
 
 type
   TForm1 = class(TForm)
     SoundGroupBox: TGroupBox;
-    InputGroupBox: TGroupBox;
+    GraphicsGroupBox: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -31,6 +31,11 @@ type
     SensitivityXTrackBar: TTrackBar;
     SensitivityYTrackBar: TTrackBar;
     EpisodeRadioGroup: TRadioGroup;
+    OpenDialog1: TOpenDialog;
+    Panel1: TPanel;
+    Label7: TLabel;
+    MainDataFileEdit: TEdit;
+    OpenBLOSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ScreenblocksTrackBarChange(Sender: TObject);
@@ -43,6 +48,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure AutorunModeCheckBoxClick(Sender: TObject);
+    procedure OpenBLOSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     defaults: TStringList;
@@ -108,7 +114,8 @@ begin
       'mousesensitivityx=10'#13#10 +
       'mousesensitivityy=5'#13#10 +
       'invertmouseturn=0'#13#10 +
-      'invertmouselook=0';
+      'invertmouselook=0'#13#10 +
+      'maindatafile=';
 
   in_startup := True;
   ToControls;
@@ -160,6 +167,7 @@ begin
   SensitivityTrackBar.Position := GetDefault('mousesensitivity');
   SensitivityXTrackBar.Position := GetDefault('mousesensitivityx');
   SensitivityYTrackBar.Position := GetDefault('mousesensitivityy');
+  MainDataFileEdit.Text := defaults.Values['maindatafile'];
 end;
 
 procedure TForm1.FromControls;
@@ -200,6 +208,10 @@ begin
   SetDefault('mousesensitivity', SensitivityTrackBar.Position);
   SetDefault('mousesensitivityx', SensitivityXTrackBar.Position);
   SetDefault('mousesensitivityy', SensitivityYTrackBar.Position);
+  if defaults.IndexOfName('maindatafile') < 0 then
+    defaults.Add('maindatafile=' + MainDataFileEdit.Text)
+  else
+    defaults.Values['maindatafile'] := MainDataFileEdit.Text;
 end;
 
 procedure TForm1.ScreenblocksTrackBarChange(Sender: TObject);
@@ -249,6 +261,8 @@ begin
     cmdline := cmdline + ' game3'
   else
     cmdline := cmdline + ' game1';
+  if FileExists(MainDataFileEdit.Text) then
+    cmdline := cmdline + ' blo ' + '''' + MainDataFileEdit.Text + '''';
   weret := WinExec(PChar(cmdline), SW_SHOWNORMAL);
   if weret > 31 then
     Close
@@ -283,6 +297,12 @@ end;
 procedure TForm1.AutorunModeCheckBoxClick(Sender: TObject);
 begin
   FromControls;
+end;
+
+procedure TForm1.OpenBLOSpeedButtonClick(Sender: TObject);
+begin
+  if OpenDialog1.Execute then
+    MainDataFileEdit.Text := OpenDialog1.FileName;
 end;
 
 end.

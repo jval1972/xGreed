@@ -331,12 +331,12 @@ begin
       tpwalls_colormap[transparentposts] := sp_colormap;
       tpwalls_count[transparentposts] := sp_count;
       inc(transparentposts);
-{$IFDEF VALIDATE}
+      {$IFDEF VALIDATE}
       if transparentposts >= MAXPEND then
         MS_Error('Too many Pending Posts! (%d)', [MAXPEND]);
       if numspans >= MAXSPANS then
         MS_Error('MAXSPANS exceeded, Walls (%d)', [MAXSPANS]);
-{$ENDIF}
+      {$ENDIF}
     end
     else
       ScalePost;
@@ -377,6 +377,7 @@ label
 begin
   floor := false;
   ceiling := false;
+  distance := 0;  
   if mapflags[mapspot] and FL_FLOOR <> 0 then
     goto ceilingstep;
   baseangle := viewfineangle;
@@ -613,12 +614,12 @@ skipceilingcalc:
       tpwalls_colormap[transparentposts] := sp_colormap;
       tpwalls_count[transparentposts] := sp_count;
       inc(transparentposts);
-{$IFDEF VALIDATE}
+      {$IFDEF VALIDATE}
       if transparentposts >= MAXPEND then
         MS_Error('Too many Pending Posts! (%d)', [MAXPEND]);
       if numspans >= MAXSPANS then
         MS_Error('MAXSPANS exceeded, FloorDefs (%d)', [MAXSPANS]);
-  {$ENDIF}
+      {$ENDIF}
     end;
 
 contceiling:
@@ -659,10 +660,10 @@ contceiling:
       if (bottomy < scrollmin) or (topy >= scrollmax) then
         continue;
       sp_count := bottomy - topy + 1;
-  {$IFDEF VALIDATE}
+      {$IFDEF VALIDATE}
       if (bottomy - scrollmin < 0) or (bottomy - scrollmin >= RENDER_VIEW_HEIGHT) then
         MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, RENDER_VIEW_HEIGHT - 1]);
-  {$ENDIF}
+      {$ENDIF}
       sp_dest := @viewylookup[bottomy - scrollmin][x];
       span.point := pointz;
       spansx[numspans] := x;
@@ -680,12 +681,12 @@ contceiling:
       tpwalls_colormap[transparentposts] := sp_colormap;
       tpwalls_count[transparentposts] := sp_count;
       inc(transparentposts);
-  {$IFDEF VALIDATE}
+      {$IFDEF VALIDATE}
       if transparentposts >= MAXPEND then
         MS_Error('Too many Pending Posts! (%d)', [MAXPEND]);
       if numspans >= MAXSPANS then
         MS_Error('MAXSPANS exceeded, CeilingDefs (%d)', [MAXSPANS]);
-  {$ENDIF}
+      {$ENDIF}
     end;
   end;
 

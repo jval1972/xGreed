@@ -809,6 +809,10 @@ begin
     netmode := true;
   end;
 
+  // load config file
+  if not M_LoadDefaults then
+    printf('LoadDefaults: Default file not found, using defaults'#13#10);
+
   if MS_CheckParm('nospawn') > 0 then
     nospawn := true;
   if MS_CheckParm('ticker') > 0 then

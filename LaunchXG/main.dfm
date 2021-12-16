@@ -4,8 +4,8 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'xGreed Launcher'
-  ClientHeight = 453
-  ClientWidth = 462
+  ClientHeight = 354
+  ClientWidth = 701
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -1052,11 +1052,11 @@ object Form1: TForm1
   TextHeight = 13
   object SoundGroupBox: TGroupBox
     Left = 16
-    Top = 192
+    Top = 240
     Width = 321
     Height = 97
     Caption = ' Sound  '
-    TabOrder = 1
+    TabOrder = 3
     object Label2: TLabel
       Left = 16
       Top = 32
@@ -1096,13 +1096,13 @@ object Form1: TForm1
       OnChange = MusicTrackBarChange
     end
   end
-  object InputGroupBox: TGroupBox
+  object GraphicsGroupBox: TGroupBox
     Left = 16
-    Top = 104
+    Top = 152
     Width = 321
     Height = 81
     Caption = ' Graphics '
-    TabOrder = 0
+    TabOrder = 2
     object Label1: TLabel
       Left = 16
       Top = 24
@@ -1131,8 +1131,8 @@ object Form1: TForm1
     end
   end
   object KeyboardRadioGroup: TRadioGroup
-    Left = 16
-    Top = 296
+    Left = 360
+    Top = 56
     Width = 97
     Height = 137
     Caption = ' Keyboard '
@@ -1140,51 +1140,51 @@ object Form1: TForm1
       'Arrows'
       'WASD'
       'Custom')
-    TabOrder = 2
+    TabOrder = 4
   end
   object Button1: TButton
-    Left = 352
-    Top = 336
+    Left = 360
+    Top = 248
     Width = 97
     Height = 25
     Caption = 'Save and Run'
     Default = True
-    TabOrder = 3
+    TabOrder = 7
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 352
-    Top = 368
+    Left = 360
+    Top = 280
     Width = 97
     Height = 25
     Caption = 'Save'
-    TabOrder = 4
+    TabOrder = 8
     OnClick = Button2Click
   end
   object Button3: TButton
-    Left = 352
-    Top = 400
+    Left = 360
+    Top = 312
     Width = 97
     Height = 25
     Caption = 'Exit'
-    TabOrder = 5
+    TabOrder = 9
     OnClick = Button3Click
   end
   object SkipIntroCheckBox: TCheckBox
-    Left = 352
-    Top = 304
+    Left = 360
+    Top = 216
     Width = 97
     Height = 17
     Caption = 'Skip Intro'
     TabOrder = 6
   end
   object MouseGroupBox1: TGroupBox
-    Left = 128
-    Top = 296
+    Left = 480
+    Top = 56
     Width = 209
     Height = 137
     Caption = ' Mouse '
-    TabOrder = 7
+    TabOrder = 5
     object Label4: TLabel
       Left = 16
       Top = 40
@@ -1253,7 +1253,7 @@ object Form1: TForm1
   end
   object EpisodeRadioGroup: TRadioGroup
     Left = 16
-    Top = 8
+    Top = 56
     Width = 321
     Height = 89
     Caption = ' Episode Selection '
@@ -1262,6 +1262,47 @@ object Form1: TForm1
       'Episode 1 - DESARIAN PENAL COLONY'
       'Episode 2 - THE CITY TEMPLE OF RISTANAK'
       'Episode 3 - KAAL')
-    TabOrder = 8
+    TabOrder = 1
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 701
+    Height = 41
+    Align = alTop
+    BevelOuter = bvNone
+    Caption = ' '
+    Color = clCream
+    TabOrder = 0
+    object Label7: TLabel
+      Left = 24
+      Top = 12
+      Width = 69
+      Height = 13
+      Caption = 'Main data file: '
+    end
+    object OpenBLOSpeedButton: TSpeedButton
+      Left = 648
+      Top = 12
+      Width = 23
+      Height = 22
+      Caption = '...'
+      Flat = True
+      OnClick = OpenBLOSpeedButtonClick
+    end
+    object MainDataFileEdit: TEdit
+      Left = 104
+      Top = 12
+      Width = 537
+      Height = 21
+      TabOrder = 0
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    DefaultExt = 'blo'
+    Filter = 'GREED.BLO|GREED.BLO|BLO Files (*.blo)|*.blo'
+    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
+    Left = 328
+    Top = 48
   end
 end

@@ -104,6 +104,8 @@ type
   TObjectArray = packed array[0..$7FFF] of TObject;
   PObjectArray = ^TObjectArray;
 
+  string255_t = string[255];
+  Pstring255_t = ^string255_t;
 
 // Memory handling
 function malloc(const size: integer): Pointer;

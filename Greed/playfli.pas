@@ -282,7 +282,23 @@ begin
     exit;
   end;
 
+  test := maindatapath + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    result := true;
+    exit;
+  end;
+
   test := basedefault + 'MOVIES\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    result := true;
+    exit;
+  end;
+
+  test := maindatapath + 'MOVIES\' + stmp;
   if fexists(test) then
   begin
     fname := test;

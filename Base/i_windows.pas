@@ -77,6 +77,8 @@ function clock: LongWord;
 
 var
   basedefault: string;
+  maindatafile: string255_t;
+  maindatapath: string;
   stdoutfile: string;
   cdr_drivenum: integer;
 
@@ -287,12 +289,8 @@ begin
   result := trunc(I_GetSysTime * TICRATE);
 end;
 
-const
-  CLOCKS_PER_SEC = 1000000;
-
 function clock: LongWord;
 begin
-//  result := trunc(I_GetSysTime * CLOCKS_PER_SEC);
   result := gametic;
 end;
 

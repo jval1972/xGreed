@@ -73,7 +73,6 @@ uses
   d_ints_h,
   d_ints,
   d_misc,
-  m_defs,
   bass,
   intro,
   i_windows,
@@ -165,10 +164,6 @@ begin
   lighting := 1;
   changelight := SC.ambientlight;
 
-  // load config file
-  if not M_LoadDefaults then
-    printf('LoadDefaults: Default file not found, using defaults'#13#10);
-
   MusicError := 0;
   if not BASS_Init(-1, 44100, 0, hMainWnd, nil) then
   begin
@@ -216,7 +211,21 @@ begin
     exit;
   end;
 
+  test := maindatapath + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
   test := basedefault + 'MUSIC\' + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    exit;
+  end;
+
+  test := maindatapath + 'MUSIC\' + stmp;
   if fexists(test) then
   begin
     fname := test;

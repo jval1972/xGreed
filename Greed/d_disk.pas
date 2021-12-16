@@ -133,12 +133,36 @@ procedure FindBLOFile(var fname: string);
 var
   stmp: string;
   test: string;
+  p: integer;
 begin
+  p := MS_CheckParm('blo');
+  if (p > 0) and (p < my_argc) then
+    maindatafile := my_argv(p + 1);
+
+  if maindatafile <> '' then
+    if fexists(maindatafile) then
+    begin
+      fname := maindatafile;
+      maindatapath := fpath(maindatafile);
+      exit;
+    end;
+
   stmp := ExtractFileName(fname);
   test := basedefault + stmp;
   if fexists(test) then
   begin
     fname := test;
+    maindatafile := fname;
+    maindatapath := fpath(maindatafile);
+    exit;
+  end;
+
+  test := fpath(maindatafile) + stmp;
+  if fexists(test) then
+  begin
+    fname := test;
+    maindatafile := fname;
+    maindatapath := fpath(maindatafile);
     exit;
   end;
 
@@ -146,6 +170,8 @@ begin
   if fexists(test) then
   begin
     fname := test;
+    maindatafile := fname;
+    maindatapath := fpath(maindatafile);
     exit;
   end;
 
@@ -153,6 +179,8 @@ begin
   if fexists(test) then
   begin
     fname := test;
+    maindatafile := fname;
+    maindatapath := fpath(maindatafile);
     exit;
   end;
 
@@ -160,6 +188,8 @@ begin
   if fexists(test) then
   begin
     fname := test;
+    maindatafile := fname;
+    maindatapath := fpath(maindatafile);
     exit;
   end;
 end;
@@ -186,8 +216,7 @@ var
 begin
   CA_ShutDown;
   filename := afilename;
-  if not fexists(filename) then
-    FindBLOFile(filename);
+  FindBLOFile(filename);
   // load the header
   if not fopen(cachehandle, filename, fOpenReadOnly) then
     MS_Error('CA_InitFile(): Can''t open %s!', [filename]);

@@ -31,9 +31,11 @@ unit m_defs;
 interface
 
 uses
+  g_delphi,
   d_ints,
   d_ints_h,
   i_video,
+  i_windows,
   modplay,
   protos_h;
 
@@ -43,7 +45,7 @@ type
   default_t = record
     name: string;
     location: pointer;
-    defaultsvalue: string;
+    defaultsvalue: string255_t;
     defaultivalue: integer;
     _type: ttype_t;
   end;
@@ -52,7 +54,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 34;
+  NUMDEFAULTS = 35;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -224,7 +226,12 @@ const
     (name: 'invertmouselook';
      location: @invertmouselook;
      defaultivalue: 0;
-     _type: tBoolean)
+     _type: tBoolean),
+
+    (name: 'maindatafile';
+     location: @maindatafile;
+     defaultsvalue: '';
+     _type: tString)
 
   );
 
@@ -239,7 +246,6 @@ implementation
 
 uses
   Classes,
-  g_delphi,
   constant,
   d_misc;
 
@@ -272,7 +278,7 @@ begin
           s.Add(defaults[i].name + '=0');
       end
       else if defaults[i]._type = tString then
-        s.Add(defaults[i].name + '=' + PString(defaults[i].location)^);
+        s.Add(defaults[i].name + '=' + PString255_t(defaults[i].location)^);
 
     s.SaveToFile(defaultfile);
 
@@ -301,10 +307,10 @@ begin
         PBoolean(defaults[i].location)^ := false;
     end
     else if defaults[i]._type = tString then
-      PString(defaults[i].location)^ := defaults[i].defaultsvalue;
+      PString255_t(defaults[i].location)^ := defaults[i].defaultsvalue;
 
   // check for a custom default file
-  i := MS_CheckParm ('config');
+  i := MS_CheckParm('config');
   if (i > 0) and (i < my_argc) then
   begin
     defaultfile := my_argv(i + 1);
