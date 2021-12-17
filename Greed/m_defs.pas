@@ -283,7 +283,7 @@ begin
         s.Add(defaults[i].name + '=' + itoa(PInteger(defaults[i].location)^))
       else if defaults[i]._type = tBoolean then
       begin
-        if PInteger(defaults[i].location)^ <> 0 then
+        if PBoolean(defaults[i].location)^ then
           s.Add(defaults[i].name + '=1')
         else
           s.Add(defaults[i].name + '=0');
