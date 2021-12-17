@@ -4095,7 +4095,7 @@ begin
   {Checks if the parameters are ok}
   if not (ColorType in [COLOR_GRAYSCALE, COLOR_RGB, COLOR_PALETTE,
     COLOR_GRAYSCALEALPHA, COLOR_RGBALPHA]) or not (BitDepth in
-    [1,2,4,8, 16]) or ((ColorType = COLOR_PALETTE) and (BitDepth = 16)) or
+    [1, 2, 4, 8, 16]) or ((ColorType = COLOR_PALETTE) and (BitDepth = 16)) or
     ((ColorType = COLOR_RGB) and (BitDepth < 8)) then
   begin
     RaiseError(EInvalidSpec);
@@ -4463,7 +4463,7 @@ begin
         AlphaSource := pOp(Header.ImageAlpha, BytesPerRowAlpha * j2);
       end;
     {Palette images with 1 byte for each pixel}
-    1,4,8: if Header.ColorType = COLOR_GRAYSCALEALPHA then
+    1, 4, 8: if Header.ColorType = COLOR_GRAYSCALEALPHA then
       for j := 1 to H do
       begin
         {Process all the pixels in this line}
@@ -4513,8 +4513,9 @@ begin
             {Obtains the palette index}
             case Header.BitDepth of
               1: PaletteIndex := (Data^ shr (7 - (I mod 8))) and 1;
-            2,4: PaletteIndex := (Data^ shr ((1 - (I mod 2)) * 4)) and $0F;
-             else PaletteIndex := Data^;
+              2,
+              4: PaletteIndex := (Data^ shr ((1 - (I mod 2)) * 4)) and $0F;
+            else PaletteIndex := Data^;
             end;
 
             {Updates the image with the new pixel}
@@ -4622,7 +4623,8 @@ begin
       Continue;
     end;
     {Tell it has an IDAT chunk}
-    if ChunkName = 'IDAT' then HasIDAT := true;
+    if ChunkName = 'IDAT' then
+      HasIDAT := true;
 
     {Creates object for this chunk}
     Chunks.SetItem(ChunkCount - 1, CreateClassChunk(Self, ChunkName));
@@ -4638,15 +4640,17 @@ begin
     {$ENDIF}
 
     {Loads it}
-    try if not TChunk(Chunks.Item[ChunkCount - 1]).LoadFromStream(Stream,
-       ChunkName, ChunkLength) then break;
+    try
+      if not TChunk(Chunks.Item[ChunkCount - 1]).LoadFromStream(Stream,
+        ChunkName, ChunkLength) then
+          break;
     except
       Chunks.Count := ChunkCount;
       raise;
     end;
 
   {Terminates when it reaches the IEND chunk}
-  until (ChunkName = 'IEND');
+  until ChunkName = 'IEND';
 
   {Resize the list to the appropriate size}
   Chunks.Count := ChunkCount;

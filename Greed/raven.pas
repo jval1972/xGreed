@@ -3475,7 +3475,7 @@ begin
             SpawnSprite(stype, sa.mapx, sa.mapy, 0, 0, 0, 0, true, 0);
             SpawnSprite(S_WARP, sa.mapx, sa.mapy, 0, 0, 0, 0, true, 0);
             if netmode and (sa.typ >= 10) then
-              NetSendSpawn(stype,sa.mapx,sa.mapy, 0, 0, 0, 0, true, 0);
+              NetSendSpawn(stype, sa.mapx, sa.mapy, 0, 0, 0, 0, true, 0);
           end;
 
         end;

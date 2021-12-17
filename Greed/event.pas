@@ -263,7 +263,7 @@ begin
             name := Chr(cdr_drivenum + Ord('A')) + ':\GREED\MOVIES\' + fliname[zones[i].endeval]
           else
             name := Chr(cdr_drivenum + Ord('A')) + ':\MOVIES\' + fliname[zones[i].endeval];
-          DoPlayFLI(name,0);
+          DoPlayFLI(name, 0);
         end;
         font := font1;
         fontbasecolor := 8;
