@@ -168,6 +168,9 @@ var
 
 procedure I_SynchronizeInput(active: boolean);
 
+var
+  menuusemouse: boolean = true;
+
 implementation
 
 uses
@@ -284,6 +287,12 @@ end;
 
 function MouseGetClick(var x, y: smallint): boolean;
 begin
+  if not menuusemouse then
+  begin
+    result := false;
+    exit;
+  end;
+
   result := (mouse.flags and 1 <> 0) and (mouse.oldflags and 1 = 0);
   if result then
   begin
@@ -412,7 +421,7 @@ end;
 
 procedure MouseShow;
 begin
-  mousevisible := true;
+  mousevisible := menuusemouse;
 end;
 
 end.

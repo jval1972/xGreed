@@ -23,6 +23,7 @@ type
     SkipIntroCheckBox: TCheckBox;
     CheckBox_4_3: TCheckBox;
     MouseGroupBox1: TGroupBox;
+    MenuUseMouseCheckBox: TCheckBox;
     UseMouseCheckBox: TCheckBox;
     Label4: TLabel;
     Label5: TLabel;
@@ -117,6 +118,7 @@ begin
       'vid_pillarbox_pct=17'#13#10 +
       'slopeprecise=1'#13#10 +
       'mouse=1'#13#10 +
+      'menumouse=1'#13#10 +
       'mousesensitivity=10'#13#10 +
       'mousesensitivityx=10'#13#10 +
       'mousesensitivityy=5'#13#10 +
@@ -173,6 +175,7 @@ begin
   SFXTrackBar.Position := GetDefault('sfxvol');
   MusicTrackBar.Position := GetDefault('musicvol');
   CheckBox_4_3.Checked := GetDefault('vid_pillarbox_pct') = 17;
+  MenuUseMouseCheckBox.Checked := GetDefault('menumouse') <> 0;
   UseMouseCheckBox.Checked := GetDefault('mouse') <> 0;
   EpisodeRadioGroup.ItemIndex := GetDefault('gameepisode') - 1;
   SensitivityTrackBar.Position := GetDefault('mousesensitivity');
@@ -214,6 +217,10 @@ begin
     SetDefault('vid_pillarbox_pct', 17)
   else
     SetDefault('vid_pillarbox_pct', 0);
+  if MenuUseMouseCheckBox.Checked then
+    SetDefault('menumouse', 1)
+  else
+    SetDefault('menumouse', 0);
   if UseMouseCheckBox.Checked then
     SetDefault('mouse', 1)
   else

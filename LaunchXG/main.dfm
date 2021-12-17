@@ -5,7 +5,7 @@ object Form1: TForm1
   BorderStyle = bsSingle
   Caption = 'xGreed Launcher'
   ClientHeight = 354
-  ClientWidth = 701
+  ClientWidth = 631
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -1053,7 +1053,7 @@ object Form1: TForm1
   object SoundGroupBox: TGroupBox
     Left = 16
     Top = 240
-    Width = 321
+    Width = 489
     Height = 97
     Caption = ' Sound  '
     TabOrder = 3
@@ -1076,7 +1076,7 @@ object Form1: TForm1
     object SFXTrackBar: TTrackBar
       Left = 104
       Top = 24
-      Width = 201
+      Width = 361
       Height = 33
       Max = 255
       PageSize = 16
@@ -1087,7 +1087,7 @@ object Form1: TForm1
     object MusicTrackBar: TTrackBar
       Left = 104
       Top = 56
-      Width = 201
+      Width = 361
       Height = 33
       Max = 255
       PageSize = 16
@@ -1099,7 +1099,7 @@ object Form1: TForm1
   object GraphicsGroupBox: TGroupBox
     Left = 16
     Top = 152
-    Width = 321
+    Width = 265
     Height = 81
     Caption = ' Graphics '
     TabOrder = 2
@@ -1114,7 +1114,7 @@ object Form1: TForm1
     object ScreenblocksTrackBar: TTrackBar
       Left = 104
       Top = 24
-      Width = 201
+      Width = 145
       Height = 33
       Max = 4
       Position = 4
@@ -1132,14 +1132,14 @@ object Form1: TForm1
     object SlopeCheckBox: TCheckBox
       Left = 104
       Top = 56
-      Width = 193
+      Width = 145
       Height = 17
       Caption = 'Precise Slope Rendering'
       TabOrder = 2
     end
   end
   object KeyboardRadioGroup: TRadioGroup
-    Left = 360
+    Left = 520
     Top = 56
     Width = 97
     Height = 137
@@ -1148,10 +1148,10 @@ object Form1: TForm1
       'Arrows'
       'WASD'
       'Custom')
-    TabOrder = 4
+    TabOrder = 5
   end
   object Button1: TButton
-    Left = 360
+    Left = 520
     Top = 248
     Width = 97
     Height = 25
@@ -1161,7 +1161,7 @@ object Form1: TForm1
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 360
+    Left = 520
     Top = 280
     Width = 97
     Height = 25
@@ -1170,7 +1170,7 @@ object Form1: TForm1
     OnClick = Button2Click
   end
   object Button3: TButton
-    Left = 360
+    Left = 520
     Top = 312
     Width = 97
     Height = 25
@@ -1179,23 +1179,23 @@ object Form1: TForm1
     OnClick = Button3Click
   end
   object SkipIntroCheckBox: TCheckBox
-    Left = 360
-    Top = 216
+    Left = 520
+    Top = 208
     Width = 97
     Height = 17
     Caption = 'Skip Intro'
     TabOrder = 6
   end
   object MouseGroupBox1: TGroupBox
-    Left = 480
+    Left = 296
     Top = 56
     Width = 209
-    Height = 137
+    Height = 177
     Caption = ' Mouse '
-    TabOrder = 5
+    TabOrder = 4
     object Label4: TLabel
       Left = 16
-      Top = 40
+      Top = 80
       Width = 53
       Height = 13
       Caption = 'Sensitivity: '
@@ -1203,7 +1203,7 @@ object Form1: TForm1
     end
     object Label5: TLabel
       Left = 16
-      Top = 64
+      Top = 104
       Width = 63
       Height = 13
       Caption = 'Sensitivity X: '
@@ -1211,7 +1211,7 @@ object Form1: TForm1
     end
     object Label6: TLabel
       Left = 16
-      Top = 96
+      Top = 136
       Width = 63
       Height = 13
       Caption = 'Sensitivity Y: '
@@ -1219,37 +1219,26 @@ object Form1: TForm1
     end
     object UseMouseCheckBox: TCheckBox
       Left = 16
-      Top = 16
+      Top = 48
       Width = 161
       Height = 17
-      Caption = 'Use mouse'
-      TabOrder = 0
+      Caption = 'Use mouse in player control'
+      TabOrder = 1
     end
     object SensitivityTrackBar: TTrackBar
       Left = 88
-      Top = 32
+      Top = 72
       Width = 105
       Height = 33
       Max = 40
       Min = 1
       Position = 10
-      TabOrder = 1
+      TabOrder = 2
       OnChange = ScreenblocksTrackBarChange
     end
     object SensitivityXTrackBar: TTrackBar
       Left = 88
-      Top = 64
-      Width = 105
-      Height = 33
-      Max = 20
-      Min = -1
-      Position = 10
-      TabOrder = 2
-      OnChange = ScreenblocksTrackBarChange
-    end
-    object SensitivityYTrackBar: TTrackBar
-      Left = 88
-      Top = 96
+      Top = 104
       Width = 105
       Height = 33
       Max = 20
@@ -1258,11 +1247,30 @@ object Form1: TForm1
       TabOrder = 3
       OnChange = ScreenblocksTrackBarChange
     end
+    object SensitivityYTrackBar: TTrackBar
+      Left = 88
+      Top = 136
+      Width = 105
+      Height = 33
+      Max = 20
+      Min = -1
+      Position = 10
+      TabOrder = 4
+      OnChange = ScreenblocksTrackBarChange
+    end
+    object MenuUseMouseCheckBox: TCheckBox
+      Left = 16
+      Top = 24
+      Width = 161
+      Height = 17
+      Caption = 'Use mouse in the menus'
+      TabOrder = 0
+    end
   end
   object EpisodeRadioGroup: TRadioGroup
     Left = 16
     Top = 56
-    Width = 321
+    Width = 265
     Height = 89
     Caption = ' Episode Selection '
     ItemIndex = 0
@@ -1275,7 +1283,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 701
+    Width = 631
     Height = 41
     Align = alTop
     BevelOuter = bvNone
@@ -1290,7 +1298,7 @@ object Form1: TForm1
       Caption = 'Main data file: '
     end
     object OpenBLOSpeedButton: TSpeedButton
-      Left = 648
+      Left = 584
       Top = 12
       Width = 23
       Height = 22
@@ -1301,7 +1309,7 @@ object Form1: TForm1
     object MainDataFileEdit: TEdit
       Left = 104
       Top = 12
-      Width = 537
+      Width = 473
       Height = 21
       TabOrder = 0
       OnChange = MainDataFileEditChange
@@ -1311,13 +1319,13 @@ object Form1: TForm1
     DefaultExt = 'blo'
     Filter = 'GREED.BLO|GREED.BLO|BLO Files (*.blo)|*.blo'
     Options = [ofHideReadOnly, ofNoChangeDir, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 328
-    Top = 48
+    Left = 448
+    Top = 32
   end
   object Timer1: TTimer
     Enabled = False
     OnTimer = Timer1Timer
-    Left = 504
-    Top = 224
+    Left = 480
+    Top = 32
   end
 end

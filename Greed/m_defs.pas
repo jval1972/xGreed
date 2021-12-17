@@ -55,7 +55,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 36;
+  NUMDEFAULTS = 37;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -206,6 +206,11 @@ const
 
     (name: 'mouse';
      location: @SC.mouse;
+     defaultivalue: 1;
+     _type: tBoolean),
+
+    (name: 'menumouse';
+     location: @menuusemouse;
      defaultivalue: 1;
      _type: tBoolean),
 

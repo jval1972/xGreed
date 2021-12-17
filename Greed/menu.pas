@@ -727,18 +727,19 @@ begin
     menutimedelay := timecount + KBDELAY2;
   end;
 
-  for i := 0 to 14 do
-  begin
-   x := cursors[menulevel][i].x;
-   y := cursors[menulevel][i].y;
-   w := cursors[menulevel][i].w;
-   h := cursors[menulevel][i].h;
-   if (mousehx > x) and (mousehx < x + w) and (mousehy > y) and (mousehy < y + h) then
-   begin
-     menucursor := i;
-     break;
-   end;
-  end;
+  if menuusemouse then
+    for i := 0 to 14 do
+    begin
+      x := cursors[menulevel][i].x;
+      y := cursors[menulevel][i].y;
+      w := cursors[menulevel][i].w;
+      h := cursors[menulevel][i].h;
+      if (mousehx > x) and (mousehx < x + w) and (mousehy > y) and (mousehy < y + h) then
+      begin
+        menucursor := i;
+        break;
+      end;
+    end;
 end;
 
 
