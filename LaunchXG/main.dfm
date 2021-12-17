@@ -1129,6 +1129,14 @@ object Form1: TForm1
       Caption = '4:3 display'
       TabOrder = 1
     end
+    object SlopeCheckBox: TCheckBox
+      Left = 104
+      Top = 56
+      Width = 193
+      Height = 17
+      Caption = 'Precise Slope Rendering'
+      TabOrder = 2
+    end
   end
   object KeyboardRadioGroup: TRadioGroup
     Left = 360

@@ -36,6 +36,7 @@ uses
   d_ints_h,
   i_video,
   i_windows,
+  r_plane,
   modplay,
   protos_h;
 
@@ -54,7 +55,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 35;
+  NUMDEFAULTS = 36;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -197,6 +198,11 @@ const
      location: @vid_pillarbox_pct;
      defaultivalue: 17;
      _type: tInteger),
+
+    (name: 'slopeprecise';
+     location: @slopeprecise;
+     defaultivalue: 1;
+     _type: tBoolean),
 
     (name: 'mouse';
      location: @SC.mouse;

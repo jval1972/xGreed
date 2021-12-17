@@ -53,6 +53,7 @@ var
 var
   // coefficients of the plane equation for sloping polygons
   planeA, planeB, planeC, planeD: float;
+  slopeprecise: boolean = true;
 
 procedure RenderTileEnds;
 
@@ -121,7 +122,7 @@ end;
 // used for sloping floors and ceilings
 // planeA, planeB, planeC, planeD must be precalculated
 // mr_picture is set once per polygon
-procedure SlopeSpan;
+procedure SlopeSpan_fast;
 var
   pointz, pointz2: fixed_t; // row's distance to view plane
   partial, denom: float;
@@ -162,6 +163,84 @@ begin
 {$ENDIF}
 end;
 
+procedure SlopeSpan_precise;
+var
+  pointz, pointz2: fixed_t; // row's distance to view plane
+  partial, denom: float;
+  span_p: Pspan_t;
+  span: tag_t;
+  sl_x1, sl_x2: integer;
+
+  procedure _nextpoint;
+  begin
+    sl_x1 := sl_x2;
+    sl_x2 := sl_x1 + 8;
+    if sl_x2 > mr_x2 then
+      sl_x2 := mr_x2;
+  end;
+
+begin
+  // calculate the Z values for each end of the span
+  sl_x1 := mr_x1;
+  sl_x2 := sl_x1 + 8;
+  if sl_x2 > mr_x2 then
+    sl_x2 := mr_x2;
+  while sl_x1 < sl_x2 do
+  begin
+    partial := (planeB / FRACUNIT) * yslope[mr_y + MAXSCROLL] + planeC;
+    denom := (planeA / FRACUNIT) * xslope[sl_x1] + partial;
+    if denom < 8000 then
+    begin
+      _nextpoint;
+      continue;
+    end;
+    pointz := trunc(planeD / denom * FRACUNIT);
+    if pointz > MAXZ then
+    begin
+      _nextpoint;
+      continue;
+    end;
+    denom := (planeA / FRACUNIT) * xslope[sl_x2] + partial;
+    if denom < 8000 then
+    begin
+      _nextpoint;
+      continue;
+    end;
+    pointz2 := trunc(planeD / denom * FRACUNIT);
+    if pointz2 > MAXZ then
+    begin
+      _nextpoint;
+      continue;
+    end;
+    // post the span in the draw list
+    span.point := pointz;
+    spansx[numspans] := sl_x1;
+    span.span := numspans;
+    spantags[numspans] := span;
+    span_p := @spans[numspans];
+    span_p.spantype := spantype;
+    span_p.picture := mr_picture;
+    span_p.x2 := sl_x2;
+    span_p.y := mr_y;
+    span_p.yh := pointz2;
+    span_p.shadow := mr_shadow;
+    span_p.light := mr_light;
+    inc(numspans);
+    {$IFDEF VALIDATE}
+    if numspans >= MAXSPANS then
+      MS_Error('SlopeSpan(): MAXSPANS exceeded, (%d)', [MAXSPANS]);
+    {$ENDIF}
+    _nextpoint;
+  end;
+end;
+
+procedure SlopeSpan;
+begin
+  if slopeprecise then
+    SlopeSpan_precise
+  else
+    SlopeSpan_fast;
+end;
 
 // Vertex list must be precliped, convex, and in clockwise order
 // Backfaces (not in clockwise order) generate no pixels

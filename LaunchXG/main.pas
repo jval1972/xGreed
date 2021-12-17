@@ -37,6 +37,7 @@ type
     MainDataFileEdit: TEdit;
     OpenBLOSpeedButton: TSpeedButton;
     Timer1: TTimer;
+    SlopeCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ScreenblocksTrackBarChange(Sender: TObject);
@@ -114,6 +115,7 @@ begin
       'screensize=4'#13#10 +
       'camdelay=35'#13#10 +
       'vid_pillarbox_pct=17'#13#10 +
+      'slopeprecise=1'#13#10 +
       'mouse=1'#13#10 +
       'mousesensitivity=10'#13#10 +
       'mousesensitivityx=10'#13#10 +
@@ -177,6 +179,7 @@ begin
   SensitivityXTrackBar.Position := GetDefault('mousesensitivityx');
   SensitivityYTrackBar.Position := GetDefault('mousesensitivityy');
   MainDataFileEdit.Text := defaults.Values['maindatafile'];
+  SlopeCheckBox.Checked := GetDefault('slopeprecise') <> 0;
 end;
 
 procedure TForm1.FromControls;
@@ -223,6 +226,10 @@ begin
     defaults.Add('maindatafile=' + MainDataFileEdit.Text)
   else
     defaults.Values['maindatafile'] := MainDataFileEdit.Text;
+  if SlopeCheckBox.Checked then
+    SetDefault('slopeprecise', 1)
+  else
+    SetDefault('slopeprecise', 0);
 end;
 
 procedure TForm1.ScreenblocksTrackBarChange(Sender: TObject);
