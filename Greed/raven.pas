@@ -2998,6 +2998,8 @@ begin
     gameepisode := 3;
     newmap(16, 2);
   end
+  else if Check_Secret('score10000') then
+    addscore(10000)
   else if Length(secretbuf) > 2 then
   begin
     if Pos('GO', strupper(secretbuf)) > 0 then
