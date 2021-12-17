@@ -154,7 +154,8 @@ begin
      (GetDefault('bt_slideleft') = 51) and
      (GetDefault('bt_slideright') = 52) and
      (GetDefault('bt_asscam') = 30) and
-     (GetDefault('bt_motionmode') = 31) then
+     (GetDefault('bt_motionmode') = 31) and
+     (GetDefault('bt_jump') = 44) then
     KeyboardRadioGroup.ItemIndex := 0
   else if (GetDefault('bt_north') = $11) and
      (GetDefault('bt_south') = $1f) and
@@ -189,6 +190,7 @@ begin
     SetDefault('bt_slideright', 52);
     SetDefault('bt_asscam', 30);
     SetDefault('bt_motionmode', 31);
+    SetDefault('bt_jump', 44);
   end
   else if KeyboardRadioGroup.ItemIndex = 1 then
   begin
@@ -198,6 +200,7 @@ begin
     SetDefault('bt_slideright', $20);
     SetDefault('bt_asscam', $2e);
     SetDefault('bt_motionmode', $21);
+    SetDefault('bt_jump', $12);
   end;
 
   SetDefault('screenblocks', ScreenblocksTrackBar.Position);
