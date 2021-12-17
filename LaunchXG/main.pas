@@ -162,7 +162,8 @@ begin
      (GetDefault('bt_slideleft') = $1e) and
      (GetDefault('bt_slideright') = $20) and
      (GetDefault('bt_asscam') = $2e) and
-     (GetDefault('bt_motionmode') = $21) then
+     (GetDefault('bt_motionmode') = $21) and
+     (GetDefault('bt_jump') = $12) then
     KeyboardRadioGroup.ItemIndex := 1
   else
     KeyboardRadioGroup.ItemIndex := 2;
