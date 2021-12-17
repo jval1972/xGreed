@@ -1112,9 +1112,9 @@ object Form1: TForm1
       FocusControl = ScreenblocksTrackBar
     end
     object ScreenblocksTrackBar: TTrackBar
-      Left = 104
-      Top = 24
-      Width = 145
+      Left = 88
+      Top = 16
+      Width = 161
       Height = 33
       Max = 4
       Position = 4
@@ -1203,7 +1203,7 @@ object Form1: TForm1
     end
     object Label5: TLabel
       Left = 16
-      Top = 104
+      Top = 112
       Width = 63
       Height = 13
       Caption = 'Sensitivity X: '
@@ -1211,7 +1211,7 @@ object Form1: TForm1
     end
     object Label6: TLabel
       Left = 16
-      Top = 136
+      Top = 144
       Width = 63
       Height = 13
       Caption = 'Sensitivity Y: '
