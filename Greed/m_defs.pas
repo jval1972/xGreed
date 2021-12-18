@@ -56,7 +56,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 39;
+  NUMDEFAULTS = 40;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -212,6 +212,11 @@ const
 
     (name: 'slopeprecise';
      location: @slopeprecise;
+     defaultivalue: 1;
+     _type: tBoolean),
+
+    (name: 'doubleblit';
+     location: @doubleblit;
      defaultivalue: 1;
      _type: tBoolean),
 

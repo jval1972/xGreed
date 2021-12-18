@@ -122,6 +122,7 @@ begin
       'weapbobon=1'#13#10 +
       'vid_pillarbox_pct=17'#13#10 +
       'slopeprecise=1'#13#10 +
+      'doubleblit=1'#13#10 +
       'mouse=1'#13#10 +
       'menumouse=1'#13#10 +
       'mousesensitivity=10'#13#10 +
