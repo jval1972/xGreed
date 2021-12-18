@@ -204,7 +204,7 @@ begin
   {$IFDEF VALIDATE}
     try
   {$ENDIF}
-    color := sp_source[sp_frac div FRACUNIT];
+    color := sp_colormap[sp_source[sp_frac div FRACUNIT]];
     if color <> 0 then
       sp_dest[0] := color;
     sp_dest := @sp_dest[windowWidth];
@@ -229,7 +229,7 @@ begin
   {$IFDEF VALIDATE}
     try
   {$ENDIF}
-    sp_dest[0] := sp_source[sp_frac div FRACUNIT];
+    sp_dest[0] := sp_colormap[sp_source[sp_frac div FRACUNIT]];
     sp_dest := @sp_dest[windowWidth];
     sp_frac := sp_frac + sp_fracstep;
     sp_frac := sp_frac and sp_loopvalue;  // JVAL: SOS
