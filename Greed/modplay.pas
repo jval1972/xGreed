@@ -53,6 +53,8 @@ procedure PlaySong(const aname: string; const pattern: integer);
 
 procedure StopMusic;
 
+procedure InitDefaults;
+
 procedure InitSound;
 
 procedure I_ShutDownSound;
@@ -110,10 +112,8 @@ begin
 end;
 
 
-procedure InitSound;
+procedure InitDefaults;
 begin
-  MusicPresent := false;
-
   SC.ambientlight := AMBIENTLIGHT;      // load all defaults
   SC.violence := true;
   SC.animation := true;
@@ -160,6 +160,11 @@ begin
   SC.vrhelmet := 0;
   SC.vrangle := DEFAULTVRANGLE;
   SC.vrdist := DEFAULTVRDIST;
+end;
+
+procedure InitSound;
+begin
+  MusicPresent := false;
 
   lighting := 1;
   changelight := SC.ambientlight;

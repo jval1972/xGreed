@@ -811,6 +811,7 @@ begin
     netmode := true;
   end;
 
+  InitDefaults;
   // load config file
   if not M_LoadDefaults then
     printf('LoadDefaults: Default file not found, using defaults'#13#10);
