@@ -814,7 +814,7 @@ begin
   InitDefaults;
   // load config file
   if not M_LoadDefaults then
-    printf('LoadDefaults: Default file not found, using defaults'#13#10);
+    printf('LoadDefaults: Ini file not found, using defaults'#13#10);
 
   if MS_CheckParm('nospawn') > 0 then
     nospawn := true;
