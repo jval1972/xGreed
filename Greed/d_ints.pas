@@ -267,11 +267,9 @@ begin
   inc(timecount);
   inc(gametic);
   if timecount and 1 <> 0 then
-  begin
     INT_ReadControls;
-    if Assigned(timerhook) then
-      timerhook;
-  end;
+  if Assigned(timerhook) then
+    timerhook;
 end;
 
 

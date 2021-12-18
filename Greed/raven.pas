@@ -100,11 +100,12 @@ var
   newweapon: integer;
   weaponychange: integer;
   headbob: integer;
+  headbobon: boolean = true;
   weapbob: integer;
+  weapbobon: boolean = true;
   moveforward: integer;
   changelight: integer;
   lighting: integer;
-  wbobcount: integer;
   turnrate: integer;
   mapmode: integer;
   scrollview: integer;
@@ -2140,6 +2141,66 @@ begin
 end;
 
 
+procedure ControlBobbing;
+begin
+  // move along move vector & compute head bobbing
+  if moverate < 0 then
+  begin
+    if headbob >= HEADBOBFACTOR * MAXBOBS - 1 then
+      headbob := 0
+    else
+      inc(headbob, HEADBOBFACTOR div 2);
+    if headbob >= HEADBOBFACTOR * MAXBOBS then
+      headbob := 0;
+    if weapbob >= WEAPONBOBFACTOR * MAXBOBS - 1 then
+      weapbob := 0
+    else
+      inc(weapbob);
+  end
+  else if moverate > 0 then
+  begin
+    if headbob >= HEADBOBFACTOR * MAXBOBS - 1 then
+      headbob := 0
+    else
+      inc(headbob, HEADBOBFACTOR div 2);
+    if headbob >= HEADBOBFACTOR * MAXBOBS then
+      headbob := 0;
+    if weapbob >= WEAPONBOBFACTOR * MAXBOBS - 1 then
+      weapbob := 0
+    else
+      inc(weapbob);
+  end
+  else
+  begin
+    if weapmove[weapbob] <> 0 then
+    begin
+      if absI(weapmove[weapbob - 1]) < absI(weapmove[weapbob]) then
+        dec(weapbob, 2)
+      else
+        inc(weapbob, 2);
+      if weapbob >= WEAPONBOBFACTOR * MAXBOBS then
+          weapbob := 0
+      else if weapbob <= 0 then
+        weapbob := 0;
+    end
+    else
+      weapbob := 0;
+    if headmove[headbob] <> 0 then
+    begin
+      if absI(headmove[headbob - 1]) < absI(headmove[headbob]) then
+        dec(headbob)
+      else
+      begin
+        inc(headbob);
+        if headbob >= HEADBOBFACTOR * MAXBOBS then
+          headbob := 0;
+      end;
+    end
+    else
+      headbob := 0;
+  end;
+end;
+
 procedure ControlMovement;
 var
   modifiedSpeed: fixed_t;
@@ -2150,6 +2211,10 @@ var
   angleturn: integer;
   angleturnunit: integer;
 begin
+  ControlBobbing;
+  if timecount and 1 = 0 then
+    exit;
+    
   if Warping <> 0 then
   begin
     floorz := RF_GetFloorZ(player.x, player.y) + player.height;
@@ -2173,8 +2238,6 @@ begin
     mousebuttons[mbt_fire] := mouse.flags and 1 <> 0;
     mousebuttons[mbt_use] := mouse.flags and 2 <> 0;
     mousebuttons[mbt_north] := mouse.flags and 4 <> 0;
-    if mousebuttons[mbt_north] then
-      mousebuttons[mbt_north] := true;
     mousedx := mousedx + ((mouse.dx * FRACUNIT * (SC.mousesensitivity + 5)) div 10) * (mousesensitivityx + 1) div 5;
     mousedy := mousedy + ((mouse.dy * FRACUNIT * (SC.mousesensitivity + 5)) div 10) * (mousesensitivityy + 1) div 5;
   end
@@ -2632,66 +2695,13 @@ begin
   // move along move vector & compute head bobbing
   if moverate < 0 then
   begin
-    if headbob = MAXBOBS - 1 then
-      headbob := 0
-    else
-      inc(headbob);
-    if wbobcount = 4 then
-    begin
-      wbobcount := 0;
-      if weapbob = MAXBOBS - 1 then
-        weapbob := 0
-      else
-        inc(weapbob);
-    end
-    else
-      inc(wbobcount);
     if not Thrust(player.angle + WEST, -moverate) then
       moverate := 0;
   end
   else if moverate > 0 then
   begin
-    if headbob = MAXBOBS - 1 then
-      headbob := 0
-    else
-      inc(headbob);
-    if wbobcount = 4 then
-    begin
-      wbobcount := 0;
-      if weapbob = MAXBOBS - 1 then
-        weapbob := 0
-      else
-        inc(weapbob);
-    end
-    else
-      inc(wbobcount);
     if not Thrust(player.angle, moverate) then
       moverate := 0;
-  end
-  else if timecount and 8 <> 0 then
-  begin
-    if weapmove[weapbob] <> 0 then
-    begin
-      if absI(weapmove[weapbob - 1]) < absI(weapmove[weapbob]) then
-        dec(weapbob)
-      else
-      begin
-        inc(weapbob);
-        if weapbob = MAXBOBS then
-          weapbob := 0;
-      end;
-    end;
-    if headmove[headbob] <> 0 then
-    begin
-      if absI(headmove[headbob - 1]) < absI(headmove[headbob]) then
-        dec(headbob)
-      else
-      begin
-        inc(headbob);
-        if headbob = MAXBOBS then
-          headbob := 0;
-      end;
-    end;
   end;
 
   // try to open a door in front of player
@@ -3987,6 +3997,7 @@ var
   dbg: string;
   angle: integer;
   rtop: integer;
+  hbob, wbobx, wboby: integer;
 begin
   angle := aangle and ANGLES;
 
@@ -3996,8 +4007,13 @@ begin
     rtimecount := timecount;
   end;
 
+  if headbobon then
+    hbob := headmove[headbob]
+  else
+    hbob := 0;
+
   SetViewSize(RENDER_VIEW_WIDTH, RENDER_VIEW_HEIGHT, @renderbuffer);
-  RF_RenderView(px, py, pz, angle);
+  RF_RenderView(px, py, pz + hbob, angle);
   SetViewSize(MAX_VIEW_WIDTH, MAX_VIEW_HEIGHT, @viewbuffer);
 
   if update = 1 then
@@ -4032,13 +4048,24 @@ begin
 
   // draw the weapon pic
 
+  if weapbobon then
+  begin
+    wbobx := weapmove[weapbob1] div 2000;
+    wboby := weapmove[weapbob1 div 2] div 8000;
+  end
+  else
+  begin
+    wbobx := 0;
+    wboby := 0;
+  end;
+
   if player.angst <> 0 then // only if alive
   begin
     if update <> 0 then
       wpic := weaponpic[weapmode];
 
-    weaponx := ((windowWidth - wpic.width) div 2) + (weapmove[weapbob1] div 2);
-    weapony := windowHeight - wpic.height + (weapmove[weapbob1 div 2] div 8);
+    weaponx := ((windowWidth - wpic.width) div 2) + wbobx;
+    weapony := windowHeight - wpic.height + wboby;
 
     if changingweapons and weaponlowering then
     begin
@@ -4053,7 +4080,7 @@ begin
         wpic := weaponpic[weapmode];
         weaponychange := weaponpic[weapmode].height - 20;
         weapony := windowHeight - 21;
-        weaponx := ((windowWidth - wpic.width) div 2) + (weapmove[weapbob1] div 2);
+        weaponx := ((windowWidth - wpic.width) div 2) + wbobx;
       end
     end
     else if changingweapons then

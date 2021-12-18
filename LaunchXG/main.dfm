@@ -1053,7 +1053,7 @@ object Form1: TForm1
   object SoundGroupBox: TGroupBox
     Left = 16
     Top = 240
-    Width = 489
+    Width = 265
     Height = 97
     Caption = ' Sound  '
     TabOrder = 3
@@ -1076,7 +1076,7 @@ object Form1: TForm1
     object SFXTrackBar: TTrackBar
       Left = 104
       Top = 24
-      Width = 361
+      Width = 153
       Height = 33
       Max = 255
       PageSize = 16
@@ -1087,7 +1087,7 @@ object Form1: TForm1
     object MusicTrackBar: TTrackBar
       Left = 104
       Top = 56
-      Width = 361
+      Width = 153
       Height = 33
       Max = 255
       PageSize = 16
@@ -1313,6 +1313,30 @@ object Form1: TForm1
       Height = 21
       TabOrder = 0
       OnChange = MainDataFileEditChange
+    end
+  end
+  object BobGroupBox: TGroupBox
+    Left = 304
+    Top = 248
+    Width = 201
+    Height = 89
+    Caption = ' Bobbing '
+    TabOrder = 10
+    object HeadBoxCheckBox: TCheckBox
+      Left = 16
+      Top = 24
+      Width = 97
+      Height = 17
+      Caption = 'Head bob'
+      TabOrder = 0
+    end
+    object WeaponBoxCheckBox: TCheckBox
+      Left = 16
+      Top = 48
+      Width = 97
+      Height = 17
+      Caption = 'Weapon bob'
+      TabOrder = 1
     end
   end
   object OpenDialog1: TOpenDialog

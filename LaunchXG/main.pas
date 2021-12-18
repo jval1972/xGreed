@@ -39,6 +39,9 @@ type
     OpenBLOSpeedButton: TSpeedButton;
     Timer1: TTimer;
     SlopeCheckBox: TCheckBox;
+    BobGroupBox: TGroupBox;
+    HeadBoxCheckBox: TCheckBox;
+    WeaponBoxCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ScreenblocksTrackBarChange(Sender: TObject);
@@ -115,6 +118,8 @@ begin
       'gameepisode=1'#13#10 +
       'screensize=4'#13#10 +
       'camdelay=35'#13#10 +
+      'headbobon=1'#13#10 +
+      'weapbobon=1'#13#10 +
       'vid_pillarbox_pct=17'#13#10 +
       'slopeprecise=1'#13#10 +
       'mouse=1'#13#10 +
@@ -183,6 +188,8 @@ begin
   SensitivityYTrackBar.Position := GetDefault('mousesensitivityy');
   MainDataFileEdit.Text := defaults.Values['maindatafile'];
   SlopeCheckBox.Checked := GetDefault('slopeprecise') <> 0;
+  HeadBoxCheckBox.Checked := GetDefault('headbobon') <> 0;
+  WeaponBoxCheckBox.Checked := GetDefault('weapbobon') <> 0;
 end;
 
 procedure TForm1.FromControls;
@@ -237,6 +244,14 @@ begin
     SetDefault('slopeprecise', 1)
   else
     SetDefault('slopeprecise', 0);
+  if HeadBoxCheckBox.Checked then
+    SetDefault('headbobon', 1)
+  else
+    SetDefault('headbobon', 0);
+  if WeaponBoxCheckBox.Checked then
+    SetDefault('weapbobon', 1)
+  else
+    SetDefault('weapbobon', 0);
 end;
 
 procedure TForm1.ScreenblocksTrackBarChange(Sender: TObject);

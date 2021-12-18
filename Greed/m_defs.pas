@@ -37,6 +37,7 @@ uses
   i_video,
   i_windows,
   r_plane,
+  raven,
   modplay,
   protos_h;
 
@@ -55,7 +56,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 37;
+  NUMDEFAULTS = 39;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -193,6 +194,16 @@ const
      location: @SC.camdelay;
      defaultivalue: 35;
      _type: tInteger),
+
+    (name: 'headbobon';
+     location: @headbobon;
+     defaultivalue: 1;
+     _type: tBoolean),
+
+    (name: 'weapbobon';
+     location: @weapbobon;
+     defaultivalue: 1;
+     _type: tBoolean),
 
     (name: 'vid_pillarbox_pct';
      location: @vid_pillarbox_pct;
