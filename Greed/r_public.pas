@@ -51,7 +51,9 @@ var
 const
   MAXBLOODSPRITES = 200;
 
-function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+function FIXEDMUL(const a, b: fixed_t): fixed_t;
+
+function FIXEDMUL64(const a, b: Int64): Int64;
 
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
 
@@ -106,6 +108,11 @@ function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
+end;
+
+function FIXEDMUL64(const a, b: Int64): Int64;
+begin
+  Result := Round(a / FRACUNIT * b);
 end;
 
 function FIXEDDIV2(const a, b: fixed_t): fixed_t; assembler;

@@ -65,6 +65,7 @@ var
   ttrx, ttry: fixed_t;
   scale: fixed_t;
   point: Pvertex_t;
+  i64: Int64;
 begin
   point := vertexlist_p;
   inc(vertexlist_p);
@@ -79,7 +80,9 @@ begin
   if point.tz >= MINZ then
   begin
     scale := FIXEDDIV(FSCALE, point.tz);
-    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
+    i64 := FIXEDMUL64(point.tx, scale);
+    i64 := i64 div FRACUNIT;
+    point.px := CENTERX + i64;
   end;
   result := point;
 end;

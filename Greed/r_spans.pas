@@ -383,6 +383,7 @@ var
   leftx, scale, xfrac, fracstep: fixed_t;
   shapebottom, topheight, bottomheight: fixed_t;
   post, x, topy, bottomy, light, shadow, bitshift: integer;
+  i64: Int64;
   specialtype: special_t;
   pic: Pscalepic_t;
   collumn: PByteArray;
@@ -450,7 +451,9 @@ begin
   sp_fracstep := fracstep;
   leftx := span_p.x2;
   leftx := leftx - _SHL(pic.leftoffset, bitshift);
-  x := CENTERX + (FIXEDMUL(leftx, scale) div FRACUNIT);
+  i64 := FIXEDMUL64(leftx, scale);
+  i64 := i64 div FRACUNIT;
+  x := CENTERX + i64;
   // step through the shape, drawing posts where visible
   xfrac := 0;
   if x < 0 then
@@ -483,7 +486,9 @@ begin
     collumn := @collumn[2];
 
     // scale a post
-    bottomy := CENTERY - FIXEDMUL(bottomheight, scale) div FRACUNIT;
+    i64 := FIXEDMUL64(bottomheight, scale);
+    i64 := i64 div FRACUNIT;
+    bottomy := CENTERY - i64;
     if bottomy < scrollmin then
     begin
       inc(x);
@@ -492,7 +497,9 @@ begin
     if bottomy >= scrollmax then
       bottomy := scrollmax - 1;
 
-    topy := CENTERY - FIXEDMUL(topheight, scale) div FRACUNIT;
+    i64 := FIXEDMUL(topheight, scale);
+    i64 := i64 div FRACUNIT;
+    topy := CENTERY - i64;
     if topy < scrollmin then
     begin
       sp_frac := (scrollmin - topy) * sp_fracstep;
