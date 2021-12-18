@@ -2212,9 +2212,7 @@ var
   angleturnunit: integer;
 begin
   ControlBobbing;
-  if timecount and 1 = 0 then
-    exit;
-    
+
   if Warping <> 0 then
   begin
     floorz := RF_GetFloorZ(player.x, player.y) + player.height;
@@ -2233,6 +2231,9 @@ begin
     exit;
   end;
 
+  if timecount and 1 = 0 then
+    exit;
+    
   if SC.mouse = 1 then
   begin
     mousebuttons[mbt_fire] := mouse.flags and 1 <> 0;
