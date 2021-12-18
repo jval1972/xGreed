@@ -2513,7 +2513,7 @@ begin
   end;
 
   // check run/slow keys
-  if (in_button[bt_run] <> 0) or autorun then
+  if (in_button[bt_run] <> 0) xor autorun then
   begin
     modifiedSpeed := PLAYERMOVESPEED * 6 + player.runmod;
     modifiedTurn := (playerturnspeed * 5) div 2;
