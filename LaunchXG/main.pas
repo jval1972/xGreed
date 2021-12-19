@@ -218,9 +218,9 @@ begin
     SetDefault('bt_jump', $12);
   end;
 
-  SetDefault('screenblocks', ScreenblocksTrackBar.Position);
-  SetDefault('sfx_volume', SFXTrackBar.Position);
-  SetDefault('music_volume', MusicTrackBar.Position);
+  SetDefault('screensize', ScreenblocksTrackBar.Position);
+  SetDefault('sfxvol', SFXTrackBar.Position);
+  SetDefault('musicvol', MusicTrackBar.Position);
   if CheckBox_4_3.Checked then
     SetDefault('vid_pillarbox_pct', 17)
   else
