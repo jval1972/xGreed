@@ -22,9 +22,11 @@ XGreed needs data that the DOS installer produces:
 * GREED.BLO file (data)
 * All *.mod & *.s3m files (music)
 * You can optionally copy the MOVIES folder of the original CD with the *.fli files (animations).
-These files must be placed in the same folder as xGreed.exe.
+These files must be placed in the same folder as xGreed.exe, or use the Launcher to locate the GREED.BLO file.
 
 ## Downloads
+[version 1.1.5.42 (20211218 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.5.42_bin.zip/download)
+
 [version 1.1.4.40 (20211217 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.4.40_bin.zip/download)
 
 [version 1.1.3.34 (20211213 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.3.34_bin.zip/download)
