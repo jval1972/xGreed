@@ -377,7 +377,7 @@ label
 begin
   floor := false;
   ceiling := false;
-  distance := 0;  
+  distance := 0;
   if mapflags[mapspot] and FL_FLOOR <> 0 then
     goto ceilingstep;
   baseangle := viewfineangle;

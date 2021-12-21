@@ -2233,7 +2233,7 @@ begin
 
   if timecount and 1 = 0 then
     exit;
-    
+
   if SC.mouse = 1 then
   begin
     mousebuttons[mbt_fire] := mouse.flags and 1 <> 0;
