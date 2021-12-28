@@ -68,7 +68,9 @@ uses
   zlibpas in 'zlib\zlibpas.pas',
   pngimage in 'Base\pngimage.pas',
   m_screenshot in 'Base\m_screenshot.pas',
-  m_defs in 'Greed\m_defs.pas';
+  m_defs in 'Greed\m_defs.pas',
+  m_crc32 in 'Base\m_crc32.pas',
+  g_fixlump in 'Base\g_fixlump.pas';
 
 var
   hGreedWnd: HWND = 0;

@@ -96,6 +96,7 @@ implementation
 uses
   i_windows,
   d_misc,
+  g_fixlump,
   menu;
 
 procedure CA_ReadFile(const fname: string; const buffer: pointer; const len: LongWord);
@@ -290,6 +291,7 @@ begin
     if waiting then
       UpdateWait;
     fread(lumpcache[lump].data, infotable[lump].size, 1, cachehandle);
+    FixLump(lumpcache[lump].data, infotable[lump].size);
     if waiting then
       UpdateWait;
   end;
