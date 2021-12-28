@@ -787,29 +787,29 @@ begin
           hurt(msprite.damage);
           if (player.angst = 0) and netmode then
             NetDeath(msprite.spawnid);
-          end;
-          Thrust(msprite.angle, msprite.damage shl (FRACBITS - 3));
-          playerhit := false;
-          killed := true;
-          if msprite.damage > 50 then
-          begin
-            player.angle := player.angle - 15 + (MS_RndT and 31);
-            player.angle := player.angle and ANGLES;
-            player_angle64 := player.angle * 64;
-          end;
         end;
-        if ret = 2 then
-          killed := true;
-        if killed then
+        Thrust(msprite.angle, msprite.damage shl (FRACBITS - 3));
+        playerhit := false;
+        killed := true;
+        if msprite.damage > 50 then
         begin
-          if not blood then
-            ShowWallPuff;
-          break;
+          player.angle := player.angle - 15 + (MS_RndT and 31);
+          player.angle := player.angle and ANGLES;
+          player_angle64 := player.angle * 64;
         end;
       end;
+      if ret = 2 then
+        killed := true;
+      if killed then
+      begin
+        if not blood then
+          ShowWallPuff;
+        break;
+      end;
     end;
-    if killed and (msprite.typ = S_GRENADE) then
-    begin
+  end;
+  if killed and (msprite.typ = S_GRENADE) then
+  begin
     angleinc := ANGLES div 12;
     angle := 0;
     for i := 0 to 11 do
