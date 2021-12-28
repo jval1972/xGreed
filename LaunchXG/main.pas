@@ -21,6 +21,7 @@ type
     Button2: TButton;
     Button3: TButton;
     SkipIntroCheckBox: TCheckBox;
+    NoBriefingCheckBox: TCheckBox;
     CheckBox_4_3: TCheckBox;
     MouseGroupBox1: TGroupBox;
     MenuUseMouseCheckBox: TCheckBox;
@@ -297,14 +298,17 @@ begin
   cmdline := 'xGreed.exe';
   if SkipIntroCheckBox.Checked then
     cmdline := cmdline + ' nointro';
+  if NoBriefingCheckBox.Checked then
+    cmdline := cmdline + ' nobriefing';
   if EpisodeRadioGroup.ItemIndex = 1 then
     cmdline := cmdline + ' game2'
   else if EpisodeRadioGroup.ItemIndex = 2 then
     cmdline := cmdline + ' game3'
   else
     cmdline := cmdline + ' game1';
-  if FileExists(MainDataFileEdit.Text) then
-    cmdline := cmdline + ' blo ' + '"' + MainDataFileEdit.Text + '"';
+  if Trim(MainDataFileEdit.Text) <> '' then
+    if FileExists(MainDataFileEdit.Text) then
+      cmdline := cmdline + ' blo ' + '"' + MainDataFileEdit.Text + '"';
   weret := WinExec(PChar(cmdline), SW_SHOWNORMAL);
   if weret > 31 then
     Close

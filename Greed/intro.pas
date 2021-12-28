@@ -181,7 +181,8 @@ const
 (**** VARIABLES ****)
 var
   colors: array[0..767] of byte;
-  nointro, nextchar: boolean;
+  nextchar: boolean;
+  nointro, nobriefing: boolean;
 
 
 (**** FUNCTIONS ****)
@@ -797,6 +798,8 @@ begin
 
   if MS_CheckParm('nointro') > 0 then
     nointro := true;
+  if MS_CheckParm('nobriefing') > 0 then
+    nobriefing := true;
   if MS_CheckParm('record') > 0 then
     recording := true;
   if MS_CheckParm('playback') > 0 then

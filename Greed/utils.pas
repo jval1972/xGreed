@@ -2303,7 +2303,7 @@ var
 label
   finale;
 begin
-  if netmode or nointro then
+  if netmode or nobriefing then
     exit;
 
   scr := malloc(64000);

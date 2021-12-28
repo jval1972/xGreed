@@ -1148,7 +1148,7 @@ object Form1: TForm1
       'Arrows'
       'WASD'
       'Custom')
-    TabOrder = 5
+    TabOrder = 6
   end
   object Button1: TButton
     Left = 520
@@ -1157,7 +1157,7 @@ object Form1: TForm1
     Height = 25
     Caption = 'Save and Run'
     Default = True
-    TabOrder = 7
+    TabOrder = 9
     OnClick = Button1Click
   end
   object Button2: TButton
@@ -1166,7 +1166,7 @@ object Form1: TForm1
     Width = 97
     Height = 25
     Caption = 'Save'
-    TabOrder = 8
+    TabOrder = 10
     OnClick = Button2Click
   end
   object Button3: TButton
@@ -1175,16 +1175,16 @@ object Form1: TForm1
     Width = 97
     Height = 25
     Caption = 'Exit'
-    TabOrder = 9
+    TabOrder = 11
     OnClick = Button3Click
   end
   object SkipIntroCheckBox: TCheckBox
     Left = 520
-    Top = 208
+    Top = 200
     Width = 97
     Height = 17
     Caption = 'Skip Intro'
-    TabOrder = 6
+    TabOrder = 7
   end
   object MouseGroupBox1: TGroupBox
     Left = 296
@@ -1321,7 +1321,7 @@ object Form1: TForm1
     Width = 201
     Height = 89
     Caption = ' Bobbing '
-    TabOrder = 10
+    TabOrder = 5
     object HeadBoxCheckBox: TCheckBox
       Left = 16
       Top = 24
@@ -1338,6 +1338,14 @@ object Form1: TForm1
       Caption = 'Weapon bob'
       TabOrder = 1
     end
+  end
+  object NoBriefingCheckBox: TCheckBox
+    Left = 520
+    Top = 224
+    Width = 97
+    Height = 17
+    Caption = 'No briefing'
+    TabOrder = 8
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = 'blo'
