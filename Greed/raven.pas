@@ -3826,7 +3826,7 @@ var
   collumn: PByteArray;
   spic: Pscalepic_t;
 begin
-  spic := lumpmain[player.holopic]; // draw the pic for it
+  spic := lumpcache[player.holopic].data; // draw the pic for it
   x := 5;
   for i := 0 to spic.width - 1 do
   begin

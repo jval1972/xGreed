@@ -336,7 +336,7 @@ begin
   begin
     for i := 0 to numwalls - 2 do
     begin
-      wall := lumpmain[walllump + i + 1];
+      wall := lumpcache[walllump + i + 1].data;
       base := @wall[65 * 2];
       size := wall[0] * 4;
       for x := 0 to 63 do
@@ -405,7 +405,7 @@ begin
 
   for i :=  0 to numwalls - 2 do
   begin
-    wall := lumpmain[walllump + i + 1];
+    wall := lumpcache[walllump + i + 1].data;
     if wall <> nil then
     begin
       base := @wall[65 * 2];

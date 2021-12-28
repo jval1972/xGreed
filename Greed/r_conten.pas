@@ -272,7 +272,7 @@ begin
   walltype := door_p.pic;
   walltype := walltranslation[walltype];     // global animation
   dec(walltype);                             // make 0 based
-  wall := lumpmain[walllump + walltype];
+  wall := lumpcache[walllump + walltype].data;
   if wall = nil then
     wall := CA_CacheLump(walllump + walltype);
   ceilingheight := vertex[0].ceilingheight;
@@ -403,7 +403,7 @@ part2:
   walltype := door_p.pic;
   walltype := walltranslation[walltype];     // global animation
   dec(walltype);                             // make 0 based
-  wall := lumpmain[walllump + walltype];
+  wall := lumpcache[walllump + walltype].data;
   if wall = nil then
     wall := CA_CacheLump(walllump + walltype);
   ceilingheight := vertex[0].ceilingheight;
@@ -522,7 +522,7 @@ part3:
 
   // set up for loop
   walltype := 2;
-  wall := lumpmain[walllump + walltype];
+  wall := lumpcache[walllump + walltype].data;
   if wall = nil then
     wall := CA_CacheLump(walllump + walltype);
   postindex := @wallposts[walltype * 64];      // 64 pointers to texture starts
@@ -644,7 +644,7 @@ begin
   spantags[numspans] := span;
   span_p := @spans[numspans];
   span_p.spantype := sp_shape;
-  span_p.picture := lumpmain[picnum];
+  span_p.picture := lumpcache[picnum].data;
   span_p.x2 := pointx;
   span_p.y := sprite.z - viewz;
   span_p.structure := sprite;

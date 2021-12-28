@@ -61,12 +61,12 @@ var
   pic: Pscalepic_t;
   collumn: PByteArray;
 begin
-  if lumpmain[lump] <> nil then
+  if lumpcache[lump].data <> nil then
     exit; // already loaded
   for l := 0 to num - 1 do
   begin
     CA_CacheLump(lump + l);
-    pic := lumpmain[lump + l];
+    pic := lumpcache[lump + l].data;
     for i := 0 to pic.width - 1 do
       if pic.collumnofs[i] <> 0 then
       begin

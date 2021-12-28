@@ -599,7 +599,7 @@ begin
     printy := 172 + ofs;
     sprintf(str1, '%2d', [player.inventory[inventorycursor]]);
     FN_RawPrint2(str1);
-    pic := lumpmain[lump]; // draw the pic for it
+    pic := lumpcache[lump].data;  // draw the pic for it
     x := 128 - (pic.width div 2);
     for i := 0 to pic.width - 1 do
     begin
@@ -670,7 +670,7 @@ begin
       time := 0;
     sprintf(str1, '%3d s ', [time]);
     name := BonusItem.name;
-    pic := lumpmain[lump];
+    pic := lumpcache[lump].data;
     x := 34 - (pic.width div 2);
     for i := 0 to pic.width - 1 do
     begin
@@ -697,7 +697,7 @@ begin
   else
   begin
     lump := fraglump + playerdata[goalitem - 1].chartype;
-    p := Ppic_t(lumpmain[lump]);
+    p := lumpcache[lump].data;
     typ := 'Player ';
     name := netnames[goalitem - 1];
     sprintf(str1, '%5d', [fragcount[goalitem - 1]]);
@@ -777,7 +777,7 @@ begin
     name := secnames[secondaries[(goalitem - 3) * 2]];
   end;
 
-  pic := lumpmain[lump];
+  pic := lumpcache[lump].data;
   x := 34 - (pic.width div 2);
   for i := 0 to pic.width - 1 do
   begin
@@ -1030,7 +1030,7 @@ begin
       printx := 149;  // name
       printy := 163;
       FN_RawPrint(inventorynames[inventorycursor]);
-      pic := lumpmain[lump]; // draw the pic for it
+      pic := lumpcache[lump].data;  // draw the pic for it
       x := 128 - (pic.width div 2);
       for i := 0 to pic.width - 1 do
       begin
@@ -1128,7 +1128,7 @@ begin
       time := 0;
     sprintf(str1, '%3d s', [time]);
     name := BonusItem.name;
-    pic := lumpmain[lump];
+    pic := lumpcache[lump].data;
     x := 34 - (pic.width div 2);
     for i := 158 to 187 do
       memset(@ylookup[i][19], approx_zero, 30);
@@ -1157,7 +1157,7 @@ begin
   else
   begin
     lump := fraglump + playerdata[goalitem - 1].chartype;
-    p := lumpmain[lump];
+    p := lumpcache[lump].data;
     typ := 'Player';
     name := netnames[goalitem - 1];
     sprintf(str1, '%d', [fragcount[goalitem - 1]]);
@@ -1284,7 +1284,7 @@ begin
 
   for i := 158 to 187 do
     memset(@ylookup[i][19], approx_zero, 30);
-  pic := lumpmain[lump];
+  pic := lumpcache[lump].data;
   x := 34 - (pic.width div 2);
   for i := 0 to pic.width - 1 do
   begin
@@ -1430,7 +1430,7 @@ begin
   end;
   memset(@ylookup[27][windowWidth - 55], 30, 55);
   lump := inventorylump + inventorycursor;
-  pic := lumpmain[lump]; // draw the pic for it
+  pic := lumpcache[lump].data; // draw the pic for it
   x := windowWidth - 31;
   for i := 0 to pic.width - 1 do
   begin

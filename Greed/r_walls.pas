@@ -109,7 +109,7 @@ var
   rotateright, rotateleft, transparent, rotateup, rotatedown, invisible: integer;
 begin
   walltype := walltranslation[walltype];        // global animation
-  wall := lumpmain[walllump + walltype];        // to get wall height
+  wall := lumpcache[walllump + walltype].data;  // to get wall height
   postindex := @wallposts[(walltype - 1) * 64];  // 64 pointers to texture start
   baseangle := viewfineangle;
   transparent := wallflags and F_TRANSPARENT;
@@ -432,10 +432,10 @@ begin
   rotatedown1 := floordefflags[tm] and F_DOWN;
   cclip1 := ceiling1;
   ceiling1 := (ceiling1 * FRACUNIT) - viewz;
-  floor1 := -((floor1 * FRACUNIT) - viewz); // distance below vi
-  walltype1 := walltranslation[walltype1];    // global animation
-  wall1 := lumpmain[walllump + walltype1];    // to get wall height
-  postindex1 := @wallposts[(walltype1 - 1) * 64];  // 64 pointers to texture start
+  floor1 := -((floor1 * FRACUNIT) - viewz);       // distance below vi
+  walltype1 := walltranslation[walltype1];        // global animation
+  wall1 := lumpcache[walllump + walltype1].data;  // to get wall height
+  postindex1 := @wallposts[(walltype1 - 1) * 64]; // 64 pointers to texture start
 
 ceilingstep:
 
@@ -484,11 +484,11 @@ ceilingstep:
 
   ceiling := true;
   ceiling2 := (ceiling2 * FRACUNIT) - viewz;
-  floor2 := -((floor2 * FRACUNIT) - viewz);   // distance below vi
+  floor2 := -((floor2 * FRACUNIT) - viewz);       // distance below vi
   walltype2 := ceilingdef[tm];
-  walltype2 := walltranslation[walltype2];  // global animation
-  wall2 := lumpmain[walllump + walltype2];  // to get wall height
-  postindex2 := @wallposts[(walltype2 - 1) * 64];  // 64 pointers to texture start
+  walltype2 := walltranslation[walltype2];        // global animation
+  wall2 := lumpcache[walllump + walltype2].data;  // to get wall height
+  postindex2 := @wallposts[(walltype2 - 1) * 64]; // 64 pointers to texture start
   rotateleft2 := ceilingdefflags[tm] and F_LEFT;
   rotateright2 := ceilingdefflags[tm] and F_RIGHT;
   rotateup2 := ceilingdefflags[tm] and F_UP;

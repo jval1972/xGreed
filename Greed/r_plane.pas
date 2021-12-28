@@ -452,7 +452,7 @@ begin
   end;
   mr_light := maplight;
   flatpic := flattranslation[flatpic];
-  mr_picture := lumpmain[flatlump + flatpic];
+  mr_picture := lumpcache[flatlump + flatpic].data;
   if mr_picture <> nil then
   begin
     polytype := (flags and FL_FLOOR) shr FLS_FLOOR;
@@ -526,7 +526,7 @@ begin
   flatpic := ceilingpic[mapspot];
   transparent := ceilingflags[mapspot] and F_TRANSPARENT <> 0;
   flatpic := flattranslation[flatpic];
-  mr_picture := lumpmain[flatlump + flatpic];
+  mr_picture := lumpcache[flatlump + flatpic].data;
   if mr_picture <> nil then
   begin
     polytype := (flags and FL_CEILING) shr FLS_CEILING;

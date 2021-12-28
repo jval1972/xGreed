@@ -48,11 +48,19 @@ type
   lumpinfo_tArray = array[0..$FFF] of lumpinfo_t;
   Plumpinfo_tArray = ^lumpinfo_tArray;
 
+  Plumpcache_t = ^lumpcache_t;
+  lumpcache_t = record
+    data: Pointer;
+    usage: Boolean;
+  end;
+  lumpcache_tArray = array[0..$FFF] of lumpcache_t;
+  Plumpcache_tArray = ^lumpcache_tArray;
+
 (**** VARIABLES ****)
 var
   fileinfo: fileinfo_t; // the file header
   infotable: Plumpinfo_tArray;  // pointers into the cache file
-  lumpmain: PPointerArray;  // pointers to the lumps in main memory
+  lumpcache: Plumpcache_tArray;  // pointers to the lumps in main memory
   cachehandle: file; // handle of current file
 
 procedure CA_ReadFile(const fname: string; const buffer: pointer; const len: LongWord);
@@ -203,9 +211,9 @@ begin
     closefile(cachehandle);
     memfree(pointer(infotable));
     for i := 0 to fileinfo.numlumps - 1 do  // dump the lumps
-      if lumpmain[i] <> nil then
-        memfree(lumpmain[i]);
-    memfree(pointer(lumpmain));
+      if lumpcache[i].data <> nil then
+        memfree(lumpcache[i].data);
+    memfree(pointer(lumpcache));
   end;
 end;
 
@@ -226,8 +234,8 @@ begin
   infotable := malloc(size);
   seek(cachehandle, fileinfo.infotableofs);
   fread(infotable, size, 1, cachehandle);
-  size := fileinfo.numlumps * SizeOf(integer);
-  lumpmain := mallocz(size);
+  size := fileinfo.numlumps * SizeOf(lumpcache_t);
+  lumpcache := mallocz(size);
   ca_initialized := true;
 end;
 
@@ -271,21 +279,22 @@ begin
   if lump >= fileinfo.numlumps then
     MS_Error('CA_LumpPointer(): %i>%i max lumps!', [lump, fileinfo.numlumps]);
 {$ENDIF}
-  if lumpmain[lump] = nil then
+  if lumpcache[lump].data = nil then
   begin
     // load the lump off disk
-    lumpmain[lump] := malloc(infotable[lump].size);
-    if lumpmain[lump] = nil then
+    lumpcache[lump].data := malloc(infotable[lump].size);
+    if lumpcache[lump].data = nil then
       MS_Error('CA_LumpPointer(): malloc failure of lump %d, with size %d',
         [lump, infotable[lump].size]);
     seek(cachehandle, infotable[lump].filepos);
     if waiting then
       UpdateWait;
-    fread(lumpmain[lump], infotable[lump].size, 1, cachehandle);
+    fread(lumpcache[lump].data, infotable[lump].size, 1, cachehandle);
     if waiting then
       UpdateWait;
   end;
-  result := lumpmain[lump];
+  lumpcache[lump].usage := True;
+  result := lumpcache[lump].data;
 end;
 
 var
@@ -321,10 +330,10 @@ begin
   if lump >= fileinfo.numlumps then
     MS_Error('CA_FreeLump(): %d>%d max lumps!', [lump, fileinfo.numlumps]);
 {$ENDIF}
-  if lumpmain[lump] = nil then
-    exit;
-  memfree(lumpmain[lump]);
-  lumpmain[lump] := nil; // JVAL: unused ?
+  lumpcache[lump].usage := False;
+//  if lumpcache[lump].data = nil then
+//    exit;
+//  memfree(lumpmain[lump]);
 end;
 
 function CA_LumpName(const lump: integer): string;
