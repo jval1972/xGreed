@@ -1470,7 +1470,7 @@ begin
           else
             fheight := 40 * FRACUNIT;
           pangle := GetFireAngle(fheight, tx, ty, targx, targy, targz) - 15 + (MS_RndT and 31);
-          SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31), pangle, true, 255);
+          SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31), pangle, true, 255);
           msprite.modetime := msprite.modetime + 8;
         end
         else
@@ -1748,7 +1748,7 @@ begin
       msprite.basepic := msprite.startpic + 24;
       fheight := 40 * FRACUNIT;
       pangle := GetFireAngle(fheight, px, py, 0, 0, 0);
-      SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle, pangle, true, 255);
+      SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle, pangle, true, 255);
       msprite.modetime := timecount + 8;
       msprite.actiontime := timecount + 30;
       msprite.firetime := timecount + 30;
@@ -1764,7 +1764,7 @@ begin
       msprite.basepic := msprite.startpic + 24;
       fheight := 40 * FRACUNIT;
       pangle := GetFireAngle(fheight, px, py, 0, 0, 0);
-      SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle, pangle, true, 255);
+      SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle, pangle, true, 255);
       msprite.modetime := timecount + 8;
       msprite.actiontime := timecount + 30;
       msprite.firetime := timecount + 30;
@@ -2033,7 +2033,7 @@ endscan:
           msprite.basepic := msprite.startpic + 32;
           fheight := 40 * FRACUNIT;
           pangle := GetFireAngle(fheight, tx, ty, targx, targy, targz);
-          SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle, pangle, true, 255);
+          SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle, pangle, true, 255);
           msprite.modetime := msprite.modetime + 8;
         end
         else
@@ -2289,8 +2289,8 @@ begin
           fheight := 70 * FRACUNIT;
           if (msprite.movemode = 5) and (MS_RndT < 32) then
           begin
-            SpawnSprite(S_GRENADE, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31), 0, true, 255);
-            SpawnSprite(S_GRENADE, msprite.x, msprite.y, msprite.z,fheight, msprite.angle + 15 + (MS_RndT and 31), 0, true, 255);
+            SpawnSprite(S_GRENADE, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31), 0, true, 255);
+            SpawnSprite(S_GRENADE, msprite.x, msprite.y, msprite.z, fheight, msprite.angle + 15 + (MS_RndT and 31), 0, true, 255);
             SoundEffect(SN_GRENADE, 0, msprite.x, msprite.y);
             msprite.movemode := 0;
             msprite.basepic := msprite.startpic;
@@ -2484,17 +2484,17 @@ begin
       pangle := GetFireAngle(fheight, tx, ty, targx, targy, targz) - 15 + (MS_RndT and 31);
       if (msprite.typ = S_MONSTER13) or (msprite.typ = S_MONSTER6) or (msprite.typ = S_MONSTER15) or (msprite.typ = S_MONSTER5) then
       begin
-        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31) + 16, pangle, true, 255);
-        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31) - 16, pangle, true, 255);
-        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31), pangle, true, 255);
+        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31) + 16, pangle, true, 255);
+        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31) - 16, pangle, true, 255);
+        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31), pangle, true, 255);
       end
       else if msprite.typ = S_MONSTER4 then
       begin
-        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31) + 8, pangle, true, 255);
-        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31) - 8, pangle, true, 255);
+        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31) + 8, pangle, true, 255);
+        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31) - 8, pangle, true, 255);
       end
       else
-        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z,fheight, msprite.angle - 15 + (MS_RndT and 31), pangle, true, 255);
+        SpawnSprite(msprite.bullet, msprite.x, msprite.y, msprite.z, fheight, msprite.angle - 15 + (MS_RndT and 31), pangle, true, 255);
     end;
     msprite.scantime := timecount + 30;
   end;

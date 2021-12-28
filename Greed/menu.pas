@@ -889,8 +889,8 @@ begin
   begin
     if not fopen(f, 'help.dat', fOpenReadOnly) then
       MS_Error('Error Loading Help.Dat file');
-    fread(screen, 64000, 1,f);
-    fread(@colors, 768, 1,f);
+    fread(screen, 64000, 1, f);
+    fread(@colors, 768, 1, f);
     fclose(f);
   end
   else
