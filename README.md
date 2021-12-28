@@ -25,6 +25,8 @@ XGreed needs data that the DOS installer produces:
 These files must be placed in the same folder as xGreed.exe, or use the Launcher to locate the GREED.BLO file.
 
 ## Downloads
+[version 1.1.7.45 (20211228 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.7.45_bin.zip/download)
+
 [version 1.1.6.43 (20211219 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.6.43_bin.zip/download)
 
 [version 1.1.5.42 (20211218 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.5.42_bin.zip/download)
