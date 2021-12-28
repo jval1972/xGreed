@@ -43,6 +43,7 @@ type
     BobGroupBox: TGroupBox;
     HeadBoxCheckBox: TCheckBox;
     WeaponBoxCheckBox: TCheckBox;
+    InterpolateCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ScreenblocksTrackBarChange(Sender: TObject);
@@ -64,7 +65,7 @@ type
     in_startup: boolean;
     in_runprepare: boolean;
     procedure SetDefault(const defname: string; const defvalue: integer);
-    function GetDefault(const defname: string): integer;
+    function GetDefault(const defname: string; const defvalue: integer = 0): integer;
     procedure ToControls;
     procedure FromControls;
     procedure CheckBloFile;
@@ -123,6 +124,7 @@ begin
       'weapbobon=1'#13#10 +
       'vid_pillarbox_pct=17'#13#10 +
       'slopeprecise=1'#13#10 +
+      'interpolate=1'#13#10 +
       'doubleblit=1'#13#10 +
       'mouse=1'#13#10 +
       'menumouse=1'#13#10 +
@@ -153,9 +155,9 @@ begin
     defaults.Values[defname] := IntToStr(defvalue);
 end;
 
-function TForm1.GetDefault(const defname: string): integer;
+function TForm1.GetDefault(const defname: string; const defvalue: integer): integer;
 begin
-  Result := StrToIntDef(defaults.Values[defname], 0);
+  Result := StrToIntDef(defaults.Values[defname], defvalue);
 end;
 
 procedure TForm1.ToControls;
@@ -181,17 +183,18 @@ begin
   ScreenblocksTrackBar.Position := GetDefault('screensize');
   SFXTrackBar.Position := GetDefault('sfxvol');
   MusicTrackBar.Position := GetDefault('musicvol');
-  CheckBox_4_3.Checked := GetDefault('vid_pillarbox_pct') = 17;
-  MenuUseMouseCheckBox.Checked := GetDefault('menumouse') <> 0;
-  UseMouseCheckBox.Checked := GetDefault('mouse') <> 0;
-  EpisodeRadioGroup.ItemIndex := GetDefault('gameepisode') - 1;
+  CheckBox_4_3.Checked := GetDefault('vid_pillarbox_pct', 17) = 17;
+  MenuUseMouseCheckBox.Checked := GetDefault('menumouse', 1) <> 0;
+  UseMouseCheckBox.Checked := GetDefault('mouse', 1) <> 0;
+  EpisodeRadioGroup.ItemIndex := GetDefault('gameepisode', 1) - 1;
   SensitivityTrackBar.Position := GetDefault('mousesensitivity');
   SensitivityXTrackBar.Position := GetDefault('mousesensitivityx');
   SensitivityYTrackBar.Position := GetDefault('mousesensitivityy');
   MainDataFileEdit.Text := defaults.Values['maindatafile'];
-  SlopeCheckBox.Checked := GetDefault('slopeprecise') <> 0;
-  HeadBoxCheckBox.Checked := GetDefault('headbobon') <> 0;
-  WeaponBoxCheckBox.Checked := GetDefault('weapbobon') <> 0;
+  SlopeCheckBox.Checked := GetDefault('slopeprecise', 1) <> 0;
+  InterpolateCheckBox.Checked := GetDefault('interpolate', 1) <> 0;
+  HeadBoxCheckBox.Checked := GetDefault('headbobon', 1) <> 0;
+  WeaponBoxCheckBox.Checked := GetDefault('weapbobon', 1) <> 0;
 end;
 
 procedure TForm1.FromControls;
@@ -246,6 +249,10 @@ begin
     SetDefault('slopeprecise', 1)
   else
     SetDefault('slopeprecise', 0);
+  if InterpolateCheckBox.Checked then
+    SetDefault('interpolate', 1)
+  else
+    SetDefault('interpolate', 0);
   if HeadBoxCheckBox.Checked then
     SetDefault('headbobon', 1)
   else

@@ -36,6 +36,7 @@ uses
   d_ints_h,
   i_video,
   i_windows,
+  r_interpolate,
   r_plane,
   raven,
   modplay,
@@ -56,7 +57,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 40;
+  NUMDEFAULTS = 41;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -212,6 +213,11 @@ const
 
     (name: 'slopeprecise';
      location: @slopeprecise;
+     defaultivalue: 1;
+     _type: tBoolean),
+
+    (name: 'interpolate';
+     location: @interpolate;
      defaultivalue: 1;
      _type: tBoolean),
 

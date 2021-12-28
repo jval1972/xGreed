@@ -34,6 +34,9 @@ procedure InterpolateSprites;
 
 procedure RestoreInterpolateSprites;
 
+var
+  interpolate: boolean = true;
+
 implementation
 
 uses
@@ -91,6 +94,9 @@ var
   frac: integer;
   typ: integer;
 begin
+  if not interpolate then
+    exit;
+
   frac := FRACUNIT - (spritemovetime - timecount) * (FRACUNIT div 8);
   if frac <= 0 then
     frac := 0;

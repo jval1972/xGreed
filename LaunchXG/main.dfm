@@ -1052,14 +1052,14 @@ object Form1: TForm1
   TextHeight = 13
   object SoundGroupBox: TGroupBox
     Left = 16
-    Top = 240
+    Top = 248
     Width = 265
-    Height = 97
+    Height = 89
     Caption = ' Sound  '
     TabOrder = 3
     object Label2: TLabel
       Left = 16
-      Top = 32
+      Top = 24
       Width = 63
       Height = 13
       Caption = 'SFX volume: '
@@ -1067,7 +1067,7 @@ object Form1: TForm1
     end
     object Label3: TLabel
       Left = 16
-      Top = 64
+      Top = 56
       Width = 71
       Height = 13
       Caption = 'Music volume: '
@@ -1075,7 +1075,7 @@ object Form1: TForm1
     end
     object SFXTrackBar: TTrackBar
       Left = 104
-      Top = 24
+      Top = 16
       Width = 153
       Height = 33
       Max = 255
@@ -1086,7 +1086,7 @@ object Form1: TForm1
     end
     object MusicTrackBar: TTrackBar
       Left = 104
-      Top = 56
+      Top = 48
       Width = 153
       Height = 33
       Max = 255
@@ -1100,7 +1100,7 @@ object Form1: TForm1
     Left = 16
     Top = 152
     Width = 265
-    Height = 81
+    Height = 89
     Caption = ' Graphics '
     TabOrder = 2
     object Label1: TLabel
@@ -1122,19 +1122,29 @@ object Form1: TForm1
       OnChange = ScreenblocksTrackBarChange
     end
     object CheckBox_4_3: TCheckBox
-      Left = 16
-      Top = 56
+      Left = 168
+      Top = 48
       Width = 89
       Height = 17
       Caption = '4:3 display'
-      TabOrder = 1
+      TabOrder = 3
     end
     object SlopeCheckBox: TCheckBox
-      Left = 104
-      Top = 56
+      Left = 8
+      Top = 48
       Width = 145
       Height = 17
       Caption = 'Precise Slope Rendering'
+      TabOrder = 1
+    end
+    object InterpolateCheckBox: TCheckBox
+      Left = 8
+      Top = 64
+      Width = 193
+      Height = 17
+      Caption = 'Interpolate Projectile Movement'
+      Checked = True
+      State = cbChecked
       TabOrder = 2
     end
   end
@@ -1190,7 +1200,7 @@ object Form1: TForm1
     Left = 296
     Top = 56
     Width = 209
-    Height = 177
+    Height = 185
     Caption = ' Mouse '
     TabOrder = 4
     object Label4: TLabel
@@ -1203,7 +1213,7 @@ object Form1: TForm1
     end
     object Label5: TLabel
       Left = 16
-      Top = 112
+      Top = 116
       Width = 63
       Height = 13
       Caption = 'Sensitivity X: '
@@ -1211,7 +1221,7 @@ object Form1: TForm1
     end
     object Label6: TLabel
       Left = 16
-      Top = 144
+      Top = 152
       Width = 63
       Height = 13
       Caption = 'Sensitivity Y: '
@@ -1238,7 +1248,7 @@ object Form1: TForm1
     end
     object SensitivityXTrackBar: TTrackBar
       Left = 88
-      Top = 104
+      Top = 108
       Width = 105
       Height = 33
       Max = 20
@@ -1249,7 +1259,7 @@ object Form1: TForm1
     end
     object SensitivityYTrackBar: TTrackBar
       Left = 88
-      Top = 136
+      Top = 144
       Width = 105
       Height = 33
       Max = 20
@@ -1316,9 +1326,9 @@ object Form1: TForm1
     end
   end
   object BobGroupBox: TGroupBox
-    Left = 304
+    Left = 296
     Top = 248
-    Width = 201
+    Width = 209
     Height = 89
     Caption = ' Bobbing '
     TabOrder = 5
