@@ -443,11 +443,11 @@ begin
   textures[134] := true;
   textures[135] := true;
   for i := 1 to numflats - 1 do
-//  if (textures[i]) // JVAL ?
-  begin
-    CA_CacheLump(flatlump + i);
-    UpdateWait;
-  end;
+    if textures[i] then // JVAL ?
+    begin
+      CA_CacheLump(flatlump + i);
+      UpdateWait;
+    end;
 end;
 
 procedure DoLoadMapData(var f: file);
