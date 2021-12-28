@@ -70,7 +70,8 @@ uses
   m_screenshot in 'Base\m_screenshot.pas',
   m_defs in 'Greed\m_defs.pas',
   m_crc32 in 'Base\m_crc32.pas',
-  g_fixlump in 'Base\g_fixlump.pas';
+  g_fixlump in 'Base\g_fixlump.pas',
+  r_interpolate in 'Greed\r_interpolate.pas';
 
 var
   hGreedWnd: HWND = 0;

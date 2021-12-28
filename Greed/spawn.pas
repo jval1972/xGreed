@@ -2682,6 +2682,19 @@ begin
   if (midgetmode) and (sprite_p <> nil) then
     inc(sprite_p.scale);
   result := sprite_p;
+  if result <> nil then
+  begin
+    result.oldx := result.x;
+    result.oldy := result.y;
+    result.oldz := result.z;
+    result.oldangle := result.angle;
+    result.oldangle2 := result.angle2;
+    result.newx := result.x;
+    result.newy := result.y;
+    result.newz := result.z;
+    result.newangle := result.angle;
+    result.newangle2 := result.angle2;
+  end;
 end;
 
 end.

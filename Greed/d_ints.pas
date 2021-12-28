@@ -170,6 +170,7 @@ procedure I_SynchronizeInput(active: boolean);
 
 var
   menuusemouse: boolean = true;
+  waitISR: boolean = false;
 
 implementation
 
@@ -264,6 +265,8 @@ end;
 // process each timer tick
 procedure INT_TimerISR;
 begin
+  while waitISR do
+    I_Sleep(0);
   inc(timecount);
   inc(gametic);
   if timecount and 1 <> 0 then

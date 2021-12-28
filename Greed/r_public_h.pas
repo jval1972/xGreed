@@ -202,6 +202,16 @@ type
     height: fixed_t;
     specialtype: special_t;
     scale: integer;
+    oldx: integer;
+    oldy: integer;
+    oldz: integer;
+    oldangle: integer;
+    oldangle2: integer;
+    newx: integer;
+    newy: integer;
+    newz: integer;
+    newangle: integer;
+    newangle2: integer;
   end;
 
 { modify this part whenever you want }

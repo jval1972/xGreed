@@ -99,6 +99,7 @@ uses
   modplay,
   raven,
   r_conten,
+  r_interpolate,
   r_render,
   r_spans,
   r_walls,
@@ -603,6 +604,7 @@ begin
     MS_Error('Invalid RF_RenderView (%d, %d, %d, %d)', [x, y, z, angle]);
 {$ENDIF}
 
+  waitISR := True;
   viewx := x;
   viewy := y;
   viewz := z;
@@ -612,9 +614,13 @@ begin
   RF_CheckActionFlag;
   FlowView;
   RF_CheckActionFlag;
+  InterpolateSprites;
   RenderSprites;
+  RestoreInterpolateSprites;
   DrawSpans;
   RF_CheckActionFlag;
+  waitISR := False;
+
 end;
 
 

@@ -2571,6 +2571,25 @@ var
   mapspot, i, j, c, px, py, sx, sy: integer;
   killed: boolean;
   floor: fixed_t;
+
+  procedure _save_old;
+  begin
+    msprite.oldx := msprite.x;
+    msprite.oldy := msprite.y;
+    msprite.oldz := msprite.z;
+    msprite.oldangle := msprite.angle;
+    msprite.oldangle2 := msprite.angle2;
+  end;
+
+  procedure _save_new;
+  begin
+    msprite.newx := msprite.x;
+    msprite.newy := msprite.y;
+    msprite.newz := msprite.z;
+    msprite.newangle := msprite.angle;
+    msprite.newangle2 := msprite.angle2;
+  end;
+
 begin
   if not netmode then
   begin
@@ -2583,6 +2602,7 @@ begin
   msprite := firstscaleobj.next;
   while msprite <> @lastscaleobj do
   begin
+    _save_old;
     if msprite.active then
     begin
       if msprite.moveSpeed <> 0 then
@@ -2600,6 +2620,7 @@ begin
             else if (msprite.typ = S_METALPARTS) and not spritehit then
             begin
               killed := false;
+              _save_new;
               msprite := msprite.next;
               continue;
             end;
@@ -2608,6 +2629,7 @@ begin
               msprite := msprite.prev;
               RF_RemoveSprite(msprite.next);
               killed := false;
+              _save_new;
               msprite := msprite.next;
               continue;
             end;
@@ -2627,6 +2649,7 @@ begin
             msprite := msprite.prev;
             RF_RemoveSprite(msprite.next);
             killed := false;
+            _save_new;
             msprite := msprite.next;
             continue;
           end;
@@ -2719,6 +2742,7 @@ begin
           reallight[mapspot] := reallight[mapspot] - msprite.heat;
       end;
     end;
+    _save_new;
     msprite := msprite.next;
   end;
 end;
