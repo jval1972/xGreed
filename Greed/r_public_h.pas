@@ -207,11 +207,13 @@ type
     oldz: integer;
     oldangle: integer;
     oldangle2: integer;
+    oldOnFoorz: boolean;
     newx: integer;
     newy: integer;
     newz: integer;
     newangle: integer;
     newangle2: integer;
+    newOnFoorz: boolean;
   end;
 
 { modify this part whenever you want }

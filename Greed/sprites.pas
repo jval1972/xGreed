@@ -2579,6 +2579,7 @@ var
     msprite.oldz := msprite.z;
     msprite.oldangle := msprite.angle;
     msprite.oldangle2 := msprite.angle2;
+    msprite.oldOnFoorz := msprite.newOnFoorz;
   end;
 
   procedure _save_new;
@@ -2588,6 +2589,7 @@ var
     msprite.newz := msprite.z;
     msprite.newangle := msprite.angle;
     msprite.newangle2 := msprite.angle2;
+    msprite.newOnFoorz := msprite.z = RF_GetFloorZ(msprite.x, msprite.y);
   end;
 
 begin
