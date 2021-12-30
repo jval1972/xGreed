@@ -2565,6 +2565,38 @@ end;
 
 
 //**************************************************************************
+procedure RecreateMapSprites;
+var
+  spr: Pscaleobj_t;
+  typ: integer;
+  i: integer;
+  mapspot, x1, y1: integer;
+begin
+  for i := 0 to MAPROWS * MAPCOLS - 1 do
+    if mapsprites[i] = 1 then
+      mapsprites[i] := 0;
+  spr := firstscaleobj.next;
+  while spr <> @lastscaleobj do
+  begin
+    typ := spr.typ;
+    if typ in [S_MONSTER1, S_MONSTER1_NS, S_MONSTER2, S_MONSTER2_NS, S_MONSTER3,
+      S_MONSTER3_NS, S_MONSTER5, S_MONSTER5_NS, S_MONSTER4, S_MONSTER4_NS, S_MONSTER6,
+      S_MONSTER6_NS, S_MONSTER7, S_MONSTER7_NS, S_MONSTER8, S_MONSTER8_NS, S_MONSTER9,
+      S_MONSTER9_NS, S_MONSTER10, S_MONSTER10_NS, S_MONSTER11, S_MONSTER11_NS, S_MONSTER12,
+      S_MONSTER12_NS, S_MONSTER13, S_MONSTER13_NS, S_MONSTER14, S_MONSTER14_NS, S_MONSTER15,
+      S_MONSTER15_NS] then
+    begin
+      if (spr.deathevent = 0) and (spr.hitpoints <> 0) then
+      begin
+        x1 := spr.x div FRACTILEUNIT;
+        y1 := spr.y div FRACTILEUNIT;
+        mapspot := y1 * MAPCOLS + x1;
+        mapsprites[mapspot] := 1;
+      end;
+    end;
+    spr := spr.next;
+  end;
+end;
 
 procedure MoveSprites;
 var
@@ -2628,10 +2660,10 @@ begin
             end;
             if msprite.typ <> S_BLOODSPLAT then
             begin
+              _save_new;
               msprite := msprite.prev;
               RF_RemoveSprite(msprite.next);
               killed := false;
-              _save_new;
               msprite := msprite.next;
               continue;
             end;
@@ -2648,10 +2680,10 @@ begin
           killed := Int6;
           if killed then
           begin
+            _save_new;
             msprite := msprite.prev;
             RF_RemoveSprite(msprite.next);
             killed := false;
-            _save_new;
             msprite := msprite.next;
             continue;
           end;
@@ -2747,6 +2779,7 @@ begin
     _save_new;
     msprite := msprite.next;
   end;
+  RecreateMapSprites;
 end;
 
 end.
