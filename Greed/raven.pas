@@ -3782,6 +3782,7 @@ end;
 procedure EndLevel;
 begin
   VI_FadeOut(0, 256, 0, 0, 0,64);
+  R_ClearRenderBuffer;
   memset(screen, 0, 64000);
   I_SetPalette(CA_CachePalette(CA_GetNamedNum('palette')));
   inc(player.map);
