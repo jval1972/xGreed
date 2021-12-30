@@ -119,12 +119,13 @@ begin
     begin
       spr.x := InterpolationCalcInt(spr.oldx, spr.newx, frac);
       spr.y := InterpolationCalcInt(spr.oldy, spr.newy, frac);
-      if spr.oldOnFoorz and spr.newOnFoorz then
+      if (typ = S_BLOODSPLAT) and spr.grounded then
+        spr.z := RF_GetFloorZ(spr.x, spr.y)
+      else if (spr.oldfloorz >= spr.oldz) and (spr.newfloorz >= spr.newz) then
         spr.z := RF_GetFloorZ(spr.x, spr.y)
       else
         spr.z := InterpolationCalcInt(spr.oldz, spr.newz, frac);
       spr.angle := InterpolationCalcAngle(spr.oldangle, spr.newangle, frac);
-//      spr.angle2 := InterpolationCalcAngle(spr.oldangle2, spr.newangle2, frac);
     end;
     spr := spr.next;
   end;
@@ -133,15 +134,24 @@ end;
 procedure RestoreInterpolateSprites;
 var
   spr: Pscaleobj_t;
+  typ: integer;
 begin
   spr := firstscaleobj.next;
   while spr <> @lastscaleobj do
   begin
-    spr.x := spr.newx;
-    spr.y := spr.newy;
-    spr.z := spr.newz;
-    spr.angle := spr.newangle;
-    spr.angle2 := spr.newangle2;
+    typ := spr.typ;
+    if not (typ in [S_MONSTER1, S_MONSTER1_NS, S_MONSTER2, S_MONSTER2_NS, S_MONSTER3,
+      S_MONSTER3_NS, S_MONSTER5, S_MONSTER5_NS, S_MONSTER4, S_MONSTER4_NS, S_MONSTER6,
+      S_MONSTER6_NS, S_MONSTER7, S_MONSTER7_NS, S_MONSTER8, S_MONSTER8_NS, S_MONSTER9,
+      S_MONSTER9_NS, S_MONSTER10, S_MONSTER10_NS, S_MONSTER11, S_MONSTER11_NS, S_MONSTER12,
+      S_MONSTER12_NS, S_MONSTER13, S_MONSTER13_NS, S_MONSTER14, S_MONSTER14_NS, S_MONSTER15,
+      S_MONSTER15_NS]) then
+    begin
+      spr.x := spr.newx;
+      spr.y := spr.newy;
+      spr.z := spr.newz;
+      spr.angle := spr.newangle;
+    end;
     spr := spr.next;
   end;
   isintepolating := false;

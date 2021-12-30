@@ -2689,13 +2689,13 @@ begin
     result.oldz := result.z;
     result.oldangle := result.angle;
     result.oldangle2 := result.angle2;
-    result.oldOnFoorz := result.z = RF_GetFloorZ(result.x, result.y);
+    result.oldfloorz := RF_GetFloorZ(result.x, result.y);
     result.newx := result.x;
     result.newy := result.y;
     result.newz := result.z;
     result.newangle := result.angle;
     result.newangle2 := result.angle2;
-    result.newOnFoorz := result.oldOnFoorz;
+    result.newfloorz := result.oldfloorz;
   end;
 end;
 
