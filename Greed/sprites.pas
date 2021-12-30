@@ -1023,7 +1023,7 @@ end;
 
 
 // scan for the player along a 45 degree angle
-// this is not very accurate not  not  approximate only
+// this is not very accurate!!  approximate only
 function ScanAngle(const limit1, x1, y1, x2, y2: integer ; const tx, ty: PInteger): integer;
 var
   mapspot, wall, x, y, limit, flags: integer;
