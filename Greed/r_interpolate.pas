@@ -36,6 +36,7 @@ procedure RestoreInterpolateSprites;
 
 var
   interpolate: boolean = true;
+  isintepolating: boolean = false;
 
 implementation
 
@@ -44,7 +45,8 @@ uses
   protos_h,
   raven,
   r_conten,
-  r_public_h;
+  r_public_h,
+  r_public;
 
 function InterpolationCalcInt(const prev, next: integer; const frac: integer): integer;
 begin
@@ -97,6 +99,8 @@ begin
   if not interpolate then
     exit;
 
+  isintepolating := true;
+
   frac := FRACUNIT - (spritemovetime - timecount) * (FRACUNIT div 8);
   if frac <= 0 then
     frac := 0;
@@ -115,7 +119,10 @@ begin
     begin
       spr.x := InterpolationCalcInt(spr.oldx, spr.newx, frac);
       spr.y := InterpolationCalcInt(spr.oldy, spr.newy, frac);
-      spr.z := InterpolationCalcInt(spr.oldz, spr.newz, frac);
+      if spr.oldOnFoorz and spr.newOnFoorz then
+        spr.z := RF_GetFloorZ(spr.x, spr.y)
+      else
+        spr.z := InterpolationCalcInt(spr.oldz, spr.newz, frac);
       spr.angle := InterpolationCalcAngle(spr.oldangle, spr.newangle, frac);
 //      spr.angle2 := InterpolationCalcAngle(spr.oldangle2, spr.newangle2, frac);
     end;
@@ -137,6 +144,7 @@ begin
     spr.angle2 := spr.newangle2;
     spr := spr.next;
   end;
+  isintepolating := false;
 end;
 
 end.
