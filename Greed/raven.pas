@@ -3916,7 +3916,7 @@ begin
     for j := -1 to 1 do
     begin
       mapspot := player.mapspot + i + j;
-      if (mapspot <> player.mapspot) and (floorpic[mapspot] and mapsprites[mapspot] = 0) then
+      if (mapspot <> player.mapspot) and (floorpic[mapspot] <> 0) and (mapsprites[mapspot] = 0) then
       begin
         x := ((player.mapspot + i + j) and 63) * MAPSIZE + 32;
         y := ((player.mapspot + i + j) div 64) * MAPSIZE + 32;
