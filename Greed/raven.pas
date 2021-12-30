@@ -4304,6 +4304,7 @@ begin
 
     if ExitLevel then
     begin
+      needsblit := true;
       EndLevel;
       if DEMO then
       begin
