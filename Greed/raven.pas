@@ -2210,6 +2210,19 @@ var
   imousedx, imousedy: integer;
   angleturn: integer;
   angleturnunit: integer;
+
+  procedure _checkceiling;
+  var
+    ceilz: fixed_t;
+  begin
+    ceilz := RF_GetCeilingZ(player.x, player.y);
+    if player.z + (10 * FRACUNIT) > ceilz then
+    begin
+      player.z := ceilz - 10 * FRACUNIT;
+      fallrate := FALLUNIT;
+    end;
+  end;
+
 begin
   ControlBobbing;
 
@@ -2228,11 +2241,17 @@ begin
       player.z := floorz;
       fallrate := 0;
     end;
+
+    _checkceiling;
+
     exit;
   end;
 
   if timecount and 1 = 0 then
+  begin
+    _checkceiling;
     exit;
+  end;
 
   if SC.mouse = 1 then
   begin
@@ -2783,12 +2802,8 @@ begin
       player.z := floorz;
     fallrate := 0;
   end;
-  floorz := RF_GetCeilingZ(player.x, player.y);
-  if player.z + (10 * FRACUNIT) > floorz then
-  begin
-    player.z := floorz - 10 * FRACUNIT;
-    fallrate := FALLUNIT;
-  end;
+
+  _checkceiling;
 end;
 
 
