@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -141,7 +141,8 @@ uses
 // px, floorheight, ceilingheight will be valid if tz >= MINZ
 function TransformVertex(const tilex, tiley: integer): Pvertex_t;
 var
-  ttrx, ttry, scale: fixed_t;
+  ttrx, ttry: fixed_t;
+  scale: Double;
   point: Pvertex_t;
   mapspot2, fl, ch: integer;
 begin
@@ -181,13 +182,10 @@ begin
   point.tz := FIXEDMUL(ttrx, viewcos) - FIXEDMUL(ttry, viewsin);
   if point.tz >= MINZ then
   begin
-    scale := FIXEDDIV(FSCALE, point.tz);
-//    point.px := CENTERX + (FIXEDMUL(point.tx, scale) div FRACUNIT);
-//    point.floory := CENTERY - (FIXEDMUL(point.floorheight, scale) div FRACUNIT);
-//    point.ceilingy := CENTERY - (FIXEDMUL(point.ceilingheight, scale) div FRACUNIT);
-    point.px := CENTERX + rint((point.tx / FRACUNIT) * (scale / FRACUNIT));
-    point.floory := CENTERY - rint((point.floorheight / FRACUNIT) * (scale / FRACUNIT));
-    point.ceilingy := CENTERY - rint((point.ceilingheight / FRACUNIT) * (scale / FRACUNIT));
+    scale := FSCALE / point.tz;
+    point.px := CENTERX + rint((point.tx / FRACUNIT) * scale);
+    point.floory := CENTERY - rint((point.floorheight / FRACUNIT) * scale);
+    point.ceilingy := CENTERY - rint((point.ceilingheight / FRACUNIT) * scale);
   end;
   framevalid[mapspot2] := frameon;
   cornervertex[mapspot2] := point;

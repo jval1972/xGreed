@@ -256,8 +256,8 @@ end;
 procedure RenderPolygon(const spanfunction: PProcedure);
 var
   stopy: integer;
-  leftfrac, rightfrac: fixed_t;
-  leftstep, rightstep: fixed_t;
+  leftfrac, rightfrac: int64;
+  leftstep, rightstep: int64;
   leftvertex, rightvertex: integer;
   deltax, deltay: integer;
   oldx: integer;
@@ -376,8 +376,8 @@ end;
 function ZClipPolygon(const numvertexpts: integer; zmin: fixed_t): boolean;
 var
   v: integer;
-  scale: fixed_t;
-  frac, cliptx, clipty: fixed_t;
+  scale: Double;
+  frac, cliptx, clipty: Double;
   p1, p2: Pclippoint_t;
 begin
   numvertex := 0;
@@ -393,15 +393,13 @@ begin
       p1 := @vertexpt[0];
     if (p1.tz < zmin) xor (p2.tz < zmin) then
     begin
-      scale := FIXEDDIV(FSCALE, zmin);
-      frac := FIXEDDIV((p1.tz - zmin), (p1.tz - p2.tz));
-      cliptx := p1.tx + FIXEDMUL((p2.tx - p1.tx), frac);
-      clipty := p1.ty + FIXEDMUL((p2.ty - p1.ty), frac);
-//      vertexx[numvertex] := CENTERX + (FIXEDMUL(cliptx, scale) div FRACUNIT);
-//      vertexy[numvertex] := CENTERY - (FIXEDMUL(clipty, scale) div FRACUNIT);
-      vertexx[numvertex] := CENTERX + rint((cliptx / FRACUNIT) * (scale / FRACUNIT));
-      vertexy[numvertex] := CENTERY - rint((clipty / FRACUNIT) * (scale / FRACUNIT));
-      if ceilingbit and (vertexy[numvertex] > 640) then
+      scale := FSCALE / zmin;
+      frac := (p1.tz - zmin) / (p1.tz - p2.tz);
+      cliptx := p1.tx + (p2.tx - p1.tx) * frac;
+      clipty := p1.ty + (p2.ty - p1.ty) * frac;
+      vertexx[numvertex] := CENTERX + rint((cliptx / FRACUNIT) * (scale));
+      vertexy[numvertex] := CENTERY - rint((clipty / FRACUNIT) * (scale));
+      if ceilingbit and (vertexy[numvertex] > 1280) then
       begin
         result := false;
         exit;
@@ -412,7 +410,7 @@ begin
     begin
       vertexx[numvertex] := p1.px;
       vertexy[numvertex] := p1.py;
-      if ceilingbit and (vertexy[numvertex] > 640) then
+      if ceilingbit and (vertexy[numvertex] > 1280) then
       begin
         result := false;
         exit;
