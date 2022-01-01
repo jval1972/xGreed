@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -3011,6 +3011,8 @@ begin
   end
   else if Check_Secret('score10000') then
     addscore(10000)
+  else if Check_Secret('score50000') then
+    addscore(50000)
   else if Length(secretbuf) > 2 then
   begin
     if Pos('GO', strupper(secretbuf)) > 0 then
