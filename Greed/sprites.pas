@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -2579,12 +2579,7 @@ begin
   while spr <> @lastscaleobj do
   begin
     typ := spr.typ;
-    if typ in [S_MONSTER1, S_MONSTER1_NS, S_MONSTER2, S_MONSTER2_NS, S_MONSTER3,
-      S_MONSTER3_NS, S_MONSTER5, S_MONSTER5_NS, S_MONSTER4, S_MONSTER4_NS, S_MONSTER6,
-      S_MONSTER6_NS, S_MONSTER7, S_MONSTER7_NS, S_MONSTER8, S_MONSTER8_NS, S_MONSTER9,
-      S_MONSTER9_NS, S_MONSTER10, S_MONSTER10_NS, S_MONSTER11, S_MONSTER11_NS, S_MONSTER12,
-      S_MONSTER12_NS, S_MONSTER13, S_MONSTER13_NS, S_MONSTER14, S_MONSTER14_NS, S_MONSTER15,
-      S_MONSTER15_NS] then
+    if IsMonster(typ) then
     begin
       if (spr.deathevent = 0) and (spr.hitpoints <> 0) then
       begin
