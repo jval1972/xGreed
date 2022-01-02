@@ -237,7 +237,7 @@ begin
         result := false;  // back face
         exit;
       end;
-      clipz :=  p1.tz + FIXEDMUL(dz, rightfrac);
+      clipz := p1.tz + FIXEDMUL(dz, rightfrac);
       if clipz < 0 then
       begin
         result := false;
@@ -247,7 +247,7 @@ begin
     end;
     if p1.tz < MINZ then
     begin
-      clipz :=  p1.tz + FIXEDMUL(dz, leftfrac);
+      clipz := p1.tz + FIXEDMUL(dz, leftfrac);
       if clipz < 0 then
       begin
         result := false;
