@@ -4,7 +4,7 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'xGreed Launcher'
-  ClientHeight = 354
+  ClientHeight = 412
   ClientWidth = 631
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -1052,7 +1052,7 @@ object Form1: TForm1
   TextHeight = 13
   object SoundGroupBox: TGroupBox
     Left = 16
-    Top = 248
+    Top = 304
     Width = 265
     Height = 89
     Caption = ' Sound  '
@@ -1100,7 +1100,7 @@ object Form1: TForm1
     Left = 16
     Top = 152
     Width = 265
-    Height = 89
+    Height = 145
     Caption = ' Graphics '
     TabOrder = 2
     object Label1: TLabel
@@ -1122,8 +1122,8 @@ object Form1: TForm1
       OnChange = ScreenblocksTrackBarChange
     end
     object CheckBox_4_3: TCheckBox
-      Left = 168
-      Top = 48
+      Left = 8
+      Top = 96
       Width = 89
       Height = 17
       Caption = '4:3 display'
@@ -1139,13 +1139,21 @@ object Form1: TForm1
     end
     object InterpolateCheckBox: TCheckBox
       Left = 8
-      Top = 64
+      Top = 72
       Width = 193
       Height = 17
       Caption = 'Interpolate Projectile Movement'
       Checked = True
       State = cbChecked
       TabOrder = 2
+    end
+    object LowResolutionCheckBox: TCheckBox
+      Left = 8
+      Top = 120
+      Width = 169
+      Height = 17
+      Caption = 'Low resolution (320x200)'
+      TabOrder = 4
     end
   end
   object KeyboardRadioGroup: TRadioGroup

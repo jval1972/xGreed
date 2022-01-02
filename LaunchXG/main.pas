@@ -44,6 +44,7 @@ type
     HeadBoxCheckBox: TCheckBox;
     WeaponBoxCheckBox: TCheckBox;
     InterpolateCheckBox: TCheckBox;
+    LowResolutionCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ScreenblocksTrackBarChange(Sender: TObject);
@@ -194,6 +195,7 @@ begin
   MainDataFileEdit.Text := defaults.Values['maindatafile'];
   SlopeCheckBox.Checked := GetDefault('slopeprecise', 1) <> 0;
   InterpolateCheckBox.Checked := GetDefault('interpolate', 1) <> 0;
+  LowResolutionCheckBox.Checked := GetDefault('lowresolution', 1) <> 0;
   HeadBoxCheckBox.Checked := GetDefault('headbobon', 1) <> 0;
   WeaponBoxCheckBox.Checked := GetDefault('weapbobon', 1) <> 0;
 end;
@@ -254,6 +256,10 @@ begin
     SetDefault('interpolate', 1)
   else
     SetDefault('interpolate', 0);
+  if LowResolutionCheckBox.Checked then
+    SetDefault('lowresolution', 1)
+  else
+    SetDefault('lowresolution', 0);
   if HeadBoxCheckBox.Checked then
     SetDefault('headbobon', 1)
   else
