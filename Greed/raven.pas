@@ -4034,12 +4034,11 @@ begin
 
   if lowresolution then
   begin
-    SetViewSize(320, 200, @viewbuffer);
+    SetViewSize(MAX_VIEW_WIDTH, MAX_VIEW_HEIGHT, @viewbuffer);
     memcpy(@pixelangle, @lowpixelangle, SizeOf(pixelangle));
     memcpy(@pixelcosine, @lowpixelcosine, SizeOf(pixelcosine));
     RF_RenderView(px, py, pz + hbob, angle);
   end
-//    LowView(px, py, pz + hbob, angle)
   else
   begin
     SetViewSize(RENDER_VIEW_WIDTH, RENDER_VIEW_HEIGHT, @renderbuffer);
