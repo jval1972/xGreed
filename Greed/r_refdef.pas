@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -39,7 +39,7 @@ const
   FINEUNIT = 1 shl FINESHIFT;
   MAXVISVERTEXES = 8192;  // max tile corners visible at once
 // for spans
-  MAXSPANS = 100 * 1024;  // JVAL: 20211217 - Higher value to accomodate precise slope drawing
+  MAXSPANS = 128 * 1024;  // JVAL: 20211217 - Higher value to accomodate precise slope drawing
   MAXPEND = 16384;
   MAXAUTO = 16 * 16;
 // flags
