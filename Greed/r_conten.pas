@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -285,7 +285,7 @@ begin
   begin
     angle := baseangle + pixelangle[x];
     angle := angle and (TANANGLES * 2 - 1);
-    // the z distance of the post hit :=  walldistance*cos(screenangle
+    // the z distance of the post hit := walldistance * cos(screenangle)
     anglecos := cosines[(angle - TANANGLES) and (TANANGLES * 4 - 1)];
     if anglecos < 8000 then
       continue;
