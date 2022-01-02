@@ -514,8 +514,12 @@ skipceilingcalc:
     angle := baseangle + pixelangle[x];
     angle := angle and (TANANGLES * 2 - 1);
     anglecos := cosines[(angle - TANANGLES) and (TANANGLES * 4 - 1)];
+    {$IFDEF USEFLOATPOINT}
+    pointz := rint(distance / anglecos * pixelcosine[x]);
+    {$ELSE}
     pointz := FIXEDDIV(distance, anglecos);
     pointz := FIXEDMUL(pointz, pixelcosine[x]);
+    {$ENDIF}
     if (pointz > MAXZ) or (pointz < MINZ) then
       continue;
 
