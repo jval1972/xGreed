@@ -544,8 +544,6 @@ var
   a, w: fixed_t;
   color: pixel_t;
   afrac1: fixed_t;
-label
-  abort1;
 begin
   // set up backdrop stuff
   w := windowWidth div 2;
@@ -614,7 +612,7 @@ begin
         begin
           light := (pointz div FRACUNIT) + span_p.light;
           if light > MAXZLIGHT then
-            goto abort1;
+            Continue;
           if light < 0 then
             light := 0;
           mr_colormap := zcolormap[light];
@@ -623,7 +621,7 @@ begin
         begin
           light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
           if light > MAXZLIGHT then
-            goto abort1;
+            Continue;
           if light < 0 then
             light := 0;
           mr_colormap := zcolormap[light];
@@ -634,14 +632,14 @@ begin
         y1 := span_p.y - scrollmin;
 
         if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
-          goto abort1; // JVAL SOS
+          Continue;
 
         mr_dest := @viewylookup[y1][spanx];
         mr_picture := span_p.picture;
         x2 := span_p.x2;
 
         if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
-          goto abort1; // JVAL SOS
+          Continue;
 
         mr_count := x2 - spanx;
         MapRow;
@@ -707,11 +705,11 @@ begin
       begin
         py := span_p.y - scrollmin;
         if (py >= RENDER_VIEW_HEIGHT) or (py < 0) then
-          goto abort1;  // JVAL: SOS
+          Continue;
         px := spanx;
 
         if (span_p.x2 > RENDER_VIEW_WIDTH) or (span_p.x2 < 0) then
-          goto abort1;  // JVAL: SOS
+          Continue;
 
         mr_count := span_p.x2 - spanx;
         mr_dest := @viewylookup[py][px];
@@ -790,7 +788,7 @@ begin
         begin
           light := (pointz div FRACUNIT) + span_p.light;
           if light > MAXZLIGHT then
-            goto abort1;
+            Continue;
           if light < 0 then
             light := 0;
           mr_colormap := zcolormap[light];
@@ -799,7 +797,7 @@ begin
         begin
           light := (pointz div FRACUNIT) + span_p.light + wallflicker4;
           if light > MAXZLIGHT then
-            goto abort1;
+            Continue;
           if light < 0 then
             light := 0;
           mr_colormap := zcolormap[light];
@@ -811,9 +809,9 @@ begin
         y1 := span_p.y - scrollmin;
 
         if (y1 >= RENDER_VIEW_HEIGHT) or (y1 < 0) then
-          goto abort1;  // JVAL: SOS
+          Continue;
         if (x2 > RENDER_VIEW_WIDTH) or (x2 < 0) then
-          goto abort1;  // JVAL: SOS
+          Continue;
 
         mr_dest := @viewylookup[y1][spanx];
         mr_picture := span_p.picture;
@@ -931,7 +929,6 @@ begin
         end;
       end;
     end;
-abort1:
   end;
 end;
 
