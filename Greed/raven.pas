@@ -736,7 +736,7 @@ begin
 end;
 
 
-procedure CheckItems(const centerx, centery: integer; const useit: boolean; const chartype: integer);
+procedure CheckItems(const cx, cy: integer; const useit: boolean; const chartype: integer);
 var
   sprite: Pscaleobj_t;
   mapspot, value, value2, index, ammo, cmapspot: integer;
@@ -744,7 +744,7 @@ var
   elev_p: Pelevobj_t;
   sound: boolean;
 begin
-  mapspot := centery * MAPCOLS + centerx;
+  mapspot := cy * MAPCOLS + cx;
   value := mapsprites[mapspot];
   case value of
   SM_MEDPAK1,
@@ -756,13 +756,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               if player.angst = player.maxangst then
@@ -798,13 +798,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               if player.shield = player.maxshield then
@@ -839,13 +839,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               hurtborder := true;
@@ -874,13 +874,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = S_AMMOBOX then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               hurtborder := true;
@@ -921,13 +921,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = S_MEDBOX then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               heal(250);
@@ -949,13 +949,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = S_GOODIEBOX then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               for i := 0 to 1 do
@@ -1012,13 +1012,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_PICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_PICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               hurtborder := true;
@@ -1048,7 +1048,7 @@ begin
       if useit then
       begin
         if netmode then
-          NetItemPickup(centerx, centery);
+          NetItemPickup(cx, cy);
           addscore(BonusItem.score);
         heal(150);
         medpaks(150);
@@ -1059,7 +1059,7 @@ begin
       BonusItem.mapspot := -1;
       RF_RemoveSprite(BonusItem.sprite);
       mapsprites[mapspot] := 0;
-      SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+      SoundEffect(SN_WEAPPICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
       BonusItem.name := '';
     end;
 
@@ -1070,14 +1070,14 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
           if sprite.typ = value2 then
           begin
             if useit and netmode then
-              NetItemPickup(centerx, centery);
+              NetItemPickup(cx, cy);
             RF_RemoveSprite(sprite);
             mapsprites[mapspot] := 0;
-            SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            SoundEffect(SN_WEAPPICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
             if useit then
             begin
               heal(150);
@@ -1105,13 +1105,13 @@ begin
       sprite := firstscaleobj.next;
       while sprite <> @lastscaleobj do
       begin
-        if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) and (sprite.typ = value2) then
+        if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) and (sprite.typ = value2) then
         begin
           if useit and netmode then
-            NetItemPickup(centerx, centery);
+            NetItemPickup(cx, cy);
           RF_RemoveSprite(sprite);
           mapsprites[mapspot] := 0;
-          SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+          SoundEffect(SN_WEAPPICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
           if useit then
           begin
             heal(150);
@@ -1141,16 +1141,16 @@ begin
           SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         end;
         if useit and netmode then
-          NetItemPickup(centerx, centery);
+          NetItemPickup(cx, cy);
         mapsprites[mapspot] := 0;
         if useit and sound then
         begin
-          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+          SoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
           if netmode then
-            NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
-          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            NetSoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
+          SoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
           if netmode then
-            NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+            NetSoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
         end;
         elev_p := elev_p.next;
       end;
@@ -1159,7 +1159,7 @@ begin
   SM_SWITCHDOWN2:
     begin
       if useit and netmode then
-        NetItemPickup(centerx, centery);
+        NetItemPickup(cx, cy);
       sound := false;
       elev_p := firstelevobj.next;
       while elev_p <> @lastelevobj do
@@ -1172,10 +1172,10 @@ begin
           sound := true;
         end;
         if useit and netmode then
-          NetItemPickup(centerx, centery);
+          NetItemPickup(cx, cy);
         mapsprites[mapspot] := 0;
         if sound then
-          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+          SoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
         elev_p := elev_p.next;
       end;
     end;
@@ -1183,7 +1183,7 @@ begin
   SM_SWITCHUP:
     begin
       if useit and netmode then
-        NetItemPickup(centerx, centery);
+        NetItemPickup(cx, cy);
       sound := false;
       elev_p := firstelevobj.next;
       while elev_p <> @lastelevobj do
@@ -1196,10 +1196,10 @@ begin
           SoundEffect(SN_ELEVATORSTART, 15, (elev_p.mapspot and 63) * FRACTILEUNIT, (elev_p.mapspot div 64) * FRACTILEUNIT);
         end;
         if useit and netmode then
-          NetItemPickup(centerx, centery);
+          NetItemPickup(cx, cy);
         mapsprites[mapspot] := 0;
         if sound then
-          SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+          SoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
         elev_p := elev_p.next;
       end;
     end;
@@ -1290,8 +1290,8 @@ begin
         player.ammo[ammo] := player.ammo[ammo] + 100;
         if player.ammo[ammo] > MAXAMMO then
           player.ammo[ammo] := MAXAMMO;
-        SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
-        NetSoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+        SoundEffect(SN_WEAPPICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
+        NetSoundEffect(SN_WEAPPICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
         changingweapons := true;
         weaponlowering := true;
         newweapon := index;
@@ -1302,7 +1302,7 @@ begin
         sprite := firstscaleobj.next;
         while sprite <> @lastscaleobj do
         begin
-          if (sprite.x div FRACTILEUNIT = centerx) and (sprite.y div FRACTILEUNIT = centery) then
+          if (sprite.x div FRACTILEUNIT = cx) and (sprite.y div FRACTILEUNIT = cy) then
             if sprite.typ = value2 then
             begin
               player.weapons[index] := value - SM_WEAPON0;
@@ -1310,7 +1310,7 @@ begin
               hurtborder := true;
               RF_RemoveSprite(sprite);
               mapsprites[mapspot] := 0;
-              SoundEffect(SN_WEAPPICKUP0 + chartype, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+              SoundEffect(SN_WEAPPICKUP0 + chartype, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
               exit;
             end;
           sprite := sprite.next;
@@ -1321,12 +1321,12 @@ begin
 end;
 
 
-procedure CheckWarps(const centerx, centery: fixed_t);
+procedure CheckWarps(const cx, cy: fixed_t);
 var
   x, y, mapspot: integer;
 begin
-  x := centerx div FRACTILEUNIT;
-  y := centery div FRACTILEUNIT;
+  x := cx div FRACTILEUNIT;
+  y := cy div FRACTILEUNIT;
   mapspot := y * MAPCOLS + x;
   if (mapsprites[mapspot] >= 128) and (mapsprites[mapspot] <= 130) then
   begin
@@ -1347,24 +1347,24 @@ begin
   end;
   if triggers[x][y] <> 0 then
   begin
-    SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+    SoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
     if netmode then
-      NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
-    SoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+      NetSoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
+    SoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
     if netmode then
-      NetSoundEffect(SN_TRIGGER, 0, centerx * FRACTILEUNIT, centery * FRACTILEUNIT);
+      NetSoundEffect(SN_TRIGGER, 0, cx * FRACTILEUNIT, cy * FRACTILEUNIT);
     RunEvent(triggers[x][y], true);
   end;
 end;
 
 
-procedure CheckDoors(const centerx, centery: fixed_t);
+procedure CheckDoors(const cx, cy: fixed_t);
 var
   x, y, mapspot: integer;
   door_p, last_p: Pdoorobj_t;
 begin
-  x := centerx div FRACTILEUNIT;
-  y := centery div FRACTILEUNIT;
+  x := cx div FRACTILEUNIT;
+  y := cy div FRACTILEUNIT;
   last_p := @doorlist[numdoors];
   door_p := @doorlist[0];
   while door_p <> last_p do
@@ -1962,8 +1962,8 @@ begin
   result := true;
 end;
 
-// check for door at centerx, centery
-procedure CheckHere(const useit: boolean; const centerx, centery: fixed_t; const angle: integer);
+// check for door at cx, cy
+procedure CheckHere(const useit: boolean; const cx, cy: fixed_t; const angle: integer);
 var
   mapspot, x, y, x1, y1: integer;
   elev_p: Pelevobj_t;
@@ -1971,9 +1971,9 @@ var
 label
   skipit;
 begin
-  TryDoor(centerx, centery);
-  x := centerx div FRACTILEUNIT;
-  y := centery div FRACTILEUNIT;
+  TryDoor(cx, cy);
+  x := cx div FRACTILEUNIT;
+  y := cy div FRACTILEUNIT;
   mapspot := y * MAPCOLS + x;
   switchit := false;
 
@@ -1984,7 +1984,7 @@ begin
       if not CheckForSwitch(x, y, angle, true) then
         goto skipit;
       if netmode then
-        NetCheckHere(centerx, centery, angle);
+        NetCheckHere(cx, cy, angle);
     end;
     SwitchWall(x, y, angle, true);
     RunEvent(switches[x][y], false);
@@ -1997,7 +1997,7 @@ skipit:
       if useit and not CheckForSwitch(x, y, angle, true) then
         exit;
       if useit and netmode then
-        NetCheckHere(centerx, centery, angle);
+        NetCheckHere(cx, cy, angle);
       elev_p := firstelevobj.next;
       while elev_p <> @lastelevobj do
       begin
@@ -2045,7 +2045,7 @@ skipit:
         elev_p := elev_p.next;
       end;
       if switchit and useit and netmode then
-        NetCheckHere(centerx, centery, angle);
+        NetCheckHere(cx, cy, angle);
     end;
   end;
 end;
