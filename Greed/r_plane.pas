@@ -54,6 +54,8 @@ var
   // coefficients of the plane equation for sloping polygons
   planeA, planeB, planeC, planeD: float;
   slopeprecise: boolean = true;
+  slopesplitfloor: boolean = false;
+  slopesplitceiling: boolean = true;
 
 procedure RenderTileEnds;
 
@@ -68,7 +70,7 @@ uses
   r_render,
   r_spans;
 
-procedure COPYFLOOR(const s, d: integer);
+procedure COPYFLOOR(const s, d: integer); overload;
 begin
   vertexpt[d].tx := vertex[s].tx;
   vertexpt[d].ty := vertex[s].floorheight;
@@ -77,7 +79,16 @@ begin
   vertexpt[d].py := vertex[s].floory;
 end;
 
-procedure COPYCEILING(const s, d: integer);
+procedure COPYFLOOR(const s1, s2, d: integer); overload;
+begin
+  vertexpt[d].tx := vertex[s1].tx div 2 + vertex[s2].tx div 2;
+  vertexpt[d].ty := vertex[s1].floorheight div 2 + vertex[s2].floorheight div 2;
+  vertexpt[d].tz := vertex[s1].tz div 2 + vertex[s2].tz div 2;
+  vertexpt[d].px := (vertex[s1].px + vertex[s2].px) div 2;
+  vertexpt[d].py := (vertex[s1].floory + vertex[s2].floory) div 2;
+end;
+
+procedure COPYCEILING(const s, d: integer); overload;
 begin
   vertexpt[d].tx := vertex[s].tx;
   vertexpt[d].ty := vertex[s].ceilingheight;
@@ -86,6 +97,14 @@ begin
   vertexpt[d].py := vertex[s].ceilingy;
 end;
 
+procedure COPYCEILING(const s1, s2, d: integer); overload;
+begin
+  vertexpt[d].tx := vertex[s1].tx div 2 + vertex[s2].tx div 2;
+  vertexpt[d].ty := vertex[s1].ceilingheight div 2 + vertex[s2].ceilingheight div 2;
+  vertexpt[d].tz := vertex[s1].tz div 2 + vertex[s2].tz div 2;
+  vertexpt[d].px := (vertex[s1].px + vertex[s2].px) div 2;
+  vertexpt[d].py := (vertex[s1].ceilingy + vertex[s2].ceilingy) div 2;
+end;
 
 // used for flat floors and ceilings, coordinates must be pre clipped
 // mr_deltaheight is planeheight - viewheight, with height values increased
@@ -254,6 +273,8 @@ end;
 // spanfunction is a pointer to a function that will handle determining
 // in the calculated span (FlatSpan or SlopeSpan)
 procedure RenderPolygon(const spanfunction: PProcedure);
+const
+  INFINITELOOP = 100;
 var
   stopy: integer;
   leftfrac, rightfrac: int64;
@@ -261,6 +282,7 @@ var
   leftvertex, rightvertex: integer;
   deltax, deltay: integer;
   oldx: integer;
+  cnt: integer;
 label
   skiprightvertex,
   skipleftvertex;
@@ -275,6 +297,8 @@ begin
   leftvertex := rightvertex;
   if mr_y >= scrollmax then
     exit;   // totally off bottom
+
+  cnt := 0;
   repeat
     if mr_y = vertexy[rightvertex] then
     begin
@@ -342,7 +366,12 @@ skipleftvertex:
       rightfrac := rightfrac + rightstep;
       inc(mr_y);
     end;
-  until (rightvertex = leftvertex) or (mr_y = scrollmax);
+    inc(cnt);
+  until (rightvertex = leftvertex) or (mr_y = scrollmax) or (cnt >= INFINITELOOP);
+  {$IFDEF VALIDATE}
+  if cnt >= INFINITELOOP then
+    MS_Error('RenderPolygon(): Infinite loop detected');
+  {$ENDIF}
 end;
 
 
@@ -397,8 +426,8 @@ begin
       frac := (p1.tz - zmin) / (p1.tz - p2.tz);
       cliptx := p1.tx + (p2.tx - p1.tx) * frac;
       clipty := p1.ty + (p2.ty - p1.ty) * frac;
-      vertexx[numvertex] := CENTERX + rint((cliptx / FRACUNIT) * (scale));
-      vertexy[numvertex] := CENTERY - rint((clipty / FRACUNIT) * (scale));
+      vertexx[numvertex] := CENTERX + rint((cliptx / FRACUNIT) * scale);
+      vertexy[numvertex] := CENTERY - rint((clipty / FRACUNIT) * scale);
       if ceilingbit and (vertexy[numvertex] > 1280) then
       begin
         result := false;
@@ -420,7 +449,6 @@ begin
   end;
   result := numvertex <> 0;
 end;
-
 
 // draw floor and ceiling for tile
 procedure RenderTileEnds;
@@ -474,13 +502,75 @@ begin
     POLY_SLOPE:
       begin
         spantype := sp_slope;
-        COPYFLOOR(0, 0);
-        COPYFLOOR(1, 1);
-        COPYFLOOR(2, 2);
-        COPYFLOOR(3, 3);
-        CalcPlaneEquation;
-        if ZClipPolygon(4, MINZ) then
-          RenderPolygon(SlopeSpan);
+
+        if not slopesplitfloor then
+        begin
+          COPYFLOOR(0, 0);
+          COPYFLOOR(1, 1);
+          COPYFLOOR(2, 2);
+          COPYFLOOR(3, 3);
+          CalcPlaneEquation;
+          if ZClipPolygon(4, MINZ) then
+            RenderPolygon(SlopeSpan);
+        end
+        else
+        begin
+          COPYFLOOR(0, 0);
+          COPYFLOOR(0, 1, 1);
+          COPYFLOOR(0, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYFLOOR(1, 0);
+          COPYFLOOR(1, 2, 1);
+          COPYFLOOR(1, 0, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYFLOOR(2, 0);
+          COPYFLOOR(2, 3, 1);
+          COPYFLOOR(1, 2, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYFLOOR(3, 0);
+          COPYFLOOR(0, 3, 1);
+          COPYFLOOR(2, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYFLOOR(0, 3, 0);
+          COPYFLOOR(1, 3, 1);
+          COPYFLOOR(2, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYFLOOR(0, 1, 0);
+          COPYFLOOR(1, 3, 1);
+          COPYFLOOR(0, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYFLOOR(1, 2, 0);
+          COPYFLOOR(1, 3, 1);
+          COPYFLOOR(0, 1, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYFLOOR(2, 3, 0);
+          COPYFLOOR(1, 3, 1);
+          COPYFLOOR(1, 2, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+        end;
       end;
 
     POLY_ULTOLR:
@@ -557,13 +647,75 @@ begin
           spantype := sp_slopesky
         else
           spantype := sp_slope;
-        COPYCEILING(3, 0);
-        COPYCEILING(2, 1);
-        COPYCEILING(1, 2);
-        COPYCEILING(0, 3);
-        CalcPlaneEquation;
-        if ZClipPolygon(4, MINZ) then
-          RenderPolygon(SlopeSpan);
+
+        if not slopesplitceiling then
+        begin
+          COPYCEILING(3, 0);
+          COPYCEILING(2, 1);
+          COPYCEILING(1, 2);
+          COPYCEILING(0, 3);
+          CalcPlaneEquation;
+          if ZClipPolygon(4, MINZ) then
+            RenderPolygon(SlopeSpan);
+        end
+        else
+        begin
+          COPYCEILING(3, 0);
+          COPYCEILING(2, 3, 1);
+          COPYCEILING(0, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYCEILING(2, 0);
+          COPYCEILING(1, 2, 1);
+          COPYCEILING(2, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYCEILING(1, 0);
+          COPYCEILING(0, 1, 1);
+          COPYCEILING(1, 2, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYCEILING(0, 0);
+          COPYCEILING(0, 3, 1);
+          COPYCEILING(0, 1, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYCEILING(0, 3, 0);
+          COPYCEILING(3, 2, 1);
+          COPYCEILING(1, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYCEILING(0, 3, 0);
+          COPYCEILING(1, 3, 1);
+          COPYCEILING(1, 0, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYCEILING(3, 2, 0);
+          COPYCEILING(2, 1, 1);
+          COPYCEILING(1, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+
+          COPYCEILING(1, 2, 0);
+          COPYCEILING(1, 0, 1);
+          COPYCEILING(1, 3, 2);
+          CalcPlaneEquation;
+          if ZClipPolygon(3, MINZ) then
+            RenderPolygon(SlopeSpan);
+        end;
       end;
 
     POLY_ULTOLR:
