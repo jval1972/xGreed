@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -43,7 +43,7 @@ type
 (**** VARIABLES ****)
 var
   screen: PByteArray;
-  ylookup: array[0..MAX_VIEW_WIDTH - 1] of PByteArray;
+  ylookup: array[0..MAX_VIEW_HEIGHT - 1] of PByteArray;
   transparency: PByteArray;
   translookup: array[0..255] of PByteArray;
 
