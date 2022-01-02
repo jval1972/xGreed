@@ -57,7 +57,7 @@ var
   gameepisode: integer = 1;
 
 const
-  NUMDEFAULTS = 41;
+  NUMDEFAULTS = 42;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
 
@@ -224,6 +224,11 @@ const
     (name: 'doubleblit';
      location: @doubleblit;
      defaultivalue: 1;
+     _type: tBoolean),
+
+    (name: 'lowresolution';
+     location: @lowresolution;
+     defaultivalue: 0;
      _type: tBoolean),
 
     (name: 'mouse';

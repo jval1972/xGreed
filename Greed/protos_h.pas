@@ -464,7 +464,7 @@ const
   WEAPONBOBFACTOR = 4;
   HEADBOBFACTOR = 4;
   MINDOORSIZE = 8;
-  SCROLLRATE = 4;
+  SCROLLRATE1 = 4;
   HEALTIME = 300;
   MAXSTARTLOCATIONS = 8;
   MAXCHARTYPES = 6;
@@ -638,6 +638,9 @@ type
     height: fixed_t;
     specialeffect: integer;
   end;
+
+var
+  SCROLLRATE: integer = SCROLLRATE1;
 
 function IsMonster(const typ: integer): boolean;
 

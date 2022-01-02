@@ -548,6 +548,8 @@ begin
   // set up backdrop stuff
   w := windowWidth div 2;
   center := viewangle and 255;
+  if not lowresolution then
+    center := center + 100;
 
   // set up for drawing
   sp_colormap := colormaps;
@@ -650,14 +652,21 @@ begin
           px := spanx;
           mr_count := span_p.x2 - spanx;
           mr_dest := @viewylookup[py][px];
-          if windowHeight <> 64 then
+          if windowHeight = 640 then
           begin
             py := span_p.y;
             repeat
               py := py + 128;
             until py >= 0;
+          end
+          else if windowHeight = 320 then
+          begin
+            py := span_p.y;
+            repeat
+              py := py + 64;
+            until py >= 0;
           end;
-          h1 := (hfrac * py) div FRACUNIT;
+          h1 := ibetween((hfrac * py) div FRACUNIT, 0, 255);
           if px <= w then
           begin
             afrac1 := afrac;
@@ -713,14 +722,21 @@ begin
 
         mr_count := span_p.x2 - spanx;
         mr_dest := @viewylookup[py][px];
-        if windowHeight <> 64 then
+        if windowHeight = 640 then
         begin
           py := span_p.y;
           repeat
             py := py + 128;
           until py >= 0;
+        end
+        else if windowHeight = 320 then
+        begin
+          py := span_p.y;
+          repeat
+            py := py + 64;
+          until py >= 0;
         end;
-        h1 := (hfrac * py) div FRACUNIT;
+        h1 := ibetween((hfrac * py) div FRACUNIT, 0, 255);
         if px <= w then
         begin
           afrac1 := afrac;
@@ -839,14 +855,21 @@ begin
           px := spanx;
           mr_count := span_p.x2 - spanx;
           mr_dest := @viewylookup[py][px];
-          if windowHeight <> 64 then
+          if windowHeight = 640 then
           begin
             py := span_p.y;
             repeat
               py := py + 128;
             until py >= 0;
+          end
+          else if windowHeight = 320 then
+          begin
+            py := span_p.y;
+            repeat
+              py := py + 64;
+            until py >= 0;
           end;
-          h1 := (hfrac * py) div FRACUNIT;
+          h1 := ibetween((hfrac * py) div FRACUNIT, 0, 255);
           if px <= w then
           begin
             afrac1 := afrac;

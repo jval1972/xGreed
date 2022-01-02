@@ -274,6 +274,20 @@ begin
   memcpy(@campixelcosine, @pixelcosine, SizeOf(pixelcosine));
 end;
 
+procedure InitLowDisplay;
+var
+  i, intval: integer;
+begin
+  for i := 0 to 320 do
+  begin
+    intval := rint(arctan((160 - (i + 1.0)) / 160) / g_PI * TANANGLES * 2.0);
+    pixelangle[i] := intval;
+    pixelcosine[i] := cosines[intval and (TANANGLES * 4 - 1)];
+  end;
+  memcpy(@lowpixelangle, @pixelangle, SizeOf(pixelangle));
+  memcpy(@lowpixelcosine, @pixelcosine, SizeOf(pixelcosine));
+end;
+
 
 procedure RF_Startup;
 var
@@ -323,6 +337,7 @@ begin
   InitTables;
   printf('.');
   InitReverseCam;
+  InitLowDisplay;
   InitWalls;
   printf('.Done!'#13#10);
 end;

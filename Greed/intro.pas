@@ -216,6 +216,7 @@ uses
   protos_h,
   playfli,
   raven,
+  r_public_h,
   r_public,
   r_render,
   timer,
@@ -818,6 +819,13 @@ begin
   // load config file
   if not M_LoadDefaults then
     printf('LoadDefaults: Ini file not found, using defaults'#13#10);
+
+  if lowresolution then
+  begin
+    MAXSCROLL := MAXSCROLL1 div 2;
+    BACKDROPHEIGHT := BACKDROPHEIGHT1 div 2;
+    SCROLLRATE := SCROLLRATE1 div 2;
+  end;
 
   if MS_CheckParm('nospawn') > 0 then
     nospawn := true;

@@ -46,6 +46,8 @@ var
   wallpixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
   campixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
   campixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
+  lowpixelangle: array[0..RENDER_VIEW_WIDTH] of integer;
+  lowpixelcosine: array[0..RENDER_VIEW_WIDTH] of fixed_t;
 
 procedure InitWalls;
 

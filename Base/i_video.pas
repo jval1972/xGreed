@@ -100,6 +100,7 @@ uses
   d_ints_h,
   m_screenshot,
   i_windows,
+  raven,
   r_public_h,
   r_render;
 
@@ -229,47 +230,77 @@ begin
   srcstop := @(renderbuffer[parms.stop]);
   if bpp = 32 then
   begin
-    destl := @screen32[parms.start];
-    while PCAST(src) <= PCAST(srcstop) do
+    if lowresolution then
     begin
-      destl^ := curpal[src^];
-      inc(destl);
-      inc(src);
-    end;
-    s8 := @viewbuffer[0];
-    for i := parms.start to parms.stop do
-    begin
-      x := (i mod 640) div 2;
-      y := (i div 640) div 2;
-      if s8[y, x] <> 0 then
+      s8 := @viewbuffer[0];
+      for i := parms.start to parms.stop do
+      begin
+        x := (i mod 640) div 2;
+        y := (i div 640) div 2;
         screen32[i] := curpal[s8[y, x]];
+      end;
+    end
+    else
+    begin
+      destl := @screen32[parms.start];
+      while PCAST(src) <= PCAST(srcstop) do
+      begin
+        destl^ := curpal[src^];
+        inc(destl);
+        inc(src);
+      end;
+      s8 := @viewbuffer[0];
+      for i := parms.start to parms.stop do
+      begin
+        x := (i mod 640) div 2;
+        y := (i div 640) div 2;
+        if s8[y, x] <> 0 then
+          screen32[i] := curpal[s8[y, x]];
+      end;
     end;
   end
   else if bpp = 16 then
   begin
-    destw := @screen16[parms.start];
-    while PCAST(src) <= PCAST(srcstop) do
+    if lowresolution then
     begin
-      pixel := curpal[src^];
-      r := (pixel shr 19) and 31;
-      g := (pixel shr 11) and 31;
-      b := (pixel shr 3) and 31;
-      destw^ := (r shl 11) or (g shl 6) or b;
-      inc(destw);
-      inc(src);
-    end;
-    s8 := @viewbuffer[0];
-    for i := parms.start to parms.stop do
-    begin
-      x := (i mod 640) div 2;
-      y := (i div 640) div 2;
-      if s8[y, x] <> 0 then
+      s8 := @viewbuffer[0];
+      for i := parms.start to parms.stop do
       begin
+        x := (i mod 640) div 2;
+        y := (i div 640) div 2;
         pixel := curpal[s8[y, x]];
         r := (pixel shr 19) and 31;
         g := (pixel shr 11) and 31;
         b := (pixel shr 3) and 31;
         screen16[i] := (r shl 11) or (g shl 6) or b;
+      end;
+    end
+    else
+    begin
+      destw := @screen16[parms.start];
+      while PCAST(src) <= PCAST(srcstop) do
+      begin
+        pixel := curpal[src^];
+        r := (pixel shr 19) and 31;
+        g := (pixel shr 11) and 31;
+        b := (pixel shr 3) and 31;
+        destw^ := (r shl 11) or (g shl 6) or b;
+        inc(destw);
+        inc(src);
+      end;
+      s8 := @viewbuffer[0];
+      for i := parms.start to parms.stop do
+      begin
+        x := (i mod 640) div 2;
+        y := (i div 640) div 2;
+        if s8[y, x] <> 0 then
+        begin
+          pixel := curpal[s8[y, x]];
+          r := (pixel shr 19) and 31;
+          g := (pixel shr 11) and 31;
+          b := (pixel shr 3) and 31;
+          screen16[i] := (r shl 11) or (g shl 6) or b;
+        end;
       end;
     end;
   end;

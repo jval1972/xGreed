@@ -2078,6 +2078,7 @@ var
   fname: string;
   i, oldscore: integer;
   handle: file;
+  dscroll: integer;
 begin
   sprintf(fname, SAVENAME, [n]);
   if not fopen(handle, fname, fOpenReadOnly) then
@@ -2094,7 +2095,25 @@ begin
 
   resetengine;
   gameloaded := true;
-  player.scrollmax := windowHeight + player.scrollmin;
+  dscroll := player.scrollmax - player.scrollmin;
+  if lowresolution then
+  begin
+    if dscroll > 200 then
+    begin
+      player.scrollmin := player.scrollmin div 2;
+      player.scrollmax := player.scrollmin + 200;
+    end;
+  end
+  else
+  begin
+    if dscroll <= 200 then
+    begin
+      player.scrollmin := player.scrollmin * 2;
+      player.scrollmax := player.scrollmin + 400;
+    end;
+  end;
+//  player.scrollmin := 0;
+//  player.scrollmax := windowHeight + player.scrollmin;
   timecount := player.timecount;
   keyboardDelay := 0;
   BonusItem.time := timecount + 2100;

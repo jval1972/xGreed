@@ -135,6 +135,7 @@ var
   nethurtsoundtime: integer;
   demobuffer: PByteArray;
   demokb: array[0..NUMCODES - 1] of byte;
+  lowresolution: boolean = false;
 
 const
   SECRETBUFSIZE = 20;
@@ -4031,9 +4032,20 @@ begin
   else
     hbob := 0;
 
-  SetViewSize(RENDER_VIEW_WIDTH, RENDER_VIEW_HEIGHT, @renderbuffer);
-  RF_RenderView(px, py, pz + hbob, angle);
-  SetViewSize(MAX_VIEW_WIDTH, MAX_VIEW_HEIGHT, @viewbuffer);
+  if lowresolution then
+  begin
+    SetViewSize(320, 200, @viewbuffer);
+    memcpy(@pixelangle, @lowpixelangle, SizeOf(pixelangle));
+    memcpy(@pixelcosine, @lowpixelcosine, SizeOf(pixelcosine));
+    RF_RenderView(px, py, pz + hbob, angle);
+  end
+//    LowView(px, py, pz + hbob, angle)
+  else
+  begin
+    SetViewSize(RENDER_VIEW_WIDTH, RENDER_VIEW_HEIGHT, @renderbuffer);
+    RF_RenderView(px, py, pz + hbob, angle);
+    SetViewSize(MAX_VIEW_WIDTH, MAX_VIEW_HEIGHT, @viewbuffer);
+  end;
 
   if update = 1 then
     TimeUpdate;
