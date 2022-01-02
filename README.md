@@ -6,6 +6,8 @@ Software rendering.
 
 Double the original game resolution (640x400).
 
+Optionally can use the old 320x200 resolution.
+
 Mouse look and WASD move control.
 
 Launcher application.
@@ -25,6 +27,8 @@ XGreed needs data that the DOS installer produces:
 These files must be placed in the same folder as xGreed.exe, or use the Launcher to locate the GREED.BLO file.
 
 ## Downloads
+[version 1.1.9.50 (20220102 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.9.50_bin.zip/download)
+
 [version 1.1.8.46 (20211230 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.8.46_bin.zip/download)
 
 [version 1.1.7.45 (20211228 - win32)](https://sourceforge.net/projects/xgreed/files/xGreed%201.1/xGreed_1.1.7.45_bin.zip/download)
