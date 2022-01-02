@@ -191,8 +191,10 @@ var
   elev_p: Pelevobj_t;
   time: integer;
   floorz, newfloorz: fixed_t;
+  pwasonground: boolean;
 begin
   floorz := RF_GetFloorZ(player.x, player.y) + player.height;
+  pwasonground := floorz >= player.z;
   time := timecount;
   elev_p := firstelevobj.next;
   while elev_p <> @lastelevobj do
@@ -258,20 +260,26 @@ begin
     end;
     elev_p := elev_p.next;
   end;
-  newfloorz := RF_GetFloorZ(player.x, player.y) + player.height;
-  if newfloorz <> floorz then
+  if pwasonground then
   begin
-    if player.z > newfloorz then
+    newfloorz := RF_GetFloorZ(player.x, player.y) + player.height;
+    if (newfloorz <> floorz) then
     begin
-      fallrate := fallrate + FALLUNIT;
-      player.z := player.z - fallrate;
-      if player.z < newfloorz then
+      if player.z > newfloorz then
+      begin
+        if fallrate >= 0 then
+        begin
+          player.z := newfloorz;
+          fallrate := 0;
+        end
+        else
+          fallrate := fallrate - FALLUNIT;
+      end
+      else if player.z < newfloorz then
+      begin
         player.z := newfloorz;
-    end
-    else if player.z < newfloorz then
-    begin
-      player.z := newfloorz;
-      fallrate := 0;
+        fallrate := 0;
+      end;
     end;
   end;
 end;
