@@ -53,6 +53,8 @@ const
 
 function FIXEDMUL(const a, b: fixed_t): fixed_t;
 
+function FIXEDADD(const a, b: fixed_t): fixed_t;
+
 function FIXEDMUL64(const a, b: Int64): Int64;
 
 function FIXEDDIV(const a, b: fixed_t): fixed_t;
@@ -109,6 +111,33 @@ function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
 asm
   imul b
   shrd eax, edx, 16
+end;
+
+function FIXEDMUL1(const a, b: fixed_t): fixed_t;
+var
+  i64: Int64;
+begin
+  i64 := Round(a / FRACUNIT * b);
+  if i64 > MAXINT then
+    Result := MAXINT
+  else if i64 < MININT then
+    Result := MININT
+  else
+    Result := i64;
+end;
+
+function FIXEDADD(const a, b: fixed_t): fixed_t;
+var
+  i64: Int64;
+begin
+  i64 := a;
+  i64 := i64 + b;
+  if i64 > MAXINT then
+    Result := MAXINT
+  else if i64 < MININT then
+    Result := MININT
+  else
+    Result := i64;
 end;
 
 function FIXEDMUL64(const a, b: Int64): Int64;
