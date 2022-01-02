@@ -3035,6 +3035,8 @@ begin
   end
   else if Check_Secret('score10000') then
     addscore(10000)
+  else if Check_Secret('score20000') then
+    addscore(20000)
   else if Check_Secret('score50000') then
     addscore(50000)
   else if Length(secretbuf) > 2 then
