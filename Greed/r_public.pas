@@ -672,7 +672,7 @@ begin
     yslope[i + MAXSCROLL] := rint(-(i - 0.5 - CENTERY) / CENTERX * FRACUNIT);
   for i := 0 to TANANGLES * 2 - 1 do
     backtangents[i] := ((width div 2) * tangents[i]) div FRACUNIT;
-  hfrac := FIXEDDIV(BACKDROPHEIGHT * FRACUNIT, (windowHeight div 2) * FRACUNIT);
+  hfrac := FIXEDDIV(BACKDROPHEIGHT1 * (FRACUNIT div 2), (windowHeight div 2) * FRACUNIT);
   afrac := FIXEDDIV(TANANGLES * FRACUNIT, width * FRACUNIT);
 end;
 
