@@ -497,7 +497,7 @@ begin
     if bottomy >= scrollmax then
       bottomy := scrollmax - 1;
 
-    i64 := FIXEDMUL(topheight, scale);
+    i64 := FIXEDMUL64(topheight, scale);
     i64 := i64 div FRACUNIT;
     topy := CENTERY - i64;
     if topy < scrollmin then
