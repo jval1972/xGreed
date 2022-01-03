@@ -548,8 +548,8 @@ begin
   // set up backdrop stuff
   w := windowWidth div 2;
   center := viewangle and 255;
-  if not lowresolution then
-    center := center + 100;
+//  if not lowresolution then
+//    center := center + 100;
 
   // set up for drawing
   sp_colormap := colormaps;
@@ -652,31 +652,27 @@ begin
           px := spanx;
           mr_count := span_p.x2 - spanx;
           mr_dest := @viewylookup[py][px];
-          if windowHeight = 640 then
+          if windowHeight = 400 then
           begin
             py := span_p.y;
-            repeat
-              py := py + 128;
-            until py >= 0;
+            py := py + 128;
           end
-          else if windowHeight = 320 then
+          else if windowHeight = 200 then
           begin
             py := span_p.y;
-            repeat
-              py := py + 64;
-            until py >= 0;
+            py := py + 64;
           end;
           h1 := ibetween((hfrac * py) div FRACUNIT, 0, 255);
           if px <= w then
           begin
             afrac1 := afrac;
-            if windowHeight <> 64 then
-              afrac := afrac * 320 div windowWidth;
+//            if windowHeight <> 64 then
+//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
             while (px <= w) and (mr_count > 0) do
             begin
-              x := backtangents[a div FRACUNIT];
-              x2 := center - x + windowWidth - 257;
+              x := backtangents[a div FRACUNIT] * 320 div windowWidth;
+              x2 := (center - x + 320 - 257);
               x2 := x2 and 255;
               if mr_dest[0] = 255 then
                 mr_dest[0] := backdroplookup[h1][x2];
@@ -690,12 +686,12 @@ begin
           if px > w then
           begin
             afrac1 := afrac;
-            if windowHeight <> 64 then
-              afrac := afrac * 320 div windowWidth;
+//            if windowHeight <> 64 then
+//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
             while mr_count > 0 do
             begin
-              x1 := center + backtangents[a div FRACUNIT];
+              x1 := center + backtangents[a div FRACUNIT] * 320 div windowWidth;
               x1 := x1 and 255;
               if mr_dest[0] = 255 then
                 mr_dest[0] := backdroplookup[h1][x1];
@@ -722,31 +718,27 @@ begin
 
         mr_count := span_p.x2 - spanx;
         mr_dest := @viewylookup[py][px];
-        if windowHeight = 640 then
+        if windowHeight = 400 then
         begin
           py := span_p.y;
-          repeat
-            py := py + 128;
-          until py >= 0;
+          py := py + 128;
         end
-        else if windowHeight = 320 then
+        else if windowHeight = 200 then
         begin
           py := span_p.y;
-          repeat
-            py := py + 64;
-          until py >= 0;
+          py := py + 64;
         end;
         h1 := ibetween((hfrac * py) div FRACUNIT, 0, 255);
         if px <= w then
         begin
           afrac1 := afrac;
-          if windowHeight <> 64 then
-            afrac := afrac * 320 div windowWidth;
+//          if windowHeight <> 64 then
+//            afrac := afrac * 320 div windowWidth;
           a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
           while (px <= w) and (mr_count > 0) do
           begin
-            x := backtangents[a div FRACUNIT];
-            x2 := center - x + windowWidth - 257;
+            x := backtangents[a div FRACUNIT] * 320 div windowWidth;
+            x2 := (center - x + 320 - 257);
             x2 := x2 and 255;
             mr_dest[0] := backdroplookup[h1][x2];
             a := a - afrac;
@@ -759,12 +751,12 @@ begin
         if px > w then
         begin
           afrac1 := afrac;
-          if windowHeight <> 64 then
-            afrac := afrac * 320 div windowWidth;
+//          if windowHeight <> 64 then
+//            afrac := afrac * 320 div windowWidth;
           a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
           while mr_count > 0 do
           begin
-            x1 := center + backtangents[a div FRACUNIT];
+            x1 := center + backtangents[a div FRACUNIT] * 320 div windowWidth;
             x1 := x1 and 255;
             mr_dest[0] := backdroplookup[h1][x1];
             a := a + afrac;
@@ -855,31 +847,27 @@ begin
           px := spanx;
           mr_count := span_p.x2 - spanx;
           mr_dest := @viewylookup[py][px];
-          if windowHeight = 640 then
+          if windowHeight = 400 then
           begin
             py := span_p.y;
-            repeat
-              py := py + 128;
-            until py >= 0;
+            py := py + 128;
           end
-          else if windowHeight = 320 then
+          else if windowHeight = 200 then
           begin
             py := span_p.y;
-            repeat
-              py := py + 64;
-            until py >= 0;
+            py := py + 64;
           end;
           h1 := ibetween((hfrac * py) div FRACUNIT, 0, 255);
           if px <= w then
           begin
             afrac1 := afrac;
-            if windowHeight <> 64 then
-              afrac := afrac * 320 div windowWidth;
+//            if windowHeight <> 64 then
+//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
             while (px <= w) and (mr_count > 0) do
             begin
-              x := backtangents[a div FRACUNIT];
-              x2 := center - x + windowWidth - 257;
+              x := backtangents[a div FRACUNIT] * 320 div windowWidth;
+              x2 := (center - x + 320 - 257);
               x2 := x2 and 255;
               if mr_dest[0] = 255 then
                 mr_dest[0] := backdroplookup[h1][x2];
@@ -893,12 +881,12 @@ begin
           if px > w then
           begin
             afrac1 := afrac;
-            if windowHeight <> 64 then
-              afrac := afrac * 320 div windowWidth;
+//            if windowHeight <> 64 then
+//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
             while mr_count > 0 do
             begin
-              x1 := center + backtangents[a div FRACUNIT];
+              x1 := center + backtangents[a div FRACUNIT] * 320 div windowWidth;
               x1 := x1 and 255;
               if mr_dest[0] = 255 then
                 mr_dest[0] := backdroplookup[h1][x1];
