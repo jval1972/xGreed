@@ -340,9 +340,9 @@ begin
     setcursorposfunc := GetProcAddress(user32inst, 'SetCursorPos');
   mouseinstalled := Assigned(getcursorposfunc) and Assigned(setcursorposfunc);
   if mouseinstalled then
-    printf(' Mouse installed')
+    printf(' Mouse installed'#13#10)
   else
-    printf(' Mouse not installed');
+    printf(' Mouse not installed'#13#10);
  lump := CA_GetNamedNum('MCURSOR');
  seek(cachehandle, infotable[lump].filepos + 8);
  fread(@mcursor, MOUSESIZE * MOUSESIZE, 1, cachehandle);
