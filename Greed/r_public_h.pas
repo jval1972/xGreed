@@ -149,38 +149,24 @@ type
     E_PRESSURELOW
   );
 
-{ list links, don't touch }
-{ modify this part whenever you want }
-{ must accept all possible tick values }
-{ zadj = height above floor }
-{ global position of the BOTTOM of the shape }
-{ lumpnum is spritelump+basepic+rotation }
-{ 0 - ANGLES }
-{ how big he is }
-{ so it doesn't self destruct owner }
-{ id }
-{ who created it }
-{ vertical height }
-{ transparent, no clipping }
-
   Pscaleobj_t = ^scaleobj_t;
   scaleobj_t = packed record
+    // list links, don't touch
     prev: Pscaleobj_t;
     next: Pscaleobj_t;
+    // modify this part whenever you want
     animation: integer;
-    animationTime: integer;
+    animationTime: integer; // must accept all possible tick values
     moveSpeed: fixed_t;
-    zadj: fixed_t;
-    x: fixed_t;
-    y: fixed_t;
-    z: fixed_t;
+    zadj: fixed_t;          // zadj = height above floor
+    x, y, z: fixed_t;       // global position of the BOTTOM of the shape
     lastx: fixed_t;
     lasty: fixed_t;
-    basepic: integer;
+    basepic: integer;       // lumpnum is spritelump+basepic+rotation
     rotate: rotate_t;
-    angle: integer;
+    angle: integer;         // 0 - ANGLES
     angle2: integer;
-    movesize: integer;
+    movesize: integer;      // how big he is
     active: bool;
     nofalling: bool;
     intelligence: integer;
@@ -194,17 +180,17 @@ type
     heat: integer;
     startpic: integer;
     movemode: integer;
-    startspot: integer;
+    startspot: integer;     // so it doesn't self destruct owner
     damage: integer;
     hitpoints: integer;
-    typ: integer;
-    spawnid: integer;
+    typ: integer;           // id
+    spawnid: integer;       // who created it
     score: integer;
     maxmove: integer;
     regen: integer;
     deathevent: integer;
-    height: fixed_t;
-    specialtype: special_t;
+    height: fixed_t;        // vertical height
+    specialtype: special_t; // transparent, no clipping
     scale: integer;
     oldx: integer;
     oldy: integer;
@@ -221,17 +207,11 @@ type
     grounded: boolean;
   end;
 
-{ modify this part whenever you want }
-{ probably only want to set this once }
-{ set true if the pic has any masked areas }
-{ lumpnum is doorlump+pic }
-{ should generally be set to the floor height }
-{ range from 0 (open) - FRACUNIT*64 (closed }
-
   Pdoorobj_t  = ^doorobj_t;
   doorobj_t = record
     tilex: integer;
     tiley: integer;
+    // modify this part whenever you want
     doorOpen: bool;
     doorOpening: bool;
     doorClosing: bool;
@@ -240,31 +220,25 @@ type
     doorSize: integer;
     doorTimer: integer;
     doorLocks: byte;
-    orientation: orientation_t;
-    transparent: bool;
-    pic: integer;
-    height: integer;
-    position: fixed_t;
+    orientation: orientation_t; // probably only want to set this once
+    transparent: bool;          // set true if the pic has any masked areas
+    pic: integer;               // lumpnum is doorlump+pic
+    height: integer;            // should generally be set to the floor height
+    position: fixed_t;          // range from 0 (open) - FRACUNIT*64 (closed)
   end;
 
-{ elevator structure }
-{ going up? }
-{ height }
-{ time for each movement }
-{ set to floorheight[mapspot] }
-{ set to ceilingheight[mapspot]-64 }
-
+  // elevator structure
   Pelevobj_t = ^elevobj_t;
   elevobj_t = record
     prev: Pelevobj_t;
     next: Pelevobj_t;
-    elevUp: bool;
+    elevUp: bool;         // going up?
     elevDown: bool;
-    position: integer;
+    position: integer;    // height
     position64: integer;
-    elevTimer: integer;
-    floor: integer;
-    ceiling: integer;
+    elevTimer: integer;   // time for each movement
+    floor: integer;       // set to floorheight[mapspot]
+    ceiling: integer;     // set to ceilingheight[mapspot]-64
     mapspot: integer;
     speed: integer;
     eval: integer;
