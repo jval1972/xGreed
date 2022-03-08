@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (*                                                                         *)
@@ -315,11 +315,13 @@ begin
     if netmode then
       TimeUpdate;
 
-    if newascii and (y >= 67) then
+    if newascii and (y >= 67) and (lastascii <> #0) then
     begin
       c := lastascii;
       break;
-    end;
+    end
+    else if newascii and (lastascii in ['y', 'Y']) then
+      c := 'y';
     if (timecount >= droptime) and (y < 67) then
     begin
       if y >= 0 then
