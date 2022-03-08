@@ -1,7 +1,7 @@
 (***************************************************************************)
 (*                                                                         *)
 (* xGreed - Source port of the game "In Pursuit of Greed"                  *)
-(* Copyright (C) 2020-2021 by Jim Valavanis                                *)
+(* Copyright (C) 2020-2022 by Jim Valavanis                                *)
 (*                                                                         *)
 (***************************************************************************)
 (* License applies to this source file                                     *)
@@ -75,7 +75,11 @@ begin
         I_SynchronizeInput(not InBackground);
       end;
     WM_CLOSE:
-      quitgame := true;
+      begin
+        quitgame := true;
+        result := 0;
+        exit;
+      end;
     WM_LBUTTONDOWN:
       lbuttondown := true;
     WM_LBUTTONUP:
