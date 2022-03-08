@@ -37,10 +37,10 @@ const
   TANANGLES = 8192; // one quadrant
   FINESHIFT = 5;
   FINEUNIT = 1 shl FINESHIFT;
-  MAXVISVERTEXES = 8192;  // max tile corners visible at once
+  MAXVISVERTEXES = 16384;  // max tile corners visible at once
 // for spans
-  MAXSPANS = 128 * 1024;  // JVAL: 20211217 - Higher value to accomodate precise slope drawing
-  MAXPEND = 16384;
+  MAXSPANS = 192 * 1024;  // JVAL: 20220308 - Higher value to accomodate precise slope drawing
+  MAXPEND = 32768;
   MAXAUTO = 16 * 16;
 // flags
   F_RIGHT = 1 shl 0;
