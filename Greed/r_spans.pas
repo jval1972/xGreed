@@ -548,8 +548,6 @@ begin
   // set up backdrop stuff
   w := windowWidth div 2;
   center := viewangle and 255;
-//  if not lowresolution then
-//    center := center + 100;
 
   // set up for drawing
   sp_colormap := colormaps;
@@ -666,8 +664,6 @@ begin
           if px <= w then
           begin
             afrac1 := afrac;
-//            if windowHeight <> 64 then
-//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
             while (px <= w) and (mr_count > 0) do
             begin
@@ -686,8 +682,6 @@ begin
           if px > w then
           begin
             afrac1 := afrac;
-//            if windowHeight <> 64 then
-//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
             while mr_count > 0 do
             begin
@@ -732,8 +726,6 @@ begin
         if px <= w then
         begin
           afrac1 := afrac;
-//          if windowHeight <> 64 then
-//            afrac := afrac * 320 div windowWidth;
           a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
           while (px <= w) and (mr_count > 0) do
           begin
@@ -751,8 +743,6 @@ begin
         if px > w then
         begin
           afrac1 := afrac;
-//          if windowHeight <> 64 then
-//            afrac := afrac * 320 div windowWidth;
           a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
           while mr_count > 0 do
           begin
@@ -861,8 +851,6 @@ begin
           if px <= w then
           begin
             afrac1 := afrac;
-//            if windowHeight <> 64 then
-//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (w - px);
             while (px <= w) and (mr_count > 0) do
             begin
@@ -881,8 +869,6 @@ begin
           if px > w then
           begin
             afrac1 := afrac;
-//            if windowHeight <> 64 then
-//              afrac := afrac * 320 div windowWidth;
             a := ((TANANGLES div 2) * FRACUNIT) + afrac * (px - w);
             while mr_count > 0 do
             begin
