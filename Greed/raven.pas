@@ -2634,15 +2634,21 @@ begin
   begin
     if (in_button[bt_west] <> 0) or (in_button[bt_slideleft] <> 0) or (imousedx >= FRACUNIT) then
     begin
-      strafrate := strafrate - modifiedMoveUnit;
-      if strafrate < -modifiedSpeed then
-        strafrate := strafrate + modifiedMoveUnit;
+      if in_button[bt_slideright] = 0 then
+      begin
+        strafrate := strafrate - modifiedMoveUnit;
+        if strafrate < -modifiedSpeed then
+          strafrate := strafrate + modifiedMoveUnit;
+      end;
     end;
     if (in_button[bt_east] <> 0) or (in_button[bt_slideright] <> 0) or (imousedx <= -FRACUNIT) then
     begin
-      strafrate := strafrate + modifiedMoveUnit;
-      if strafrate > modifiedSpeed then
-        strafrate := strafrate - modifiedMoveUnit;
+      if in_button[bt_slideleft] = 0 then
+      begin
+        strafrate := strafrate + modifiedMoveUnit;
+        if strafrate > modifiedSpeed then
+          strafrate := strafrate - modifiedMoveUnit;
+      end;
     end
     else if (in_button[bt_west] = 0) and (in_button[bt_slideleft] = 0) and (imousedx > - FRACUNIT) and (imousedx < FRACUNIT) then
     begin
