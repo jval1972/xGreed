@@ -59,7 +59,7 @@ implementation
 
 uses
   d_disk,
-  {$IFDEF VALIDATE}
+  {$IFDEF VALIDATEOVERFLOW}
   d_misc,
   {$ENDIF}
   raven,
@@ -333,7 +333,7 @@ begin
       tpwalls_colormap[transparentposts] := sp_colormap;
       tpwalls_count[transparentposts] := sp_count;
       inc(transparentposts);
-      {$IFDEF VALIDATE}
+      {$IFDEF VALIDATEOVERFLOW}
       if transparentposts >= MAXPEND then
         MS_Error('Too many Pending Posts! (%d)', [MAXPEND]);
       if numspans >= MAXSPANS then
@@ -620,7 +620,7 @@ skipceilingcalc:
       tpwalls_colormap[transparentposts] := sp_colormap;
       tpwalls_count[transparentposts] := sp_count;
       inc(transparentposts);
-      {$IFDEF VALIDATE}
+      {$IFDEF VALIDATEOVERFLOW}
       if transparentposts >= MAXPEND then
         MS_Error('Too many Pending Posts! (%d)', [MAXPEND]);
       if numspans >= MAXSPANS then
@@ -666,7 +666,7 @@ contceiling:
       if (bottomy < scrollmin) or (topy >= scrollmax) then
         continue;
       sp_count := bottomy - topy + 1;
-      {$IFDEF VALIDATE}
+      {$IFDEF VALIDATEOVERFLOW}
       if (bottomy - scrollmin < 0) or (bottomy - scrollmin >= RENDER_VIEW_HEIGHT) then
         MS_Error('DrawSteps(): Indexing viewylookup at %d (out of range [%d,%d])', [bottomy - scrollmin, 0, RENDER_VIEW_HEIGHT - 1]);
       {$ENDIF}
@@ -687,7 +687,7 @@ contceiling:
       tpwalls_colormap[transparentposts] := sp_colormap;
       tpwalls_count[transparentposts] := sp_count;
       inc(transparentposts);
-      {$IFDEF VALIDATE}
+      {$IFDEF VALIDATEOVERFLOW}
       if transparentposts >= MAXPEND then
         MS_Error('Too many Pending Posts! (%d)', [MAXPEND]);
       if numspans >= MAXSPANS then

@@ -69,7 +69,7 @@ var
 begin
   point := vertexlist_p;
   inc(vertexlist_p);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
   if point = @vertexlist[MAXVISVERTEXES] then
     MS_Error('TransformPoint(): Vertexlist overflow (%d)', [MAXVISVERTEXES]);
 {$ENDIF}
@@ -314,7 +314,7 @@ begin
     span_p.shadow := wallshadow;
 
     inc(numspans);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
     if numspans >= MAXSPANS then
       MS_Error('MAXSPANS exceeded, RenderDoor (%d)', [MAXSPANS]);
 {$ENDIF}
@@ -447,7 +447,7 @@ part2:
     span_p.shadow := wallshadow;
 
     inc(numspans);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
     if numspans >= MAXSPANS then
       MS_Error('MAXSPANS exceeded, RenderDoor (%d)', [MAXSPANS]);
 {$ENDIF}
@@ -564,7 +564,7 @@ part3:
     span_p.shadow := wallshadow;
 
     inc(numspans);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
     if numspans >= MAXSPANS then
       MS_Error('MAXSPANS exceeded, RenderDoor (%d)', [MAXSPANS]);
 {$ENDIF}
@@ -660,9 +660,9 @@ begin
   else
     span_p.light := (maplights[mapspot] * 4) + reallight[mapspot];
   inc(numspans);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
   if numspans >= MAXSPANS then
-    MS_Error('MAXSPANS exceeded, RenderSprites (%d)', [MAXSPANS]);
+    MS_Error('MAXSPANS exceeded, RenderSprite (%d)', [MAXSPANS]);
 {$ENDIF}
 end;
 

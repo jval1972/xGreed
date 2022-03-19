@@ -79,7 +79,7 @@ var
   framech: array[0..MAPROWS * MAPCOLS] of integer;
   framefl: array[0..MAPROWS * MAPCOLS] of integer;
   cornervertex: array[0..MAPROWS * MAPCOLS] of Pvertex_t;
-  vertexlist: array[0..MAXVISVERTEXES{$IFNDEF VALIDATE} - 1{$ENDIF}] of vertex_t;
+  vertexlist: array[0..MAXVISVERTEXES{$IFNDEF VALIDATEOVERFLOW} - 1{$ENDIF}] of vertex_t;
   vertexlist_p: Pvertex_t;
   costable: array[0..ANGLES] of fixed_t;
   sintable: array[0..ANGLES] of fixed_t;
@@ -112,7 +112,7 @@ var
   doortile: boolean;               // true if the tile being renderd has a door
   adjacentx: array[0..3] of integer = ( 0, 1, 0,-1);
   adjacenty: array[0..3] of integer = (-1, 0, 1, 0);
-  entries: array[0..MAXENTRIES{$IFNDEF VALIDATE} - 1{$ENDIF}] of entry_t;
+  entries: array[0..MAXENTRIES{$IFNDEF VALIDATEOVERFLOW} - 1{$ENDIF}] of entry_t;
   entry_p: Pentry_t;
   entrymap: array[0..MAPCOLS * MAPROWS - 1] of integer;
   entrycount: array[0..MAPCOLS * MAPROWS - 1] of integer;
@@ -170,7 +170,7 @@ begin
   end;
   point := vertexlist_p;
   inc(vertexlist_p);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
   if point = @vertexlist[MAXVISVERTEXES] then
     MS_Error('TransformVertex(): Vertexlist overflow (%d)', [MAXVISVERTEXES]);
 {$ENDIF}
@@ -363,7 +363,7 @@ begin
         entry_p.counter := entrycounter;
         entrycount[entry_p.mapspot] := entrycounter;
         inc(entry_p);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
         if entry_p = @entries[MAXENTRIES] then
           MS_Error('RenderTileWalls(): Entry Array OverFlow (%d)', [MAXENTRIES]);
 {$ENDIF}

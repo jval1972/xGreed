@@ -96,7 +96,7 @@ PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=
 Packages=vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;Rave50CLX;Rave50VCL;dclOfficeXP
-Conditionals=
+Conditionals=VALIDATEOVERFLOW
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
@@ -115,7 +115,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=1
 Release=11
-Build=52
+Build=55
 Debug=0
 PreRelease=0
 Special=0
@@ -126,7 +126,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=Jim Valavanis
 FileDescription=In Pursuit of Greed
-FileVersion=1.1.11.52
+FileVersion=1.1.11.55
 InternalName=xGreed
 LegalCopyright=Copyright 2020 - 2022, Jim Valavanis
 LegalTrademarks=Copyright 2020 - 2022, Jim Valavanis
@@ -135,9 +135,10 @@ ProductName=xGreed
 ProductVersion=1.0.0.0
 Comments=Source port of the game "In pursuit of Greed"
 [HistoryLists\hlConditionals]
-Count=2
-Item0=VALIDATE
-Item1=USEFLOATPOINT
+Count=3
+Item0=VALIDATEOVERFLOW
+Item1=VALIDATE
+Item2=USEFLOATPOINT
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

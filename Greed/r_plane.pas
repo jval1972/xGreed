@@ -63,7 +63,7 @@ implementation
 
 uses
   d_disk,
-  {$IFDEF VALIDATE}
+  {$IFDEF VALIDATEOVERFLOW}
   d_misc,
   {$ENDIF}
   r_public,
@@ -131,7 +131,7 @@ begin
   span_p.shadow := mr_shadow;
   span_p.light := mr_light;
   inc(numspans);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
   if numspans >= MAXSPANS then
     MS_Error('FlatSpan(): MAXSPANS exceeded, (%d)', [MAXSPANS]);
 {$ENDIF}
@@ -176,9 +176,9 @@ begin
   span_p.shadow := mr_shadow;
   span_p.light := mr_light;
   inc(numspans);
-{$IFDEF VALIDATE}
+{$IFDEF VALIDATEOVERFLOW}
   if numspans >= MAXSPANS then
-    MS_Error('SlopeSpan(): MAXSPANS exceeded, (%d)', [MAXSPANS]);
+    MS_Error('SlopeSpan_fast(): MAXSPANS exceeded, (%d)', [MAXSPANS]);
 {$ENDIF}
 end;
 
@@ -245,9 +245,9 @@ begin
     span_p.shadow := mr_shadow;
     span_p.light := mr_light;
     inc(numspans);
-    {$IFDEF VALIDATE}
+    {$IFDEF VALIDATEOVERFLOW}
     if numspans >= MAXSPANS then
-      MS_Error('SlopeSpan(): MAXSPANS exceeded, (%d)', [MAXSPANS]);
+      MS_Error('SlopeSpan_precise(): MAXSPANS exceeded, (%d)', [MAXSPANS]);
     {$ENDIF}
     _nextpoint;
   end;

@@ -66,7 +66,7 @@ procedure DrawSpans;
 implementation
 
 uses
-  {$IFDEF VALIDATE}
+  {$IFDEF VALIDATEOVERFLOW}
   d_misc,
   {$ENDIF}
   d_video,
